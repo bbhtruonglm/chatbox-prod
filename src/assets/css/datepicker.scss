@@ -1,0 +1,38 @@
+$namespace: "xmx";
+
+$default-color: #140f2d;
+$primary-color: #ff5f0b;
+
+$input-border-color: #e5e7eb !default;
+$input-color: #555 !default;
+$input-hover-border-color: #e5e7eb !default;
+
+$border-color: #e8e8e8 !default;
+
+.xmx-input {
+    height: 37px !important;
+    padding-left: 34px !important;
+    padding-right: 5px !important;
+}
+.xmx-icon-calendar {
+    left: 10px;
+
+    svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
+.xmx-icon-clear {
+    left: 10px;
+    width: 16px !important;
+}
+
+.xmx-calendar-content .cell.active {
+    border-radius: 20px !important;
+}
+
+.xmx-datepicker-range {
+    width: 222px !important;
+}
+
+@import "vue-datepicker-next/scss/index.scss";
