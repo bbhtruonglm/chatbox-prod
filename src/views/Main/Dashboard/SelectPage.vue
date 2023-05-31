@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="h-[90px] bg-white shadow-t-lg rounded-[35px] pt-4 px-[40px]">
+        <div class="h-[90px] bg-white shadow-lg rounded-t-[35px] pt-4 px-[40px]">
             <div>
                 <button class="bg-orange-600 w-full rounded-full py-1 text-white flex justify-center items-center">
                     {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
