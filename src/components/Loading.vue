@@ -12,6 +12,10 @@
 import LoadingSvg from '@/assets/icons/loading.svg'
 
 withDefaults(defineProps<{
+    /**
+     * MINI: chỉ có loading
+     * FULL: phủ toàn trang
+     */
     type?: 'MINI' | 'FULL'
     text?: string
 }>(), {
@@ -24,5 +28,6 @@ import { i18n } from '@/lang'
 
 const $t = i18n.global.t
 
+// đặt text mặc định cho prop
 const text = $t('v1.common.loading')
 </script>

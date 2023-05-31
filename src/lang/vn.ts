@@ -19,6 +19,26 @@ const source: Language = {
                     login: 'Đăng nhập',
                     btn_text: 'Tiếp tục với Facebook'
                 }
+            },
+            main: {
+                dashboard: {
+                    nav: {
+                        noti: 'Thông báo',
+                        toggle: 'Thu nhỏ',
+                        select_page: 'Chọn trang',
+                        select_platform: 'Kết nối nền tảng',
+                        upgrade: 'Quản lý nâng cấp'
+                    },
+                    select_page: {
+                        search_placeholder: 'Tìm kiếm trang hoặc ID trang',
+                        all_platform: 'Tất cả',
+                        facebook: 'Facebook',
+                        web: 'Website',
+                        whatsapp: 'Whatsapp',
+                        select_all_page: 'Chọn tất cả các trang',
+                        munti_chat_page: 'Chat nhiều trang'
+                    }
+                }
             }
         }
     },

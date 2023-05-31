@@ -91,7 +91,7 @@ function loginChatbox(access_token: string) {
             cb()
         },
         (cb: CbError) => { // * redirect sang dashboard
-            $router.push('/dashboard')
+            $router.push('/main/dashboard')
 
             cb()
         },

@@ -15,4 +15,5 @@ export interface Env {
         /**các tuỳ chọn khi đăng nhập */
         login_option: {}
     }
+    platform: string[]
 }

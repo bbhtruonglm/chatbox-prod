@@ -41,7 +41,8 @@ const ENV: Env = {
             auth_type: 'rerequest',
             enable_profile_selector: true
         }
-    }
+    },
+    platform: ['facebook', 'web', 'whatsapp']
 }
 
 export default ENV
