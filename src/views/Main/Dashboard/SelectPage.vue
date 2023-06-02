@@ -18,8 +18,8 @@
                 </div>
             </div>
         </div>
-        <div class="px-2 h-[calc(100%_-_229px)] md:h-[calc(100%_-_169px)]">
-            <div class="flex justify-end py-2">
+        <div class="px-2 relative h-[calc(100%_-_229px)] md:h-[calc(100%_-_169px)]">
+            <div class="flex justify-end py-2 top-[-39px] right-[8px] pr-[8px] md:absolute">
                 <div class="flex items-center cursor-pointer">
                     <div @click="checkbox_select_all_page?.click()" class="text-sm font-semibold">{{
                         $t('v1.view.main.dashboard.select_page.select_all_page') }}</div>
@@ -28,8 +28,8 @@
             </div>
             <!-- click vào vùng 1 và vùng 2: thì click vào checkbox luôn -->
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': appStore.toggle_nav }"
-                class="h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
-                <div v-for="i of 20" class="cursor-pointer bg-white rounded-md flex py-3 hover:shadow-lg md:bg-slate-100">
+                class="h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+                <div v-for="i of 20" class="cursor-pointer bg-white rounded-md flex py-3 border-b-2 hover:border-orange-500 md:bg-slate-100">
                     <div class="w-[60px] flex justify-center items-center">
                         <div class="relative">
                             <img src="@/assets/icons/crown.svg" width="15" height="15"
@@ -59,7 +59,7 @@
                 </div>
             </div>
         </div>
-        <div class="h-[90px] md:h-[64px] bg-white rounded-t-[35px] md:rounded-none pt-4 px-[40px]">
+        <div class="h-[90px] md:h-[64px] bg-white rounded-t-[35px] md:rounded-none pt-4 md:pt-[10px] xl:pt-4 px-[40px]">
             <div>
                 <button
                     class="bg-orange-600 w-full rounded-full py-1 text-white flex justify-center items-center hover:bg-orange-500 mx-auto md:w-[300px]">
