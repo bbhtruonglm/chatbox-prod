@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen bg-white">
+  <div class="w-screen h-screen bg-white select-none">
     <Loading v-if="appStore.is_loading_full_screen" type="FULL" />
     <div class="h-full overflow-hidden overflow-y-auto">
       <router-view />

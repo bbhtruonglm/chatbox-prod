@@ -36,7 +36,8 @@ const source: Language = {
                         web: 'Website',
                         whatsapp: 'Whatsapp',
                         select_all_page: 'Chọn tất cả các trang',
-                        munti_chat_page: 'Chat nhiều trang'
+                        munti_chat_page: 'Chat nhiều trang',
+                        chat_now: 'Chat ngay',
                     }
                 }
             }

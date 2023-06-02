@@ -42,7 +42,7 @@ const ENV: Env = {
             enable_profile_selector: true
         }
     },
-    platform: ['facebook', 'web', 'whatsapp']
+    platform: ['facebook', 'web']
 }
 
 export default ENV

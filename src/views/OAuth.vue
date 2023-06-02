@@ -1,18 +1,29 @@
 <template>
     <div class="relative md:flex md:flex-row-reverse md:h-full">
-        <div class="w-full h-[250px] md:h-full md:w-2/4 bg-no-repeat bg-center bg-cover bg-[url(@/assets/imgs/login-background.svg)]" />
-        <div class="mt-[-30px] md:mt-0 md:h-full md:w-2/4 px-8 py-10 md:py-24 rounded-t-[40px] bg-white relative h-[calc(100vh_-_244px)]">
-            <img class="absolute top-[-150px] w-[60px] h-[60px] md:w-[80px] md:h-[80px] md:static md:mx-auto left-8" src="@/assets/imgs/chatbox.svg" />
+        <div
+            class="w-full h-[250px] md:h-full md:w-2/4 bg-no-repeat bg-center bg-cover bg-[url(@/assets/imgs/login-background.svg)]" />
+        <div
+            class="mt-[-30px] md:mt-0 md:h-full md:w-2/4 px-8 py-10 md:py-24 rounded-t-[40px] bg-white relative h-[calc(100vh_-_244px)]">
+            <img class="absolute top-[-150px] w-[60px] h-[60px] md:w-[80px] md:h-[80px] md:static md:mx-auto left-8"
+                src="@/assets/imgs/chatbox.svg" />
             <div class="text-2xl font-semibold md:text-center md:mt-5">
                 {{ $t('v1.view.oauth.login.login') }}
+                <button
+                    @click="loginChatbox('EAAEUCPkC4qIBALAVuvEnviGZBc3mfaV0tIETal68vjEUTOo63xruDIMFbZCfwdrMmPU4ZCrL5IWZCeaRrSKkgvrPAHLohkMSCP62oKaZAogZAGhfAXJLZAhZBtNZCZB1fZAeDdXkoMFuoKrsZCa3uUwB3YQ9ZAU6s7hVUXsJdc3PZBaApZCcas9DIPikTDZC')"
+                    class="">
+                    <img src="@/assets/icons/test.svg" width="20" height="20">
+                </button>
             </div>
 
-            <div class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full px-[33px] flex justify-center">
+            <div
+                class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full px-[33px] flex justify-center">
                 <iframe class="h-[40px] w-full md:w-[350px]" :src="IFRAME_SRC" frameborder="0" />
             </div>
         </div>
 
-        <div class="absolute bottom-[40px] left-8"><Language /></div>
+        <div class="absolute bottom-[40px] left-8">
+            <Language />
+        </div>
     </div>
 </template>
 
@@ -100,6 +111,6 @@ function loginChatbox(access_token: string) {
 
 // lắng nghe iframe gửi dữ liệu
 onMounted(() => window.addEventListener("message", getFacebookToken))
- // huỷ sự kiện lắng nghe khi un mount component này
+// huỷ sự kiện lắng nghe khi un mount component này
 onUnmounted(() => window.removeEventListener('message', getFacebookToken))
 </script>

@@ -36,3 +36,16 @@ xl:bg-blue-100
 
 # Lib
 - https://swiperjs.com/demos/430-slideable-menu/core
+
+# Integrations Ios
+- https://capacitorjs.com
+```
+npm install @capacitor/core @capacitor/cli
+npx cap init [name] [id] --web-dir=dist
+
+npm run build
+
+npm i @capacitor/ios @capacitor/android
+npx cap add android
+npx cap add ios
+```
