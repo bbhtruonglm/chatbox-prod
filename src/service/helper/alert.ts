@@ -21,6 +21,9 @@ export const toast = (
     toast: true,
     showConfirmButton: false,
     timerProgressBar: true,
+    customClass: {
+        popup: 'mt-[60px] md:mt-[20px] xl:mt-0'
+    },
     didOpen: (r: HTMLElement) => {
         r.addEventListener('mouseenter', Swal.stopTimer)
         r.addEventListener('mouseleave', Swal.resumeTimer)

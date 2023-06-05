@@ -1,5 +1,5 @@
 import { waterfall } from 'async'
-import { useAppStore } from '@/stores'
+import { useCommonStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 
 import type { Cb, CbError } from '@/service/interface/function'
@@ -19,9 +19,9 @@ export const flow = (
     function toggleLoading(value: boolean) {
         if (!active_full_screen_loading) return
 
-        const appStore = useAppStore()
+        const commonStore = useCommonStore()
 
-        appStore.is_loading_full_screen = value
+        commonStore.is_loading_full_screen = value
     }
 
     waterfall([

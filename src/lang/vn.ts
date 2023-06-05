@@ -32,12 +32,15 @@ const source: Language = {
                     select_page: {
                         search_placeholder: 'Tìm kiếm trang hoặc ID trang',
                         all_platform: 'Tất cả',
-                        facebook: 'Facebook',
-                        web: 'Website',
-                        whatsapp: 'Whatsapp',
+                        fb_mess: 'Facebook',
+                        website: 'Website',
+                        fb_whatsapp: 'Whatsapp',
                         select_all_page: 'Chọn tất cả các trang',
                         munti_chat_page: 'Chat nhiều trang',
                         chat_now: 'Chat ngay',
+                        inactive_page: {
+                            title: 'Bạn có chắc chắn muốn ẩn trang này ?'
+                        }
                     }
                 }
             }

@@ -42,7 +42,7 @@ const ENV: Env = {
             enable_profile_selector: true
         }
     },
-    platform: ['facebook', 'web']
+    platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP']
 }
 
 export default ENV

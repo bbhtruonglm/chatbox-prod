@@ -1,6 +1,6 @@
 <template>
-  <div class="w-screen h-screen bg-white select-none">
-    <Loading v-if="appStore.is_loading_full_screen" type="FULL" />
+  <div class="w-screen h-screen bg-white select-none xl:select-auto">
+    <Loading v-if="commonStore.is_loading_full_screen" type="FULL" />
     <div class="h-full overflow-hidden overflow-y-auto">
       <router-view />
     </div>
@@ -9,9 +9,9 @@
 
 <script setup lang="ts">
 import Loading from '@/components/Loading.vue'
-import { useAppStore } from '@/stores'
+import { useCommonStore } from '@/stores'
 
-const appStore = useAppStore()
+const commonStore = useCommonStore()
 </script>
 
 <style lang="scss">

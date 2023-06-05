@@ -15,5 +15,6 @@ export interface Env {
         /**các tuỳ chọn khi đăng nhập */
         login_option: {}
     }
+    /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: string[]
 }
