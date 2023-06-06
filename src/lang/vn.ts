@@ -12,6 +12,7 @@ const source: Language = {
             success: 'Thành công',
             page: 'Trang',
             setting: 'Cài đặt',
+            page_search_placeholder: 'Tìm kiếm trang hoặc ID trang',
         },
         view: {
             oauth: {
@@ -30,7 +31,6 @@ const source: Language = {
                         upgrade: 'Quản lý nâng cấp'
                     },
                     select_page: {
-                        search_placeholder: 'Tìm kiếm trang hoặc ID trang',
                         all_platform: 'Tất cả',
                         fb_mess: 'Facebook',
                         website: 'Website',
@@ -40,7 +40,17 @@ const source: Language = {
                         chat_now: 'Chat ngay',
                         inactive_page: {
                             title: 'Bạn có chắc chắn muốn ẩn trang này ?'
+                        },
+                        empty_page: {
+                            title: 'Không có trang nào được chọn',
+                            description: 'Hãy chọn kết nối nền tảng để chọn kênh chat!'
                         }
+                    },
+                    select_platform: {
+                        empty_page: 'Không tìm thấy trang của bạn?',
+                        add_page: 'Thêm trang',
+                        click_add_page: 'Bấm thêm trang để bắt đầu!',
+                        active: 'Kích hoạt'
                     }
                 }
             }

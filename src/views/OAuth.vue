@@ -8,16 +8,20 @@
                 src="@/assets/imgs/chatbox.svg" />
             <div class="text-2xl font-semibold md:text-center md:mt-5">
                 {{ $t('v1.view.oauth.login.login') }}
+
+                <!-- TODO START test đăng nhập -->
                 <button
                     @click="loginChatbox('EAAEUCPkC4qIBALAVuvEnviGZBc3mfaV0tIETal68vjEUTOo63xruDIMFbZCfwdrMmPU4ZCrL5IWZCeaRrSKkgvrPAHLohkMSCP62oKaZAogZAGhfAXJLZAhZBtNZCZB1fZAeDdXkoMFuoKrsZCa3uUwB3YQ9ZAU6s7hVUXsJdc3PZBaApZCcas9DIPikTDZC')"
                     class="">
                     <img src="@/assets/icons/test.svg" width="20" height="20">
                 </button>
+                <!-- TODO END test đăng nhập -->
             </div>
 
             <div
                 class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full px-[33px] flex justify-center">
-                <iframe class="h-[40px] w-full md:w-[350px]" :src="IFRAME_SRC" frameborder="0" />
+                <Facebook :text="$t('v1.view.oauth.login.btn_text')" class="h-[40px] w-full md:w-[350px]"
+                    @access_token="loginChatbox" />
             </div>
         </div>
 
@@ -28,14 +32,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
-import { cross_login_url } from '@/service/constant/botbanhang'
 import { flow } from '@/service/helper/async'
 import { login_facebook } from '@/service/api/chatbox/n4-service'
 import { setItem } from '@/service/helper/localStorage'
 import { useRouter } from 'vue-router'
 
 import Language from '@/components/Language.vue'
+import Facebook from '@/components/OAuth/Facebook.vue'
 
 import type { CbError } from '@/service/interface/function'
 import { useI18n } from 'vue-i18n'
@@ -43,43 +46,6 @@ import { useI18n } from 'vue-i18n'
 const $router = useRouter()
 const { t: $t } = useI18n()
 
-const APP_ID = $env.facebook.app_id
-const FB_OPTION = JSON.stringify($env.facebook.login_option)
-const IFRAME_SRC = `${cross_login_url}?app_id=${APP_ID}&option=${FB_OPTION}&text=${$t('v1.view.oauth.login.btn_text')}`
-
-/**
- * - do fb bị lỗi không thêm mới được white domain, nên phải đăng nhập thông qua 
- * iframe của bot bán hàng, sau đó send event ra ngoài
- * - hàm này nhận data được gửi từ iframe
- */
-function getFacebookToken($event: MessageEvent<{
-    data: {
-        authResponse: {
-            accessToken: string
-            userID: string
-        }
-    }
-    from: 'FACEBOOK_IFRAME'
-    event: 'LOGIN'
-}>) {
-    // chỉ xử lý các data được gửi từ iframe bbh với event là login
-    if (
-        !$event ||
-        !$event.data ||
-        !$event.data.data ||
-        $event.data.from !== 'FACEBOOK_IFRAME' ||
-        $event.data.event !== 'LOGIN'
-    ) return
-
-    const FACEBOOK_RESPONSE = $event.data.data
-
-    if (
-        !FACEBOOK_RESPONSE.authResponse ||
-        !FACEBOOK_RESPONSE.authResponse.accessToken
-    ) return
-
-    loginChatbox(FACEBOOK_RESPONSE.authResponse.accessToken)
-}
 /**
  * - đăng nhập chatbox bằng token fb
  */
@@ -108,9 +74,4 @@ function loginChatbox(access_token: string) {
         },
     ], undefined, true)
 }
-
-// lắng nghe iframe gửi dữ liệu
-onMounted(() => window.addEventListener("message", getFacebookToken))
-// huỷ sự kiện lắng nghe khi un mount component này
-onUnmounted(() => window.removeEventListener('message', getFacebookToken))
 </script>

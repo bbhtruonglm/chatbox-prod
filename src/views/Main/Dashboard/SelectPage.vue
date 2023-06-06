@@ -2,21 +2,9 @@
     <div class="w-full h-full bg-slate-100 md:bg-white">
         <div class="bg-white pt-[65px] md:pt-8 xl:pt-4">
             <div class="pl-14 pr-4 md:pl-4">
-                <div class="relative md:w-[300px]">
-                    <img width="23" height="23" class="absolute top-[6px] left-[10px]" src="@/assets/icons/search.svg">
-                    <input v-model="search" class="w-full border-2 rounded-full py-1 pl-10 pr-2 " type="text"
-                        :placeholder="$t('v1.view.main.dashboard.select_page.search_placeholder')">
-                </div>
+                <Search class="md:w-[300px]" v-model="search" :placeholder="$t('v1.common.page_search_placeholder')" />
             </div>
-            <div class="overflow-hidden overflow-x-auto px-4 mt-1">
-                <div class="flex w-max">
-                    <div @click="current_selected_tab = tab.key"
-                        class="font-semibold px-4 py-1 cursor-pointer border-b-2 border-white text-slate-400 hover:border-orange-500 hover:font-semibold hover:text-black"
-                        :class="{ '!text-black !border-orange-500': current_selected_tab === tab.key }"
-                        v-for="tab of  LIST_TAB_SELECT">{{ tab.title }}
-                    </div>
-                </div>
-            </div>
+            <PlatformTab v-model="current_selected_tab" :platform_list="LIST_TAB_SELECT" />
         </div>
         <div class="px-2 relative h-[calc(100%_-_229px)] md:h-[calc(100%_-_169px)]">
             <div class="flex justify-end py-2 top-[-39px] right-[8px] pr-[8px] md:absolute">
@@ -27,66 +15,51 @@
                         type="checkbox" class="w-[15px] h-[15px] ml-1 accent-orange-600">
                 </div>
             </div>
-            <div v-if="is_loading_active_page_list">
+            <div v-if="is_loading_active_page_list" class="absolute left-[50%] translate-x-[-50%]">
                 <Loading class="mx-auto" />
             </div>
-            <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.toggle_nav }"
-                class="max-h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
-                <div v-for="page of active_page_list"
-                    class="cursor-pointer bg-white rounded-md flex py-3 border-b-2 hover:border-orange-500 md:bg-slate-100">
-                    <div class="w-[60px] flex justify-center items-center">
-                        <div class="relative">
-                            <img v-if="isPagePremium(page.page)" src="@/assets/icons/crown.svg" width="15" height="15"
-                                class="absolute top-[-10px] left-[50%] translate-x-[-50%]">
-                            <PageAvatar :page_avatar="page.page?.avatar" :page_type="page.page?.type"
-                                :page_id="page.page?.fb_page_id" class="rounded-full" />
-                        </div>
+            <div v-if="!active_page_list || !active_page_list.length"
+                class="h-[calc(100%_-_36px)] md:h-full flex justify-center pt-10">
+                <div>
+                    <img src="@/assets/icons/empty-page.svg" class="mx-auto w-[200px]">
+                    <div class="text-center font-medium text-2xl">
+                        {{ $t('v1.view.main.dashboard.select_page.empty_page.title') }}
                     </div>
-                    <div class="w-[calc(100%_-_150px)]">
-                        <div class="text-base truncate">{{ page.page?.name }}</div>
-                        <div class="flex items-center">
-                            <PageTypeIcon :page_type="page.page?.type" />
-                            <div class="text-sm text-slate-500 ml-1 truncate">
-                                {{ page.page?.fb_page_id }}
-                            </div>
-                        </div>
+                    <div class="text-center text-slate-500">
+                        {{ $t('v1.view.main.dashboard.select_page.empty_page.description') }}
                     </div>
-                    <div class="w-[90px]">
-                        <div class="flex justify-end">
-                            <div @click="togglePagePriority(page.page?.fb_page_id, !page.page?.is_priority)">
-                                <img v-if="page.page?.is_priority" src="@/assets/icons/star-active.svg" width="15"
-                                    height="15" class="mr-4 cursor-pointer" />
-                                <img v-else src="@/assets/icons/star-inactive.svg" width="15" height="15"
-                                    class="mr-4 cursor-pointer" />
-                            </div>
-                            <img @click="inactivePage(page.page?.fb_page_id)" src="@/assets/icons/hide.svg" width="15"
-                                height="15" class="mr-4 cursor-pointer" />
-                            <input @click="toggleSelectThisPage(page.page?.fb_page_id)"
-                                :checked="isSelectedThisPage(page.page?.fb_page_id)" type="checkbox"
-                                class="w-[15px] h-[15px] mr-2 accent-orange-600">
-                        </div>
-                        <div class="text-center pt-[13px]">
-                            <button @click="selectOnlyThisPage(page.page?.fb_page_id)"
-                                class="bg-slate-600 text-white text-xs px-3 rounded-full h-[28px] hover:bg-slate-400">{{
-                                    $t('v1.view.main.dashboard.select_page.chat_now') }}</button>
-                        </div>
+                    <div class="text-center cursor-pointer text-orange-500"
+                        @click="$router.push('/main/dashboard/select-platform')">
+                        {{ $t('v1.view.main.dashboard.nav.select_platform') }}
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="h-[90px] md:h-[64px] bg-white rounded-t-[35px] md:rounded-none pt-4 md:pt-[10px] xl:pt-4 px-[40px]">
-            <div>
-                <button @click="goToChat()" :disabled="!size(pageStore.selected_page_id_list)"
-                    :class="size(pageStore.selected_page_id_list) ? 'bg-orange-600 hover:bg-orange-500' : 'bg-slate-600 hover:bg-slate-500'"
-                    class="w-full rounded-full py-1 text-white flex justify-center items-center  mx-auto md:w-[300px]">
-                    {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
-                    <div v-if="size(pageStore.selected_page_id_list)"
-                        class="text-xs text-orange-600 bg-white rounded-full w-[19px] h-[19px] flex justify-center items-center ml-2">
-                        {{ size(pageStore.selected_page_id_list) }}
+            <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.toggle_nav }"
+                class="max-h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+                <PageItem v-for="page of active_page_list" :page_info="page.page">
+                    <div class="flex justify-end">
+                        <div @click="togglePagePriority(page.page?.fb_page_id, !page.page?.is_priority)">
+                            <img v-if="page.page?.is_priority" src="@/assets/icons/star-active.svg" width="15" height="15"
+                                class="mr-4 cursor-pointer" />
+                            <img v-else src="@/assets/icons/star-inactive.svg" width="15" height="15"
+                                class="mr-4 cursor-pointer" />
+                        </div>
+                        <img @click="inactivePage(page.page?.fb_page_id)" src="@/assets/icons/hide.svg" width="15"
+                            height="15" class="mr-4 cursor-pointer" />
+                        <input @click="toggleSelectThisPage(page.page?.fb_page_id)"
+                            :checked="isSelectedThisPage(page.page?.fb_page_id)" type="checkbox"
+                            class="w-[15px] h-[15px] mr-2 accent-orange-600">
                     </div>
-                </button>
+                    <div class="text-center pt-[13px]">
+                        <button @click="selectOnlyThisPage(page.page?.fb_page_id)"
+                            class="bg-slate-600 text-white text-xs px-3 rounded-full h-[28px] hover:bg-slate-400">{{
+                                $t('v1.view.main.dashboard.select_page.chat_now') }}</button>
+                    </div>
+                </PageItem>
             </div>
         </div>
+        <FooterButton :text="$t('v1.view.main.dashboard.select_page.munti_chat_page')" @click_btn="goToChat()"
+            :disabled="!size(pageStore.selected_page_id_list)" :count="size(pageStore.selected_page_id_list)" />
     </div>
 </template>
 
@@ -100,15 +73,16 @@ import { get_current_active_page, update_page } from '@/service/api/chatbox/n4-s
 import { debounce, map, mapValues, set, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { confirm } from '@/service/helper/alert'
+import { useRouter } from 'vue-router'
 
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import Loading from '@/components/Loading.vue'
+import Search from '@/components/Main/Dashboard/Search.vue'
+import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
+import PageItem from '@/components/Main/Dashboard/PageItem.vue'
+import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { PageInfo } from '@/service/interface/app/page'
 import type { PageData } from '@/service/interface/app/page'
-import { useRouter } from 'vue-router'
 
 const { t: $t } = useI18n()
 const $router = useRouter()
@@ -290,7 +264,7 @@ function getCurrentActivePage() {
 
             cb()
         },
-        (cb: CbError) => get_current_active_page((e, r) => {
+        (cb: CbError) => get_current_active_page({ is_active: true }, (e, r) => {
             if (e) return cb(e)
 
             pageStore.active_page_list = r.page_list
@@ -301,16 +275,6 @@ function getCurrentActivePage() {
         // tắt loading
         is_loading_active_page_list.value = false
     })
-}
-/**kiểm tra xem page này đã được kích hoạt gói | kích hoạt dùng thử hay chưa */
-function isPagePremium(page?: PageInfo) {
-    const CURRENT_DATE = new Date().getTime()
-
-    if (page?.end_date_trial && page?.end_date_trial > CURRENT_DATE) return true
-
-    if (page?.pricing_id && page?.end_date && page?.end_date > CURRENT_DATE) return true
-
-    return false
 }
 /**đánh dấu sao page ưu tiên lên đầu */
 function togglePagePriority(page_id?: string, is_priority?: boolean) {
@@ -337,7 +301,7 @@ function togglePagePriority(page_id?: string, is_priority?: boolean) {
         }
     ], undefined, true)
 }
-/**huỷ kích hoạt page này */
+/**huỷ kích hoạt page này | ẩn page */
 function inactivePage(page_id?: string) {
     flow([
         // * hỏi trước khi thực hiện hành động
@@ -363,11 +327,13 @@ function inactivePage(page_id?: string) {
 
             cb()
         }),
-        // * xoá page bị ẩn khỏi danh sách page
+        // * xoá page bị ẩn khỏi danh sách page và danh sách page đang chọn (nếu có)
         (cb: CbError) => {
             if (!page_id) return cb()
 
             delete pageStore.active_page_list[page_id]
+
+            delete pageStore.selected_page_id_list[page_id]
 
             filterCurrentActivePage()
 
