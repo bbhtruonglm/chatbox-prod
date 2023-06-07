@@ -11,6 +11,7 @@ export interface PageInfo {
     end_date?: number
     pricing_id?: string
     is_priority?: boolean
+    is_active?: boolean
 }
 
 export interface PageData {
@@ -22,4 +23,10 @@ export interface PageData {
 
 export interface PageList {
     [index: string]: PageData
+}
+
+export interface PageWebsiteCreate {
+    name: string
+    avatar?: string
+    description?: string
 }

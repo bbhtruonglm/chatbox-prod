@@ -1,7 +1,7 @@
 import { chatbox } from '@/service/api/chatbox/common'
 
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
-import type { PageList } from '@/service/interface/app/page'
+import type { PageList, PageWebsiteCreate } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 
@@ -57,4 +57,13 @@ export const sync_facebook_page = (
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/page/sync_facebook_page`,
     body: { access_token },
+}, proceed)
+
+/**tạo mới page dạng website */
+export const create_website_page = (
+    body: PageWebsiteCreate,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/page/create_website_page`,
+    body,
 }, proceed)

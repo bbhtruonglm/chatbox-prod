@@ -13,6 +13,7 @@ const source: Language = {
             page: 'Trang',
             setting: 'Cài đặt',
             page_search_placeholder: 'Tìm kiếm trang hoặc ID trang',
+            upcoming_feature: 'Tính năng sắp được ra mắt!'
         },
         view: {
             oauth: {
@@ -50,7 +51,18 @@ const source: Language = {
                         empty_page: 'Không tìm thấy trang của bạn?',
                         add_page: 'Thêm trang',
                         click_add_page: 'Bấm thêm trang để bắt đầu!',
-                        active: 'Kích hoạt'
+                        active: 'Kích hoạt',
+                        create_website: {
+                            title: 'Thêm kết nối Website',
+                            description: 'Mô tả',
+                            enter_description: 'Nhập mô tả',
+                            link_website: 'Link Website',
+                            enter_link_website: 'website.com',
+                            link_icon: 'Đường dẫn icon',
+                            enter_link_icon: 'Nhập đường dẫn icon',
+                            success: 'Tạo kết nối Website thành công'
+                        },
+                        success: 'Kích hoạt các trang thành công'
                     }
                 }
             }

@@ -1,9 +1,16 @@
 <template>
-    <iframe v-if="iframe_src" :src="iframe_src" frameborder="0" />
+    <div class="relative">
+        <div class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
+            <Loading />
+        </div>
+        <iframe class="relative z-[2] w-full h-full" v-if="iframe_src" :src="iframe_src" frameborder="0" />
+    </div>
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { cross_login_url } from '@/service/constant/botbanhang'
+
+import Loading from '../Loading.vue'
 
 const $emit = defineEmits(['access_token'])
 
