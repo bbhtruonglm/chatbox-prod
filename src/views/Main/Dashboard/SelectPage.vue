@@ -4,7 +4,7 @@
             <div class="pl-14 pr-4 md:pl-4">
                 <Search class="md:w-[300px]" v-model="search" :placeholder="$t('v1.common.page_search_placeholder')" />
             </div>
-            <PlatformTab v-model="current_selected_tab" :platform_list="LIST_TAB_SELECT" />
+            <PlatformTab v-model="current_selected_tab" :platform_list="list_tab_select" />
         </div>
         <div class="px-2 relative h-[calc(100%_-_229px)] md:h-[calc(100%_-_169px)]">
             <div class="flex justify-end py-2 top-[-39px] right-[8px] pr-[8px] md:absolute">
@@ -70,7 +70,7 @@ import { saveLocal, getLocal } from '@/service/helper/store'
 import { useCommonStore, usePageStore, useStaffStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { get_current_active_page, update_page } from '@/service/api/chatbox/n4-service'
-import { debounce, map, mapValues, set, size } from 'lodash'
+import { debounce, keyBy, map, mapValues, set, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { confirm } from '@/service/helper/alert'
 import { useRouter } from 'vue-router'
@@ -83,6 +83,7 @@ import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
 
 import type { CbError } from '@/service/interface/function'
 import type { PageData } from '@/service/interface/app/page'
+import type { TabPlatform } from '@/service/interface/app/page'
 
 const { t: $t } = useI18n()
 const $router = useRouter()
@@ -90,19 +91,19 @@ const commonStore = useCommonStore()
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
 
-const LIST_TAB_SELECT = [
-    {
-        title: $t(`v1.view.main.dashboard.select_page.all_platform`),
-        key: 'ALL_PLATFORM'
+/**danh sách các tab */
+const list_tab_select = ref<TabPlatform>({
+    ALL_PLATFORM: {
+        title: $t(`v1.common.all`),
+        count: 0
     },
-    ...$env.platform.map(n => {
+    ...mapValues(keyBy($env.platform), n => {
         return {
-            title: $t(`v1.view.main.dashboard.select_page.${n.toLowerCase()}`),
-            key: n
+            title: $t(`v1.common.${n.toLowerCase()}`),
+            count: 0
         }
     })
-]
-
+})
 // đọc data từ local
 const current_selected_tab = ref(getLocal('current_selected_tab', 'ALL_PLATFORM'))
 // lưu lại data vào local để khi f5 không bị reset
@@ -259,18 +260,36 @@ function filterCurrentActivePage() {
 /**lấy toàn bộ các page được kích hoạt của user này */
 function getCurrentActivePage() {
     flow([
-        (cb: CbError) => { // * kích hoạt loading
+        // * kích hoạt loading
+        (cb: CbError) => { 
             is_loading_active_page_list.value = true
 
             cb()
         },
+        // * gọi api lấy danh sách page
         (cb: CbError) => get_current_active_page({ is_active: true }, (e, r) => {
             if (e) return cb(e)
 
             pageStore.active_page_list = r.page_list
             staffStore.staff_list_of_active_page = r.all_staff_list
             cb()
-        })
+        }),
+        // * tính count của từng nền tảng - chạy bất đồng bộ
+        (cb: CbError) => {
+            cb()
+
+            // loop qua từng attribute của object
+            mapValues(pageStore.active_page_list, page_data => {
+                const PAGE_TYPE = page_data.page?.type
+
+                if (!PAGE_TYPE) return
+
+                // count cho all page
+                list_tab_select.value.ALL_PLATFORM.count++
+                // count cho từng page type
+                list_tab_select.value[PAGE_TYPE].count++
+            })
+        }
     ], e => {
         // tắt loading
         is_loading_active_page_list.value = false

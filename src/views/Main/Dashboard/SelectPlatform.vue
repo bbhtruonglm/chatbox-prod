@@ -4,7 +4,7 @@
             <div class="pl-14 pr-4 md:pl-4">
                 <Search class="md:w-[300px]" v-model="search" :placeholder="$t('v1.common.page_search_placeholder')" />
             </div>
-            <PlatformTab v-model="current_selected_tab" :platform_list="LIST_TAB_SELECT" />
+            <PlatformTab v-model="current_selected_tab" :platform_list="list_tab_select" />
         </div>
         <div class="px-2 pt-2 relative h-[calc(100%_-_229px)] md:h-[calc(100%_-_169px)]">
             <div class="flex items-center justify-between mb-2 md:absolute md:top-[-40px] md:right-[9px]">
@@ -90,7 +90,7 @@ import {
     get_current_active_page, sync_facebook_page, create_website_page,
     update_page,
 } from '@/service/api/chatbox/n4-service'
-import { debounce, map, sortBy } from 'lodash'
+import { debounce, keyBy, map, mapValues, sortBy } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 
 import Loading from '@/components/Loading.vue'
@@ -102,12 +102,13 @@ import Facebook from '@/components/OAuth/Facebook.vue'
 import Modal from '@/components/Modal.vue'
 import InputLabel from '@/components/Main/Dashboard/InputLabel.vue'
 import { toast } from '@/service/helper/alert'
+import { eachOfLimit } from 'async'
 
 import type { CbError } from '@/service/interface/function'
 import type {
     PageData, PageWebsiteCreate, PageList
 } from '@/service/interface/app/page'
-import { eachOfLimit } from 'async'
+import type { TabPlatform } from '@/service/interface/app/page'
 
 /**
  * những page được active rồi (is_active: true) sẽ bị disable khả năng chọn
@@ -120,12 +121,16 @@ interface ThisPageData extends PageData {
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
 
-const LIST_TAB_SELECT = $env.platform.map(n => {
-    return {
-        title: $t(`v1.view.main.dashboard.select_page.${n.toLowerCase()}`),
-        key: n
-    }
+/**danh sách các tab */
+const list_tab_select = ref<TabPlatform>({
+    ...mapValues(keyBy($env.platform), n => {
+        return {
+            title: $t(`v1.common.${n.toLowerCase()}`),
+            count: 0
+        }
+    })
 })
+
 /**nền tảng hiện tại đang được chọn */
 const current_selected_tab = ref('FB_MESS')
 /**danh sách page sau khi được lọc */
@@ -209,10 +214,7 @@ function filterListPage() {
 
         if (
             // lọc theo tab
-            (
-                current_selected_tab.value === 'ALL_PLATFORM' ||
-                current_selected_tab.value === page_type
-            ) &&
+            current_selected_tab.value === page_type &&
             // tìm kiếm theo tên hoặc id
             (
                 formated_page_name.includes(formated_search_value) ||
@@ -237,17 +239,32 @@ function filterListPage() {
 /**lấy toàn bộ các page của user này */
 function getAllPageOfUser() {
     flow([
-        (cb: CbError) => { // * kích hoạt loading
+        // * kích hoạt loading
+        (cb: CbError) => {
             is_loading_page_list.value = true
 
             cb()
         },
+        // * call api đọc danh sách page
         (cb: CbError) => get_current_active_page({}, (e, r) => {
             if (e) return cb(e)
 
             page_list.value = r.page_list
             cb()
-        })
+        }),
+        // * tính count cho từng nền tảng
+        (cb: CbError) => {
+            cb()
+
+            mapValues(page_list.value, page_data => {
+                const PAGE_TYPE = page_data.page?.type
+
+                if (!PAGE_TYPE) return
+
+                // count cho từng page type
+                list_tab_select.value[PAGE_TYPE].count++
+            })
+        }
     ], e => {
         // tắt loading
         is_loading_page_list.value = false

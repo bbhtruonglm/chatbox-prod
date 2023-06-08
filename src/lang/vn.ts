@@ -13,9 +13,17 @@ const source: Language = {
             page: 'Trang',
             setting: 'Cài đặt',
             page_search_placeholder: 'Tìm kiếm trang hoặc ID trang',
-            upcoming_feature: 'Tính năng sắp được ra mắt!'
+            upcoming_feature: 'Tính năng sắp được ra mắt!',
+            all: 'Tất cả',
+            fb_mess: 'Facebook',
+            website: 'Website',
+            fb_whatsapp: 'Whatsapp',
         },
         view: {
+            network: {
+                disconnect: 'Mất kết nối mạng...',
+                connected: 'Đã kết nối mạng!'
+            },
             oauth: {
                 login: {
                     login: 'Đăng nhập',
@@ -29,13 +37,10 @@ const source: Language = {
                         toggle: 'Thu nhỏ',
                         select_page: 'Chọn trang',
                         select_platform: 'Kết nối nền tảng',
-                        upgrade: 'Quản lý nâng cấp'
+                        upgrade: 'Quản lý nâng cấp',
+                        widget: 'Chợ ứng dụng'
                     },
                     select_page: {
-                        all_platform: 'Tất cả',
-                        fb_mess: 'Facebook',
-                        website: 'Website',
-                        fb_whatsapp: 'Whatsapp',
                         select_all_page: 'Chọn tất cả các trang',
                         munti_chat_page: 'Chat nhiều trang',
                         chat_now: 'Chat ngay',
@@ -63,6 +68,31 @@ const source: Language = {
                             success: 'Tạo kết nối Website thành công'
                         },
                         success: 'Kích hoạt các trang thành công'
+                    },
+                    pricing: {
+                        help: {
+                            you_need_help: 'Bạn cần hỗ trợ,',
+                            connect_us: 'kết nối với chúng tôi'
+                        },
+                        pricing_detail: 'Chi tiết giao dịch',
+                        create_pricing: 'Tạo gói nâng cấp',
+                        empty_pricing: 'Bạn chưa có gói, bấm "Tạo gói nâng cấp" để bắt đầu',
+                        type: {
+                            actived: 'Thành công',
+                            created: 'Đang chờ',
+                            expired: 'Hết hạn',
+                            cancelled: 'Đã huỷ',
+                        },
+                        type_info: {
+                            actived: 'Kích hoạt thành công',
+                            created: 'Đã khởi tạo',
+                            expired: 'Đã hết hạn',
+                            cancelled: 'Đã huỷ giao dịch',
+                        },
+                        action: {
+                            upgrade: 'Mua thêm',
+                            disconnect: 'Ngắt kết nối'
+                        }
                     }
                 }
             }

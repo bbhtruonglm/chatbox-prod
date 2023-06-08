@@ -48,6 +48,7 @@ import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
 import arrowRightSvg from '@/assets/icons/arrow-right.svg'
 import pageSvg from '@/assets/icons/page.svg'
 import crownSvg from '@/assets/icons/crown.svg'
+import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
 
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
@@ -79,6 +80,12 @@ const LIST_NAV = [
         icon: crownSvg,
         icon_class: 'w-[20px]',
         title: $t('v1.view.main.dashboard.nav.upgrade')
+    },
+    {
+        path: '/main/dashboard/widget',
+        icon: widgetSvg,
+        icon_class: 'w-[20px]',
+        title: $t('v1.view.main.dashboard.nav.widget')
     },
 ]
 

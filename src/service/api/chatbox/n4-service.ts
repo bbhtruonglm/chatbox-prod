@@ -67,3 +67,12 @@ export const create_website_page = (
     uri: `${$env.host.n4_service}/app/page/create_website_page`,
     body,
 }, proceed)
+
+/**đọc toàn bộ các gói của user */
+export const read_me_pricing = (
+    body: { pricing_id?: string },
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/read_me_pricing`,
+    body,
+}, proceed)

@@ -30,3 +30,12 @@ export interface PageWebsiteCreate {
     avatar?: string
     description?: string
 }
+
+export interface TabPlatform {
+    [index: string]: {
+        /**tên nền tảng */
+        title: string,
+        /**đếm tổng số item của tab này */
+        count: number
+    }
+}
