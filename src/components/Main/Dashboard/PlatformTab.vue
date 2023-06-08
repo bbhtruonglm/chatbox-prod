@@ -5,7 +5,7 @@
                 class="font-semibold px-4 py-1 cursor-pointer border-b-2 border-white text-slate-400 hover:border-orange-500 hover:font-semibold hover:text-black"
                 :class="{ '!text-black !border-orange-500': modelValue === key }" v-for="(tab, key) of  platform_list">
                 <span>{{ tab.title }}</span>
-                <span v-if="tab.count" :class="{ 'text-white bg-orange-500': modelValue === key }"
+                <span v-if="tab.count" :class="{ '!text-white !bg-orange-500': modelValue === key }"
                     class="ml-2 bg-slate-300 text-xs px-1 rounded">
                     {{ tab.count }}
                 </span>
