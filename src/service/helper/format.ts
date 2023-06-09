@@ -35,4 +35,4 @@ export const nonAccentVn = (input: string) => {
 }
 
 /**tạo mới obj để ngắt sự liên kết trong ô nhớ */
-export const cloneObject = (object: Object) => JSON.parse(JSON.stringify(object))
+export const copy = (object: Object) => JSON.parse(JSON.stringify(object))

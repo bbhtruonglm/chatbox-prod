@@ -38,4 +38,5 @@ export interface PricingInfo {
     end_date?: string
     /**ngày kết thúc */
     start_date?: string
+    createdAt: string
 }

@@ -103,12 +103,14 @@ import Modal from '@/components/Modal.vue'
 import InputLabel from '@/components/Main/Dashboard/InputLabel.vue'
 import { toast } from '@/service/helper/alert'
 import { eachOfLimit } from 'async'
+import { copy } from '@/service/helper/format'
 
 import type { CbError } from '@/service/interface/function'
 import type {
     PageData, PageWebsiteCreate, PageList
 } from '@/service/interface/app/page'
 import type { TabPlatform } from '@/service/interface/app/page'
+import type { ComponentPublicInstance } from 'vue'
 
 /**
  * những page được active rồi (is_active: true) sẽ bị disable khả năng chọn
@@ -121,15 +123,17 @@ interface ThisPageData extends PageData {
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
 
-/**danh sách các tab */
-const list_tab_select = ref<TabPlatform>({
+/**danh sách các tab gốc */
+const ROOT_TAB = {
     ...mapValues(keyBy($env.platform), n => {
         return {
             title: $t(`v1.common.${n.toLowerCase()}`),
             count: 0
         }
     })
-})
+}
+/**danh sách các tab */
+const list_tab_select = ref<TabPlatform>(copy(ROOT_TAB))
 
 /**nền tảng hiện tại đang được chọn */
 const current_selected_tab = ref('FB_MESS')
@@ -140,7 +144,7 @@ const search = ref('')
 /**gắn cờ loading cho danh sách page */
 const is_loading_page_list = ref(false)
 /**ref của modal tạo mới website */
-const create_new_website_ref = ref<any>(null)
+const create_new_website_ref = ref<ComponentPublicInstance<any>>(null)
 /**data tạo mới website */
 const create_new_website_data = ref<PageWebsiteCreate>({
     avatar: '',
@@ -256,6 +260,8 @@ function getAllPageOfUser() {
         (cb: CbError) => {
             cb()
 
+            // reset count
+            list_tab_select.value = copy(ROOT_TAB)
             mapValues(page_list.value, page_data => {
                 const PAGE_TYPE = page_data.page?.type
 

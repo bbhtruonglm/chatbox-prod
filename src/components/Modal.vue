@@ -1,8 +1,9 @@
 <template>
     <Teleport to="body">
-        <div v-if="is_open" @click="toggleModal" class="absolute top-0 left-0 w-screen h-screen bg-slate-500/50 z-10">
-            <div @click.stop
-                class="w-[calc(100%_-_20px)] max-h-[calc(100vh_-_150px)] md:w-[70%] bg-white rounded-lg absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 py-2 overflow-hidden">
+        <div v-if="is_open" class="absolute top-0 left-0 w-screen h-screen bg-slate-500/50 z-10">
+            <div @click="toggleModal" class="w-full h-full" />
+            <div
+                class="w-[calc(100%_-_20px)] max-h-[calc(100vh_-_150px)] md:w-[70%] bg-white rounded-lg absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 py-2">
                 <button @click="toggleModal" class="absolute top-[8px] right-[6px]">
                     <img src="@/assets/icons/close-red.svg">
                 </button>

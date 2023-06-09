@@ -18,6 +18,9 @@ const source: Language = {
             fb_mess: 'Facebook',
             website: 'Website',
             fb_whatsapp: 'Whatsapp',
+            status: 'Trạng thái',
+            staff: 'Nhân viên',
+            month: 'Tháng'
         },
         view: {
             network: {
@@ -83,6 +86,23 @@ const source: Language = {
                             expired: 'Hết hạn',
                             cancelled: 'Đã huỷ',
                         },
+                        detail: {
+                            title: 'Chi tiết hoá đơn',
+                            invoice_id: 'Mã hoá đơn',
+                            created_at: 'Ngày khởi tạo',
+                            payment: 'Thành tiền',
+                            price: 'Giá gốc',
+                            selected_page: 'Số trang',
+                            selected_month: 'Số tháng',
+                            selected_staff: 'Số nhân viên',
+                            payment_method: 'Phương thức thanh toán',
+                            payment_method_detail: {
+                                manual: 'Chuyển khoản'
+                            },
+                            unlimited: 'Không giới hạn',
+                            discount: 'Ưu đãi',
+                            cost_staff: 'Chi phí nhân viên',
+                        },
                         type_info: {
                             actived: 'Kích hoạt thành công',
                             created: 'Đã khởi tạo',
@@ -92,6 +112,14 @@ const source: Language = {
                         action: {
                             upgrade: 'Mua thêm',
                             disconnect: 'Ngắt kết nối'
+                        },
+                        create: {
+                            page: 'Số trang',
+                            month: 'Số tháng',
+                            staff: 'Số nhân viên',
+                            page_description: 'Chọn số trang',
+                            month_description: 'Chọn số tháng',
+                            staff_description: 'Chọn số nhân viên',
                         }
                     }
                 }

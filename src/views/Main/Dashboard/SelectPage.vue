@@ -74,6 +74,7 @@ import { debounce, keyBy, map, mapValues, set, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { confirm } from '@/service/helper/alert'
 import { useRouter } from 'vue-router'
+import { copy } from '@/service/helper/format'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -91,8 +92,8 @@ const commonStore = useCommonStore()
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
 
-/**danh sách các tab */
-const list_tab_select = ref<TabPlatform>({
+/**danh sách các tab gốc */
+const ROOT_TAB = {
     ALL_PLATFORM: {
         title: $t(`v1.common.all`),
         count: 0
@@ -103,7 +104,9 @@ const list_tab_select = ref<TabPlatform>({
             count: 0
         }
     })
-})
+}
+/**danh sách các tab */
+const list_tab_select = ref<TabPlatform>(copy(ROOT_TAB))
 // đọc data từ local
 const current_selected_tab = ref(getLocal('current_selected_tab', 'ALL_PLATFORM'))
 // lưu lại data vào local để khi f5 không bị reset
@@ -261,7 +264,7 @@ function filterCurrentActivePage() {
 function getCurrentActivePage() {
     flow([
         // * kích hoạt loading
-        (cb: CbError) => { 
+        (cb: CbError) => {
             is_loading_active_page_list.value = true
 
             cb()
@@ -277,6 +280,9 @@ function getCurrentActivePage() {
         // * tính count của từng nền tảng - chạy bất đồng bộ
         (cb: CbError) => {
             cb()
+
+            // reset count
+            list_tab_select.value = copy(ROOT_TAB)
 
             // loop qua từng attribute của object
             mapValues(pageStore.active_page_list, page_data => {

@@ -6,6 +6,10 @@
                 <a href="https://m.me/1706801539392655" target="_blank"
                     class="hover:underline cursor-pointer text-orange-600 ml-1">{{
                         $t('v1.view.main.dashboard.pricing.help.connect_us') }}</a>
+
+                <span @click="getAllPricing()" class="ml-4 cursor-pointer">
+                    <img src="@/assets/icons/reload.svg" width="20" height="20">
+                </span>
             </div>
             <PlatformTab v-model="current_selected_tab" :platform_list="list_tab_select" />
         </div>
@@ -35,10 +39,10 @@
                             <span v-if="pricing.pricing_status === 'ACTIVED'" class="text-green-600">
                                 {{ $t('v1.view.main.dashboard.pricing.type_info.actived') }}
                             </span>
-                            <span v-if="pricing.pricing_status === 'CREATED'" class="text-blue-500">
+                            <span v-if="pricing.pricing_status === 'CREATED'" class="text-blue-600">
                                 {{ $t('v1.view.main.dashboard.pricing.type_info.created') }}
                             </span>
-                            <span v-if="pricing.pricing_status === 'EXPIRED'" class="text-indigo-500">
+                            <span v-if="pricing.pricing_status === 'EXPIRED'" class="text-violet-500">
                                 {{ $t('v1.view.main.dashboard.pricing.type_info.expired') }}
                             </span>
                             <span v-if="pricing.pricing_status === 'CANCELLED'" class="text-red-500">
@@ -69,32 +73,33 @@
                                 {{ currency(pricing.package.payment) }}
                             </div>
                         </div>
-                        <div v-if="pricing.end_date" class="flex items-center">
+                        <div class="flex items-center">
                             <img src="@/assets/icons/expired.svg" width="17" height="17">
                             <div class="ml-1 text-slate-400">
-                                {{ format(new Date(pricing.end_date), 'dd/MM/yy') }}
+                                <span v-if="pricing.end_date">
+                                    {{ format_date(new Date(pricing.end_date), 'dd/MM/yy') }}
+                                </span>
+                                <span v-else>- -/- -/- -</span>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-1 flex justify-between">
-                        <div class="text-sm text-orange-500 font-medium cursor-pointer">
-                            {{ $t('v1.view.main.dashboard.pricing.pricing_detail') }}
-                        </div>
+                    <div class="mt-1 flex justify-between items-end">
+                        <PricingDetail :pricing="pricing" />
                         <div>
                             <button v-if="['ACTIVED', 'EXPIRED'].includes(pricing.pricing_status)"
-                                class="text-xs px-2 py-1 rounded ml-2 bg-orange-500 hover:bg-orange-600 text-white">
+                                class="text-xs px-2 py-[3px] rounded ml-2 bg-orange-500 hover:bg-orange-600 text-white">
                                 {{ $t('v1.common.setting') }}
                             </button>
                             <button v-if="pricing.pricing_status === 'CREATED'"
-                                class="text-xs px-2 py-1 rounded ml-2 bg-gray-500 hover:bg-gray-600 text-white">
+                                class="text-xs px-2 py-[3px] rounded ml-2 bg-gray-400 hover:bg-gray-500 text-white">
                                 {{ $t('v1.common.cancel') }}
                             </button>
                             <button v-if="pricing.pricing_status === 'ACTIVED'"
-                                class="text-xs px-2 py-1 rounded ml-2 bg-blue-500 hover:bg-blue-600 text-white">
+                                class="text-xs px-2 py-[3px] rounded ml-2 bg-blue-500 hover:bg-blue-600 text-white">
                                 {{ $t('v1.view.main.dashboard.pricing.action.upgrade') }}
                             </button>
                             <button v-if="pricing.pricing_status === 'EXPIRED'"
-                                class="text-xs px-2 py-1 rounded ml-2 bg-indigo-500 hover:bg-indigo-600 text-white">
+                                class="text-xs px-2 py-[3px] rounded ml-2 bg-violet-500 hover:bg-violet-600 text-white">
                                 {{ $t('v1.view.main.dashboard.pricing.action.disconnect') }}
                             </button>
                         </div>
@@ -102,7 +107,7 @@
                 </div>
             </div>
         </div>
-        <FooterButton :text="$t('v1.view.main.dashboard.pricing.create_pricing')" @click_btn="createPricing" />
+        <CreatePricing />
     </div>
 </template>
 
@@ -112,14 +117,15 @@ import { useI18n } from 'vue-i18n'
 import { useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_me_pricing } from '@/service/api/chatbox/n4-service'
-import { keyBy, mapValues } from 'lodash'
+import { keyBy, map, mapValues } from 'lodash'
 import { currency } from '@/service/helper/format'
-import { format } from 'date-fns'
-import { toast } from '@/service/helper/alert'
+import { format as format_date } from 'date-fns'
+import { copy } from '@/service/helper/format'
 
 import Loading from '@/components/Loading.vue'
 import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
-import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
+import PricingDetail from '@/views/Main/Dashboard/Pricing/PricingDetail.vue'
+import CreatePricing from '@/views/Main/Dashboard/Pricing/CreatePricing.vue'
 
 import type { CbError } from '@/service/interface/function'
 import type { PricingInfo } from '@/service/interface/app/pricing'
@@ -128,8 +134,8 @@ import type { TabPlatform } from '@/service/interface/app/page'
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
 
-/**danh sách các tab */
-const list_tab_select = ref<TabPlatform>({
+/**danh sách các tab gốc */
+const ROOT_TAB = {
     ALL_STATUS: {
         title: $t(`v1.common.all`),
         count: 0
@@ -145,8 +151,9 @@ const list_tab_select = ref<TabPlatform>({
             count: 0
         }
     })
-})
-
+}
+/**danh sách các tab */
+const list_tab_select = ref<TabPlatform>(copy(ROOT_TAB))
 /**nền tảng hiện tại đang được chọn */
 const current_selected_tab = ref('ALL_STATUS')
 /**danh sách pricing sau khi được lọc */
@@ -154,7 +161,9 @@ const filter_pricing_list = ref<PricingInfo[]>()
 /**gắn cờ loading cho danh sách pricing */
 const is_loading_pricing_list = ref(false)
 /**danh sách toan bộ các pricing của user */
-const pricing_list = ref<PricingInfo[]>([])
+const pricing_list = ref<{
+    [index: string]: PricingInfo
+}>({})
 
 // lọc danh sách pricing khi chọn tab
 watch(() => current_selected_tab.value, () => filterListPricing())
@@ -169,7 +178,7 @@ function filterListPricing() {
     is_loading_pricing_list.value = true
 
     // lọc theo tab
-    filter_pricing_list.value = pricing_list.value.filter(pricing => {
+    filter_pricing_list.value = map(pricing_list.value).filter(pricing => {
         if (
             current_selected_tab.value === 'ALL_STATUS' ||
             current_selected_tab.value === pricing.pricing_status
@@ -201,7 +210,10 @@ function getAllPricing() {
         (cb: CbError) => {
             cb()
 
-            pricing_list.value.map(pricing => {
+            // reset count
+            list_tab_select.value = copy(ROOT_TAB)
+
+            map(pricing_list.value, (pricing => {
                 const PRICING_STATUS = pricing.pricing_status
 
                 if (!PRICING_STATUS) return
@@ -210,31 +222,14 @@ function getAllPricing() {
                 list_tab_select.value.ALL_STATUS.count++
                 // count cho từng page type
                 list_tab_select.value[PRICING_STATUS].count++
-            })
+            }))
         }
     ], e => {
         // tắt loading
         is_loading_pricing_list.value = false
     })
 }
-/**kích hoạt các page được chọn */
-function createPricing() {
-    const DATA: {
-    } = {
-    }
-    flow([
-        // * active các page được chọn
-        (cb: CbError) => {
-            cb()
-        },
-        // * load lại danh sách page + thông báo thành công
-        (cb: CbError) => {
-            getAllPricing()
 
-            // toast('success', $t('v1.view.main.dashboard.select_platform.success'))
-
-            cb()
-        },
-    ], undefined, true)
-}
+// public chức năng 
+defineExpose({ getAllPricing })
 </script>

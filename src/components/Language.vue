@@ -22,6 +22,8 @@ import vnSvg from '@/assets/icons/vn.svg'
 import enSvg from '@/assets/icons/en.svg'
 import thSvg from '@/assets/icons/th.svg'
 
+import type { ComponentPublicInstance } from 'vue'
+
 const { locale } = useI18n()
 
 const vn = { img: vnSvg, title: 'Tiếng Việt' }
@@ -39,7 +41,7 @@ const MAPPING_LANG: { [index: string]: string } = {
 
 const SELECT_LANG = { vn, en, th }
 
-const select_lang_ref = ref<any>(null)
+const select_lang_ref = ref<ComponentPublicInstance<any>>(null)
 
 const is_toggle_select_lang = ref(false)
 
