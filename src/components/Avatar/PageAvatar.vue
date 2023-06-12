@@ -1,5 +1,5 @@
 <template>
-    <img v-if="page_type === 'FB_MESS'" :src="`https://graph.facebook.com/${page_id}/picture?width=${size}&height=${size}`" :width="size" />
+    <img v-if="page_type === 'FB_MESS'" :src="`https://chatbox-static-v3.botbanhang.vn/private/facebook/avatar/${page_id}`" :width="size" />
 
     <img v-else-if="page_type === 'WEBSITE'" :src="page_avatar || websiteSvg" :width="size" />
 

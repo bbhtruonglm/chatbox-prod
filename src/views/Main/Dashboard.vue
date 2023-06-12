@@ -28,7 +28,7 @@
                         :title="$t('v1.view.main.dashboard.nav.noti')" />
                     <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
                         @click="selectNav('/main/dashboard/user')" :is_active_user="!!chatbotUserStore.chatbot_user?.pricing_id" :is_only_show_icon="commonStore.toggle_nav"
-                        :icon="`https://graph.facebook.com/${chatbotUserStore.chatbot_user?.fb_staff_id}/picture?width=50&height=50`"
+                        :icon="`https://chatbox-static-v3.botbanhang.vn/private/facebook/avatar/${chatbotUserStore.chatbot_user?.fb_staff_id}`"
                         :title="chatbotUserStore.chatbot_user?.full_name" />
                     <NavItem class="hidden md:flex" :is_only_show_icon="commonStore.toggle_nav"
                         :icon="commonStore.toggle_nav ? arrowRightSvg : arrowLeftSvg" @click="toggleNav"

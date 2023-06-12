@@ -20,7 +20,8 @@ const source: Language = {
             fb_whatsapp: 'Whatsapp',
             status: 'Trạng thái',
             staff: 'Nhân viên',
-            month: 'Tháng'
+            month: 'Tháng',
+            type: 'Loại',
         },
         view: {
             network: {
@@ -114,12 +115,33 @@ const source: Language = {
                             disconnect: 'Ngắt kết nối'
                         },
                         create: {
+                            package: 'Gói',
+                            package_description: 'Chọn gói',
                             page: 'Số trang',
                             month: 'Số tháng',
                             staff: 'Số nhân viên',
                             page_description: 'Chọn số trang',
                             month_description: 'Chọn số tháng',
                             staff_description: 'Chọn số nhân viên',
+                            code: {
+                                UNLIMITED_12_UNLIMITED: 'Không giới hạn một năm',
+                                UNLIMITED_12_30: 'Không giới hạn trang và 30 nhân viên một năm',
+                                UNLIMITED_12_60: 'Không giới hạn trang và 60 nhân viên một năm',
+                                CUSTOM: 'Gói tự chọn',
+                            },
+                            success: 'Khởi tạo gói thành công'
+                        },
+                        upgrade: {
+                            title: 'Nâng cấp gói',
+                            page: 'Mua thêm trang',
+                            staff: 'Mua thêm nhân viên',
+                            page_price: 'Chi phí mua thêm trang',
+                            staff_price: 'Chi phí mua thêm nhân viên',
+                            month: 'Số tháng còn lại',
+                            success: 'Đã khởi tạo lệnh nâng cấp gói'
+                        },
+                        cancel: {
+                            title: 'Bạn có chắc chắn muốn huỷ thanh toán'
                         }
                     }
                 }

@@ -40,3 +40,25 @@ export interface PricingInfo {
     start_date?: string
     createdAt: string
 }
+
+export interface CreatePricing {
+    /**mã của các gói đặc biệt */
+    code: string
+    /**số trang */
+    selected_page: string | number
+    /**số tháng */
+    selected_month: string | number
+    /**số nhân viên */
+    selected_staff: string | number
+}
+
+export interface UpgradePricing {
+    /**id của gói được nâng cấp */
+    pricing_id: string
+    /**số page muốn mua thêm */
+    selected_page?:  string | number
+    /**số nhân viên muốn mua thêm */
+    selected_staff?:  string | number
+    /**đơn vị tiền tệ */
+    currency?: string
+}

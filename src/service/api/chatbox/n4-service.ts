@@ -4,6 +4,7 @@ import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
 import type { PageList, PageWebsiteCreate } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
+import type { CreatePricing, PricingInfo, UpgradePricing } from '@/service/interface/app/pricing'
 
 /**đăng nhập bằng token của fb */
 export const login_facebook = (
@@ -75,4 +76,49 @@ export const read_me_pricing = (
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/pricing/read_me_pricing`,
     body,
+}, proceed)
+
+/**tính toán số tiền của một gói */
+export const calc_price_of_pricing = (
+    body: CreatePricing,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/calc_price_of_pricing`,
+    body,
+}, proceed)
+
+/**tạo mới một gói */
+export const create_pricing = (
+    body: CreatePricing,
+    proceed: (e?: any, r?: PricingInfo) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/create_pricing`,
+    body,
+}, proceed)
+
+/**tính toán số tiền khi nâng cấp gói */
+export const calc_price_of_upgrade_pricing = (
+    body: UpgradePricing | {},
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/calc_price_of_upgrade_pricing`,
+    body,
+}, proceed)
+
+/**tạo mới một gói */
+export const upgrade_this_pricing = (
+    body: UpgradePricing | {},
+    proceed: (e?: any, r?: PricingInfo) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/upgrade_this_pricing`,
+    body,
+}, proceed)
+
+/**huỷ một gói chưa thanh toán */
+export const cancel_this_pricing = (
+    pricing_id: string,
+    proceed: (e?: any, r?: PricingInfo) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/cancel_this_pricing`,
+    body: { pricing_id },
 }, proceed)
