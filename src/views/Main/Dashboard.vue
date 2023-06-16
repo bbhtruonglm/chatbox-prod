@@ -2,12 +2,13 @@
     <div class="h-full w-full flex relative">
         <div class="bg-white duration-500 h-screen w-[300px] absolute z-[10]" :class="GenNavClass()">
             <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-2">
-                <div @click="toggleNav" v-if="commonStore.toggle_nav" class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
+                <div @click="toggleNav" v-if="commonStore.toggle_nav"
+                    class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
                 <button @click="toggleNav" class="absolute top-[70px] right-[-40px] md:hidden">
                     <img v-if="commonStore.toggle_nav" src="@/assets/icons/close.svg">
                     <img v-else src="@/assets/icons/toggle.svg">
                 </button>
-                <div class="cursor-pointer">
+                <div @click="toggleNav" class="cursor-pointer">
                     <div class="block md:hidden">
                         <img src="@/assets/icons/bbh-large.svg" />
                     </div>
@@ -19,16 +20,17 @@
                 <hr class="my-4" />
                 <div class="h-[calc(100%_-_145px)] md:h-[calc(100%_-_232px)] overflow-hidden overflow-y-auto">
                     <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
-                        @click="selectNav(nav.path)" :icon_class="nav.icon_class" :is_only_show_icon="commonStore.toggle_nav"
-                        :icon="nav.icon" :title="nav.title" />
+                        @click="selectNav(nav.path)" :icon_class="nav.icon_class"
+                        :is_only_show_icon="commonStore.toggle_nav" :icon="nav.icon" :title="nav.title" />
                 </div>
                 <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
                     <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0"
-                        @click="selectNav('/main/dashboard/noti')" :is_only_show_icon="commonStore.toggle_nav" :icon="bellSvg"
-                        :title="$t('v1.view.main.dashboard.nav.noti')" />
+                        @click="selectNav('/main/dashboard/noti')" :is_only_show_icon="commonStore.toggle_nav"
+                        :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
                     <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
-                        @click="selectNav('/main/dashboard/user')" :is_active_user="!!chatbotUserStore.chatbot_user?.pricing_id" :is_only_show_icon="commonStore.toggle_nav"
-                        :icon="`https://chatbox-static-v3.botbanhang.vn/private/facebook/avatar/${chatbotUserStore.chatbot_user?.fb_staff_id}`"
+                        @click="selectNav('/main/dashboard/user')"
+                        :is_active_user="isActiveUser(chatbotUserStore.chatbot_user)"
+                        :is_only_show_icon="commonStore.toggle_nav" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                         :title="chatbotUserStore.chatbot_user?.full_name" />
                     <NavItem class="hidden md:flex" :is_only_show_icon="commonStore.toggle_nav"
                         :icon="commonStore.toggle_nav ? arrowRightSvg : arrowLeftSvg" @click="toggleNav"
@@ -51,6 +53,7 @@ import crownSvg from '@/assets/icons/crown.svg'
 import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
 
+import { isActiveUser } from '@/service/helper/pricing'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 import UserItem from '@/components/Main/Dashboard/UserItem.vue'
 import { useRouter } from 'vue-router'

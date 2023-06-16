@@ -1,4 +1,4 @@
-import type { StaffInfo } from '@/service/interface/app/staff'
+import type { AllStaffList } from '@/service/interface/app/staff'
 
 export type PageType = 'FB_MESS' | 'ZALO' | 'WEBSITE' | 'FB_WHATSAPP'
 
@@ -7,18 +7,23 @@ export interface PageInfo {
     type: PageType
     name: string
     avatar?: string
+    /**thời gian hết hạn gói dùng thử */
     end_date_trial?: number
+    /**thời gian hết hạn gói hiện tại */
     end_date?: number
+    /**id của gói hiện tại */
     pricing_id?: string
     is_priority?: boolean
     is_active?: boolean
+    /**page này là page nội bộ được sử dụng vĩnh viễn */
+    is_internal?: boolean
+    /**page này bị hệ thống chặn */
+    is_block?: boolean
 }
 
 export interface PageData {
     page?: PageInfo
-    staff_list?: {
-        [index: string]: StaffInfo
-    }
+    staff_list?: AllStaffList
 }
 
 export interface PageList {
@@ -38,4 +43,9 @@ export interface TabPlatform {
         /**đếm tổng số item của tab này */
         count: number
     }
+}
+
+export interface SelectPageData extends PageData {
+    /**page có được chọn mới hay không */
+    is_select?: boolean
 }

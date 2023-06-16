@@ -22,6 +22,8 @@ const source: Language = {
             staff: 'Nhân viên',
             month: 'Tháng',
             type: 'Loại',
+            select_all: 'Chọn tất cả',
+            active: 'Kích hoạt',
         },
         view: {
             network: {
@@ -54,6 +56,13 @@ const source: Language = {
                         empty_page: {
                             title: 'Không có trang nào được chọn',
                             description: 'Hãy chọn kết nối nền tảng để chọn kênh chat!'
+                        },
+                        expire: {
+                            title: 'Có lỗi xảy ra',
+                            description: 'Không tìm thấy gói cước nào đã được kích hoạt cho người dùng, các trang hoặc cài đặt đã bị thay đổi. Đi đến trang nâng cấp gói để sửa cài đặt.',
+                            go_pricing: 'Đi đến trang quản lý nâng cấp',
+                            actived: 'Đã kích hoạt',
+                            inactive: 'Chưa kích hoạt'
                         }
                     },
                     select_platform: {
@@ -142,6 +151,14 @@ const source: Language = {
                         },
                         cancel: {
                             title: 'Bạn có chắc chắn muốn huỷ thanh toán'
+                        },
+                        setting: {
+                            title: 'Cài đặt gói',
+                            page_not_found: 'Không tìm thấy trang',
+                            staff_not_found: 'Không tìm nhân viên'
+                        },
+                        disconnect: {
+                            title: 'Bạn có chắn chắn muốn ngắt kết nối gói này?'
                         }
                     }
                 }

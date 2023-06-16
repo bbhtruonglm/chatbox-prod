@@ -36,8 +36,9 @@
             </div>
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.toggle_nav }"
                 class="max-h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
-                <PageItem v-for="page of active_page_list" :page_info="page.page">
-                    <div class="flex justify-end">
+                <PageItem @click="toggleSelectThisPage(page.page?.fb_page_id)" v-for="page of active_page_list"
+                    :page_info="page.page">
+                    <div @click.stop class="flex justify-end">
                         <div @click="togglePagePriority(page.page?.fb_page_id, !page.page?.is_priority)">
                             <img v-if="page.page?.is_priority" src="@/assets/icons/star-active.svg" width="15" height="15"
                                 class="mr-4 cursor-pointer" />
@@ -50,7 +51,7 @@
                             :checked="isSelectedThisPage(page.page?.fb_page_id)" type="checkbox"
                             class="w-[15px] h-[15px] mr-2 accent-orange-600">
                     </div>
-                    <div class="text-center pt-[13px]">
+                    <div @click.stop class="text-center pt-[13px]">
                         <button @click="selectOnlyThisPage(page.page?.fb_page_id)"
                             class="bg-slate-600 text-white text-xs px-3 rounded-full h-[28px] hover:bg-slate-400">{{
                                 $t('v1.view.main.dashboard.select_page.chat_now') }}</button>
@@ -64,11 +65,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import { useCommonStore, usePageStore, useStaffStore } from '@/stores'
-import { flow } from '@/service/helper/async'
+import { flow, toggle_loading } from '@/service/helper/async'
 import { get_current_active_page, update_page } from '@/service/api/chatbox/n4-service'
 import { debounce, keyBy, map, mapValues, set, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
@@ -85,12 +86,14 @@ import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
 import type { CbError } from '@/service/interface/function'
 import type { PageData } from '@/service/interface/app/page'
 import type { TabPlatform } from '@/service/interface/app/page'
+import { checkPricingValid } from '@/service/helper/pricing'
 
 const { t: $t } = useI18n()
 const $router = useRouter()
 const commonStore = useCommonStore()
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
+const self = getCurrentInstance()
 
 /**danh sách các tab gốc */
 const ROOT_TAB = {
@@ -131,7 +134,10 @@ watch(() => current_selected_tab.value, () => filterCurrentActivePage())
 // nạp lại danh sách page thì có thay đổi
 watch(() => pageStore.active_page_list, () => filterCurrentActivePage())
 
-onMounted(() => getCurrentActivePage())
+onMounted(() => {
+    reloadChatbotUserInfo()
+    getCurrentActivePage()
+})
 
 /**chọn | huỷ toàn bộ các page */
 function toggleSelectAllPage() {
@@ -385,8 +391,37 @@ function selectOnlyThisPage(page_id?: string) {
 }
 /**đi đến trang chat */
 function goToChat() {
-    if (!size(pageStore.selected_page_id_list)) return
+    flow([
+        // * kiểm tra xem page đã được chọn hay chưa
+        (cb: CbError) => {
+            if (!size(pageStore.selected_page_id_list))
+                return cb('v1.view.main.dashboard.select_page.empty_page.title')
 
-    $router.push('/main/chat')
+            cb()
+        },
+        // * kiểm tra các page và user hiện tại có gói hay không
+        (cb: CbError) => checkPricingValid((e, r) => {
+            // tắt loading
+            if (e) return toggle_loading(false)
+
+            cb()
+        }),
+        // * đi đến trang chat
+        (cb: CbError) => {
+            $router.push('/main/chat')
+
+            cb()
+        },
+    ], undefined, true)
+}
+/**load lại info của chatbot user - phòng trường hợp user mới được kích hoạt gói */
+function reloadChatbotUserInfo() {
+    self
+        ?.parent
+        ?.parent
+        ?.parent
+        ?.parent
+        ?.exposed
+        ?.getMeChatbotUser()
 }
 </script>

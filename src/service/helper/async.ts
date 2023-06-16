@@ -4,6 +4,13 @@ import { toastError } from '@/service/helper/alert'
 
 import type { Cb, CbError } from '@/service/interface/function'
 
+/**hiển thị loading toàn trang */
+export const toggle_loading = (value: boolean) => {
+    const commonStore = useCommonStore()
+
+    commonStore.is_loading_full_screen = value
+}
+
 /**
  * custom lại hàm async.waterfall
  * - thêm loading toàn trang tự động
@@ -19,9 +26,7 @@ export const flow = (
     function toggleLoading(value: boolean) {
         if (!active_full_screen_loading) return
 
-        const commonStore = useCommonStore()
-
-        commonStore.is_loading_full_screen = value
+        toggle_loading(value)
     }
 
     waterfall([

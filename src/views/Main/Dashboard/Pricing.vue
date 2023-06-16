@@ -50,7 +50,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="mt-1 flex justify-between">
+                    <div class="mt-2 flex justify-between text-xs">
                         <div class="flex items-center">
                             <img src="@/assets/icons/page-white.svg" width="17" height="17">
                             <div class="ml-1 text-slate-400">
@@ -89,21 +89,23 @@
                             {{ $t('v1.view.main.dashboard.pricing.pricing_detail') }}
                         </div>
                         <div>
-                            <button v-if="['ACTIVED', 'EXPIRED'].includes(pricing.pricing_status)"
-                                class="text-xs px-2 py-[3px] rounded ml-2 bg-orange-500 hover:bg-orange-600 text-white">
-                                {{ $t('v1.common.setting') }}
-                            </button>
                             <button v-if="pricing.pricing_status === 'CREATED'" @click="cancelThisPricing(pricing._id)"
                                 class="text-xs px-2 py-[3px] rounded ml-2 bg-gray-400 hover:bg-gray-500 text-white">
                                 {{ $t('v1.common.cancel') }}
                             </button>
                             <button v-if="pricing.pricing_status === 'ACTIVED'" @click="openPricingUpgrade(pricing._id)"
-                                class="text-xs px-2 py-[3px] rounded ml-2 bg-blue-500 hover:bg-blue-600 text-white">
+                                class="text-xs px-2 py-[3px] rounded ml-2 text-blue-500">
                                 {{ $t('v1.view.main.dashboard.pricing.action.upgrade') }}
                             </button>
                             <button v-if="pricing.pricing_status === 'EXPIRED'"
-                                class="text-xs px-2 py-[3px] rounded ml-2 bg-violet-500 hover:bg-violet-600 text-white">
+                                @click="inactiveAllPageAndStaffOfThisPricing(pricing)"
+                                class="text-xs px-2 py-[3px] rounded ml-2 text-violet-500">
                                 {{ $t('v1.view.main.dashboard.pricing.action.disconnect') }}
+                            </button>
+                            <button @click="openPricingSettingModal(pricing)"
+                                v-if="pricing.pricing_status === 'ACTIVED'"
+                                class="text-xs px-2 py-[3px] rounded ml-2 bg-orange-500 hover:bg-orange-600 text-white">
+                                {{ $t('v1.common.setting') }}
                             </button>
                         </div>
                     </div>
@@ -112,13 +114,16 @@
         </div>
         <FooterButton :text="$t('v1.view.main.dashboard.pricing.create_pricing')"
             @click_btn="create_pricing_ref.openCreatePricing()" />
+    </div>
+    <template>
         <CreatePricing ref="create_pricing_ref" @done_create_pricing="handleDoneCreatePricing" />
         <PricingDetail @update_this_pricing="reloadPricingDetail" ref="pricing_detail_ref"
             :pricing="current_pricing_detail" />
         <UpgradePricing ref="upgrade_pricing_ref" @done_upgrade_pricing="openPricingDetailModal"
             :pricing_id="current_pricing_id_upgrade" />
-        <SettingPricing ref="setting_pricing_ref" />
-    </div>
+        <SettingPricing @done_setting_pricing="doneSettingPricing" ref="setting_pricing_ref"
+            :pricing="current_setting_pricing" />
+    </template>
 </template>
 
 <script setup lang="ts">
@@ -126,11 +131,12 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
-import { cancel_this_pricing, read_me_pricing } from '@/service/api/chatbox/n4-service'
+import { cancel_this_pricing, control_active_pricing, read_me_pricing } from '@/service/api/chatbox/n4-service'
 import { keyBy, map, mapValues } from 'lodash'
 import { currency } from '@/service/helper/format'
 import { format as format_date } from 'date-fns'
 import { copy } from '@/service/helper/format'
+import { confirm, toast } from '@/service/helper/alert'
 
 import Loading from '@/components/Loading.vue'
 import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
@@ -145,7 +151,6 @@ import type { PricingInfo } from '@/service/interface/app/pricing'
 import type { TabPlatform } from '@/service/interface/app/page'
 
 import type { ComponentPublicInstance } from 'vue'
-import { confirm } from '@/service/helper/alert'
 
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
@@ -192,6 +197,8 @@ const current_pricing_id_upgrade = ref<string>()
 const upgrade_pricing_ref = ref<ComponentPublicInstance<any>>()
 /**ref của modal setting pricing */
 const setting_pricing_ref = ref<ComponentPublicInstance<any>>()
+/**data của pricing hiện tại đang được setting */
+const current_setting_pricing = ref<PricingInfo>()
 
 // lọc danh sách pricing khi chọn tab
 watch(() => current_selected_tab.value, () => filterListPricing())
@@ -332,6 +339,69 @@ function cancelThisPricing(pricing_id: string) {
         // tắt loading
         is_loading_pricing_list.value = false
     })
+}
+/**mở modal setting */
+function openPricingSettingModal(pricing: PricingInfo) {
+    // set data
+    current_setting_pricing.value = pricing
+
+    // mở modal
+    setting_pricing_ref.value.openSettingPricingModal()
+}
+/**cập nhật lại dữ liệu gói sau các hành động setting */
+function doneSettingPricing(pricing?: PricingInfo) {
+    // sửa lại data pricing đang chọn
+    current_setting_pricing.value = pricing
+
+    // sửa lại data trong list
+    updateThisPricing(pricing)
+}
+/**ngắt kết nối toàn bộ page và staff của gói này */
+function inactiveAllPageAndStaffOfThisPricing(pricing: PricingInfo) {
+    const DATA: {
+        pricing?: PricingInfo
+    } = {}
+
+    // * xác nhận lại trước khi ngắt kết nối
+    confirm(
+        'question',
+        $t('v1.view.main.dashboard.pricing.disconnect.title'),
+        '',
+        (e, r) => {
+            if (e) return
+
+            flow([
+                // * ngắt kết nối toàn bộ
+                (cb: CbError) => control_active_pricing({
+                    pricing_id: pricing._id,
+                    inactive_page_id_list: pricing.list_pages,
+                    inactive_staff_id_list: pricing.list_staffs
+                }, (e, r) => {
+                    if (e) return cb(e)
+
+                    DATA.pricing = r
+                    cb()
+                }),
+                // load lại dữ liệu page và staff mới
+                (cb: CbError) => setting_pricing_ref
+                    .value
+                    .getAllPageAndStaffInfo((e: any, r: any) => {
+                        if (e) return cb(e)
+
+                        cb()
+                    }),
+                // * xử lý sau khi thành công
+                (cb: CbError) => {
+                    // cập nhật lại pricing
+                    doneSettingPricing(DATA.pricing)
+
+                    // alert success
+                    toast('success', $t('v1.common.success'))
+
+                    cb()
+                },
+            ], undefined, true)
+        })
 }
 
 // public chức năng 

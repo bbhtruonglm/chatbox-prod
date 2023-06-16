@@ -122,3 +122,29 @@ export const cancel_this_pricing = (
     uri: `${$env.host.n4_service}/app/pricing/cancel_this_pricing`,
     body: { pricing_id },
 }, proceed)
+
+/**đọc info của danh sách user */
+export const read_pricing_info_of_list_chatbot_user = (
+    list_staff: string[],
+    proceed: (e?: any, r?: {
+        [index: string]: ChatbotUserInfo
+    }) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/read_pricing_info_of_list_chatbot_user`,
+    body: { list_staff },
+}, proceed)
+
+/**kích hoạt | huỷ kích hoạt page và staff */
+export const control_active_pricing = (
+    body: {
+        pricing_id?: string
+        active_page_id_list?: string[]
+        inactive_page_id_list?: string[]
+        active_staff_id_list?: string[]
+        inactive_staff_id_list?: string[]
+    },
+    proceed: (e?: any, r?: PricingInfo) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/pricing/control_active_pricing`,
+    body,
+}, proceed)

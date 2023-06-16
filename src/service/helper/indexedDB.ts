@@ -1,6 +1,6 @@
 import { get } from 'lodash'
 
-import type { Cb } from "../interface/function"
+import type { Cb } from "@/service/interface/function"
 
 interface ConstructorInput {
     /**tên của db */

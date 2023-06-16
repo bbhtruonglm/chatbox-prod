@@ -1,4 +1,5 @@
 <template>
+    <RequirePricing />    
     <RouterView />
 </template>
 
@@ -8,6 +9,8 @@ import { flow } from '@/service/helper/async'
 import type { CbError } from '@/service/interface/function'
 import { useChatbotUserStore } from '@/stores'
 import { onMounted } from 'vue'
+
+import RequirePricing from '@/components/Main/RequirePricing.vue'
 
 const chatbotUserStore = useChatbotUserStore()
 
@@ -26,4 +29,6 @@ function getMeChatbotUser() {
         }),
     ], undefined)
 }
+
+defineExpose({ getMeChatbotUser })
 </script>

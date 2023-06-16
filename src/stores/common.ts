@@ -21,8 +21,19 @@ export const useCommonStore = defineStore('common_store', () => {
     /** lưu toggle xuống local, để khi f5 trang không bị mất */
     saveLocal(toggle_nav, 'dashboard_toggle_nav')
 
+    /**trigger sự kiện đến modal báo lỗi không có gói */
+    const trigger_require_pricing = ref(false)
+
+    /**action tự động thay đổi value của trigger */
+    function triggerRequirePricing() {
+        trigger_require_pricing.value = !trigger_require_pricing.value
+    }
+
     return {
         is_loading_full_screen,
         toggle_nav,
+        trigger_require_pricing,
+
+        triggerRequirePricing,
     }
 })
