@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </div>
-            <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.toggle_nav }"
+            <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="max-h-full overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <div v-for="pricing of filter_pricing_list"
                     class="bg-white rounded-md border-b-2 hover:border-orange-500 md:bg-slate-100 p-2 ">

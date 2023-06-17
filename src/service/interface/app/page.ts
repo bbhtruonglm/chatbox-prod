@@ -22,6 +22,8 @@ export interface PageInfo {
 }
 
 export interface PageData {
+    /**tạo data key cho vitual scroll */
+    data_key?: string
     page?: PageInfo
     staff_list?: AllStaffList
 }

@@ -24,6 +24,7 @@ const source: Language = {
             type: 'Loại',
             select_all: 'Chọn tất cả',
             active: 'Kích hoạt',
+            chatbox: 'Chatbox'
         },
         view: {
             network: {
@@ -39,6 +40,7 @@ const source: Language = {
             main: {
                 dashboard: {
                     nav: {
+                        chat: 'Chat',
                         noti: 'Thông báo',
                         toggle: 'Thu nhỏ',
                         select_page: 'Chọn trang',

@@ -17,9 +17,12 @@ export const useCommonStore = defineStore('common_store', () => {
      * false: không hiển thị nav
      * true: hiển thị full nav
      */
-    const toggle_nav = ref(getLocal('dashboard_toggle_nav', false))
+    const dashboard_toggle_nav = ref(getLocal('dashboard_toggle_nav', false))
+    const chat_toggle_nav = ref(getLocal('chat_toggle_nav', false))
+
     /** lưu toggle xuống local, để khi f5 trang không bị mất */
-    saveLocal(toggle_nav, 'dashboard_toggle_nav')
+    saveLocal(dashboard_toggle_nav, 'dashboard_toggle_nav')
+    saveLocal(chat_toggle_nav, 'chat_toggle_nav')
 
     /**trigger sự kiện đến modal báo lỗi không có gói */
     const trigger_require_pricing = ref(false)
@@ -31,7 +34,8 @@ export const useCommonStore = defineStore('common_store', () => {
 
     return {
         is_loading_full_screen,
-        toggle_nav,
+        dashboard_toggle_nav,
+        chat_toggle_nav,
         trigger_require_pricing,
 
         triggerRequirePricing,

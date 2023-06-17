@@ -1,70 +1,70 @@
 <template>
-    <div class="h-full w-full flex relative">
-        <div class="bg-white duration-500 h-screen w-[300px] absolute z-[10]" :class="GenNavClass()">
-            <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-2">
-                <div @click="toggleNav" v-if="commonStore.toggle_nav"
-                    class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
-                <button @click="toggleNav" class="absolute top-[70px] right-[-40px] md:hidden">
-                    <img v-if="commonStore.toggle_nav" src="@/assets/icons/close.svg">
-                    <img v-else src="@/assets/icons/toggle.svg">
-                </button>
-                <div @click="toggleNav" class="cursor-pointer">
-                    <div class="block md:hidden">
-                        <img src="@/assets/icons/bbh-large.svg" />
-                    </div>
-                    <div class="hidden md:block">
-                        <img v-if="!commonStore.toggle_nav" src="@/assets/icons/bbh-large.svg">
-                        <img v-else src="@/assets/icons/bbh-mini.svg">
-                    </div>
+    <Menu ref="dashboard_menu_ref" :init_toggle_nav="commonStore.dashboard_toggle_nav"
+        @toggle_nav_change="onToggleNavChange">
+        <template v-slot:menu>
+            <div @click="toggleNav" class="cursor-pointer">
+                <div class="block md:hidden">
+                    <img src="@/assets/icons/bbh-large.svg" />
                 </div>
-                <hr class="my-4" />
-                <div class="h-[calc(100%_-_145px)] md:h-[calc(100%_-_232px)] overflow-hidden overflow-y-auto">
-                    <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
-                        @click="selectNav(nav.path)" :icon_class="nav.icon_class"
-                        :is_only_show_icon="commonStore.toggle_nav" :icon="nav.icon" :title="nav.title" />
-                </div>
-                <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
-                    <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0"
-                        @click="selectNav('/main/dashboard/noti')" :is_only_show_icon="commonStore.toggle_nav"
-                        :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
-                    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
-                        @click="selectNav('/main/dashboard/user')"
-                        :is_active_user="isActiveUser(chatbotUserStore.chatbot_user)"
-                        :is_only_show_icon="commonStore.toggle_nav" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                        :title="chatbotUserStore.chatbot_user?.full_name" />
-                    <NavItem class="hidden md:flex" :is_only_show_icon="commonStore.toggle_nav"
-                        :icon="commonStore.toggle_nav ? arrowRightSvg : arrowLeftSvg" @click="toggleNav"
-                        :title="$t('v1.view.main.dashboard.nav.toggle')" />
+                <div class="hidden md:block">
+                    <img v-if="!toggle_nav" src="@/assets/icons/bbh-large.svg">
+                    <img v-else src="@/assets/icons/bbh-mini.svg">
                 </div>
             </div>
-        </div>
-        <div class="duration-500 w-full">
+            <hr class="my-4" />
+            <div class="h-[calc(100%_-_145px)] md:h-[calc(100%_-_232px)] overflow-hidden overflow-y-auto">
+                <NavItem v-if="size(pageStore.selected_page_id_list)"
+                    :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
+                    @click="selectNav('/main/dashboard/chat')" icon_class="w-[20px]" :is_only_show_icon="toggle_nav"
+                    :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
+                <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
+                    @click="selectNav(nav.path)" :icon_class="nav.icon_class" :is_only_show_icon="toggle_nav"
+                    :icon="nav.icon" :title="nav.title" />
+            </div>
+            <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
+                <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0"
+                    @click="selectNav('/main/dashboard/noti')" :is_only_show_icon="toggle_nav" :icon="bellSvg"
+                    :title="$t('v1.view.main.dashboard.nav.noti')" />
+                <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
+                    @click="selectNav('/main/dashboard/user')" :is_only_show_icon="toggle_nav" />
+                <NavItem class="hidden md:flex" :is_only_show_icon="toggle_nav"
+                    :icon="toggle_nav ? arrowRightSvg : arrowLeftSvg" @click="toggleNav"
+                    :title="$t('v1.view.main.dashboard.nav.toggle')" />
+            </div>
+        </template>
+        <template v-slot:content>
             <RouterView />
-        </div>
-    </div>
+        </template>
+    </Menu>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useCommonStore, usePageStore } from '@/stores'
+import { computed, ref } from 'vue'
+
 import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
 import arrowRightSvg from '@/assets/icons/arrow-right.svg'
 import pageSvg from '@/assets/icons/page.svg'
+import chatSvg from '@/assets/icons/chat.svg'
 import crownSvg from '@/assets/icons/crown.svg'
 import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
-
-import { isActiveUser } from '@/service/helper/pricing'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 import UserItem from '@/components/Main/Dashboard/UserItem.vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useCommonStore, useChatbotUserStore } from '@/stores'
+import Menu from '@/components/Main/Menu.vue'
+
+import type { ComponentPublicInstance } from 'vue'
+import { size } from 'lodash'
 
 const $router = useRouter()
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
-const chatbotUserStore = useChatbotUserStore()
+const pageStore = usePageStore()
 
+/**danh sách menu item */
 const LIST_NAV = [
     {
         path: '/main/dashboard/select-page',
@@ -91,37 +91,25 @@ const LIST_NAV = [
         title: $t('v1.view.main.dashboard.nav.widget')
     },
 ]
+/**ref của menu */
+const dashboard_menu_ref = ref<ComponentPublicInstance<any>>()
 
-/**check screen size before click */
+/**lắng nghe giá trị ẩn hiện nav từ component */
+const toggle_nav = computed(() => dashboard_menu_ref.value?.this_toggle_nav)
+
+/**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
 function selectNav(path: string) {
-    // close nav with mobile screen
-    if (window.innerWidth < 768) commonStore.toggle_nav = false
+    // check cỡ màn điện thoại
+    if (window.innerWidth < 768) commonStore.dashboard_toggle_nav = false
 
     $router.push(path)
 }
-
 /**thay đổi trạng thái của nav */
-function toggleNav() {
-    commonStore.toggle_nav = !commonStore.toggle_nav
+function onToggleNavChange(value: boolean) {
+    commonStore.dashboard_toggle_nav = value
 }
-/**
- * css lại nav khi ẩn / hiên
- * mobile: ẩn nav - hiện nav cỡ lớn
- * tablet/pc: hiện nav cỡ lớn - hiện nav cỡ nhỏ
- */
-function GenNavClass() {
-    /**
-     * trạng thái bình thường
-     * mobile: ẩn nav
-     * tablet/pc: hiển thị cỡ lớn
-     */
-    if (!commonStore.toggle_nav) return 'left-[-300px] md:static'
-
-    /**
-     * trạng thái kích hoạt
-     * mobile: hiển thị cỡ lớn
-     * tablet/pc: hiển thị cỡ nhỏ
-     */
-    return 'top-0 left-0 md:static md:w-[60px]'
+/**ẩn hiện nav */
+function toggleNav() {
+    dashboard_menu_ref.value?.toggleNav()
 }
 </script>
