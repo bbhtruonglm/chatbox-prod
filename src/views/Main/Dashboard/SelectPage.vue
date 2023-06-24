@@ -73,7 +73,7 @@ import { flow, toggle_loading } from '@/service/helper/async'
 import { get_current_active_page, update_page } from '@/service/api/chatbox/n4-service'
 import { debounce, keyBy, map, mapValues, set, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
-import { confirm } from '@/service/helper/alert'
+import { confirm, toast } from '@/service/helper/alert'
 import { useRouter } from 'vue-router'
 import { copy } from '@/service/helper/format'
 
@@ -306,7 +306,7 @@ function getCurrentActivePage() {
                 // count cho từng page type
                 list_tab_select.value[PAGE_TYPE].count++
             })
-        }
+        },
     ], e => {
         // tắt loading
         is_loading_active_page_list.value = false
@@ -413,7 +413,7 @@ function goToChat() {
         }),
         // * đi đến trang chat
         (cb: CbError) => {
-            $router.push('/main/chat')
+            $router.push('/main/dashboard/chat')
 
             cb()
         },

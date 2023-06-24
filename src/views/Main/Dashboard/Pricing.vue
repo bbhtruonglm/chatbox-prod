@@ -149,8 +149,7 @@ import SettingPricing from '@/views/Main/Dashboard/Pricing/SettingPricing.vue'
 import type { CbError } from '@/service/interface/function'
 import type { PricingInfo } from '@/service/interface/app/pricing'
 import type { TabPlatform } from '@/service/interface/app/page'
-
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
@@ -186,17 +185,17 @@ const pricing_list = ref<{
     [index: string]: PricingInfo
 }>({})
 /**ref của modal tạo  mới gói */
-const create_pricing_ref = ref<ComponentPublicInstance<any>>()
+const create_pricing_ref = ref<ComponentRef>()
 /**ref của modal chi tiết 1 gois */
-const pricing_detail_ref = ref<ComponentPublicInstance<any>>()
+const pricing_detail_ref = ref<ComponentRef>()
 /**dữ liệu chi tiết của 1 gói khi được chonj */
 const current_pricing_detail = ref<PricingInfo>()
 /**id của gói muốn nâng cấp */
 const current_pricing_id_upgrade = ref<string>()
 /**ref của modal nâng cấp gói */
-const upgrade_pricing_ref = ref<ComponentPublicInstance<any>>()
+const upgrade_pricing_ref = ref<ComponentRef>()
 /**ref của modal setting pricing */
-const setting_pricing_ref = ref<ComponentPublicInstance<any>>()
+const setting_pricing_ref = ref<ComponentRef>()
 /**data của pricing hiện tại đang được setting */
 const current_setting_pricing = ref<PricingInfo>()
 

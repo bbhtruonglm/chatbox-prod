@@ -9,6 +9,7 @@ const ENV: Env = {
         prefix: 'chatbox_'
     },
     host: {
+        n3_socket: 'wss://socket.sellingpage.net',
         n4_service: 'https://dev.sellingpage.net/v1/n4_service'
     },
     facebook: {
@@ -21,7 +22,6 @@ const ENV: Env = {
                 'pages_messaging',
                 'email',
                 'pages_read_user_content',
-                'pages_messaging_subscriptions',
                 'instagram_basic',
                 'instagram_manage_comments',
                 'instagram_manage_insights',
@@ -29,13 +29,14 @@ const ENV: Env = {
                 'ads_management',
                 'read_page_mailboxes',
                 'read_insights',
-                'manage_pages',
-                'publish_pages',
                 'pages_manage_metadata',
                 'pages_manage_ads',
                 'pages_manage_posts',
                 'pages_manage_engagement',
                 'page_events',
+                // 'pages_messaging_subscriptions',
+                // 'manage_pages',
+                // 'publish_pages',
             ].join(),
             return_scopes: true,
             auth_type: 'rerequest',

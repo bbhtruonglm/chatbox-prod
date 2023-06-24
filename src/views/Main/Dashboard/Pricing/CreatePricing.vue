@@ -13,9 +13,9 @@
                     </div>
                     <Select class="col-span-2 md:col-span-2" v-model="create_pricing_data.code"
                         :placeholder="$t('v1.view.main.dashboard.pricing.create.package_description')">
-                        <option v-for="code of CODE_LIST" :value="code">
+                        <Option v-for="code of CODE_LIST" :value="code">
                             {{ $t(`v1.view.main.dashboard.pricing.create.code.${code}`) }}
-                        </option>
+                        </Option>
                     </Select>
                 </div>
                 <template v-if="create_pricing_data.code === 'CUSTOM'">
@@ -25,9 +25,9 @@
                         </div>
                         <Select class="col-span-2" v-model="create_pricing_data.selected_page"
                             :placeholder="$t('v1.view.main.dashboard.pricing.create.page_description')">
-                            <option v-for="i of 30" :value="i">
+                            <Option v-for="i of 30" :value="i">
                                 {{ i }} {{ $t('v1.common.page') }}
-                            </option>
+                            </Option>
                         </Select>
                     </div>
                     <div class="grid grid-cols-3 mb-2 gap-x-2">
@@ -36,15 +36,15 @@
                         </div>
                         <Select class="col-span-2" v-model="create_pricing_data.selected_month"
                             :placeholder="$t('v1.view.main.dashboard.pricing.create.month_description')">
-                            <option value="6">
+                            <Option value="6">
                                 6 {{ $t('v1.common.month') }}
-                            </option>
-                            <option value="12">
+                            </Option>
+                            <Option value="12">
                                 12 {{ $t('v1.common.month') }}
-                            </option>
-                            <option value="24">
+                            </Option>
+                            <Option value="24">
                                 24 {{ $t('v1.common.month') }}
-                            </option>
+                            </Option>
                         </Select>
                     </div>
                     <div class="grid grid-cols-3 mb-2 gap-x-2">
@@ -53,9 +53,9 @@
                         </div>
                         <Select class="col-span-2" v-model="create_pricing_data.selected_staff"
                             :placeholder="$t('v1.view.main.dashboard.pricing.create.staff_description')">
-                            <option v-for="i of 60" :value="i">
+                            <Option v-for="i of 60" :value="i">
                                 {{ i }} {{ $t('v1.common.staff') }}
-                            </option>
+                            </Option>
                         </Select>
                     </div>
                 </template>
@@ -126,12 +126,13 @@ import { toast } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
 
 import Select from '@/components/Select.vue'
+import Option from '@/components/Option.vue'
 import Modal from '@/components/Modal.vue'
 import Loading from '@/components/Loading.vue'
 
-import type { ComponentPublicInstance } from 'vue'
 import type { CbError } from '@/service/interface/function'
 import type { CreatePricing } from '@/service/interface/app/pricing'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['done_create_pricing'])
 
@@ -163,7 +164,7 @@ const create_pricing_data = ref<CreatePricing>({
 /**ước lượng chi phí của gói */
 const price_of_pricing = ref(copy(PRICE_ROOT))
 /**ref của modal tạo gói */
-const create_pricing_ref = ref<ComponentPublicInstance<any>>()
+const create_pricing_ref = ref<ComponentRef>()
 /**loading */
 const is_loading_calc_price = ref(false)
 

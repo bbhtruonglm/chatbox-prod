@@ -15,7 +15,7 @@
             <div class="h-[calc(100%_-_145px)] md:h-[calc(100%_-_232px)] overflow-hidden overflow-y-auto">
                 <NavItem v-if="size(pageStore.selected_page_id_list)"
                     :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
-                    @click="selectNav('/main/dashboard/chat')" icon_class="w-[20px]" :is_only_show_icon="toggle_nav"
+                    @click="goToChat" icon_class="w-[20px]" :is_only_show_icon="toggle_nav"
                     :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
                 <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
                     @click="selectNav(nav.path)" :icon_class="nav.icon_class" :is_only_show_icon="toggle_nav"
@@ -43,6 +43,9 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useCommonStore, usePageStore } from '@/stores'
 import { computed, ref } from 'vue'
+import { size } from 'lodash'
+import { flow, toggle_loading } from '@/service/helper/async'
+import { checkPricingValid } from '@/service/helper/pricing'
 
 import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
@@ -56,8 +59,8 @@ import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 import UserItem from '@/components/Main/Dashboard/UserItem.vue'
 import Menu from '@/components/Main/Menu.vue'
 
-import type { ComponentPublicInstance } from 'vue'
-import { size } from 'lodash'
+import type { CbError } from '@/service/interface/function'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $router = useRouter()
 const { t: $t } = useI18n()
@@ -92,7 +95,7 @@ const LIST_NAV = [
     },
 ]
 /**ref của menu */
-const dashboard_menu_ref = ref<ComponentPublicInstance<any>>()
+const dashboard_menu_ref = ref<ComponentRef>()
 
 /**lắng nghe giá trị ẩn hiện nav từ component */
 const toggle_nav = computed(() => dashboard_menu_ref.value?.this_toggle_nav)
@@ -111,5 +114,30 @@ function onToggleNavChange(value: boolean) {
 /**ẩn hiện nav */
 function toggleNav() {
     dashboard_menu_ref.value?.toggleNav()
+}
+/**đi đến trang chat */
+function goToChat() {
+    flow([
+        // * kiểm tra xem page đã được chọn hay chưa
+        (cb: CbError) => {
+            if (!size(pageStore.selected_page_id_list))
+                return cb('v1.view.main.dashboard.select_page.empty_page.title')
+
+            cb()
+        },
+        // * kiểm tra các page và user hiện tại có gói hay không
+        (cb: CbError) => checkPricingValid((e, r) => {
+            // tắt loading
+            if (e) return toggle_loading(false)
+
+            cb()
+        }),
+        // * đi đến trang chat
+        (cb: CbError) => {
+            selectNav('/main/dashboard/chat')
+
+            cb()
+        },
+    ], undefined, true)
 }
 </script>

@@ -1,9 +1,10 @@
 <template>
     <div class="relative">
-        <div class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
+        <div v-if="is_loading" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
             <Loading />
         </div>
-        <iframe class="relative z-[2] w-full h-full" v-if="iframe_src" :src="iframe_src" frameborder="0" />
+        <iframe @load="removeLoading" loading="lazy" class="relative z-[2] w-full h-full" v-if="iframe_src"
+            :src="iframe_src" frameborder="0" />
     </div>
 </template>
 <script setup lang="ts">
@@ -25,8 +26,15 @@ const $props = withDefaults(defineProps<{
     border_radius?: string
 }>(), {})
 
+/**url của iframe */
 const iframe_src = ref('')
+/**có hiển thị loading hay không */
+const is_loading = ref(true)
 
+/**tắt loading khi iframe load thành công */
+function removeLoading() {
+    is_loading.value = false
+}
 /**
  * - do fb bị lỗi không thêm mới được white domain, nên phải đăng nhập thông qua 
  * iframe của bot bán hàng, sau đó send event ra ngoài

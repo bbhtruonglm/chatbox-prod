@@ -12,9 +12,9 @@
                     <div class="col-span-2 flex h-[fit-content]">
                         <Select class="w-[-webkit-fill-available]" v-model="upgrade_pricing_data.selected_page"
                             :placeholder="$t('v1.view.main.dashboard.pricing.create.page_description')">
-                            <option v-for="i of 30" :value="i">
+                            <Option v-for="i of 30" :value="i">
                                 {{ i }} {{ $t('v1.common.page') }}
-                            </option>
+                            </Option>
                         </Select>
                         <img @click="upgrade_pricing_data.selected_page = ''" class="cursor-pointer" src="@/assets/icons/close.svg" width="28" height="28">
                     </div>
@@ -26,9 +26,9 @@
                     <div class="col-span-2 flex h-[fit-content]">
                         <Select class="w-[-webkit-fill-available]" v-model="upgrade_pricing_data.selected_staff"
                             :placeholder="$t('v1.view.main.dashboard.pricing.create.staff_description')">
-                            <option v-for="i of 60" :value="i">
+                            <Option v-for="i of 60" :value="i">
                                 {{ i }} {{ $t('v1.common.staff') }}
-                            </option>
+                            </Option>
                         </Select>
                         <img @click="upgrade_pricing_data.selected_staff = ''" class="cursor-pointer" src="@/assets/icons/close.svg" width="28" height="28">
                     </div>
@@ -100,12 +100,13 @@ import { toast } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
 
 import Select from '@/components/Select.vue'
+import Option from '@/components/Option.vue'
 import Modal from '@/components/Modal.vue'
 import Loading from '@/components/Loading.vue'
 
-import type { ComponentPublicInstance } from 'vue'
 import type { CbError } from '@/service/interface/function'
 import type { UpgradePricing } from '@/service/interface/app/pricing'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['done_upgrade_pricing'])
 
@@ -134,7 +135,7 @@ const upgrade_pricing_data = ref<UpgradePricing>({
 /**ước lượng chi phí */
 const price_of_pricing = ref(copy(PRICE_ROOT))
 /**ref của modal */
-const upgrade_pricing_ref = ref<ComponentPublicInstance<any>>()
+const upgrade_pricing_ref = ref<ComponentRef>()
 /**loading */
 const is_loading_calc_price = ref(false)
 

@@ -148,3 +148,23 @@ export const control_active_pricing = (
     uri: `${$env.host.n4_service}/app/pricing/control_active_pricing`,
     body,
 }, proceed)
+
+/**đọc dữ liệu trực tuyến của các user */
+export const online_staff = (
+    list_page_id: string[],
+    proceed: (e?: any, r?: {
+        [index: string]: string
+    }) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/staff/online_staff`,
+    body: { list_page_id },
+}, proceed)
+
+/**đọc dữ liệu của page để chat */
+export const get_page_info_to_chat = (
+    list_page_id: string[],
+    proceed: (e?: any, r?: PageList) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/page/get_page_info_to_chat`,
+    body: { list_page_id },
+}, proceed)

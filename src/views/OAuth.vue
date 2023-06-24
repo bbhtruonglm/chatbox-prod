@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { flow } from '@/service/helper/async'
 import { login_facebook } from '@/service/api/chatbox/n4-service'
-import { setItem } from '@/service/helper/localStorage'
+import { getItem, setItem } from '@/service/helper/localStorage'
 import { useRouter } from 'vue-router'
 
 import Language from '@/components/Language.vue'
@@ -42,13 +42,20 @@ import Facebook from '@/components/OAuth/Facebook.vue'
 
 import type { CbError } from '@/service/interface/function'
 import { useI18n } from 'vue-i18n'
+import { onMounted } from 'vue'
 
 const $router = useRouter()
 const { t: $t } = useI18n()
 
-/**
- * - đăng nhập chatbox bằng token fb
- */
+onMounted(() => isAlreadyLogin())
+
+/**nếu có token thì redirect vào dashboard */
+function isAlreadyLogin() {
+    if (!getItem('access_token')) return
+
+    $router.push('/main/dashboard/chat')
+}
+/**đăng nhập chatbox bằng token fb */
 function loginChatbox(access_token: string) {
     const DATA: {
         access_token: string

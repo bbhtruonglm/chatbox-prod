@@ -1,6 +1,6 @@
 import { eachOfLimit, waterfall } from 'async'
 import { useChatbotUserStore, useCommonStore, usePageStore } from '@/stores'
-import { keys } from 'lodash'
+import { keys, size } from 'lodash'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
@@ -48,7 +48,13 @@ export const isActivePage = (page?: PageInfo) => {
 }
 
 /**kiểm tra danh sác page được chọn và user hiện tại có gói hay không */
-export const checkPricingValid = (proceed: Cb) => {
+export const checkPricingValid = (
+    proceed: Cb,
+    /**sử dụng data page chat thay cho data page thường */
+    is_use_chat_data?: boolean,
+    /**tắt thông báo */
+    disable_alert?: boolean
+) => {
     const chatbotUserStore = useChatbotUserStore()
     const pageStore = usePageStore()
     const commonStore = useCommonStore()
@@ -61,12 +67,23 @@ export const checkPricingValid = (proceed: Cb) => {
         count_trial_page: 0
     }
     waterfall([
+        // * kiểm tra xem đã chọn page chưa
+        (cb: CbError) => {
+            if (!size(pageStore.selected_page_id_list)) return cb(true)
+
+            cb()
+        },
         // * kiểm tra các page đã chọn
         (cb: CbError) => eachOfLimit(
             LIST_SELECTED_PAGE_ID,
             1,
             (page_id: string, i, next) => {
-                const PAGE = pageStore.active_page_list[page_id]?.page
+                const LIST_PAGE_INFO =
+                    is_use_chat_data ?
+                        pageStore.selected_page_list_info :
+                        pageStore.active_page_list
+
+                const PAGE = LIST_PAGE_INFO[page_id]?.page
 
                 // kiểm tra xem có phải là page dùng thử hay không
                 if (
@@ -101,10 +118,10 @@ export const checkPricingValid = (proceed: Cb) => {
         },
     ], e => {
         if (e) {
-            proceed(true)
+            proceed(e)
 
             // mở modal báo lỗi gói
-            commonStore.triggerRequirePricing()
+            if (!disable_alert) commonStore.triggerRequirePricing()
 
             return
         }

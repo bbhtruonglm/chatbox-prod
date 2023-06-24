@@ -102,12 +102,12 @@ import PricingActiveItem from '@/components/Main/Dashboard/PricingActiveItem.vue
 
 import type { SelectStaffData } from '@/service/interface/app/staff'
 import type { SelectPageData } from '@/service/interface/app/page'
-import type { ComponentPublicInstance } from 'vue'
 import type { PricingInfo } from '@/service/interface/app/pricing'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
 import { toast } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
+import type { ComponentRef } from '@/service/interface/vue'
 
 interface PageList {
     [index: string]: SelectPageData
@@ -127,7 +127,7 @@ const { t: $t } = useI18n()
 /**tab hiện tại đang được chọn */
 const current_select_tab = ref<'PAGE' | 'STAFF'>('PAGE')
 /**ref của modal setting pricing */
-const setting_pricing_ref = ref<ComponentPublicInstance<any>>()
+const setting_pricing_ref = ref<ComponentRef>()
 /**có loading hay không */
 const is_loading = ref(false)
 /**danh sách page của user */

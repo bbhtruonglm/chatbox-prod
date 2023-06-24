@@ -162,6 +162,49 @@ const source: Language = {
                         disconnect: {
                             title: 'Bạn có chắn chắn muốn ngắt kết nối gói này?'
                         }
+                    },
+                    chat: {
+                        filter: {
+                            title: 'Lọc tin nhắn',
+                            interact: {
+                                title: 'Lọc tương tác',
+                                message: 'Tương tác từ nhắn tin',
+                                comment: 'Tương tác từ bình luận'
+                            },
+                            message: {
+                                title: 'Lọc trạng thái tin nhắn',
+                                unread: 'Tin nhắn chưa đọc',
+                                not_reply: 'Tin nhắn chưa phản hồi',
+                                not_tag: 'Tin nhắn chưa gắn nhãn',
+                                spam: 'Tin nhắn spam',
+                            },
+                            phone: {
+                                title: 'Lọc số điện thoại',
+                                include_phone: 'Có số điện thoại',
+                                exclude_phone: 'Không có số điện thoại'
+                            },
+                            time: {
+                                title: 'Lọc theo thời gian'
+                            },
+                            label: {
+                                title: 'Lọc theo nhãn'
+                            },
+                            staff: {
+                                title: 'Lọc theo nhân viên'
+                            },
+                            comment: {
+                                title: 'Lọc bình luận'
+                            },
+                            un_filter: 'Xoá lọc',
+                        },
+                        search: 'Tìm kiếm hội thoại',
+                        error: {
+                            get_page_info: 'Không tìm thấy dữ liệu trang'
+                        },
+                        online_status: {
+                            online: 'Đang trực tuyến',
+                            offline: 'Đã ngoại tuyến'
+                        }
                     }
                 }
             }

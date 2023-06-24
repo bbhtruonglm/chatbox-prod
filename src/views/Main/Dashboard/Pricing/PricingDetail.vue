@@ -127,11 +127,11 @@ import { currency } from '@/service/helper/format'
 import Modal from '@/components/Modal.vue'
 import Loading from '@/components/Loading.vue'
 
-import type { ComponentPublicInstance } from 'vue'
 import type { PricingInfo } from '@/service/interface/app/pricing'
 import { flow } from '@/service/helper/async'
 import type { CbError } from '@/service/interface/function'
 import { read_me_pricing } from '@/service/api/chatbox/n4-service'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['update_this_pricing'])
 
@@ -141,7 +141,7 @@ const $props = withDefaults(defineProps<{
 }>(), {})
 
 /**ref của modal */
-const pricing_detail_ref = ref<ComponentPublicInstance<any>>()
+const pricing_detail_ref = ref<ComponentRef>()
 /**gắn cờ loading  */
 const is_loading = ref(false)
 

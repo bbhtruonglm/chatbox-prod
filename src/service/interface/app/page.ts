@@ -26,6 +26,8 @@ export interface PageData {
     data_key?: string
     page?: PageInfo
     staff_list?: AllStaffList
+    label_list?: {}
+    current_staff?: {}
 }
 
 export interface PageList {

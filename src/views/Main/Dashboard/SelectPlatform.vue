@@ -110,7 +110,7 @@ import type {
     PageData, PageWebsiteCreate, PageList
 } from '@/service/interface/app/page'
 import type { TabPlatform } from '@/service/interface/app/page'
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentRef } from '@/service/interface/vue'
 
 /**
  * những page được active rồi (is_active: true) sẽ bị disable khả năng chọn
@@ -144,7 +144,7 @@ const search = ref('')
 /**gắn cờ loading cho danh sách page */
 const is_loading_page_list = ref(false)
 /**ref của modal tạo mới website */
-const create_new_website_ref = ref<ComponentPublicInstance<any>>(null)
+const create_new_website_ref = ref<ComponentRef>()
 /**data tạo mới website */
 const create_new_website_data = ref<PageWebsiteCreate>({
     avatar: '',

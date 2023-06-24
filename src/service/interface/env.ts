@@ -6,6 +6,7 @@ export interface Env {
     }
     /**danh sách các domain của api */
     host: {
+        n3_socket: string
         n4_service: string
     }
     /**cài đặt cho riêng facebook */

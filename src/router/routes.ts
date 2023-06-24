@@ -5,13 +5,12 @@ import OAuth from '@/views/OAuth.vue'
 import Main from '@/views/Main.vue'
 
 import Dashboard from '@/views/Main/Dashboard.vue'
+import Chat from '@/views/Main/Dashboard/Chat.vue'
 import SelectPage from '@/views/Main/Dashboard/SelectPage.vue'
 import SelectPlatform from '@/views/Main/Dashboard/SelectPlatform.vue'
 import Pricing from '@/views/Main/Dashboard/Pricing.vue'
 import Noti from '@/views/Main/Dashboard/Noti.vue'
 import User from '@/views/Main/Dashboard/User.vue'
-
-import Chat from '@/views/Main/Chat.vue'
 
 export const routes = [
   { path: '/', redirect: '/oauth' },
@@ -26,6 +25,7 @@ export const routes = [
         redirect: '/main/dashboard/select-page',
         component: Dashboard,
         children: [
+          { path: 'chat', component: Chat },
           { path: 'select-page', component: SelectPage },
           { path: 'select-platform', component: SelectPlatform },
           { path: 'pricing', component: Pricing },
@@ -33,7 +33,6 @@ export const routes = [
           { path: 'user', component: User },
         ]
       },
-      { path: 'chat', component: Chat },
     ]
   },
   { path: '/404', component: PageNotFound },

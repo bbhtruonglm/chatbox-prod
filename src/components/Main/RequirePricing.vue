@@ -80,8 +80,8 @@ import Modal from '@/components/Modal.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
-import type { ComponentPublicInstance } from 'vue'
 import type { PageInfo } from '@/service/interface/app/page'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
@@ -89,7 +89,7 @@ const pageStore = usePageStore()
 const $router = useRouter()
 
 /**ref của modal */
-const require_pricing_ref = ref<ComponentPublicInstance<any>>()
+const require_pricing_ref = ref<ComponentRef>()
 const sorted_inactive_page = ref<(PageInfo | undefined)[]>()
 
 // lắng nghe sự kiện để kích hoạt modal

@@ -22,7 +22,7 @@
             <img width="15" height="15" src="@/assets/icons/search.svg" class="absolute top-[6px] left-1">
         </div>
         <div ref="select_option_ref" v-show="is_show_option" @click="selectOption"
-            class="p-2 rounded-lg border border-slate-300 bg-white mt-1 h-auto max-h-[200px] overflow-hidden overflow-y-auto absolute z-40 max-w-[100vw] option-warper w-[-webkit-fill-available]">
+            class="p-2 rounded-lg border border-slate-300 bg-white mt-1 h-auto max-h-[200px] overflow-hidden overflow-y-auto absolute z-40 max-w-[100vw] w-[-webkit-fill-available]">
             <slot />
             <span class="text-gray-400">{{ placeholder }}</span>
         </div>
@@ -33,7 +33,7 @@
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { nonAccentVn } from '@/service/helper/format'
 
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentRef } from '@/service/interface/vue';
 
 const $props = withDefaults(defineProps<{
     /**giá trị của v-model được truyền vào */
@@ -52,15 +52,12 @@ const $props = withDefaults(defineProps<{
 
 const $emit = defineEmits(['update:modelValue', 'update:display_value', 'search'])
 
-/**màu */
-const slate_200 = '#e2e8f0'
-
 /**ref tổng của select */
-const select_ref = ref<ComponentPublicInstance<any>>()
+const select_ref = ref<ComponentRef>()
 /**ref của input */
-const select_input_ref = ref<ComponentPublicInstance<any>>()
+const select_input_ref = ref<ComponentRef>()
 /**ref của div bao quanh option */
-const select_option_ref = ref<ComponentPublicInstance<any>>()
+const select_option_ref = ref<ComponentRef>()
 /**gắn cờ cho logic hiện danh sách lựa chọn của select */
 const is_show_option = ref<boolean>()
 /**giá trị của tìm kiếm */
@@ -79,9 +76,9 @@ watch(() => $props.modelValue, () => onChangeModelValue())
 watch(() => search.value, val => {
     // nếu tắt tìm kiếm nội bộ, thì emit search ra bên ngoài
     if ($props.filter_off) return $emit('search', val)
-    
+
     // ẩn hiện option theo tìm kiếm
-    getAllOption().map((option: HTMLOptionElement) => {
+    getAllOption().map((option: HTMLDivElement) => {
         let option_text = nonAccentVn(option.innerText)
         let search_value = nonAccentVn(val || '')
 
@@ -103,21 +100,21 @@ onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 /**đọc toàn bộ dữ liệu của option */
 function getAllOption() {
     // lấy ra toàn bộ các option của select
-    const LIST_OPTION: HTMLOptionElement[] = select_option_ref
+    const LIST_OPTION: HTMLDivElement[] = select_option_ref
         .value
-        .getElementsByTagName('option')
+        .getElementsByClassName('custom-select-option')
 
     if (!LIST_OPTION || !LIST_OPTION.length) return []
 
     // parser html list thành array
     return [...LIST_OPTION]
 }
-/**sử lý dữ liệu khi v-model thay đổi */
+/**xử lý dữ liệu khi v-model thay đổi */
 function onChangeModelValue() {
     nextTick(() => {
         // tìm kiếm option khớp với v-model mới
         const SELECTED_OPTION = getAllOption()
-            .map((option: HTMLOptionElement) => getOptionData(option))
+            .map((option: HTMLDivElement) => getOptionData(option))
             .find(option => option.value == $props.modelValue)
 
         if (!SELECTED_OPTION || !SELECTED_OPTION.value) return
@@ -139,16 +136,16 @@ function clickOutSide($event: MouseEvent) {
     hideOption()
 }
 /**đọc dữ liệu của 1 option */
-function getOptionData(option: HTMLOptionElement) {
+function getOptionData(option: HTMLDivElement) {
     return {
         value: option.getAttribute('value'),
         display_value: option.innerText,
     }
 }
-/**sử lý sự kiện kh click vào một option */
+/**xử lý sự kiện khi click vào một option */
 function selectOption($event: Event) {
     // tìm thấy option
-    const NODE_OPTION = $event.target as HTMLOptionElement
+    const NODE_OPTION = $event.target as HTMLDivElement
 
     if (!NODE_OPTION) return
 
@@ -185,16 +182,3 @@ function getDisplayValue() {
     return $props.display_value || selected_value.value?.display_value
 }
 </script>
-
-<style lang="scss">
-.option-warper {
-    option {
-        cursor: pointer;
-        white-space: break-spaces;
-
-        &:hover {
-            background: v-bind('slate_200');
-        }
-    }
-}
-</style>
