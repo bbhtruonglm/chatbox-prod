@@ -31,6 +31,9 @@ const source: Language = {
                 disconnect: 'Mất kết nối mạng...',
                 connected: 'Đã kết nối mạng!'
             },
+            adblocker: {
+                title: 'Hãy tắt các tiện ích chặn quảng cáo bạn đang sử dụng đối với trang này, để không làm ảnh hưởng đến các tính năng của chatbox',
+            },
             oauth: {
                 login: {
                     login: 'Đăng nhập',
@@ -204,7 +207,9 @@ const source: Language = {
                         online_status: {
                             online: 'Đang trực tuyến',
                             offline: 'Đã ngoại tuyến'
-                        }
+                        },
+                        you: 'Bạn:',
+                        empty_conversation: 'Không tìm thấy hội thoại!'
                     }
                 }
             }

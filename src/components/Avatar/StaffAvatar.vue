@@ -1,14 +1,14 @@
 <template>
     <div :class="animate_pulse" :style="`width:${size}px;height:${size}px;`" class="overflow-hidden bg-slate-200">
         <img loading="lazy"
-            :src="`https://chatbox-static-v3.botbanhang.vn/private/facebook/avatar/${id}`" 
+            :src="loadImageUrl()" 
             @error="onImageError" @load="removeAnimatePulse" class="w-full h-full">
     </div>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 
-withDefaults(defineProps<{
+const $props = withDefaults(defineProps<{
     id?: string
     size?: string
 }>(), {
@@ -26,6 +26,12 @@ function removeAnimatePulse() {
 function onImageError($event: Event) {
     const image = $event.target as HTMLImageElement
 
-    image.src = 'https://chatbox-static-v3.botbanhang.vn/private/facebook/avatar/1111111111'
+    image.src = `${$env.img_host}/1111111111?width=${$props.size}&height=${$props.size}`
+}
+/**tạo url ảnh */
+function loadImageUrl() {
+    // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.id}.jpeg`
+    
+    return `${$env.img_host}/${$props.id}?width=${$props.size}&height=${$props.size}`
 }
 </script>

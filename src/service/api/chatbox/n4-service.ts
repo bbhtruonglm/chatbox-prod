@@ -5,6 +5,7 @@ import type { PageList, PageWebsiteCreate } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 import type { CreatePricing, PricingInfo, UpgradePricing } from '@/service/interface/app/pricing'
+import type { QueryConversationInput, QueryConversationResponse } from '@/service/interface/app/conversation'
 
 /**đăng nhập bằng token của fb */
 export const login_facebook = (
@@ -167,4 +168,13 @@ export const get_page_info_to_chat = (
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/page/get_page_info_to_chat`,
     body: { list_page_id },
+}, proceed)
+
+/**đọc dữ liệu của conversation */
+export const read_conversation = (
+    body: QueryConversationInput,
+    proceed: (e?: any, r?: QueryConversationResponse) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/conversation/read_conversation`,
+    body,
 }, proceed)

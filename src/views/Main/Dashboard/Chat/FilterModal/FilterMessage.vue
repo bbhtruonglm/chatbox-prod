@@ -4,14 +4,18 @@
             {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
         </template>
         <template v-slot:body>
-            <FilterCheckbox :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
-            <FilterCheckbox :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
-            <FilterCheckbox :icon="notTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
-            <FilterCheckbox :icon="SpamSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
+                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
+                :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label"
+                :icon="notTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
+            <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
-                <FilterButton @click="toggleModal" type="text-slate-500 hover:text-white hover:bg-slate-500"
+                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
                     :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
                 <FilterButton @click="toggleModal"
                     type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
@@ -21,7 +25,8 @@
     </ModalBottom>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useConversationStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterCheckbox from '@/views/Main/Dashboard/Chat/FilterModal/FilterCheckbox.vue'
@@ -34,9 +39,35 @@ import SpamSvg from '@/assets/icons/spam.svg'
 
 import type { ComponentRef } from '@/service/interface/vue'
 
+const conversationStore = useConversationStore()
+
 /**ref của modal */
 const filter_modal_ref = ref<ComponentRef>()
 
+/**biến tạm của spam */
+const is_spam_fb = computed({
+    // lấy dữ liệu từ store
+    get() {
+        return conversationStore.option_filter_page_data.is_spam_fb
+    },
+    // khi có thay đổi thì set lại data cho store
+    set(val) {
+        if (!val)
+            conversationStore.option_filter_page_data.is_spam_fb = 'NO'
+        else
+            conversationStore.option_filter_page_data.is_spam_fb = 'YES'
+    }
+})
+
+/**loại bỏ lọc */
+function clearThisFilter() {
+    delete conversationStore.option_filter_page_data.unread_message
+    delete conversationStore.option_filter_page_data.not_response_client
+    delete conversationStore.option_filter_page_data.not_exist_label
+    conversationStore.option_filter_page_data.is_spam_fb = 'NO'
+
+    toggleModal()
+}
 /**ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()

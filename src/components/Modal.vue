@@ -48,11 +48,15 @@ function toggleModal() {
         // tạo hiệu ứng hiện thị
         animation.value = 'opacity-50'
 
-        // tăt modal
-        setTimeout(() => { is_open.value = false }, 300)
+        // delay một khoảng thời gian cho hiệu ứng hoạt động
+        setTimeout(() => { 
+            // tăt modal
+            is_open.value = false 
 
-        // bắn sự kiện ra ngoài
-        $emit('close_modal')
+            // bắn sự kiện ra ngoài
+            $emit('close_modal')
+        }, 300)
+
     }
 }
 

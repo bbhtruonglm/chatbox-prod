@@ -1,6 +1,7 @@
 <template>
   <div class="w-screen h-screen bg-white select-none xl:select-auto">
     <Network />
+    <AdBlocker />
     <Loading v-if="commonStore.is_loading_full_screen" type="FULL" />
     <div class="h-full overflow-hidden overflow-y-auto">
       <router-view />
@@ -13,6 +14,7 @@ import { useCommonStore } from '@/stores'
 
 import Loading from '@/components/Loading.vue'
 import Network from './components/Network.vue'
+import AdBlocker from './components/AdBlocker.vue'
 
 const commonStore = useCommonStore()
 </script>

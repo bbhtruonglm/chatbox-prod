@@ -4,16 +4,13 @@
             <Loading class="mx-auto" />
         </div>
     </div>
-    <!-- <div v-if="!size(staff_list_array)" class="absolute left-[50%] translate-x-[-50%] h-[37px]">
-        <Loading class="mx-auto" />
-    </div> -->
     <VirtualList class="user-online overflow-hidden overflow-x-auto mt-2 px-2 h-[37px]" wrap-class="inline-flex"
         :data-key="'data_key'" :data-sources="staff_list_array" :data-component="UserOnlineItem" direction="horizontal" />
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import VirtualList from 'vue3-virtual-scroll-list'
-import { usePageStore } from '@/stores'
+import { usePageStore, useStaffStore } from '@/stores'
 import { online_staff } from '@/service/api/chatbox/n4-service'
 import { waterfall } from 'async'
 import { keys, map, set, size, sortBy } from 'lodash'
@@ -25,6 +22,7 @@ import type { CbError } from '@/service/interface/function'
 import type { StaffInfo, AllStaffList, StaffSocket } from '@/service/interface/app/staff'
 
 const pageStore = usePageStore()
+const staffStore = useStaffStore()
 
 /**danh sách các staff hiện tại của các page được chọn */
 const staff_list = ref<AllStaffList>({})
@@ -42,14 +40,14 @@ interface CustomEvent extends Event {
 }
 /**lắng nghe thay đổi khi user trực tuyến - ngoại tuyến */
 function onRealtimeChangeOnlineStatus({ detail }: CustomEvent) {
-    if (!detail?.fb_staff_id || !staff_list.value[detail?.fb_staff_id]) return
+    if (!detail?.fb_staff_id) return
 
     // nếu trực tuyến
     if (detail?.online_status)
-        set(staff_list.value, [detail?.fb_staff_id, 'is_online'], true)
+        changeUserOnlineValue(detail?.fb_staff_id, 'ONLINE')
     // nếu ngoại tuyến 
     else
-        delete staff_list.value?.[detail?.fb_staff_id]?.is_online
+        changeUserOnlineValue(detail?.fb_staff_id, 'OFFINE')
 
     // sort lại danh sách
     sortUserOnlineToTop()
@@ -88,14 +86,7 @@ function getListStaffOfSelectedPage() {
                 if (!size(r)) return cb()
 
                 // gắn cờ online
-                map(
-                    r,
-                    staff_id => set(
-                        staff_list.value,
-                        [staff_id, 'is_online'],
-                        true
-                    )
-                )
+                map(r, staff_id => changeUserOnlineValue(staff_id, 'ONLINE'))
 
                 cb()
             }
@@ -107,6 +98,35 @@ function getListStaffOfSelectedPage() {
             cb()
         }
     ])
+}
+/**thay đổi trạng thái online | offline của 1 user */
+function changeUserOnlineValue(staff_id: string, type: 'ONLINE' | 'OFFINE') {
+    // nếu online
+    if (type === 'ONLINE') {
+        if (!size(staffStore.staff_list_of_active_page)) return
+
+        // lưu lại giá trị vào biến trong component để phục vụ sort
+        set(
+            staff_list.value,
+            [staff_id, 'is_online'],
+            true
+        )
+
+        // lưu lại giá trị ở store
+        set(
+            staffStore.staff_list_of_active_page || {},
+            [staff_id, 'is_online'],
+            true
+        )
+    }
+    // nếu offline
+    else {
+        // xoá giá trị ở biến trong component để phục vụ sort
+        delete staff_list.value?.[staff_id]?.is_online
+
+        // xoá giá trị ở store
+        delete staffStore.staff_list_of_active_page?.[staff_id]?.is_online
+    }
 }
 /**sắp xếp user đang trực tuyến lên đầu */
 function sortUserOnlineToTop() {

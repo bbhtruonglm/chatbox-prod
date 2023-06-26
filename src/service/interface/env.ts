@@ -18,4 +18,6 @@ export interface Env {
     }
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: string[]
+    /**host của url link ảnh */
+    img_host: string
 }

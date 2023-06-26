@@ -19,7 +19,11 @@ export const useStaffStore = defineStore('staff_store', () => {
     // lưu dữ liệu xuống indexed khi có thay đổi
     saveIndexedDB(staff_list_of_active_page, 'staff_list_of_active_page')
 
+    /**dữ liệu tạm khi click xem thông tin của 1 nhân viên */
+    const view_staff_info = ref<StaffInfo>()
+
     return {
         staff_list_of_active_page,
+        view_staff_info,
     }
 })

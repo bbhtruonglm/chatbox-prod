@@ -43,7 +43,8 @@ const ENV: Env = {
             enable_profile_selector: true
         }
     },
-    platform: ['FB_MESS', 'WEBSITE']
+    platform: ['FB_MESS', 'WEBSITE'],
+    img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
 }
 
 export default ENV

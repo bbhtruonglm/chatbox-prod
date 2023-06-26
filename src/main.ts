@@ -1,8 +1,8 @@
 import { waterfall } from 'async'
 import { createApp } from 'vue'
 import App from '@/App.vue'
-import { 
-    loadEnv, loadLib, loadApp, loadLanguage, loadDirective, loadRouter 
+import {
+    loadEnv, loadLib, loadApp, loadLanguage, loadDirective, loadRouter
 } from '@/service/core'
 
 import type { CbError } from '@/service/interface/function'
@@ -15,6 +15,9 @@ declare global {
     var $env: Env
     var $node_env: string
     var $indexed_db: IndexedDB
+    var Vue: any
+    var check_ad_blocker: boolean
+    var detect_ad_blocker: boolean
 }
 
 const APP = createApp(App)
