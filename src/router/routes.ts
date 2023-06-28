@@ -9,6 +9,7 @@ import Chat from '@/views/Main/Dashboard/Chat.vue'
 import SelectPage from '@/views/Main/Dashboard/SelectPage.vue'
 import SelectPlatform from '@/views/Main/Dashboard/SelectPlatform.vue'
 import Pricing from '@/views/Main/Dashboard/Pricing.vue'
+import Widget from '@/views/Main/Dashboard/Widget.vue'
 import Noti from '@/views/Main/Dashboard/Noti.vue'
 import User from '@/views/Main/Dashboard/User.vue'
 
@@ -29,6 +30,7 @@ export const routes = [
           { path: 'select-page', component: SelectPage },
           { path: 'select-platform', component: SelectPlatform },
           { path: 'pricing', component: Pricing },
+          { path: 'widget', component: Widget },
           { path: 'noti', component: Noti },
           { path: 'user', component: User },
         ]

@@ -12,7 +12,9 @@
             <FilterModalItem :is_active="!!conversationStore.option_filter_page_data.have_phone"
                 @click="filter_phone?.toggleModal()" :icon="filterPhoneSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
-            <FilterModalItem :icon="filterDateSvg" :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
+            <FilterModalItem :is_active="!!conversationStore.option_filter_page_data.time_range"
+                @click="filter_date?.toggleModal()" :icon="filterDateSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
             <FilterModalItem :icon="filterTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.label.title')" />
             <FilterModalItem :icon="filterStaffSvg" :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
             <FilterModalItem :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.comment.title')" />
@@ -31,6 +33,7 @@
         <FilterInteract ref="filter_interact" />
         <FilterMessage ref="filter_message" />
         <FilterPhone ref="filter_phone" />
+        <FilterDate ref="filter_date" />
     </template>
 </template>
 <script setup lang="ts">
@@ -43,6 +46,7 @@ import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.v
 import FilterInteract from '@/views/Main/Dashboard/Chat/FilterModal/FilterInteract.vue'
 import FilterMessage from '@/views/Main/Dashboard/Chat/FilterModal/FilterMessage.vue'
 import FilterPhone from '@/views/Main/Dashboard/Chat/FilterModal/FilterPhone.vue'
+import FilterDate from '@/views/Main/Dashboard/Chat/FilterModal/FilterDate.vue'
 
 import filterInteractSvg from '@/assets/icons/filter_interact.svg'
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
@@ -61,6 +65,7 @@ const filter_modal_ref = ref<ComponentRef>()
 const filter_interact = ref<ComponentRef>()
 const filter_message = ref<ComponentRef>()
 const filter_phone = ref<ComponentRef>()
+const filter_date = ref<ComponentRef>()
 
 /**kiểm tra xem có đang kích hoạt filter tin nhắn hay không */
 function isActiveMessageFilter() {

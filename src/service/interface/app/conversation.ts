@@ -16,9 +16,9 @@ export interface FilterConversation {
     /**lọc theo thời gian */
     time_range?: {
         /**thời gian bắt đầu */
-        gte?: any
+        gte?: number
         /**thời gian kết thúc */
-        lte?: any
+        lte?: number
     }
     /**lọc các hội thoại của 1 nhân viên */
     staff_id?: string

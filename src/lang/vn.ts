@@ -34,6 +34,21 @@ const source: Language = {
             adblocker: {
                 title: 'Hãy tắt các tiện ích chặn quảng cáo bạn đang sử dụng đối với trang này, để không làm ảnh hưởng đến các tính năng của chatbox',
             },
+            datepicker: {
+                minute: 'Phút',
+                hour: 'Giờ',
+                month: 'Tháng',
+                year: 'Năm',
+                day: {
+                    1: 'Th2',
+                    2: 'Th3',
+                    3: 'Th4',
+                    4: 'Th5',
+                    5: 'Th6',
+                    6: 'Th7',
+                    0: 'CN',
+                }
+            },
             oauth: {
                 login: {
                     login: 'Đăng nhập',
@@ -187,7 +202,15 @@ const source: Language = {
                                 exclude_phone: 'Không có số điện thoại'
                             },
                             time: {
-                                title: 'Lọc theo thời gian'
+                                title: 'Lọc theo thời gian',
+                                today: 'Hôm nay',
+                                yesterday: 'Hôm qua',
+                                day_ago_7: '7 ngày trước',
+                                day_ago_30: '30 ngày trước',
+                                day_ago_90: '90 ngày trước',
+                                custom: 'Tuỳ chỉnh thời gian',
+                                from: 'Từ ngày',
+                                to: 'Đến ngày'
                             },
                             label: {
                                 title: 'Lọc theo nhãn'
@@ -209,7 +232,7 @@ const source: Language = {
                             offline: 'Đã ngoại tuyến'
                         },
                         you: 'Bạn:',
-                        empty_conversation: 'Không tìm thấy hội thoại!'
+                        empty_conversation: 'Không tìm thấy hội thoại!',
                     }
                 }
             }
