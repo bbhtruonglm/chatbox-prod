@@ -213,7 +213,13 @@ const source: Language = {
                                 to: 'Đến ngày'
                             },
                             label: {
-                                title: 'Lọc theo nhãn'
+                                title: 'Gắn nhãn',
+                                filteration_condition: 'Điều kiện lọc:',
+                                and: 'Và',
+                                or: 'Hoặc',
+                            },
+                            exclude_label: {
+                                title: 'Loại trừ nhãn',
                             },
                             staff: {
                                 title: 'Lọc theo nhân viên'
