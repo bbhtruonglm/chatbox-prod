@@ -14,7 +14,7 @@
             </div>
             <div class="h-[40vh] overflow-y-auto">
                 <div 
-                    class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-slate-100"
+                    class="flex justify-between p-2 border-b items-center cursor-pointer hover:bg-orange-100"
                     v-for="item, index in labels"
                     @click="selectLabel(index as string)"
                 >
@@ -36,7 +36,7 @@
                     </div>
                     <img
                         v-if="labels_selected[index]"
-                        class="mr-3 w-5 h-5"
+                        class="w-5 h-5"
                         src="@/assets/icons/check-circle.svg"
                     >
                 </div>

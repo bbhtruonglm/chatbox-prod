@@ -40,8 +40,16 @@
                 :icon="filterNotTagSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')" 
             />
-            <FilterModalItem :icon="filterStaffSvg" :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
-            <FilterModalItem :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.comment.title')" />
+            <FilterModalItem
+                @click="filter_staff?.toggleModal()"
+                :is_active="!!conversationStore.option_filter_page_data.staff_id"
+                :icon="filterStaffSvg" 
+                :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" 
+            />
+            <FilterModalItem 
+                :icon="filterCommentSvg" 
+                :title="$t('v1.view.main.dashboard.chat.filter.comment.title')" 
+            />
         </template>
         <template 
             v-slot:footer
@@ -64,6 +72,7 @@
         <FilterDate ref="filter_date" />
         <FilterNotTag ref="filter_not_tag" />
         <FilterTag ref="filter_tag" />
+        <FilterStaff ref="filter_staff" />
     </template>
 </template>
 <script setup lang="ts">
@@ -79,6 +88,7 @@ import FilterPhone from '@/views/Main/Dashboard/Chat/FilterModal/FilterPhone.vue
 import FilterDate from '@/views/Main/Dashboard/Chat/FilterModal/FilterDate.vue'
 import FilterNotTag from '@/views/Main/Dashboard/Chat/FilterModal/FilterNotTag.vue'
 import FilterTag from '@/views/Main/Dashboard/Chat/FilterModal/FilterTag.vue'
+import FilterStaff from '@/views/Main/Dashboard/Chat/FilterModal/FilterStaff.vue'
 
 import filterInteractSvg from '@/assets/icons/filter_interact.svg'
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
@@ -101,6 +111,7 @@ const filter_phone = ref<ComponentRef>()
 const filter_date = ref<ComponentRef>()
 const filter_not_tag = ref<ComponentRef>()
 const filter_tag = ref<ComponentRef>()
+const filter_staff = ref<ComponentRef>()
 
 
 /**kiểm tra xem có đang kích hoạt filter tin nhắn hay không */

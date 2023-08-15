@@ -223,7 +223,8 @@ const source: Language = {
                                 title: 'Loại trừ nhãn'
                             },
                             staff: {
-                                title: 'Lọc theo nhân viên'
+                                title: 'Lọc theo nhân viên',
+                                find_staff: 'Tìm kiếm nhân viên'
                             },
                             comment: {
                                 title: 'Lọc bình luận'
