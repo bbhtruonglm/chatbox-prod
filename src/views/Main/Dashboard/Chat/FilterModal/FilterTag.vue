@@ -6,7 +6,7 @@
         <template v-slot:body>
             <div class="py-3">
                 <input 
-                    type="text" placeholder="Tìm tiếm nhãn" 
+                    type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
                     class="border px-3 py-1 w-full rounded-lg focus:outline-none"
                     v-on:keyup="searchLabel()"
                     v-model="label_search_name"
@@ -35,7 +35,7 @@
             </div>
             <div class="h-[40vh] overflow-y-auto">
                 <div 
-                    class="flex justify-between py-2 border-b items-center"
+                    class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-slate-100"
                     v-for="item, index in labels"
                     @click="selectLabel(index as string)"
                 >
@@ -51,6 +51,8 @@
                             class="ml-3 text-xs text-slate-400"
                         >
                             {{ pageStore.active_page_list[item.fb_page_id].page?.name }}
+                            <br>
+                            {{ pageStore.active_page_list[item.fb_page_id].page?.fb_page_id }}
                         </span>
                     </div>
                     <img
@@ -75,14 +77,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore } from '@/stores'
-import _ from 'lodash'
+import { map, isString, get } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
 
+import { nonAccentVn } from '@/service/helper/format'
+
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
-import { nonAccentVn } from '@/service/helper/format'
+
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
@@ -107,12 +111,11 @@ function clearThisFilter() {
 /** Ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
-    filterByLabel()
 }
 
 /** Lấy danh sách nhãn */
 function getLabelList() {
-    _.map(pageStore.selected_page_list_info, (item) => {
+    map(pageStore.selected_page_list_info, (item) => {
         labels.value = { ...labels.value, ...item.label_list }
     })
     snap_labels.value = labels.value
@@ -120,8 +123,8 @@ function getLabelList() {
 
 /** Hiển thị label đã chọn */
 function showLabelSelected() {
-    if(_.get(conversationStore.option_filter_page_data, 'label_id')) {
-        let label_id:string = _.get(conversationStore.option_filter_page_data, 'label_id') || ''
+    if(get(conversationStore.option_filter_page_data, 'label_id')) {
+        let label_id:string = get(conversationStore.option_filter_page_data, 'label_id') || ''
         let labels:string[] = label_id.split(' ')
         labels.map(item => {
             labels_selected.value[item] = true
@@ -131,8 +134,9 @@ function showLabelSelected() {
 
 /** Chọn nhãn */
 function selectLabel(page_id: string) {
-    if(labels_selected.value[page_id]) return delete labels_selected.value[page_id]
-    labels_selected.value[page_id] = true
+    if(labels_selected.value[page_id]) delete labels_selected.value[page_id]
+    else labels_selected.value[page_id] = true
+    filterByLabel()
 }
 
 /** Lọc theo nhãn đã chọn */
@@ -146,7 +150,7 @@ function filterByLabel() {
 function searchLabel() {
     if(!label_search_name.value) return labels.value = snap_labels.value
     labels.value = {}
-    _.map(snap_labels.value, (item:LabelInfo) => {
+    map(snap_labels.value, (item:LabelInfo) => {
         if(nonAccentVn(item.title).includes(nonAccentVn(label_search_name.value))) {
             labels.value[item._id] = item
         }
@@ -155,7 +159,7 @@ function searchLabel() {
 
 onMounted(() => {
     /**Trường hợp điều kiện lọc theo nhãn and là string thì ghi đè lại thành boolean  */
-    if(_.isString(conversationStore.option_filter_page_data.label_and)) {
+    if(isString(conversationStore.option_filter_page_data.label_and)) {
         conversationStore.option_filter_page_data.label_and = false
     }
 

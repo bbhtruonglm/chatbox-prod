@@ -217,9 +217,10 @@ const source: Language = {
                                 filteration_condition: 'Điều kiện lọc:',
                                 and: 'Và',
                                 or: 'Hoặc',
+                                find_tag : 'Tìm kiếm nhãn'
                             },
                             exclude_label: {
-                                title: 'Loại trừ nhãn',
+                                title: 'Loại trừ nhãn'
                             },
                             staff: {
                                 title: 'Lọc theo nhân viên'
