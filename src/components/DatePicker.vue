@@ -3,26 +3,26 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center justify-between">
                 <div @click="changeDate('MONTH', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"
-                        src="@/assets/icons/arrow-left.svg" width="10" height="10" />
+                        src="@/assets/icons/arrow-left.svg" width="7" height="7" />
                 </div>
                 <div class="font-medium text-center">
                     {{ $t('v1.view.datepicker.month') }}
                     {{ current_month + 1 }}
                 </div>
                 <div @click="changeDate('MONTH', 'ADD')" class="cursor-pointer w-[30px]"><img class="mx-auto"
-                        src="@/assets/icons/arrow-right.svg" width="10" height="10" />
+                        src="@/assets/icons/arrow-right.svg" width="7" height="7" />
                 </div>
             </div>
             <div class="flex items-center justify-between">
                 <div @click="changeDate('YEAR', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"
-                        src="@/assets/icons/arrow-left.svg" width="10" height="10" />
+                        src="@/assets/icons/arrow-left.svg" width="7" height="7" />
                 </div>
                 <div class="font-medium text-center">
                     {{ $t('v1.view.datepicker.year') }}
                     {{ current_year }}
                 </div>
                 <div @click="changeDate('YEAR', 'ADD')" class="cursor-pointer w-[30px]"><img class="mx-auto"
-                        src="@/assets/icons/arrow-right.svg" width="10" height="10" />
+                        src="@/assets/icons/arrow-right.svg" width="7" height="7" />
                 </div>
             </div>
         </div>
@@ -34,12 +34,14 @@
         <div v-for="(value, index_row) of TOTAL_ROW" class="grid grid-cols-7">
             <div @click="selectThisDate(getDayInfo(index_row, index_col))" v-for="(day, index_col) of TOTAL_COL"
                 :class="getDayInfo(index_row, index_col)?.index_month === 0 ? 'font-medium' : 'text-slate-300'"
-                class="text-center cursor-pointer flex justify-center">
+                class="text-center flex justify-center">
                 <div :class="{
-                    'bg-orange-100': isToday(getDayInfo(index_row, index_col)?.timestamp),
-                    'bg-orange-600 text-white': select_date.year === getDayInfo(index_row, index_col)?.year && select_date.month === getDayInfo(index_row, index_col)?.month && select_date.date === getDayInfo(index_row, index_col)?.date
-                }"
-                    class="hover:bg-orange-600 hover:text-white w-[23px] h-[23px] rounded-full flex justify-center items-center">
+                    'text-orange-600': isToday(getDayInfo(index_row, index_col)?.timestamp),
+                    '!bg-orange-600 text-white': select_date.year === getDayInfo(index_row, index_col)?.year && select_date.month === getDayInfo(index_row, index_col)?.month && select_date.date === getDayInfo(index_row, index_col)?.date,
+                    'hover:bg-orange-600 hover:text-white cursor-pointer': !max || getDayInfo(index_row, index_col)?.timestamp < max,
+                    'text-slate-400 cursor-not-allowed': max && getDayInfo(index_row, index_col)?.timestamp >= max,
+                    'bg-orange-100': (modelValue && min_another_range && getDayInfo(index_row, index_col)?.timestamp < modelValue && getDayInfo(index_row, index_col)?.timestamp > min_another_range) || (modelValue && max_another_range && getDayInfo(index_row, index_col)?.timestamp > modelValue && getDayInfo(index_row, index_col)?.timestamp <  max_another_range)
+                }" class="w-[23px] h-[23px] rounded-full flex justify-center items-center">
                     {{ getDayInfo(index_row, index_col)?.date }}
                 </div>
             </div>
@@ -90,6 +92,16 @@ const $emit = defineEmits(['update:modelValue'])
 const $props = withDefaults(defineProps<{
     /**giá trị của v-model được truyền vào dưới dạng timestamp */
     modelValue?: number
+    /**giá trị thời gian tối data có thể chọn được */
+    max?: number
+
+    /**
+     * 2 giá trị dưới đây chỉ được prop 1, sử dụng khi làm time range
+     */
+    /**giá trị của range min => range hiện tại là max */
+    min_another_range?: number
+    /**giá trị của range max => đang là range min */
+    max_another_range?: number
 }>(), {})
 
 /**tổng số hàng của lịch */
@@ -142,7 +154,7 @@ onMounted(() => calcMonthYear())
 /**tính toán tháng và năm được chọn dựa trên v-model truyền vào */
 function calcMonthYear() {
     const THIS_DATE = new Date(select_date.value.timestamp)
-    
+
     const THIS_MONTH = new Date(THIS_DATE).getMonth()
     const THIS_YEAR = new Date(THIS_DATE).getFullYear()
 
@@ -176,6 +188,12 @@ function changeTime() {
 }
 /**chọn ngày trong lịch */
 function selectThisDate(time_info: ADayInfo) {
+    // nếu quá limit thì không cho chọn thời gian
+    if ($props.max && time_info.timestamp >= $props.max) return
+
+    /**
+     * tính toán thời gian được chọn + giờ được chọn để trả về kết quả cuối cùng
+     */
     // giờ được chọn - đã format
     const HOUR = Number(select_date.value.hour)
     // phút được chọn - đã format
@@ -187,17 +205,20 @@ function selectThisDate(time_info: ADayInfo) {
         time_info.month,
         time_info.date,
         HOUR,
-        MINUTE
+        MINUTE,
+        // nếu là time range, và là range cuối, thì set số giây và mili giây ở mức cao nhất
+        $props.min_another_range ? 59 : 0,
+        $props.min_another_range ? 999 : 0,
     ).getTime()
 
-    // ghi đè lại toàn bộ để chạy computed set
+    // chọn thời gian
     select_date.value = {
-        timestamp: TIMESTAMP,
-        date: time_info.date,
-        month: time_info.month,
         year: time_info.year,
+        month: time_info.month,
+        date: time_info.date,
         hour: HOUR,
-        minute: MINUTE
+        minute: MINUTE,
+        timestamp: TIMESTAMP
     }
 }
 /**parser date thành giá trị để sử dụng */
@@ -324,11 +345,11 @@ function createDayInfo(
         year++
     }
 
-    // tính toán mốc thời gian ở 0:0:0 của ngày hiện tại
+    // tính toán mốc thời gian ở 0:0:0 của ngày này
     const TIMESTAMP = new Date(
-        current_year.value,
-        current_month.value,
-        REAL_DATE
+        year,
+        month,
+        REAL_DATE,
     ).getTime()
 
     day_list.value[`${index_row}_${index_col}`] = {

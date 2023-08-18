@@ -1,3 +1,4 @@
+/**các cài đặt cho một môi trường */
 export interface Env {
     /**cài đặt cho local */
     local_storage: {

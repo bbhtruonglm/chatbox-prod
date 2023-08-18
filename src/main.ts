@@ -6,19 +6,8 @@ import {
 } from '@/service/core'
 
 import type { CbError } from '@/service/interface/function'
-import type { Env } from '@/service/interface/env'
-import type { IndexedDB } from '@/service/helper/indexedDB'
 
 import '@/assets/css/tailwind.css'
-
-declare global {
-    var $env: Env
-    var $node_env: string
-    var $indexed_db: IndexedDB
-    var Vue: any
-    var check_ad_blocker: boolean
-    var detect_ad_blocker: boolean
-}
 
 const APP = createApp(App)
 
