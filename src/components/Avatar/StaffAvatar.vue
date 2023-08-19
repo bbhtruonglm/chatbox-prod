@@ -1,8 +1,14 @@
 <template>
-    <div :class="animate_pulse" :style="`width:${size}px;height:${size}px;`" class="overflow-hidden bg-slate-200">
-        <img loading="lazy"
+    <div 
+        :class="animate_pulse" 
+        :style="`width:${size}px;height:${size}px;`" 
+        class="overflow-hidden bg-slate-200"
+    >
+        <img 
+            loading="lazy"
             :src="loadImageUrl()" 
-            @error="onImageError" @load="removeAnimatePulse" class="w-full h-full">
+            @error="onImageError" @load="removeAnimatePulse" class="w-full h-full"
+        >
     </div>
 </template>
 <script setup lang="ts">

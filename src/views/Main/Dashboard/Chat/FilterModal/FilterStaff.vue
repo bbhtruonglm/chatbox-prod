@@ -8,7 +8,8 @@
                 <input 
                     type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
                     class="border px-3 py-1 w-full rounded-lg focus:outline-none"
-                    v-on:keyup="searchStaff()"
+                    v-on:keyup="startSearch"
+                    v-on:keydown="staffs = {}"
                     v-model="search_staff_name"
                 >
             </div>
@@ -19,11 +20,10 @@
                     @click="selectStaff(staff_id as string)"
                 >
                     <div class="flex items-center">
-                        <img 
-                            :src="getStaffAvatar(staff)"
-                            @error="onImageError"
-                            class="rounded-full w-6 h-6 mr-3"
-                        >
+                        <StaffAvatar
+                            class="rounded-full w-6 h-6 mr-3" 
+                            :id="staff.fb_staff_id"
+                        />
                         <p class="text-sm">{{ staff.name }}</p>
                     </div>
                     <img 
@@ -53,9 +53,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore } from '@/stores'
-import { map, isString, get } from 'lodash'
+import { map, get, debounce } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
+import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
 
 import { nonAccentVn } from '@/service/helper/format'
@@ -79,7 +80,7 @@ const search_staff_name = ref<string>('')
 
 /** Xoá lọc */
 function clearThisFilter() {
-    delete conversationStore.option_filter_page_data.display_style
+    delete conversationStore.option_filter_page_data.staff_id
     toggleModal()
 }
 
@@ -94,17 +95,6 @@ function getStaffs() {
         staffs.value = { ...staffs.value, ...item.staff_list }
     })
     snap_staffs.value = staffs.value
-}
-
-/** Hiển thị avatar nhân viên */
-function getStaffAvatar(staff: StaffInfo) {
-    return `${$env.img_host}/${staff.fb_staff_id}?width=${50}&height=${50}`
-}
-
-/** Hiển thị avatar mặc định khi avatar nhân viên bị lỗi */
-function onImageError($event: Event) {
-    const image = $event.target as HTMLImageElement
-    image.src = `${$env.img_host}/1111111111?width=${50}&height=${50}`
 }
 
 /** Lựa chọn nhân viên */
@@ -132,6 +122,9 @@ function searchStaff() {
         }
     })
 }
+
+/** Bắt đầu seach nhân viên sau 500ms */
+const startSearch = debounce(() => { searchStaff() }, 500)
 
 /** Hiển thị lại nhân viên đã chọn */
 function showLabelSelected() {
