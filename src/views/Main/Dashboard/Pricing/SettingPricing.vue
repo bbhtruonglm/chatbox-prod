@@ -89,11 +89,12 @@
 import { onMounted, ref, watch } from 'vue'
 import {
     get_current_active_page, read_pricing_info_of_list_chatbot_user,
-    control_active_pricing,
+    control_active_pricing, read_me_chatbot_user
 } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
 import { debounce, map, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
+import { usePageStore, useStaffStore, useChatbotUserStore } from '@/stores'
 
 import Modal from '@/components/Modal.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -117,6 +118,9 @@ interface StaffList {
 }
 
 const $emit = defineEmits(['done_setting_pricing'])
+const pageStore = usePageStore()
+const staffStore = useStaffStore()
+const chatbotUserStore = useChatbotUserStore()
 
 const $props = withDefaults(defineProps<{
     /**v-model được truyền vào */
@@ -381,6 +385,22 @@ function activeSelectData() {
         (cb: CbError) => getAllPageAndStaffInfo((e, r) => {
             if (e) return cb(e)
 
+            cb()
+        }),
+        // * nạp lại trạng thái của các page hiện tại
+        (cb: CbError) => get_current_active_page({ is_active: true }, (e, r) => {
+            if (e) return cb(e)
+
+            pageStore.active_page_list = r.page_list
+            staffStore.staff_list_of_active_page = r.all_staff_list
+            cb()
+        }),
+        // * nạp lại trạng thái của người dùng
+        (cb: CbError) => read_me_chatbot_user((e, r) => {
+            if (e) return cb(e)
+
+            // lưu vào store
+            chatbotUserStore.chatbot_user = r
             cb()
         }),
         // * xử lý sau khi thành công

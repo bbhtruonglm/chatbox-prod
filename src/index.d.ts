@@ -1,2 +1,7 @@
-declare module 'vue3-virtual-scroll-list' {}
-declare module 'vue-virtual-scroller'
+/*******************************************************************************
+ * 
+ * * KHAI BÁO KIỂU CHO CÁC THƯ VIỆN KHÔNG HỖ TRỢ TYPESCRIPT
+ * 
+ ******************************************************************************/
+
+declare module 'vue3-virtual-scroll-list';
