@@ -1,7 +1,7 @@
 <template>
     <div class="border-b py-1 px-2 flex h-full">
         <div class="w-fit h-fit relative">
-            <ClientAvatar :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
+            <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id" :platform_type="source?.platform_type" size="37"
                 class="rounded-full" />
             <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px]">

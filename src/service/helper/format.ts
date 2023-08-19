@@ -36,3 +36,13 @@ export const nonAccentVn = (input: string) => {
 
 /**tạo mới obj để ngắt sự liên kết trong ô nhớ */
 export const copy = (object: Object) => JSON.parse(JSON.stringify(object))
+
+/**cắt ra 2 ký tự đầu và cuối trong tên */
+export const nameToLetter = (name: string) => {
+    return nonAccentVn(name)
+        .match(/(\b\S)?/g)
+        ?.join("")
+        .match(/(^\S|\S$)?/g)
+        ?.join("")
+        .toUpperCase()
+}
