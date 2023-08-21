@@ -1,5 +1,5 @@
 <template>
-    <ModalBottom ref="filter_modal_ref">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
         </template>
@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useCommonStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterRadio from '@/views/Main/Dashboard/Chat/FilterModal/FilterRadio.vue'
@@ -34,6 +34,7 @@ import filterCommentSvg from '@/assets/icons/filter_comment.svg'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 
 /**ref của modal */
 const filter_modal_ref = ref<ComponentRef>()

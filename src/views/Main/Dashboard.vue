@@ -44,8 +44,8 @@ import { useI18n } from 'vue-i18n'
 import { useCommonStore, usePageStore } from '@/stores'
 import { computed, ref } from 'vue'
 import { size } from 'lodash'
-import { flow, toggle_loading } from '@/service/helper/async'
-import { checkPricingValid } from '@/service/helper/pricing'
+import { preGoToChat } from '@/service/function'
+import { teleportModelFilterOnPcScreen } from '@/service/function'
 
 import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
@@ -59,7 +59,6 @@ import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 import UserItem from '@/components/Main/Dashboard/UserItem.vue'
 import Menu from '@/components/Main/Menu.vue'
 
-import type { CbError } from '@/service/interface/function'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const $router = useRouter()
@@ -110,6 +109,8 @@ function selectNav(path: string) {
 /**thay đổi trạng thái của nav */
 function onToggleNavChange(value: boolean) {
     commonStore.dashboard_toggle_nav = value
+
+    teleportModelFilterOnPcScreen()
 }
 /**ẩn hiện nav */
 function toggleNav() {
@@ -117,27 +118,6 @@ function toggleNav() {
 }
 /**đi đến trang chat */
 function goToChat() {
-    flow([
-        // * kiểm tra xem page đã được chọn hay chưa
-        (cb: CbError) => {
-            if (!size(pageStore.selected_page_id_list))
-                return cb('v1.view.main.dashboard.select_page.empty_page.title')
-
-            cb()
-        },
-        // * kiểm tra các page và user hiện tại có gói hay không
-        (cb: CbError) => checkPricingValid((e, r) => {
-            // tắt loading
-            if (e) return toggle_loading(false)
-
-            cb()
-        }),
-        // * đi đến trang chat
-        (cb: CbError) => {
-            selectNav('/main/dashboard/chat')
-
-            cb()
-        },
-    ], undefined, true)
+    preGoToChat(() => selectNav('/main/dashboard/chat'))
 }
 </script>

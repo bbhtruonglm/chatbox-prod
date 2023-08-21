@@ -1,5 +1,5 @@
 <template>
-    <ModalBottom ref="filter_modal_ref">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.time.title') }}
         </template>
@@ -60,7 +60,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useCommonStore } from '@/stores'
 import {
     format, startOfDay, endOfDay, startOfYesterday, endOfYesterday, subDays,
     addDays, getTime
@@ -73,6 +73,7 @@ import DatePicker from '@/components/DatePicker.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 
 /**danh sách các khoảng thời gian được chọn sẵn */
 const EXACTLY_TIME_RANGE = [

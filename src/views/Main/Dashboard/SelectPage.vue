@@ -76,6 +76,7 @@ import { nonAccentVn } from '@/service/helper/format'
 import { confirm, toast } from '@/service/helper/alert'
 import { useRouter } from 'vue-router'
 import { copy } from '@/service/helper/format'
+import { preGoToChat } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -396,28 +397,7 @@ function selectOnlyThisPage(page_id?: string) {
 }
 /**đi đến trang chat */
 function goToChat() {
-    flow([
-        // * kiểm tra xem page đã được chọn hay chưa
-        (cb: CbError) => {
-            if (!size(pageStore.selected_page_id_list))
-                return cb('v1.view.main.dashboard.select_page.empty_page.title')
-
-            cb()
-        },
-        // * kiểm tra các page và user hiện tại có gói hay không
-        (cb: CbError) => checkPricingValid((e, r) => {
-            // tắt loading
-            if (e) return toggle_loading(false)
-
-            cb()
-        }),
-        // * đi đến trang chat
-        (cb: CbError) => {
-            $router.push('/main/dashboard/chat')
-
-            cb()
-        },
-    ], undefined, true)
+    preGoToChat(() => $router.push('/main/dashboard/chat'))
 }
 /**load lại info của chatbot user - phòng trường hợp user mới được kích hoạt gói */
 function reloadChatbotUserInfo() {

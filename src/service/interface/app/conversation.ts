@@ -55,6 +55,7 @@ export interface QueryConversationInput extends FilterConversation {
     after?: number[]
 }
 
+/**dữ liệu của một khách hàng */
 export interface ConversationInfo {
     /**key cho vitual scroll */
     data_key?: string
@@ -87,6 +88,7 @@ export interface ConversationInfo {
     },
 }
 
+/**dữ liệu khách hàng dạng obj để dễ update */
 export interface ConversationList {
     [index: string]: ConversationInfo
 }

@@ -32,11 +32,18 @@ export const useCommonStore = defineStore('common_store', () => {
         trigger_require_pricing.value = !trigger_require_pricing.value
     }
 
+    /**khoảng cách bộ lọc từ bên trái */
+    const conversation_filter_modal_left = ref<string>()
+    /**độ rộng của bộ lọc */
+    const conversation_filter_modal_width = ref<string>()
+
     return {
         is_loading_full_screen,
         dashboard_toggle_nav,
         chat_toggle_nav,
         trigger_require_pricing,
+        conversation_filter_modal_left,
+        conversation_filter_modal_width,
 
         triggerRequirePricing,
     }

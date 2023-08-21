@@ -1,6 +1,6 @@
 <template>
     <Teleport :to="teleport_to">
-        <div v-if="is_open" class="absolute top-0 left-0 w-screen h-screen z-10 bg-slate-500/50">
+        <div v-if="is_open" :style="{ width, left }" class="absolute top-0 h-screen z-10 bg-slate-500/50">
             <div @click="toggleModal" class="w-full h-full"></div>
             <div :class="main_content_class"
                 class="absolute bottom-0 left-0 w-full pb-10 px-4 pt-2 bg-white rounded-t-[18px] duration-200 max-h-[calc(100vh_-_100px)] overflow-hidden">
@@ -25,9 +25,16 @@
 import { nextTick, ref } from 'vue'
 
 withDefaults(defineProps<{
+    /**dịch chuyển component này đến vị trí nào */
     teleport_to?: string
+    /**độ rộng của component */
+    width?: string
+    /**component được cách bên trái bao nhiêu */
+    left?: string
 }>(), {
-    teleport_to: 'body'
+    teleport_to: 'body',
+    width: '100%',
+    left: '0'
 })
 
 const $emit = defineEmits(['close_modal'])
@@ -42,7 +49,7 @@ function toggleModal() {
     // mở modal
     if (!is_open.value) {
         // tạo hiệu ứng hiện thị
-        setTimeout(() => main_content_class.value = 'translate-y-0' , 50)
+        setTimeout(() => main_content_class.value = 'translate-y-0', 50)
 
         // mở modal
         is_open.value = true

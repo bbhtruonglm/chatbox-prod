@@ -1,5 +1,5 @@
 <template>
-    <ModalBottom ref="filter_modal_ref">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
         </template>
@@ -52,7 +52,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { map, get, debounce } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
@@ -66,6 +66,7 @@ import type { StaffInfo } from '@/service/interface/app/staff'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
+const commonStore = useCommonStore()
 
 /** ref của modal */
 const filter_modal_ref = ref<ComponentRef>()

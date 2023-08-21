@@ -21,6 +21,11 @@ import UserOnlineItem from '@/views/Main/Dashboard/Chat/UserOnline/UserOnlineIte
 import type { CbError } from '@/service/interface/function'
 import type { StaffInfo, AllStaffList, StaffSocket } from '@/service/interface/app/staff'
 
+/**dữ liệu từ socket */
+interface CustomEvent extends Event {
+    detail?: StaffSocket
+}
+
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
 
@@ -35,9 +40,6 @@ watch(() => pageStore.selected_page_list_info, () => getListStaffOfSelectedPage(
 onMounted(() => window.addEventListener('chatbox_socket_staff', onRealtimeChangeOnlineStatus))
 onUnmounted(() => window.removeEventListener('chatbox_socket_staff', onRealtimeChangeOnlineStatus))
 
-interface CustomEvent extends Event {
-    detail?: StaffSocket
-}
 /**lắng nghe thay đổi khi user trực tuyến - ngoại tuyến */
 function onRealtimeChangeOnlineStatus({ detail }: CustomEvent) {
     if (!detail?.fb_staff_id) return

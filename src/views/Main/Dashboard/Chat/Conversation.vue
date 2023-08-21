@@ -17,19 +17,26 @@
 </template>
 <script setup lang="ts">
 import VirtualList from 'vue3-virtual-scroll-list'
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { keys, map, mapValues, size } from 'lodash'
 import { usePageStore } from '@/stores'
 import { read_conversation } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
 import { useConversationStore } from '@/stores'
+import { toastError } from '@/service/helper/alert'
 
 import Loading from '@/components/Loading.vue'
 import ConversationItem from '@/views/Main/Dashboard/Chat/Conversation/ConversationItem.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { ConversationList } from '@/service/interface/app/conversation'
-import { toastError } from '@/service/helper/alert'
+import type { 
+    ConversationList, ConversationInfo 
+} from '@/service/interface/app/conversation'
+
+/**dữ liệu từ socket */
+interface CustomEvent extends Event {
+    detail?: ConversationInfo
+}
 
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
@@ -55,11 +62,44 @@ watch(
     () => loadConversationFirstTime()
 )
 
-/**
- * TODO socket conversation
- * - socket khi đang được lọc thì sao?
- */
+onMounted(() => window.addEventListener(
+    'chatbox_socket_conversation',
+    onRealtimeUpdateConversation
+))
+onUnmounted(() => window.removeEventListener(
+    'chatbox_socket_conversation',
+    onRealtimeUpdateConversation
+))
 
+/**
+ * TODO nếu đang kích hoạt lọc loại tin nhắn thì phải check có thoả mãn lọc không
+ * mới thêm vào mảng
+ * - có một số trường hợp update nhưng không đẩy lên đầu, hãy kiểm tra
+ */
+/**xử lý socket conversation */
+function onRealtimeUpdateConversation({ detail }: CustomEvent) {
+    if (!detail) return
+
+    // tạo ra key cho vitual scroll
+    detail.data_key = `${detail?.fb_page_id}_${detail?.fb_client_id}`
+
+    // nạp dữ liệu vào danh sách hội thoại lên đầu
+
+    /**gói dữ liệu */
+    const PAYLOAD: ConversationList = { }
+
+    // nạp dữ liệu vào gói
+    PAYLOAD[detail.data_key] = detail
+
+    // xoá dữ liệu cũ
+    delete conversation_list.value[detail.data_key]
+
+    // thêm dữ liệu mới lên đầu của obj
+    conversation_list.value = {
+        ...PAYLOAD,
+        ...conversation_list.value
+    }
+}
 /**đọc danh sách hội thoại lần đầu tiên */
 function loadConversationFirstTime() {
     // reset data

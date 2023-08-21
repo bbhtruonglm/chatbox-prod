@@ -1,8 +1,8 @@
 <template>
     <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-4">
-        <div id="chat-conversation" class="bg-white md:w-[300px]">
+        <div id="chat-conversation" class="bg-white md:w-[350px]">
             <div class="pl-14 pr-4 md:pl-4 flex items-center">
-                <div @click="filter_modal_ref?.toggleModal()" class="cursor-pointer">
+                <div @click="openConversationFilter()" class="cursor-pointer">
                     <img v-if="isFilterActive()" src="@/assets/icons/filter-active.svg" width="23" height="23">
                     <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
                 </div>
@@ -38,6 +38,7 @@ import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { debounce, identity, isEqual, keys, omit, pickBy, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
+import { teleportModelFilterOnPcScreen } from '@/service/function'
 
 import UserOnline from '@/views/Main/Dashboard/Chat/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/Conversation.vue'
@@ -78,6 +79,12 @@ onMounted(() => {
 })
 onUnmounted(() => closeSocketConnect())
 
+/**toggle modal */
+function openConversationFilter() {
+    teleportModelFilterOnPcScreen()
+
+    filter_modal_ref.value?.toggleModal()
+}
 /**delay tìm kiếm hội thoại */
 const onSearchConversation = debounce(($event: Event) => {
     const INPUT = $event.target as HTMLInputElement
@@ -162,7 +169,7 @@ function onSocketFromChatboxServer() {
         // loại bỏ vòng lặp tự động ping socket cũ
         clearInterval(ping_interval_id)
 
-        // khởi tạo lại kết nối sau 100s
+        // khởi tạo lại kết nối sau 100ms
         setTimeout(() => onSocketFromChatboxServer(), 100)
     }
 
@@ -176,11 +183,17 @@ function onSocketFromChatboxServer() {
     CONNECTION.onmessage = ({ data }) => {
         if (!data || data === 'pong') return
 
+        /**dữ liệu socket nhận được */
         let socket_data: {
+            /**dữ liệu của khách hàng */
             conversation?: {}
+            /**dữ liệu tin nhắn */
             message?: {}
+            /**dữ liệu nhân viên */
             staff?: StaffSocket
         } = {}
+
+        // cố gắng giải mã dữ liệu
         try { socket_data = JSON.parse(data) } catch (e) { }
 
         if (!size(socket_data)) return
@@ -193,11 +206,11 @@ function onSocketFromChatboxServer() {
             { detail: staff }
         ))
 
-        /**
-         * TODO nếu đang kích hoạt lọc loại tin nhắn
-         * - chặn socket nếu đang lọc mess mà về post
-         * - chặn socket nếu đang lọc post mà về mess
-         */
+        // gửi thông điệp đến component xử lý user online
+        if (size(conversation)) window.dispatchEvent(new CustomEvent(
+            'chatbox_socket_conversation',
+            { detail: conversation }
+        ))
     }
 }
 /**đóng kết nối socket */
