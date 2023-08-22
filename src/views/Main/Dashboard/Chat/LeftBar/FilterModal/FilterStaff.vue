@@ -57,7 +57,7 @@ import { map, get, debounce } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import { nonAccentVn } from '@/service/helper/format'
 

@@ -25,8 +25,8 @@ import { ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
-import FilterRadio from '@/views/Main/Dashboard/Chat/FilterModal/FilterRadio.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterRadio from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterRadio.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import includePhoneSvg from '@/assets/icons/include_phone.svg'
 import excludePhoneSvg from '@/assets/icons/exclude_phone.svg'

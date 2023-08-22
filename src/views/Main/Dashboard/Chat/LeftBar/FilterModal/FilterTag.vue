@@ -1,7 +1,7 @@
 <template>
     <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
-            {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
+            {{ $t('v1.view.main.dashboard.chat.filter.label.title') }}
         </template>
         <template v-slot:body>
             <div class="py-3">
@@ -12,9 +12,30 @@
                     v-model="label_search_name"
                 >
             </div>
+            <div class="flex justify-between py-3 border-t border-b">
+                <p>{{ $t('v1.view.main.dashboard.chat.filter.label.filteration_condition') }}</p>
+                <div class="flex items-center">
+                    <p class="mr-3">{{ $t('v1.view.main.dashboard.chat.filter.label.or') }}</p>
+                    <input 
+                        :checked="!conversationStore.option_filter_page_data.label_and"
+                        :value="false"
+                        v-model="conversationStore.option_filter_page_data.label_and"
+                        type="radio" 
+                        class="accent-orange-600 w-[20px] h-[20px]"
+                    >
+                    <p class="mr-3 ml-8">{{ $t('v1.view.main.dashboard.chat.filter.label.and') }}</p>
+                    <input 
+                        v-model="conversationStore.option_filter_page_data.label_and"
+                        :value="true"
+                        :checked="conversationStore.option_filter_page_data.label_and"
+                        type="radio"
+                        class="accent-orange-600 w-[20px] h-[20px] mr-3"
+                    >
+                </div>
+            </div>
             <div class="h-[40vh] overflow-y-auto">
                 <div 
-                    class="flex justify-between p-2 border-b items-center cursor-pointer hover:bg-orange-100"
+                    class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-orange-100 px-2"
                     v-for="item, index in labels"
                     @click="selectLabel(index as string)"
                 >
@@ -59,7 +80,7 @@ import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { map, isString, get } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import { nonAccentVn } from '@/service/helper/format'
 
@@ -84,7 +105,7 @@ const label_search_name = ref<string>('')
 
 /** Xoá lọc */
 function clearThisFilter() {
-    delete conversationStore.option_filter_page_data.not_label_id
+    delete conversationStore.option_filter_page_data.label_id
     toggleModal()
 }
 
@@ -103,8 +124,8 @@ function getLabelList() {
 
 /** Hiển thị label đã chọn */
 function showLabelSelected() {
-    if(get(conversationStore.option_filter_page_data, 'not_label_id')) {
-        let label_id:string = get(conversationStore.option_filter_page_data, 'not_label_id') || ''
+    if(get(conversationStore.option_filter_page_data, 'label_id')) {
+        let label_id:string = get(conversationStore.option_filter_page_data, 'label_id') || ''
         let labels:string[] = label_id.split(' ')
         labels.map(item => {
             labels_selected.value[item] = true
@@ -123,7 +144,7 @@ function selectLabel(page_id: string) {
 function filterByLabel() {
     let label_id:string = ''
     label_id = Object.keys(labels_selected.value).join(' ')
-    conversationStore.option_filter_page_data.not_label_id = label_id
+    conversationStore.option_filter_page_data.label_id = label_id
 }
 
 /** Tìm kiếm nhãn theo tên */

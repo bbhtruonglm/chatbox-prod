@@ -29,8 +29,8 @@ import { computed, ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
-import FilterCheckbox from '@/views/Main/Dashboard/Chat/FilterModal/FilterCheckbox.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterCheckbox from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterCheckbox.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
 import notReplySvg from '@/assets/icons/not_reply.svg'

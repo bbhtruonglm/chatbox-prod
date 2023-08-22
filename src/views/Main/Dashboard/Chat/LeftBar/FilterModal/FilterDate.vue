@@ -67,7 +67,7 @@ import {
 } from 'date-fns'
 
 import ModalBottom from '@/components/ModalBottom.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 import DatePicker from '@/components/DatePicker.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'

@@ -25,8 +25,8 @@ import { ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
-import FilterRadio from '@/views/Main/Dashboard/Chat/FilterModal/FilterRadio.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/FilterModal/FilterButton.vue'
+import FilterRadio from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterRadio.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
 import filterCommentSvg from '@/assets/icons/filter_comment.svg'

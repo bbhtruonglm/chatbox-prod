@@ -26,7 +26,7 @@ import { useConversationStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 
 import Loading from '@/components/Loading.vue'
-import ConversationItem from '@/views/Main/Dashboard/Chat/Conversation/ConversationItem.vue'
+import ConversationItem from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/ConversationItem.vue'
 
 import type { CbError } from '@/service/interface/function'
 import type { 
@@ -71,14 +71,12 @@ onUnmounted(() => window.removeEventListener(
     onRealtimeUpdateConversation
 ))
 
-/**
- * TODO nếu đang kích hoạt lọc loại tin nhắn thì phải check có thoả mãn lọc không
- * mới thêm vào mảng
- * - có một số trường hợp update nhưng không đẩy lên đầu, hãy kiểm tra
- */
 /**xử lý socket conversation */
 function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     if (!detail) return
+
+    // bỏ qua record của page chat cho page
+    if (detail.fb_page_id === detail.fb_client_id) return
 
     // tạo ra key cho vitual scroll
     detail.data_key = `${detail?.fb_page_id}_${detail?.fb_client_id}`
@@ -146,7 +144,12 @@ function getConversation() {
         // * format lại response của api
         (cb: CbError) => {
             mapValues(DATA.current_conversation_list, (conversation, key) => {
+                // tạo ra key cho vitual scroll
                 conversation.data_key = key
+
+                // bỏ qua record của page chat cho page
+                if (conversation.fb_page_id === conversation.fb_client_id)
+                    delete DATA.current_conversation_list?.[key]
             })
 
             cb()

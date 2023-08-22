@@ -16,7 +16,7 @@ import { waterfall } from 'async'
 import { keys, map, set, size, sortBy } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
-import UserOnlineItem from '@/views/Main/Dashboard/Chat/UserOnline/UserOnlineItem.vue'
+import UserOnlineItem from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline/UserOnlineItem.vue'
 
 import type { CbError } from '@/service/interface/function'
 import type { StaffInfo, AllStaffList, StaffSocket } from '@/service/interface/app/staff'

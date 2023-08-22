@@ -1,53 +1,29 @@
 <template>
-    <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-4">
-        <div id="chat-conversation" class="bg-white md:w-[350px]">
-            <div class="pl-14 pr-4 md:pl-4 flex items-center">
-                <div @click="openConversationFilter()" class="cursor-pointer">
-                    <img v-if="isFilterActive()" src="@/assets/icons/filter-active.svg" width="23" height="23">
-                    <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
-                </div>
-                <div class="flex items-center ml-4 w-full justify-between">
-                    <span v-if="!is_show_search" class="font-medium text-2xl">
-                        {{ $t('v1.common.chatbox') }}
-                    </span>
-                    <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
-                        class="h-[32px] w-full px-2" v-if="is_show_search" type="text"
-                        :placeholder="$t('v1.view.main.dashboard.chat.search')">
-                    <div @click="toogleSearch" class="cursor-pointer">
-                        <img v-if="!is_show_search" src="@/assets/icons/search.svg" width="28" height="28">
-                        <img v-else src="@/assets/icons/close-red.svg">
-                    </div>
-                </div>
-            </div>
-            <UserOnline />
-            <Conversation />
-        </div>
+    <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-0 md:flex">
+        <LeftBar />
+        <CenterContent />
+        <RightBar />
     </div>
-    <template>
-        <FilterModal ref="filter_modal_ref" />
-        <StaffInfoModal />
-    </template>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
 import { useChatbotUserStore, usePageStore, useConversationStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
-import { debounce, identity, isEqual, keys, omit, pickBy, size } from 'lodash'
+import { keys, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
-import { teleportModelFilterOnPcScreen } from '@/service/function'
 
-import UserOnline from '@/views/Main/Dashboard/Chat/UserOnline.vue'
-import Conversation from '@/views/Main/Dashboard/Chat/Conversation.vue'
-import FilterModal from '@/views/Main/Dashboard/Chat/FilterModal.vue'
-import StaffInfoModal from '@/views/Main/Dashboard/Chat/StaffInfoModal.vue'
+import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
+import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
+import RightBar from '@/views/Main/Dashboard/Chat/RightBar.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { ComponentRef } from '@/service/interface/vue'
 import type { StaffSocket } from '@/service/interface/app/staff'
+import type { MessageInfo } from '@/service/interface/app/message'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -55,55 +31,13 @@ const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
 const { t: $t } = useI18n()
 
-/**giá trị của ô tìm kiếm hội thoại */
-const search_conversation = ref<string>()
-/**ref của modal filter */
-const filter_modal_ref = ref<ComponentRef>()
-/**có hiển thị tìm kiếm hay không */
-const is_show_search = ref(false)
-/**lưu lại kết nối socket */
 const socket_connection = ref<WebSocket>()
-/**ref của input tìm kiếm hội thoại */
-const search_conversation_input = ref<ComponentRef>()
 
 onMounted(() => {
-    if (conversationStore.option_filter_page_data.search) {
-        // load giá trị search được lưu từ local vào biến khi load lại trang
-        search_conversation.value = conversationStore.option_filter_page_data.search
-
-        // hiện input tìm kiếm
-        is_show_search.value = true
-    }
-
     getPageInfoToChat()
 })
 onUnmounted(() => closeSocketConnect())
 
-/**toggle modal */
-function openConversationFilter() {
-    teleportModelFilterOnPcScreen()
-
-    filter_modal_ref.value?.toggleModal()
-}
-/**delay tìm kiếm hội thoại */
-const onSearchConversation = debounce(($event: Event) => {
-    const INPUT = $event.target as HTMLInputElement
-
-    conversationStore.option_filter_page_data.search = INPUT.value
-}, 300)
-/**check xem có đang kích hoạt lọc hội thoại hay không */
-function isFilterActive() {
-    // đọc lấy dữ liệu lọc không có search
-    let filter = omit(conversationStore.option_filter_page_data, ['search'])
-
-    // loại bỏ các giá trị bị undefied trong object
-    filter = pickBy(filter, identity)
-
-    // kiểm tra lọc
-    if (isEqual(filter, { is_spam_fb: 'NO' })) return false
-
-    return true
-}
 /**đọc dữ liệu của các page được chọn lưu lại */
 function getPageInfoToChat() {
     flow([
@@ -186,9 +120,9 @@ function onSocketFromChatboxServer() {
         /**dữ liệu socket nhận được */
         let socket_data: {
             /**dữ liệu của khách hàng */
-            conversation?: {}
+            conversation?: ConversationInfo
             /**dữ liệu tin nhắn */
-            message?: {}
+            message?: MessageInfo
             /**dữ liệu nhân viên */
             staff?: StaffSocket
         } = {}
@@ -199,6 +133,20 @@ function onSocketFromChatboxServer() {
         if (!size(socket_data)) return
 
         let { staff, conversation, message } = socket_data
+
+        // nếu đang kích hoạt filter thì chỉ thêm dữ liệu nếu thoả mãn điều kiện
+        if (
+            // đang lọc inbox thì không cho post qua
+            (
+                conversationStore.option_filter_page_data.display_style === 'INBOX' &&
+                message?.platform_type === 'FB_POST'
+            ) ||
+            // đang lọc post thì không cho inbox qua
+            (
+                conversationStore.option_filter_page_data.display_style === 'COMMENT' &&
+                message?.platform_type === 'FB_MESS'
+            )
+        ) return
 
         // gửi thông điệp đến component xử lý user online
         if (size(staff)) window.dispatchEvent(new CustomEvent(
@@ -216,22 +164,5 @@ function onSocketFromChatboxServer() {
 /**đóng kết nối socket */
 function closeSocketConnect() {
     socket_connection.value?.close()
-}
-/**ẩn hiện ô tìm kiếm hội thoại */
-function toogleSearch() {
-    // toggle value
-    is_show_search.value = !is_show_search.value
-
-    // nếu hiển thị ô tìm kiếm thì tự động focus vào input
-    if (is_show_search.value)
-        nextTick(() => search_conversation_input.value?.focus())
-
-    // nếu tắt ô tìm kiếm thì xoá search
-    if (!is_show_search.value) {
-        // xoá trong store
-        conversationStore.option_filter_page_data.search = undefined
-        // xoá biến hiện tại
-        search_conversation.value = undefined
-    }
 }
 </script>
