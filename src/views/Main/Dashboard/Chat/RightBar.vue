@@ -1,6 +1,6 @@
 <template>
-    <div class="w-[400px] h-full p-3">
-            <div class="w-full h-full bg-slate-100 border-2 border-dashed rounded-lg flex justify-center items-center">
+    <div class="md:w-[300px] xl:w-[400px] h-full">
+            <div class="w-full h-full bg-slate-100 flex justify-center items-center">
                 widget placeholder
             </div>
         </div>
