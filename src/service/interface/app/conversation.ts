@@ -44,7 +44,7 @@ export interface FilterConversation {
 
 export interface QueryConversationInput extends FilterConversation {
     /**lọc theo danh sách page: "ID_1 ID_2 ID_3 ID_4" */
-    page_id: string
+    page_id: string[]
     /**phân trang */
     skip?: number
     /**phân trang */
@@ -85,7 +85,12 @@ export interface ConversationInfo {
     client_bio?: {
         /**uid fb quét được */
         fb_uid?: string
-    },
+    }
+    /**snap dữ liệu của nhân viên được chỉ định nếu có */
+    snap_staff?: {
+        /**tên nhân viên */
+        name?: string
+    }
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */

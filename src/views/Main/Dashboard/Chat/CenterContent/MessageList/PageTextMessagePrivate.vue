@@ -3,7 +3,7 @@
         <div class="text-sm  bg-yellow-100 rounded-lg p-2 w-fit max-w-[370px]">
             {{ text }}
         </div>
-        <MessageDate />
+        <MessageDate :time="time" />
     </div>
 </template>
 <script setup lang="ts">
@@ -12,5 +12,7 @@ import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/M
 const $props = withDefaults(defineProps<{
     /**nội dung tin nhắn bí mật của page */
     text: string
+    /**thời gian của tin nhắn */
+    time: string
 }>(), {})
 </script>

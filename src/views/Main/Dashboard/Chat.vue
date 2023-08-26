@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-0 md:flex">
+    <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-0 md:flex relative">
         <LeftBar />
         <CenterContent />
         <RightBar />

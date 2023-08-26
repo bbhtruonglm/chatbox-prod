@@ -6,6 +6,7 @@ import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 import type { CreatePricing, PricingInfo, UpgradePricing } from '@/service/interface/app/pricing'
 import type { QueryConversationInput, QueryConversationResponse } from '@/service/interface/app/conversation'
+import type { MessageInfo, QueryMessage } from '@/service/interface/app/message'
 
 /**đăng nhập bằng token của fb */
 export const login_facebook = (
@@ -176,5 +177,14 @@ export const read_conversation = (
     proceed: (e?: any, r?: QueryConversationResponse) => void
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/conversation/read_conversation`,
+    body,
+}, proceed)
+
+/**đọc dữ liệu của message */
+export const read_message = (
+    body: QueryMessage,
+    proceed: (e?: any, r?: MessageInfo[]) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/message/read_message`,
     body,
 }, proceed)

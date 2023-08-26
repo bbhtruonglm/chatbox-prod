@@ -1,5 +1,7 @@
 <template>
-    <div class="border-b py-1 px-2 flex h-full">
+    <div @click="clickConversation" :class="{
+        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key
+    }" class="border-l-4 border-l-white border-b py-1 px-2 flex h-full">
         <div class="w-fit h-fit relative">
             <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id" :platform_type="source?.platform_type" size="37"
@@ -71,10 +73,13 @@
     </div>
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, usePageStore } from '@/stores'
+import {
+    useChatbotUserStore, usePageStore, useCommonStore, useStaffStore,
+    useConversationStore,
+} from '@/stores'
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
-import { useStaffStore } from '@/stores'
+import { useRouter } from 'vue-router'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -86,9 +91,29 @@ const $props = withDefaults(defineProps<{
     source?: ConversationInfo
 }>(), {})
 
+const $router = useRouter()
 const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
+const commonStore = useCommonStore()
+const conversationStore = useConversationStore()
+
+/**click chuột vào 1 khách hàng */
+function clickConversation() {
+    // hiện tin nhắn ở giao diện mobile
+    commonStore.is_show_message_mobile = true
+    
+    // chọn khách hàng này, lưu dữ liệu vào store
+    if ($props.source) conversationStore.select_conversation = $props.source
+
+    // đẩy id lên param
+    $router.replace({
+        query: {
+            page_id: $props.source?.fb_page_id,
+            client_id: $props.source?.fb_client_id,
+        }
+    })
+}
 
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {

@@ -124,7 +124,7 @@ function getConversation() {
         (cb: CbError) => read_conversation(
             {
                 ...{
-                    page_id: keys(pageStore.selected_page_id_list).join(' '),
+                    page_id: keys(pageStore.selected_page_id_list),
                     limit: 40,
                     after: after.value,
                 },

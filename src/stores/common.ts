@@ -37,6 +37,13 @@ export const useCommonStore = defineStore('common_store', () => {
     /**độ rộng của bộ lọc */
     const conversation_filter_modal_width = ref<string>()
 
+    /**cờ để hiển thị danh sách tin nhắn ở mobile */
+    const is_show_message_mobile = ref(false)
+    /**khoảng cách assign modal từ bên trái */
+    const assign_staff_modal_left = ref<string>()
+    /**độ rộng của assign modal */
+    const assign_staff_modal_width = ref<string>()
+
     return {
         is_loading_full_screen,
         dashboard_toggle_nav,
@@ -44,6 +51,9 @@ export const useCommonStore = defineStore('common_store', () => {
         trigger_require_pricing,
         conversation_filter_modal_left,
         conversation_filter_modal_width,
+        is_show_message_mobile,
+        assign_staff_modal_left,
+        assign_staff_modal_width,
 
         triggerRequirePricing,
     }

@@ -74,3 +74,31 @@ export const teleportModelFilterOnPcScreen = () => {
         commonStore.conversation_filter_modal_width = `${width}px`
     }, 600)
 }
+
+/**nếu là giao diện pc hoặc tablet thì không hiển thị assign staff full màn hình nữa */
+export const teleportModelAssignStaffOnPcScreen = () => {
+    const commonStore = useCommonStore()
+
+    // mobile thì hiển thị full
+    if (window.innerWidth < 768) {
+        commonStore.assign_staff_modal_left = `0`
+        commonStore.assign_staff_modal_width = `100%`
+    }
+    // tablet, pc thì hiển thị nhỏ
+    // đợi 1 khoảng thời gian để div gốc di chuyển đến vị trí mong muốn
+    else setTimeout(() => {
+        let left = document
+            .getElementById('center-content')
+            ?.getBoundingClientRect()
+            ?.left
+
+        let width = document
+            .getElementById('center-content')
+            ?.offsetWidth
+
+        if (!left || !width) return
+
+        commonStore.assign_staff_modal_left = `${left}px`
+        commonStore.assign_staff_modal_width = `${width}px`
+    }, 600)
+}

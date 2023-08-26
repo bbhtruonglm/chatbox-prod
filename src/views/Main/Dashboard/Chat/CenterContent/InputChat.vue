@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full bg-slate-100 flex justify-center items-center h-[100px] border-r border-white">
+    <div class="w-full flex justify-center items-center h-[100px] border-t">
         khu vực chat
     </div>
 </template>

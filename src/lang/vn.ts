@@ -241,6 +241,11 @@ const source: Language = {
                         },
                         you: 'Bạn:',
                         empty_conversation: 'Không tìm thấy hội thoại!',
+                        empty_select_conversation: 'Chọn một khách hàng để bắt đầu!',
+                        assign_staff: {
+                            title: 'Phân công nhân viên'
+                        },
+
                     }
                 }
             }
