@@ -24,7 +24,8 @@ const source: Language = {
             type: 'Loại',
             select_all: 'Chọn tất cả',
             active: 'Kích hoạt',
-            chatbox: 'Chatbox'
+            chatbox: 'Chatbox',
+            unsupport_message: 'Nội dung tin nhắn này chưa được hỗ trợ, vui lòng liên hệ với quản trị viên hệ thống'
         },
         view: {
             network: {

@@ -8,15 +8,16 @@
         <template v-for="message of list_message">
             <template v-if="message.message_type === 'client'">
                 <ClientTextMessage v-if="message.message_text" :text="message.message_text" :time="message.time" />
-                <ClientTextMessage v-else text="Nội dung tin nhắn này chưa được hỗ trợ" :time="message.time" />
+                <UnsupportMessage v-else :time="message.time" />
             </template>
-
-            <template v-if="message.message_type === 'page'">
+            <template v-else-if="message.message_type === 'page'">
                 <PageTextMessage v-if="message.message_text" :text="message.message_text" :time="message.time" />
-                <PageTextMessage v-else text="Nội dung tin nhắn này chưa được hỗ trợ" :time="message.time" />
+                <UnsupportMessage v-else :time="message.time" />
             </template>
             <!-- <PageTextMessagePrivate :text="random_sentence(1, 5)" :time="message.time" /> -->
             <!-- <SystemMessage :text="random_sentence(10, 15)" /> -->
+
+            <UnsupportMessage v-else :time="message.time" />
         </template>
     </div>
 </template>
@@ -28,6 +29,7 @@ import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
 
 import Loading from '@/components/Loading.vue'
+import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessage.vue'
 import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/SystemMessage.vue'
