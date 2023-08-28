@@ -80,6 +80,8 @@ import {
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
+import { reset_read_conversation } from '@/service/api/chatbox/n4-service'
+import { toastError } from '@/service/helper/alert'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -100,9 +102,11 @@ const conversationStore = useConversationStore()
 
 /**click chuột vào 1 khách hàng */
 function clickConversation() {
+    if (!$props.source?.fb_page_id || !$props.source?.fb_client_id) return
+
     // hiện tin nhắn ở giao diện mobile
     commonStore.is_show_message_mobile = true
-    
+
     // chọn khách hàng này, lưu dữ liệu vào store
     if ($props.source) conversationStore.select_conversation = $props.source
 
@@ -112,6 +116,14 @@ function clickConversation() {
             page_id: $props.source?.fb_page_id,
             client_id: $props.source?.fb_client_id,
         }
+    })
+
+    // đánh dấu tin nhắn là đã đọc
+    reset_read_conversation({
+        page_id: $props.source?.fb_page_id,
+        client_id: $props.source?.fb_client_id,
+    }, (e, r) => {
+        if (e) return toastError(e)
     })
 }
 

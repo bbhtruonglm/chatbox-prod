@@ -98,9 +98,18 @@ export interface ConversationList {
     [index: string]: ConversationInfo
 }
 
+/**kết quả trả về khi đọc danh sách hội thoại */
 export interface QueryConversationResponse {
     conversation?: ConversationList
     count?: number
     after?: number[]
     result?: ConversationInfo[]
+}
+
+/**đầu vào api đánh dấu là đã đọc */
+export interface QueryResetReadConversation {
+    /**id trang */
+    page_id: string
+    /**id khách hàng */
+    client_id: string
 }

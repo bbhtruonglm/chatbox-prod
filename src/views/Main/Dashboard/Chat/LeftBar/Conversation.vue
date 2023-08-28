@@ -29,13 +29,19 @@ import Loading from '@/components/Loading.vue'
 import ConversationItem from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/ConversationItem.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { 
-    ConversationList, ConversationInfo 
+import type {
+    ConversationList, ConversationInfo
 } from '@/service/interface/app/conversation'
+import type { SocketEvent } from '@/service/interface/app/common'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
-    detail?: ConversationInfo
+    detail?: {
+        /**dữ liệu của 1 hội thoại */
+        conversation?: ConversationInfo
+        /**tên sự kiện socket */
+        event?: SocketEvent
+    }
 }
 
 const pageStore = usePageStore()
@@ -75,27 +81,36 @@ onUnmounted(() => window.removeEventListener(
 function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     if (!detail) return
 
+    let { conversation, event } = detail
+
+    if (!conversation) return
+
     // bỏ qua record của page chat cho page
-    if (detail.fb_page_id === detail.fb_client_id) return
+    if (conversation.fb_page_id === conversation.fb_client_id) return
 
     // tạo ra key cho vitual scroll
-    detail.data_key = `${detail?.fb_page_id}_${detail?.fb_client_id}`
+    conversation.data_key = `${conversation?.fb_page_id}_${conversation?.fb_client_id}`
 
+    // nếu chỉ đồng bộ dữ liệu thì không đẩy hội thoại lên đầu
+    if (event === 'SYNC_DATA') {
+        conversation_list.value[conversation.data_key] = conversation
+    }
     // nạp dữ liệu vào danh sách hội thoại lên đầu
+    else {
+        /**gói dữ liệu */
+        const PAYLOAD: ConversationList = {}
 
-    /**gói dữ liệu */
-    const PAYLOAD: ConversationList = { }
+        // nạp dữ liệu vào gói
+        PAYLOAD[conversation.data_key] = conversation
 
-    // nạp dữ liệu vào gói
-    PAYLOAD[detail.data_key] = detail
+        // xoá dữ liệu cũ
+        delete conversation_list.value[conversation.data_key]
 
-    // xoá dữ liệu cũ
-    delete conversation_list.value[detail.data_key]
-
-    // thêm dữ liệu mới lên đầu của obj
-    conversation_list.value = {
-        ...PAYLOAD,
-        ...conversation_list.value
+        // thêm dữ liệu mới lên đầu của obj
+        conversation_list.value = {
+            ...PAYLOAD,
+            ...conversation_list.value
+        }
     }
 }
 /**đọc danh sách hội thoại lần đầu tiên */

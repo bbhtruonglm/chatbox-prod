@@ -24,6 +24,7 @@ import type { CbError } from '@/service/interface/function'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
+import type { SocketEvent } from '@/service/interface/app/common'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -125,6 +126,8 @@ function onSocketFromChatboxServer() {
             message?: MessageInfo
             /**dữ liệu nhân viên */
             staff?: StaffSocket
+            /**tên sự kiện */
+            event?: SocketEvent
         } = {}
 
         // cố gắng giải mã dữ liệu
@@ -132,7 +135,7 @@ function onSocketFromChatboxServer() {
 
         if (!size(socket_data)) return
 
-        let { staff, conversation, message } = socket_data
+        let { staff, conversation, message, event } = socket_data
 
         // nếu đang kích hoạt filter thì chỉ thêm dữ liệu nếu thoả mãn điều kiện
         if (
@@ -154,10 +157,15 @@ function onSocketFromChatboxServer() {
             { detail: staff }
         ))
 
-        // gửi thông điệp đến component xử lý user online
+        // gửi thông điệp đến component xử lý danh sách hội thoại
         if (size(conversation)) window.dispatchEvent(new CustomEvent(
             'chatbox_socket_conversation',
-            { detail: conversation }
+            {
+                detail: {
+                    conversation,
+                    event
+                }
+            }
         ))
     }
 }
