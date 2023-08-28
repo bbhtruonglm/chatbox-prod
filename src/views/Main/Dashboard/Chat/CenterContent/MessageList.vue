@@ -48,6 +48,8 @@ const is_loading = ref(false)
 const is_done = ref(false)
 /**phân trang */
 const skip = ref(0)
+/**phân trang */
+const LIMIT = 20
 /**giá trị scroll_height trước đó của danh sách tin nhắn */
 const old_scroll_height = ref(0)
 
@@ -78,9 +80,6 @@ function loadMoreMessage($event: Event) {
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
-    /**phân trang */
-    const LIMIT = 20
-
     flow([
         // * bật loading
         (cb: CbError) => {
@@ -144,10 +143,10 @@ function getListMessage(is_scroll?: boolean) {
         // load lần đầu thì tự động cuộn xuống
         if (is_scroll) {
             /**
-             * lần đầu tiên load tin nhắn, thì load thêm 1 lần tin nhắn nữa
-             * để tránh lỗi scroll không mượt
+             * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
+             *  thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
-            getListMessage()
+            if (list_message.value.length >= LIMIT) getListMessage()
 
             scrollToBottomMessage()
         }

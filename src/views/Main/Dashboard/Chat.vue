@@ -32,11 +32,15 @@ const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
 const { t: $t } = useI18n()
 
+/**kết nối socket đến server */
 const socket_connection = ref<WebSocket>()
+/**gắn cờ đóng kết nối hoàn toàn */
+const is_force_close_socket = ref(false)
 
 onMounted(() => {
     getPageInfoToChat()
 })
+// tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => closeSocketConnect())
 
 /**đọc dữ liệu của các page được chọn lưu lại */
@@ -72,6 +76,7 @@ function getPageInfoToChat() {
 
             cb()
         }, true),
+        // * khởi tạo kết nối socket lên server
         (cb: CbError) => {
             onSocketFromChatboxServer()
 
@@ -81,6 +86,7 @@ function getPageInfoToChat() {
 }
 /**lắng nghe sự kiện từ socket */
 function onSocketFromChatboxServer() {
+    console.log('mo socket')
     /**tạo kết nối đến socket */
     const CONNECTION = new WebSocket($env.host.n3_socket)
     socket_connection.value = CONNECTION
@@ -103,6 +109,9 @@ function onSocketFromChatboxServer() {
     CONNECTION.onclose = () => {
         // loại bỏ vòng lặp tự động ping socket cũ
         clearInterval(ping_interval_id)
+
+        // nếu đóng kết hoàn toàn thì không cho kết nối tự mở lại nữa
+        if (is_force_close_socket.value) return
 
         // khởi tạo lại kết nối sau 100ms
         setTimeout(() => onSocketFromChatboxServer(), 100)
@@ -171,6 +180,9 @@ function onSocketFromChatboxServer() {
 }
 /**đóng kết nối socket */
 function closeSocketConnect() {
+    // gắn cờ ngăn chặn kết nối mở lại
+    is_force_close_socket.value = true
+
     socket_connection.value?.close()
 }
 </script>

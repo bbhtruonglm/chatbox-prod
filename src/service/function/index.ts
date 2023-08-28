@@ -8,6 +8,7 @@ import type { Cb, CbError } from '@/service/interface/function'
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
     const pageStore = usePageStore()
+    const conversationStore = useConversationStore()
 
     flow([
         // * kiểm tra xem page đã được chọn hay chưa
@@ -32,8 +33,13 @@ export const preGoToChat = (proceed: Cb) => {
                 keys(sortBy(pageStore.selected_page_list_info))
             )) return cb()
 
-            // nếu chọn khác page thì xoá lọc 
+            // nếu chọn khác page thì
+
+            //  xoá lọc 
             resetConversationFilter()
+
+            // xoá conversation đang chọn
+            conversationStore.select_conversation = undefined
 
             cb()
         }
