@@ -88,6 +88,7 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { copy } from '@/service/helper/format'
 
 const $props = withDefaults(defineProps<{
     source?: ConversationInfo

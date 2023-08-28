@@ -18,11 +18,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     saveLocal(option_filter_page_data, 'option_filter_page_data')
 
     /**dữ liệu của 1 khách hàng khi được chọn */
-    const select_conversation = ref<ConversationInfo>({
-        fb_page_id: '',
-        fb_client_id: '',
-        last_message_type: 'page'
-    })
+    const select_conversation = ref<ConversationInfo>()
 
     return {
         option_filter_page_data,

@@ -51,7 +51,7 @@ const skip = ref(0)
 /**giá trị scroll_height trước đó của danh sách tin nhắn */
 const old_scroll_height = ref(0)
 
-watch(() => conversationStore.select_conversation, () => {
+watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
     list_message.value = []
 
@@ -74,8 +74,6 @@ function loadMoreMessage($event: Event) {
         is_done.value
     ) return
 
-    console.log('hey', SCROLL_TOP)
-
     getListMessage()
 }
 /**đọc danh sách tin nhắn */
@@ -93,8 +91,8 @@ function getListMessage(is_scroll?: boolean) {
         // * đọc dữ liệu từ api
         (cb: CbError) => read_message(
             {
-                page_id: conversationStore.select_conversation.fb_page_id,
-                client_id: conversationStore.select_conversation.fb_client_id,
+                page_id: conversationStore.select_conversation?.fb_page_id,
+                client_id: conversationStore.select_conversation?.fb_client_id,
                 skip: skip.value,
                 limit: LIMIT
             },
