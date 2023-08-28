@@ -112,4 +112,6 @@ export interface QueryResetReadConversation {
     page_id: string
     /**id khách hàng */
     client_id: string
+    /**reset về mấy, mặc định là 0 */
+    unread_message_amount?: number
 }

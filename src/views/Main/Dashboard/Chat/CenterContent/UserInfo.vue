@@ -31,9 +31,10 @@
             </div>
         </div>
         <div class="flex items-center justify-end">
-            <button class="border border-slate-300 rounded-full p-2 mr-2">
-                <!-- <img width="16" height="16" src="@/assets/icons/envelope-icon.svg"> -->
-                <img width="16" height="16" src="@/assets/icons/envelope-open-icon.svg">
+            <button @click="unreadConversation" class="border border-slate-300 rounded-full p-2 mr-2">
+                <img v-if="!is_loading_unread_conversation" width="16" height="16"
+                    src="@/assets/icons/envelope-open-icon.svg">
+                <Loading v-else class="w-[16px] h-[16px]" />
             </button>
             <button class="border border-slate-300 rounded-full p-2 mr-2">
                 <img width="16" height="16" src="@/assets/icons/block-user-unactive.svg">
@@ -46,8 +47,13 @@
 import {
     useCommonStore, useConversationStore, useChatbotUserStore, usePageStore
 } from '@/stores'
+import { reset_read_conversation } from '@/service/api/chatbox/n4-service';
+import { ref } from 'vue'
+import { flow } from '@/service/helper/async'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
+import Loading from '@/components/Loading.vue'
+import type { CbError } from '@/service/interface/function';
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 
@@ -56,6 +62,9 @@ const conversationStore = useConversationStore()
 const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
 
+/**bật loading khi gọi api đánh dấu hội thoại chưa đọc */
+const is_loading_unread_conversation = ref(false)
+
 /**xử lý sự kiện thoát ra ngoài màn hình danh sách khách hàng của mobile */
 function backToConversation() {
     commonStore.is_show_message_mobile = false
@@ -63,5 +72,32 @@ function backToConversation() {
 /**mở modal thay đổi assign nhân viên */
 function openAssignStaff() {
     $emit('toggle_change_assign_staff')
+}
+/**đánh dấu hội thoại này là chưa đọc */
+function unreadConversation() {
+    // api đang chạy thì không cho gọi nữa
+    if (is_loading_unread_conversation.value) return
+
+    flow([
+        // * bật loading
+        (cb: CbError) => {
+            is_loading_unread_conversation.value = true
+
+            cb()
+        },
+        // * gọi api
+        (cb: CbError) => reset_read_conversation({
+            page_id: conversationStore.select_conversation?.fb_page_id as string,
+            client_id: conversationStore.select_conversation?.fb_client_id as string,
+            unread_message_amount: 1
+        }, (e, r) => {
+            if (e) return cb(e)
+
+            cb()
+        })
+    ], e => {
+        // tắt loading
+        is_loading_unread_conversation.value = false
+    })
 }
 </script>
