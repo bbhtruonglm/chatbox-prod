@@ -8,8 +8,7 @@
                 <input 
                     type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
                     class="border px-3 py-1 w-full rounded-lg focus:outline-none"
-                    v-on:keyup="startSearch"
-                    v-on:keydown="staffs = {}"
+                    v-on:keyup="searchStaff()"
                     v-model="search_staff_name"
                 >
             </div>
@@ -115,6 +114,7 @@ function filterByStaff() {
 
 /** Lọc hội thoại theo nhân viên */
 function searchStaff() {
+    staffs.value = {}
     if(!search_staff_name.value) return staffs.value = snap_staffs.value
     staffs.value = {}
     map(snap_staffs.value, (item:StaffInfo) => {
@@ -123,9 +123,6 @@ function searchStaff() {
         }
     })
 }
-
-/** Bắt đầu seach nhân viên sau 500ms */
-const startSearch = debounce(() => { searchStaff() }, 500)
 
 /** Hiển thị lại nhân viên đã chọn */
 function showLabelSelected() {
