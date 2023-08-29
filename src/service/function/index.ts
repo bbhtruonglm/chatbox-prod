@@ -2,8 +2,11 @@ import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { isEqual, keys, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
+import { reset_read_conversation } from '../api/chatbox/n4-service'
+import { toastError } from '../helper/alert'
 
 import type { Cb, CbError } from '@/service/interface/function'
+import type { ConversationInfo } from '../interface/app/conversation'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -107,4 +110,22 @@ export const teleportModelAssignStaffOnPcScreen = () => {
         commonStore.assign_staff_modal_left = `${left}px`
         commonStore.assign_staff_modal_width = `${width}px`
     }, 600)
+}
+
+/**chọn một hội thoại */
+export const selectConversation = (conversation: ConversationInfo) => {
+    if (!conversation) return
+
+    const conversationStore = useConversationStore()
+
+    // chọn khách hàng này, lưu dữ liệu vào store
+    conversationStore.select_conversation = conversation
+
+    // đánh dấu tin nhắn là đã đọc
+    reset_read_conversation({
+        page_id: conversation?.fb_page_id,
+        client_id: conversation?.fb_client_id,
+    }, (e, r) => {
+        if (e) return toastError(e)
+    })
 }

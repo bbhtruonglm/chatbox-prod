@@ -72,7 +72,7 @@ function loadMoreMessage($event: Event) {
 
     if (
         is_loading.value ||
-        SCROLL_TOP > 100 ||
+        SCROLL_TOP > 300 ||
         is_done.value
     ) return
 
