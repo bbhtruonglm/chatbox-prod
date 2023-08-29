@@ -37,7 +37,7 @@ withDefaults(defineProps<{
     left: '0'
 })
 
-const $emit = defineEmits(['close_modal'])
+const $emit = defineEmits(['close_modal', 'open_modal'])
 
 /**ẩn hiện modal */
 const is_open = ref(false)
@@ -53,6 +53,9 @@ function toggleModal() {
 
         // mở modal
         is_open.value = true
+
+        // bắn sự kiện ra ngoài khi tắt modal
+        $emit('open_modal')
     }
     // tắt modal
     else {
