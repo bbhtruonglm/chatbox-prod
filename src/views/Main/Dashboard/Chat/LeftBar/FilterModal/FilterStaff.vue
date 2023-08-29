@@ -114,7 +114,6 @@ function filterByStaff() {
 
 /** Lọc hội thoại theo nhân viên */
 function searchStaff() {
-    staffs.value = {}
     if(!search_staff_name.value) return staffs.value = snap_staffs.value
     staffs.value = {}
     map(snap_staffs.value, (item:StaffInfo) => {
