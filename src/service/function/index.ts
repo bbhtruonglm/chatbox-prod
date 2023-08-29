@@ -129,3 +129,8 @@ export const selectConversation = (conversation: ConversationInfo) => {
         if (e) return toastError(e)
     })
 }
+
+/**kiểm tra cỡ màn hình, từ đó suy luận ra có đang ở chế độ dt hay không */
+export const isMobile = () => {
+    return window.innerWidth < 768
+}

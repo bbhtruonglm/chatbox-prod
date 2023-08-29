@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-end mb-[1px]">
-        <div class="text-sm  bg-yellow-100 rounded-lg p-2 w-fit max-w-[370px]">
+        <div class="text-sm break-words bg-yellow-100 rounded-lg p-2 w-fit max-w-[370px]">
             {{ text }}
         </div>
         <MessageDate :time="time" />

@@ -1,11 +1,13 @@
 <template>
-    <div @scroll="loadMoreMessage" id="list-message" class="p-2 h-[calc(100%_-_150px)] overflow-hidden overflow-y-auto">
+    <div class="h-[0.5rem]" />
+    <div @scroll="loadMoreMessage" id="list-message"
+        class="pt-0 p-2 h-[calc(100%_-_150px)] overflow-hidden overflow-y-auto">
         <div v-if="is_loading" class="relative">
             <div class="fixed left-[50%] translate-x-[-50%]">
                 <Loading class="mx-auto" />
             </div>
         </div>
-        <template v-for="message of list_message">
+        <div v-for="message of list_message" :id="message._id">
             <template v-if="message.message_type === 'client'">
                 <ClientTextMessage v-if="message.message_text" :text="message.message_text" :time="message.time" />
                 <UnsupportMessage v-else :time="message.time" />
@@ -18,15 +20,16 @@
             <!-- <SystemMessage :text="random_sentence(10, 15)" /> -->
 
             <UnsupportMessage v-else :time="message.time" />
-        </template>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
+import { isMobile } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
@@ -39,6 +42,7 @@ import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 
 /**danh sách tin nhắn hiện tại */
 const list_message = ref<MessageInfo[]>([])
@@ -51,7 +55,7 @@ const skip = ref(0)
 /**phân trang */
 const LIMIT = 20
 /**giá trị scroll_height trước đó của danh sách tin nhắn */
-const old_scroll_height = ref(0)
+let old_scroll_height = ref(0)
 
 watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
@@ -66,20 +70,43 @@ watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     getListMessage(true)
 })
 
+
 /**load thêm dữ liệu khi lăn chuột lên trên */
 function loadMoreMessage($event: Event) {
-    const SCROLL_TOP = ($event?.target as HTMLElement)?.scrollTop
+    /**div chưa danh sách tin nhắn */
+    const LIST_MESSAGE = $event?.target as HTMLElement
 
-    if (
-        is_loading.value ||
-        SCROLL_TOP > 300 ||
-        is_done.value
-    ) return
+    if (!LIST_MESSAGE) return
 
-    getListMessage()
+    /**giá trị scroll top hiện tại */
+    const SCROLL_TOP = LIST_MESSAGE?.scrollTop
+
+    /**
+     * nếu là dt, thì khi scroll lên trên cùng, sẽ dùng thủ thuật này, để hạn
+     * chế không cho phép giá trị scroll thành số âm, gây ra bug bị trắng màn hình
+     */
+    if (isMobile() && SCROLL_TOP <= 0) {
+        // tắt scroll
+        LIST_MESSAGE.style.overflowY = 'hidden'
+
+        // bật scroll lại ngay sau đó
+        setTimeout(() => LIST_MESSAGE.style.overflowY = 'auto')
+    }
+
+    // nếu đang chạy hoặc đã hết dữ liệu thì thôi
+    if (is_loading.value || is_done.value) return
+
+    // nếu là dt thì phải chạm đỉnh mới load tiếp dữ liệu
+    if (isMobile() && SCROLL_TOP === 0) getListMessage()
+
+    // các thiết bị còn lại thì cho phép infinitve loading scroll
+    if (!isMobile() && SCROLL_TOP < 300) getListMessage()
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
+    /**id tin nhắn trên đầu của lần loading trước */
+    let old_first_message_id = list_message.value?.[0]?._id
+
     flow([
         // * bật loading
         (cb: CbError) => {
@@ -108,7 +135,7 @@ function getListMessage(is_scroll?: boolean) {
                 r.reverse()
 
                 // thêm dữ liệu đã đảo chiều lên đầu
-                list_message.value = [...r, ...list_message.value]
+                list_message.value.unshift(...r)
 
                 // trang tiếp theo
                 skip.value += LIMIT
@@ -118,7 +145,18 @@ function getListMessage(is_scroll?: boolean) {
         ),
         // * làm cho scroll to top mượt hơn
         (cb: CbError) => {
-            nextTick(() => {
+            // nếu là điện thoại thì scroll đến phần tử cuối cùng trước đó
+            if (
+                isMobile() &&
+                old_first_message_id
+            ) nextTick(
+                () => document
+                    .getElementById(old_first_message_id)
+                    ?.scrollIntoView()
+            )
+
+            // nếu là các thiết bị khác thì chạy infinitve loading scroll
+            if (!isMobile()) nextTick(() => {
                 // lấy div chưa danh sách tin nhắn
                 const LIST_MESSAGE = document.getElementById('list-message')
 
@@ -143,10 +181,11 @@ function getListMessage(is_scroll?: boolean) {
         // load lần đầu thì tự động cuộn xuống
         if (is_scroll) {
             /**
+             * nếu không phải mobile, thì chạy logic infinitve loading scroll 
              * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
-             *  thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
+             * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
-            if (list_message.value.length >= LIMIT) getListMessage()
+            if (!isMobile() && list_message.value.length >= LIMIT) getListMessage()
 
             scrollToBottomMessage()
         }
