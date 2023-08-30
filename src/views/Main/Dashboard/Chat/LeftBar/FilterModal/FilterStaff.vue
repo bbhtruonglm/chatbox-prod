@@ -81,6 +81,7 @@ const search_staff_name = ref<string>('')
 /** Xoá lọc */
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.staff_id
+    staffs_selected.value = {}
     toggleModal()
 }
 

@@ -106,6 +106,7 @@ const label_search_name = ref<string>('')
 /** Xoá lọc */
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.label_id
+    labels_selected.value = {}
     toggleModal()
 }
 

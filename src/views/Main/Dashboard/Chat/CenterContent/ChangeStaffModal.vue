@@ -23,14 +23,15 @@
                     border-b cursor-pointer hover:bg-orange-100 px-2"
                     v-for="staff, staff_id in staffs"
                     @click="assignConversationtoStaff(staff)"
-                >
+                    v-show="staff"
+                >   
                     <div class="flex items-center">
                         <StaffAvatar
                             class="rounded-full mr-3" 
-                            :id="staff.fb_staff_id"
+                            :id="staff?.fb_staff_id"
                             size="35"
                         />
-                        <p class="text-sm">{{ staff.name }}</p>
+                        <p class="text-sm">{{ staff?.name }}</p>
                     </div>
                     <img 
                         v-if="fb_staff_id === staff_id"
@@ -97,10 +98,10 @@ function getStaffsByPageId() {
     search_staff_name.value = ''
     
     // * Lấy ID page hiện tại
-    const curent_page_id = ref<string>($route.query.page_id as string)
+    const curent_page_id:string = $route.query.page_id as string
 
     // * Lấy ra thông tin page hiện tại từ store
-    const current_page = pageStore.selected_page_list_info[curent_page_id.value]
+    const current_page = pageStore.selected_page_list_info[curent_page_id]
 
     // * Lưu lại danh sách nhân viên
     staffs.value = current_page.staff_list || {}
@@ -115,7 +116,11 @@ function getStaffsByPageId() {
 
 /** Phân công cuộc trò chuyện cho nhân viên */
 function assignConversationtoStaff(staff: StaffInfo) {
+    // * Nếu data conversation không tồn tại thì dừng lại
     if(!conversationStore.select_conversation) return
+
+    // * Nếu nhân viên đã được assign thì không chạy logic nữa
+    if(fb_staff_id.value === staff.fb_staff_id) return
      
     // * Phân công cuộc hội thoại cho nhân viên
     conversationStore.select_conversation.fb_staff_id = staff.fb_staff_id
@@ -147,7 +152,7 @@ function pushStaffSelectedToTop() {
     let new_staff_list: { [index: string]: StaffInfo } = {}
     new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
     map(staffs.value, (item) => {
-        if(item.fb_staff_id !== fb_staff_id.value) {
+        if(item && item.fb_staff_id !== fb_staff_id.value) {
             new_staff_list[item.fb_staff_id] = staffs.value[item.fb_staff_id]
         }
     })
