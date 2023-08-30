@@ -9,41 +9,34 @@
         <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 mb-1 relative">
             <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
                 <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
-
                 <UnsupportMessage v-else />
-
                 <MessageDate class="text-right" :time="message.time" />
             </div>
             <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                 <div class="w-fit max-w-[370px]">
                     <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-
                     <UnsupportMessage v-else />
-
                     <MessageDate :time="message.time" />
                 </div>
             </div>
             <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
                 <div class="w-fit max-w-[370px]">
                     <NoteMessage v-if="message.message_text" :text="message.message_text" />
-
                     <UnsupportMessage v-else />
-
                     <MessageDate :time="message.time" />
                 </div>
             </div>
             <div v-else-if="message.message_type === 'system'" class="flex justify-center">
                 <div class="w-[70%] text-center">
                     <SystemMessage v-if="message.message_text" :text="message.message_text" />
-
                     <UnsupportMessage v-else />
                 </div>
             </div>
             <div v-else class="text-center flex justify-center">
                 <UnsupportMessage class="w-[70%]" />
             </div>
-
             <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
+            <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
         </div>
     </div>
 </template>
@@ -64,9 +57,11 @@ import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageLi
 import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/SystemMessage.vue'
 import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/NoteMessage.vue'
 import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'
+import StaffRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/StaffRead.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
+import type { DebouncedFunc } from 'lodash'
 
 const conversationStore = useConversationStore()
 
@@ -82,6 +77,10 @@ const skip = ref(0)
 const LIMIT = 20
 /**giá trị scroll_height trước đó của danh sách tin nhắn */
 let old_scroll_height = ref(0)
+/**danh sách các hàm debounce cho từng staff */
+const list_debounce_staff = ref<{
+    [index: string]: DebouncedFunc<any>
+}>({})
 
 watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
@@ -242,4 +241,33 @@ const visibleFirstClientReadAvatar = debounce(() => {
     // thêm css để hiển thị
     FIRST_AVATAR.style.display = 'block'
 }, 50)
+/**
+ * chỉ hiển thị avatar nhân viên đã đọc tin nhắn cuối cùng
+ * vì cùng mội thời điểm sẽ có nhiều div thoả mãn điều kiện gửi event
+ * nên sử dụng debounce để chỉ chạy event cuối cùng, tránh bị lặp code
+ */
+function visibleLastStaffReadAvatar(staff_id: string) {
+    // init hàm debounce cho từng staff nếu không tồn tại
+    if (!list_debounce_staff.value[staff_id])
+        list_debounce_staff.value[staff_id] = debounce(doVisibleAvatar, 50)
+
+    // chạy hàm debounce
+    list_debounce_staff.value[staff_id](staff_id)
+
+    /**hiển thị avatar staff cuối cùng */
+    function doVisibleAvatar(staff_id: string) {
+        /**toàn bộ các div avatar */
+        const LIST_AVATAR: HTMLElement[] = Array.from(
+            document.querySelectorAll(`.message-staff-read-${staff_id}`)
+        )
+
+        // lặp qua toàn bộ các div
+        LIST_AVATAR.forEach((element: any, i: number) => {
+            // reset ẩn toàn bộ các avatar hiện tại
+            if (i < LIST_AVATAR.length - 1) element.style.display = 'none'
+            // chỉ hiển thị avatar cuối cùng
+            else element.style.display = 'block'
+        })
+    }
+}
 </script>

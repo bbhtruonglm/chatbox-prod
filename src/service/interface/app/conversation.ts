@@ -93,6 +93,10 @@ export interface ConversationInfo {
     }
     /**thời gian cuối cùng mà user đọc tin nhắn */
     last_read_message?: string
+    /**id và thời gian cuối cùng nhân viên đã đọc hội thoại này */
+    staff_read?: {
+        [index: string]: number
+    }
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */

@@ -80,8 +80,6 @@ import {
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { reset_read_conversation } from '@/service/api/chatbox/n4-service'
-import { toastError } from '@/service/helper/alert'
 import { selectConversation } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
