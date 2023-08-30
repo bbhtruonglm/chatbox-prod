@@ -1,43 +1,24 @@
 <template>
-    <ModalBottom 
-        ref="change_staff_modal_ref" 
-        :left="commonStore.assign_staff_modal_left" 
-        :width="commonStore.assign_staff_modal_width"
-        @open_modal="getStaffsByPageId()"
-    >
+    <ModalBottom ref="change_staff_modal_ref" :left="commonStore.assign_staff_modal_left"
+        :width="commonStore.assign_staff_modal_width" @open_modal="getStaffsByPageId()">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
         </template>
         <template v-slot:body>
             <div class="py-3">
-                <input 
-                    type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none"
-                    v-on:keyup="searchStaff()"
-                    v-model="search_staff_name"
-                >
+                <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff()"
+                    v-model="search_staff_name">
             </div>
             <div class="h-[50vh] overflow-y-auto">
-                <div 
-                    class="w-full flex items-center justify-between py-2.5 
-                    border-b cursor-pointer hover:bg-orange-100 px-2"
-                    v-for="staff, staff_id in staffs"
-                    @click="assignConversationtoStaff(staff)"
-                    v-show="staff"
-                >   
+                <div class="w-full flex items-center justify-between py-2.5 
+                    border-b cursor-pointer hover:bg-orange-100 px-2" v-for="staff, staff_id in staffs"
+                    @click="assignConversationtoStaff(staff)" v-show="staff">
                     <div class="flex items-center">
-                        <StaffAvatar
-                            class="rounded-full mr-3" 
-                            :id="staff?.fb_staff_id"
-                            size="35"
-                        />
+                        <StaffAvatar class="rounded-full mr-3" :id="staff?.fb_staff_id" size="35" />
                         <p class="text-sm">{{ staff?.name }}</p>
                     </div>
-                    <img 
-                        v-if="fb_staff_id === staff_id"
-                        class="w-5 h-5"
-                        src="@/assets/icons/check-circle.svg"
-                    >
+                    <img v-if="fb_staff_id === staff_id" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                 </div>
             </div>
         </template>
@@ -50,15 +31,16 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCommonStore, usePageStore, useConversationStore } from '@/stores'
 import { teleportModelAssignStaffOnPcScreen } from '@/service/function'
-
+import { set_assign_staff_conversation } from '@/service/api/chatbox/n4-service'
+import { nonAccentVn } from '@/service/helper/format'
+import { flow } from '@/service/helper/async'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
-import { nonAccentVn } from '@/service/helper/format'
-
 import type { ComponentRef } from '@/service/interface/vue'
 import type { StaffInfo } from '@/service/interface/app/staff'
+import type { CbError } from '@/service/interface/function'
 
 /** Sử dụng route vue */
 const $route = useRoute()
@@ -96,9 +78,9 @@ function toggleModal() {
 function getStaffsByPageId() {
     // * Xóa tên nhân viên đang tìm kiếm
     search_staff_name.value = ''
-    
+
     // * Lấy ID page hiện tại
-    const curent_page_id:string = $route.query.page_id as string
+    const curent_page_id: string = $route.query.page_id as string
 
     // * Lấy ra thông tin page hiện tại từ store
     const current_page = pageStore.selected_page_list_info[curent_page_id]
@@ -117,13 +99,10 @@ function getStaffsByPageId() {
 /** Phân công cuộc trò chuyện cho nhân viên */
 function assignConversationtoStaff(staff: StaffInfo) {
     // * Nếu data conversation không tồn tại thì dừng lại
-    if(!conversationStore.select_conversation) return
+    if (!conversationStore.select_conversation) return
 
     // * Nếu nhân viên đã được assign thì không chạy logic nữa
-    if(fb_staff_id.value === staff.fb_staff_id) return
-     
-    // * Phân công cuộc hội thoại cho nhân viên
-    conversationStore.select_conversation.fb_staff_id = staff.fb_staff_id
+    if (fb_staff_id.value === staff.fb_staff_id) return
 
     // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
     fb_staff_id.value = staff.fb_staff_id
@@ -131,17 +110,32 @@ function assignConversationtoStaff(staff: StaffInfo) {
     // * Đưa nhân viên được assign lên đầu danh sách
     pushStaffSelectedToTop()
 
-    // TODO Gọi api để update nhân viên được assign
+    flow([
+        // * Gọi api để update nhân viên được assign
+        (cb: CbError) => set_assign_staff_conversation({
+            page_id: conversationStore.select_conversation?.fb_page_id as string,
+            client_id: conversationStore.select_conversation?.fb_client_id as string,
+            new_staff_id: staff.fb_staff_id,
+            old_staff_id: conversationStore.select_conversation?.fb_staff_id,
+        }, (e, r) => {
+            if (e) return cb(e)
+
+            // * Phân công cuộc hội thoại cho nhân viên
+            // conversationStore.select_conversation.fb_staff_id = staff.fb_staff_id
+
+            cb()
+        })
+    ], undefined, true)
 }
 
 /** Lọc hội thoại theo nhân viên */
 function searchStaff() {
-    if(!search_staff_name.value) return staffs.value = snap_staffs.value
+    if (!search_staff_name.value) return staffs.value = snap_staffs.value
     staffs.value = {}
-    map(snap_staffs.value, (item:StaffInfo) => {
+    map(snap_staffs.value, (item: StaffInfo) => {
         let search_name: string = nonAccentVn(search_staff_name.value)
-        let staff_name:string = nonAccentVn(item.name)
-        if(staff_name.includes(search_name)) {
+        let staff_name: string = nonAccentVn(item.name)
+        if (staff_name.includes(search_name)) {
             staffs.value[item.fb_staff_id] = item
         }
     })
@@ -152,7 +146,7 @@ function pushStaffSelectedToTop() {
     let new_staff_list: { [index: string]: StaffInfo } = {}
     new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
     map(staffs.value, (item) => {
-        if(item && item.fb_staff_id !== fb_staff_id.value) {
+        if (item && item.fb_staff_id !== fb_staff_id.value) {
             new_staff_list[item.fb_staff_id] = staffs.value[item.fb_staff_id]
         }
     })

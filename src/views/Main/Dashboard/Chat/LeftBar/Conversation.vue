@@ -92,8 +92,14 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // bỏ qua record của page chat cho page
     if (conversation.fb_page_id === conversation.fb_client_id) return
 
+
     // tạo ra key cho vitual scroll
     conversation.data_key = `${conversation?.fb_page_id}_${conversation?.fb_client_id}`
+
+    // nếu dữ liệu được socket chính là hội thoại đang chọn, thì làm mới dữ liệu được chọn
+    if (
+        conversationStore.select_conversation?.data_key === conversation.data_key
+    ) conversationStore.select_conversation = conversation
 
     // nếu chỉ đồng bộ dữ liệu thì không đẩy hội thoại lên đầu
     if (event === 'SYNC_DATA') {

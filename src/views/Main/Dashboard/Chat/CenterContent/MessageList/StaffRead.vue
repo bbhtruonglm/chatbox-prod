@@ -15,14 +15,14 @@ const $emit = defineEmits(['change_last_read_message'])
 
 const $props = withDefaults(defineProps<{
     /**thời gian của tin nhắn */
-    time: string
+    time?: string
 }>(), {})
 
 const conversationStore = useConversationStore()
 
 /**kiểm tra xem nhân viên có đọc đến tin nhắn này hay không */
 function isStaffLastReadThisMessage(staff_id?: string, staff_read_time?: number) {
-    if (!staff_read_time) return false
+    if (!staff_read_time || !$props.time) return false
 
     /**thời gian tin nhắn này được tạo */
     const CURRENT_MESSAGE_DATE = new Date($props.time).getTime()
