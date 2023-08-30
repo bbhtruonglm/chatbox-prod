@@ -1,5 +1,4 @@
 <template>
-    <div class="h-[0.5rem]" />
     <div @scroll="loadMoreMessage" id="list-message"
         class="pt-0 p-2 h-[calc(100%_-_150px)] overflow-hidden overflow-y-auto">
         <div v-if="is_loading" class="relative">
@@ -7,42 +6,69 @@
                 <Loading class="mx-auto" />
             </div>
         </div>
-        <div v-for="message of list_message" :id="message._id">
-            <template v-if="message.message_type === 'client'">
-                <ClientTextMessage v-if="message.message_text" :text="message.message_text" :time="message.time" />
-                <UnsupportMessage v-else :time="message.time" />
-            </template>
-            <template v-else-if="message.message_type === 'page'">
-                <PageTextMessage v-if="message.message_text" :text="message.message_text" :time="message.time" />
-                <UnsupportMessage v-else :time="message.time" />
-            </template>
-            <!-- <PageTextMessagePrivate :text="random_sentence(1, 5)" :time="message.time" /> -->
-            <!-- <SystemMessage :text="random_sentence(10, 15)" /> -->
+        <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 mb-1 relative">
+            <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
+                <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
 
-            <UnsupportMessage v-else :time="message.time" />
+                <UnsupportMessage v-else />
+
+                <MessageDate class="text-right" :time="message.time" />
+            </div>
+            <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
+                <div class="w-fit max-w-[370px]">
+                    <PageTextMessage v-if="message.message_text" :text="message.message_text" />
+
+                    <UnsupportMessage v-else />
+
+                    <MessageDate :time="message.time" />
+                </div>
+            </div>
+            <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
+                <div class="w-fit max-w-[370px]">
+                    <NoteMessage v-if="message.message_text" :text="message.message_text" />
+
+                    <UnsupportMessage v-else />
+
+                    <MessageDate :time="message.time" />
+                </div>
+            </div>
+            <div v-else-if="message.message_type === 'system'" class="flex justify-center">
+                <div class="w-[70%] text-center">
+                    <SystemMessage v-if="message.message_text" :text="message.message_text" />
+
+                    <UnsupportMessage v-else />
+                </div>
+            </div>
+            <div v-else class="text-center flex justify-center">
+                <UnsupportMessage class="w-[70%]" />
+            </div>
+
+            <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import { useConversationStore, useCommonStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
 import { isMobile } from '@/service/function'
+import { debounce } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
+import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessage.vue'
 import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/SystemMessage.vue'
-import PageTextMessagePrivate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessagePrivate.vue'
+import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/NoteMessage.vue'
+import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 
 const conversationStore = useConversationStore()
-const commonStore = useCommonStore()
 
 /**danh sách tin nhắn hiện tại */
 const list_message = ref<MessageInfo[]>([])
@@ -69,7 +95,6 @@ watch(() => conversationStore.select_conversation, (new_val, old_val) => {
 
     getListMessage(true)
 })
-
 
 /**load thêm dữ liệu khi lăn chuột lên trên */
 function loadMoreMessage($event: Event) {
@@ -204,4 +229,17 @@ function scrollToBottomMessage() {
         LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
     })
 }
+/**
+ * chỉ hiển thị avatar khách hàng đã đọc đến tin nhắn đầu tiên
+ * vì cùng mội thời điểm sẽ có nhiều div thoả mãn điều kiện gửi event
+ * nên sử dụng debounce để chỉ chạy event cuối cùng, tránh bị lặp code
+ */
+const visibleFirstClientReadAvatar = debounce(() => {
+    const FIRST_AVATAR = document.querySelector('.mesage-client-read') as HTMLElement
+
+    if (!FIRST_AVATAR) return
+
+    // thêm css để hiển thị
+    FIRST_AVATAR.style.display = 'block'
+}, 50)
 </script>

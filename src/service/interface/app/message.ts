@@ -9,7 +9,7 @@ export interface MessageInfo {
     /**id khách hàng */
     fb_client_id: string
     /**tin nhắn được gửi từ đâu */
-    message_type: 'page' | 'client'
+    message_type: 'page' | 'client' | 'system' | 'note'
     /**thời gian tin được gửi */
     time: string
     /**nội dung tin nhắn văn bản */
