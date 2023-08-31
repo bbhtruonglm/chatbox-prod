@@ -1,42 +1,45 @@
 <template>
-    <div @scroll="loadMoreMessage" id="list-message"
-        class="pt-0 p-2 h-[calc(100%_-_150px)] overflow-hidden overflow-y-auto">
-        <div v-if="is_loading" class="relative">
-            <div class="fixed left-[50%] translate-x-[-50%]">
-                <Loading class="mx-auto" />
-            </div>
-        </div>
-        <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 mb-1 relative">
-            <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
-                <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
-                <UnsupportMessage v-else />
-                <MessageDate class="text-right" :time="message.time" />
-            </div>
-            <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
-                <div class="w-fit max-w-[370px]">
-                    <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-                    <UnsupportMessage v-else />
-                    <MessageDate :time="message.time" />
+    <div class="h-[calc(100%_-_150px)] relative">
+        <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0" />
+        <div @scroll="loadMoreMessage" id="list-message"
+            class="pt-0 p-2 h-full overflow-hidden overflow-y-auto">
+            <div v-if="is_loading" class="relative z-10">
+                <div class="fixed left-[50%] translate-x-[-50%]">
+                    <Loading class="mx-auto" />
                 </div>
             </div>
-            <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
-                <div class="w-fit max-w-[370px]">
-                    <NoteMessage v-if="message.message_text" :text="message.message_text" />
+            <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 mb-1 relative">
+                <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
+                    <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                     <UnsupportMessage v-else />
-                    <MessageDate :time="message.time" />
+                    <MessageDate class="text-right" :time="message.time" />
                 </div>
-            </div>
-            <div v-else-if="message.message_type === 'system'" class="flex justify-center">
-                <div class="w-[70%] text-center">
-                    <SystemMessage v-if="message.message_text" :text="message.message_text" />
-                    <UnsupportMessage v-else />
+                <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
+                    <div class="w-fit max-w-[370px]">
+                        <PageTextMessage v-if="message.message_text" :text="message.message_text" />
+                        <UnsupportMessage v-else />
+                        <MessageDate :time="message.time" />
+                    </div>
                 </div>
+                <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
+                    <div class="w-fit max-w-[370px]">
+                        <NoteMessage v-if="message.message_text" :text="message.message_text" />
+                        <UnsupportMessage v-else />
+                        <MessageDate :time="message.time" />
+                    </div>
+                </div>
+                <div v-else-if="message.message_type === 'system'" class="flex justify-center">
+                    <div class="w-[70%] text-center">
+                        <SystemMessage v-if="message.message_text" :text="message.message_text" />
+                        <UnsupportMessage v-else />
+                    </div>
+                </div>
+                <div v-else class="text-center flex justify-center">
+                    <UnsupportMessage class="w-[70%]" />
+                </div>
+                <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
+                <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
             </div>
-            <div v-else class="text-center flex justify-center">
-                <UnsupportMessage class="w-[70%]" />
-            </div>
-            <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
-            <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
         </div>
     </div>
 </template>

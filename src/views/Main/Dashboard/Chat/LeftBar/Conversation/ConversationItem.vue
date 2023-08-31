@@ -16,7 +16,7 @@
         <div class="w-[calc(100%_-_86px)] pl-2">
             <div class="flex items-center">
                 <div v-if="source?.fb_staff_id" class="flex items-center">
-                    <StaffAvatar @click="openStaffInfo" :id="source?.fb_staff_id" size="20" class="rounded-full" />
+                    <StaffAvatar :id="source?.fb_staff_id" size="20" class="rounded-full" />
                     <div class="mx-1">
                         <img src="@/assets/icons/arrow-right.svg" width="8" height="8">
                     </div>
@@ -80,7 +80,7 @@ import {
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { selectConversation } from '@/service/function'
+import { isMobile, selectConversation } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -101,6 +101,9 @@ const conversationStore = useConversationStore()
 
 /**click chuột vào 1 khách hàng */
 function clickConversation() {
+    // nếu mess đang được show thì không cho click nữa
+    if (isMobile() && commonStore.is_show_message_mobile) return
+
     if (!$props.source?.fb_page_id || !$props.source?.fb_client_id) return
 
     // hiện tin nhắn ở giao diện mobile

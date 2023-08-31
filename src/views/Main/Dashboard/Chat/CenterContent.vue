@@ -19,9 +19,10 @@
     </template>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useCommonStore, useConversationStore } from '@/stores'
 import { teleportModelAssignStaffOnPcScreen } from '@/service/function'
+import { swipe_left } from '@/service/helper/touchGesture'
 
 import UserInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo.vue'
 import MessageList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList.vue'
@@ -36,6 +37,15 @@ const conversationStore = useConversationStore()
 /**ref của modal thay đổi assign của nhân viên */
 const change_staff_modal_ref = ref<ComponentRef>()
 
+onMounted(() => allowMobileSwipeClose())
+
+/**cho phép mobile dùng hành động vuốt để đóng message */
+function allowMobileSwipeClose() {
+    swipe_left(
+        'center-content',
+        (e, r) => commonStore.is_show_message_mobile = false
+    )
+}
 /**ẩn hiện modal */
 function toggleChangeAssignStaff() {
     teleportModelAssignStaffOnPcScreen()
