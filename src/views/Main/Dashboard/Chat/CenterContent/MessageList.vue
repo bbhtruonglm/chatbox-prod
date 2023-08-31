@@ -1,6 +1,6 @@
 <template>
     <div class="h-[calc(100%_-_150px)] relative">
-        <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0" />
+        <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
         <div @scroll="loadMoreMessage" id="list-message"
             class="pt-0 p-2 h-full overflow-hidden overflow-y-auto">
             <div v-if="is_loading" class="relative z-10">
@@ -112,7 +112,7 @@ function loadMoreMessage($event: Event) {
      * nếu là dt, thì khi scroll lên trên cùng, sẽ dùng thủ thuật này, để hạn
      * chế không cho phép giá trị scroll thành số âm, gây ra bug bị trắng màn hình
      */
-    if (isMobile() && SCROLL_TOP <= 0) {
+    if (isMobile() && SCROLL_TOP <= 0 && !is_done.value) {
         // tắt scroll
         LIST_MESSAGE.style.overflowY = 'hidden'
 
