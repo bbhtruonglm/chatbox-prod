@@ -21,15 +21,15 @@ export interface FilterConversation {
         lte?: number
     }
     /**lọc các hội thoại của 1 nhân viên */
-    staff_id?: string
+    staff_id?: string[]
     /**lọc hội thoại bị gắn cờ spam */
     is_spam_fb?: 'YES' | 'NO'
     /**lọc hội thoại theo nhãn or */
-    label_id?: string
+    label_id?: string[]
     /**lọc hội thoại theo nhãn and */
     label_and?: boolean
     /**lọc hội thoại không có nhãn x */
-    not_label_id?: string
+    not_label_id?: string[]
     /**lọc hội thoại chưa trả lời */
     not_response_client?: boolean
     /**lọc hội thoại chưa gắn nhãn */
@@ -81,6 +81,8 @@ export interface ConversationInfo {
     last_message_time?: number
     /**sdt của khách hàng */
     client_phone?: string
+    /**email của khách hàng */
+    client_email?: string
     /**thông tin thêm của khách hàng */
     client_bio?: {
         /**uid fb quét được */
@@ -97,6 +99,8 @@ export interface ConversationInfo {
     staff_read?: {
         [index: string]: number
     }
+    /**đánh dấu khách hàng này là spam */
+    is_spam_fb?: boolean
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */

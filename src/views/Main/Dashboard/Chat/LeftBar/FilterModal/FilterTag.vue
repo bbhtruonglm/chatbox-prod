@@ -1,65 +1,43 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
+        :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.label.title') }}
         </template>
         <template v-slot:body>
             <div class="py-3">
-                <input 
-                    type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none"
-                    v-on:keyup="searchLabel()"
-                    v-model="label_search_name"
-                >
+                <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel()"
+                    v-model="label_search_name">
             </div>
             <div class="flex justify-between py-3 border-t border-b">
                 <p>{{ $t('v1.view.main.dashboard.chat.filter.label.filteration_condition') }}</p>
                 <div class="flex items-center">
                     <p class="mr-3">{{ $t('v1.view.main.dashboard.chat.filter.label.or') }}</p>
-                    <input 
-                        :checked="!conversationStore.option_filter_page_data.label_and"
-                        :value="false"
-                        v-model="conversationStore.option_filter_page_data.label_and"
-                        type="radio" 
-                        class="accent-orange-600 w-[20px] h-[20px]"
-                    >
+                    <input :checked="!conversationStore.option_filter_page_data.label_and" :value="false"
+                        v-model="conversationStore.option_filter_page_data.label_and" type="radio"
+                        class="accent-orange-600 w-[20px] h-[20px]">
                     <p class="mr-3 ml-8">{{ $t('v1.view.main.dashboard.chat.filter.label.and') }}</p>
-                    <input 
-                        v-model="conversationStore.option_filter_page_data.label_and"
-                        :value="true"
-                        :checked="conversationStore.option_filter_page_data.label_and"
-                        type="radio"
-                        class="accent-orange-600 w-[20px] h-[20px] mr-3"
-                    >
+                    <input v-model="conversationStore.option_filter_page_data.label_and" :value="true"
+                        :checked="conversationStore.option_filter_page_data.label_and" type="radio"
+                        class="accent-orange-600 w-[20px] h-[20px] mr-3">
                 </div>
             </div>
             <div class="h-[40vh] overflow-y-auto">
-                <div 
-                    class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-orange-100 px-2"
-                    v-for="item, index in labels"
-                    @click="selectLabel(index as string)"
-                >
+                <div class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-orange-100 px-2"
+                    v-for="item, index in labels" @click="selectLabel(index as string)">
                     <div class="flex items-center">
-                        <div 
-                            class="w-5 h-5 rounded-full mr-3" 
-                            :style="{ 'background' : item.bg_color }"
-                        >
+                        <div class="w-5 h-5 rounded-full mr-3" :style="{ 'background': item.bg_color }">
                         </div>
                         <span>{{ item.title }}</span>
-                        <span
-                            v-if="Object.keys(pageStore.selected_page_id_list).length > 1"
-                            class="ml-3 text-xs text-slate-400"
-                        >
+                        <span v-if="Object.keys(pageStore.selected_page_id_list).length > 1"
+                            class="ml-3 text-xs text-slate-400">
                             {{ pageStore.active_page_list[item.fb_page_id].page?.name }}
                             <br>
                             {{ pageStore.active_page_list[item.fb_page_id].page?.fb_page_id }}
                         </span>
                     </div>
-                    <img
-                        v-if="labels_selected[index]"
-                        class="w-5 h-5"
-                        src="@/assets/icons/check-circle.svg"
-                    >
+                    <img v-if="labels_selected[index]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                 </div>
             </div>
         </template>
@@ -77,7 +55,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
-import { map, isString, get } from 'lodash'
+import { map, isString, get, keys } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
@@ -95,11 +73,11 @@ const commonStore = useCommonStore()
 /**ref của modal */
 const filter_modal_ref = ref<ComponentRef>()
 /** Danh sách label của page đang được chọn */
-const labels = ref<{[index: string]: LabelInfo}>({})
+const labels = ref<{ [index: string]: LabelInfo }>({})
 /** Snap label của page đang được chọn */
-const snap_labels = ref<{[index: string]: LabelInfo}>({})
+const snap_labels = ref<{ [index: string]: LabelInfo }>({})
 /** Danh sách label sau khi bấm chọn */
-const labels_selected = ref<{[index: string]: boolean}>({})
+const labels_selected = ref<{ [index: string]: boolean }>({})
 /** ID page hiện tại đang được chọn */
 const label_search_name = ref<string>('')
 
@@ -125,35 +103,29 @@ function getLabelList() {
 
 /** Hiển thị label đã chọn */
 function showLabelSelected() {
-    if(get(conversationStore.option_filter_page_data, 'label_id')) {
-        let label_id:string = get(conversationStore.option_filter_page_data, 'label_id') || ''
-        let labels:string[] = label_id.split(' ')
-        labels.map(item => {
-            labels_selected.value[item] = true
-        })
-    }
+    conversationStore.option_filter_page_data.label_id?.map(item => {
+        labels_selected.value[item] = true
+    })
 }
 
 /** Chọn nhãn */
 function selectLabel(page_id: string) {
-    if(labels_selected.value[page_id]) delete labels_selected.value[page_id]
+    if (labels_selected.value[page_id]) delete labels_selected.value[page_id]
     else labels_selected.value[page_id] = true
     filterByLabel()
 }
 
 /** Lọc theo nhãn đã chọn */
 function filterByLabel() {
-    let label_id:string = ''
-    label_id = Object.keys(labels_selected.value).join(' ')
-    conversationStore.option_filter_page_data.label_id = label_id
+    conversationStore.option_filter_page_data.label_id = keys(labels_selected.value)
 }
 
 /** Tìm kiếm nhãn theo tên */
 function searchLabel() {
-    if(!label_search_name.value) return labels.value = snap_labels.value
+    if (!label_search_name.value) return labels.value = snap_labels.value
     labels.value = {}
-    map(snap_labels.value, (item:LabelInfo) => {
-        if(nonAccentVn(item.title).includes(nonAccentVn(label_search_name.value))) {
+    map(snap_labels.value, (item: LabelInfo) => {
+        if (nonAccentVn(item.title).includes(nonAccentVn(label_search_name.value))) {
             labels.value[item._id] = item
         }
     })
@@ -161,12 +133,12 @@ function searchLabel() {
 
 onMounted(() => {
     /**Trường hợp điều kiện lọc theo nhãn and là string thì ghi đè lại thành boolean  */
-    if(isString(conversationStore.option_filter_page_data.label_and)) {
+    if (isString(conversationStore.option_filter_page_data.label_and)) {
         conversationStore.option_filter_page_data.label_and = false
     }
 
     /** Lấy danh sách nhãn sau 3s mounted done */
-    setTimeout(function() {
+    setTimeout(function () {
         getLabelList()
         showLabelSelected()
     }, 3000)

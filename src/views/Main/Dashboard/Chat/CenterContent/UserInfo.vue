@@ -47,7 +47,7 @@
 import {
     useCommonStore, useConversationStore, useChatbotUserStore, usePageStore
 } from '@/stores'
-import { reset_read_conversation } from '@/service/api/chatbox/n4-service';
+import { reset_read_conversation } from '@/service/api/chatbox/n4-service'
 import { ref } from 'vue'
 import { flow } from '@/service/helper/async'
 
