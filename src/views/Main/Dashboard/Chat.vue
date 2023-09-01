@@ -175,6 +175,12 @@ function onSocketFromChatboxServer() {
                 }
             }
         ))
+
+        // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
+        if (size(message)) window.dispatchEvent(new CustomEvent(
+            'chatbox_socket_message',
+            { detail: message }
+        ))
     }
 }
 /**đóng kết nối socket */

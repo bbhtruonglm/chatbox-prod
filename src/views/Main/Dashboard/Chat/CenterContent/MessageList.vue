@@ -8,7 +8,7 @@
                     <Loading class="mx-auto" />
                 </div>
             </div>
-            <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 mb-1 relative">
+            <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 relative">
                 <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
                     <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                     <UnsupportMessage v-else />
@@ -44,7 +44,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useConversationStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
@@ -65,6 +65,11 @@ import StaffRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/Sta
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 import type { DebouncedFunc } from 'lodash'
+
+/**dữ liệu từ socket */
+interface CustomEvent extends Event {
+    detail?: MessageInfo
+}
 
 const conversationStore = useConversationStore()
 
@@ -98,6 +103,32 @@ watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     getListMessage(true)
 })
 
+onMounted(() => window.addEventListener(
+    'chatbox_socket_message',
+    onRealtimeHandleMessage
+))
+onUnmounted(() => window.removeEventListener(
+    'chatbox_socket_message',
+    onRealtimeHandleMessage
+))
+
+/**xử lý socket message */
+function onRealtimeHandleMessage({ detail }: CustomEvent) {
+    if (!detail) return
+
+    // nếu không phải của khách hàng đang chọn thì chặn
+    if (
+        detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
+        detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
+    ) return
+
+    // thêm tin nhắn vào danh sách
+    list_message.value.push(detail)
+
+    // TODO xử lý khi gặp trường hợp phát hiện tin nhắn chờ
+
+    scrollToBottomMessage()
+}
 /**load thêm dữ liệu khi lăn chuột lên trên */
 function loadMoreMessage($event: Event) {
     /**div chưa danh sách tin nhắn */
