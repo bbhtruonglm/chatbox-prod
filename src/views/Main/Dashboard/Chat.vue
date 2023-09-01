@@ -277,7 +277,7 @@ function validateConversation(
 
     // lọc khách spam
     if (
-        conversationStore.option_filter_page_data.is_spam_fb &&
+        conversationStore.option_filter_page_data.is_spam_fb === 'YES' &&
         !conversation.is_spam_fb
     ) return
 

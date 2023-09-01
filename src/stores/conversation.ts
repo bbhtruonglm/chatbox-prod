@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type {
-    ConversationInfo, FilterConversation
+    ConversationInfo, ConversationList, FilterConversation
 } from '@/service/interface/app/conversation'
 
 export const useConversationStore = defineStore('conversation_store', () => {
@@ -20,8 +20,12 @@ export const useConversationStore = defineStore('conversation_store', () => {
     /**dữ liệu của 1 khách hàng khi được chọn */
     const select_conversation = ref<ConversationInfo>()
 
+    /**danh sách hội thoại đang hiển thị */
+    const conversation_list = ref<ConversationList>({})
+
     return {
         option_filter_page_data,
         select_conversation,
+        conversation_list,
     }
 })

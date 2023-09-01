@@ -1,6 +1,6 @@
 <template>
     <div @click="clickConversation" :class="{
-        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key
+        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
     }" class="border-l-4 border-l-white border-b py-1 px-2 flex h-full">
         <div class="w-fit h-fit relative">
             <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"

@@ -59,6 +59,8 @@ export interface QueryConversationInput extends FilterConversation {
 export interface ConversationInfo {
     /**key cho vitual scroll */
     data_key?: string
+    /**gắn cờ đặc biệt để có thể ẩn hội thoại đi */
+    is_hidden?: boolean
     /**id của trang */
     fb_page_id: string
     /**id của khách hàng */
@@ -136,4 +138,14 @@ export interface QuerySetAssignStaffConversation {
     new_staff_id: string
     /**id của nhân viên cũ */
     old_staff_id?: string
+}
+
+/**đầu vào api toggle spam coversation */
+export interface QueryToggleSpamConversation {
+    /**id trang */
+    page_id: string
+    /**id khách hàng */
+    client_id: string
+    /**giá trị của cờ */
+    is_spam: boolean
 }

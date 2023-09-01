@@ -5,7 +5,7 @@ import type { PageList, PageWebsiteCreate } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 import type { CreatePricing, PricingInfo, UpgradePricing } from '@/service/interface/app/pricing'
-import type { QueryConversationInput, QueryConversationResponse, QueryResetReadConversation, QuerySetAssignStaffConversation } from '@/service/interface/app/conversation'
+import type { QueryConversationInput, QueryConversationResponse, QueryResetReadConversation, QuerySetAssignStaffConversation, QueryToggleSpamConversation } from '@/service/interface/app/conversation'
 import type { MessageInfo, QueryMessage } from '@/service/interface/app/message'
 
 /**đăng nhập bằng token của fb */
@@ -204,5 +204,14 @@ export const set_assign_staff_conversation = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/conversation/set_assign_staff_conversation`,
+    body,
+}, proceed)
+
+/**thay đổi gắn cờ spam cho khách hàng */
+export const toggle_spam_conversation = (
+    body: QueryToggleSpamConversation,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/conversation/toggle_spam_conversation`,
     body,
 }, proceed)
