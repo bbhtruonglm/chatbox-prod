@@ -134,3 +134,13 @@ export const selectConversation = (conversation: ConversationInfo) => {
 export const isMobile = () => {
     return window.innerWidth < 768
 }
+
+/**kiểm tra cỡ màn hình có phải là máy tính bảng hay không */
+export const isTablet = () => {
+    return window.innerWidth >= 768 && window.innerWidth < 1280
+}
+
+/**kiểm tra cỡ màn hình không phải là pc */
+export const isNotPc = () => {
+    return isMobile() || isTablet()
+}

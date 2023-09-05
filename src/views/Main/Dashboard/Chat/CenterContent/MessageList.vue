@@ -2,7 +2,7 @@
     <div class="h-[calc(100%_-_150px)] relative">
         <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
         <div @scroll="loadMoreMessage" id="list-message"
-            class="pt-0 p-2 h-full overflow-hidden overflow-y-auto">
+            class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto">
             <div v-if="is_loading" class="relative z-10">
                 <div class="fixed left-[50%] translate-x-[-50%]">
                     <Loading class="mx-auto" />
@@ -49,7 +49,7 @@ import { useConversationStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import { isMobile } from '@/service/function'
+import { isNotPc } from '@/service/function'
 import { debounce } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
@@ -143,7 +143,7 @@ function loadMoreMessage($event: Event) {
      * nếu là dt, thì khi scroll lên trên cùng, sẽ dùng thủ thuật này, để hạn
      * chế không cho phép giá trị scroll thành số âm, gây ra bug bị trắng màn hình
      */
-    if (isMobile() && SCROLL_TOP <= 0 && !is_done.value) {
+    if (isNotPc() && SCROLL_TOP <= 0 && !is_done.value) {
         // tắt scroll
         LIST_MESSAGE.style.overflowY = 'hidden'
 
@@ -155,10 +155,10 @@ function loadMoreMessage($event: Event) {
     if (is_loading.value || is_done.value) return
 
     // nếu là dt thì phải chạm đỉnh mới load tiếp dữ liệu
-    if (isMobile() && SCROLL_TOP === 0) getListMessage()
+    if (isNotPc() && SCROLL_TOP === 0) getListMessage()
 
     // các thiết bị còn lại thì cho phép infinitve loading scroll
-    if (!isMobile() && SCROLL_TOP < 300) getListMessage()
+    if (!isNotPc() && SCROLL_TOP < 300) getListMessage()
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
@@ -205,7 +205,7 @@ function getListMessage(is_scroll?: boolean) {
         (cb: CbError) => {
             // nếu là điện thoại thì scroll đến phần tử cuối cùng trước đó
             if (
-                isMobile() &&
+                isNotPc() &&
                 old_first_message_id
             ) nextTick(
                 () => document
@@ -214,7 +214,7 @@ function getListMessage(is_scroll?: boolean) {
             )
 
             // nếu là các thiết bị khác thì chạy infinitve loading scroll
-            if (!isMobile()) nextTick(() => {
+            if (!isNotPc()) nextTick(() => {
                 // lấy div chưa danh sách tin nhắn
                 const LIST_MESSAGE = document.getElementById('list-message')
 
@@ -243,7 +243,7 @@ function getListMessage(is_scroll?: boolean) {
              * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
              * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
-            if (!isMobile() && list_message.value.length >= LIMIT) getListMessage()
+            if (!isNotPc() && list_message.value.length >= LIMIT) getListMessage()
 
             scrollToBottomMessage()
         }
