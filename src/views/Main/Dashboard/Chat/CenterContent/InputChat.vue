@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full min-h-[50px] relative border-t flex items-center">
+    <div ref="input_chat_warper" class="w-full min-h-[50px] relative border-t flex items-center">
         <div
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-25px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <div class="flex items-center justify-center h-full w-full bg-slate-200">
@@ -24,7 +24,9 @@
             <img src="@/assets/icons/slash.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_90px)] h-full">
-            <div @keydown.enter="test" id="input-chat" class="max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none" contenteditable="true" />
+            <div @keydown.enter="submitInput"
+                class="max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
+                contenteditable="true" />
         </div>
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/send.svg" width="25" height="25" />
@@ -47,8 +49,46 @@
 </template>
 <script setup lang="ts">
 import { random_word } from '@/service/helper/random'
+import { onMounted, ref } from 'vue'
 
-function test($event: KeyboardEvent) {
+import type { ComponentRef } from '@/service/interface/vue'
+
+/**ref của input chat */
+const input_chat_warper = ref<ComponentRef>()
+
+onMounted(() => {
+    onChangeHeightInput()
+})
+
+/**lắng nghe sự thay đổi độ cao của input, để thay đổi độ cao danh sách tin nhắn */
+function onChangeHeightInput() {
+    /**input chat */
+    const INPUT_CHAT = input_chat_warper.value
+
+    // lắng nghe sự thay đổi
+    new ResizeObserver(function (entries) {
+        for (var entry of entries) {
+            if (entry.target !== INPUT_CHAT) return
+
+            /**độ cao mới */
+            const NEW_HEIGHT = entry.contentRect.height
+
+            resizeHeightMessageList(NEW_HEIGHT)
+        }
+    }).observe(INPUT_CHAT)
+}
+/**thay đổi độ cao của danh sách tin nhắn */
+function resizeHeightMessageList(new_height: number) {
+    /**mục tiêu */
+    const TARGET = document.getElementById('list-message-warper')
+
+    if (!TARGET) return
+
+    // thay đổi độ cao của danh sách tin nhắn cho khớp với màn hình
+    TARGET.style.height = `calc(100% - ${100 + new_height}px)`
+}
+/**xử lý sự kiện nhấn enter ở ô chat */
+function submitInput($event: KeyboardEvent) {
     if ($event.shiftKey) return
 
     $event.preventDefault()
