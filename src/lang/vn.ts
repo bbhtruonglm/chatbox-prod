@@ -25,7 +25,8 @@ const source: Language = {
             select_all: 'Chọn tất cả',
             active: 'Kích hoạt',
             chatbox: 'Chatbox',
-            unsupport_message: 'Nội dung tin nhắn này hiện tại chưa thể hiển thị được, vui lòng liên hệ với quản trị viên hệ thống'
+            unsupport_message: 'Nội dung tin nhắn này hiện tại chưa thể hiển thị được, vui lòng liên hệ với quản trị viên hệ thống',
+            close: 'Đóng'
         },
         view: {
             network: {
@@ -246,7 +247,9 @@ const source: Language = {
                         assign_staff: {
                             title: 'Phân công nhân viên'
                         },
-
+                        input: {
+                            add_tag: 'Gắn thẻ',
+                        }
                     }
                 }
             }
