@@ -1,13 +1,14 @@
 <template>
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
         <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
-        <div @scroll="loadMoreMessage" id="list-message" class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto">
+        <div @scroll="loadMoreMessage" id="list-message"
+            class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto bg-slate-50">
             <div v-if="is_loading" class="relative z-10">
                 <div class="fixed left-[50%] translate-x-[-50%]">
                     <Loading class="mx-auto" />
                 </div>
             </div>
-            <div v-for="message of list_message" :id="message._id" class="pt-2 pr-5 relative">
+            <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative group">
                 <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
                     <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                     <UnsupportMessage v-else />
@@ -17,14 +18,16 @@
                     <div class="w-fit max-w-[370px]">
                         <PageTextMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
-                        <MessageDate :time="message.time" />
+                        <MessageDate class="right-5" :time="message.time"
+                            :info="parserStaffName(message.message_metadata)" />
                     </div>
                 </div>
                 <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px]">
                         <NoteMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
-                        <MessageDate :time="message.time" />
+                        <MessageDate class="right-5" :time="message.time"
+                            :info="parserStaffName(message.message_metadata)" />
                     </div>
                 </div>
                 <div v-else-if="message.message_type === 'system'" class="flex justify-center">
@@ -39,11 +42,11 @@
                 <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
                 <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
             </div>
-            <div v-for="message of messageStore.send_message_list" class="pt-2 pr-5 relative">
+            <div v-for="message of messageStore.send_message_list" class="pt-[1px] pr-5 relative group">
                 <div class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px]">
                         <PageTempTextMessage :text="message.text" />
-                        <MessageDate :time="message.time" />
+                        <MessageDate class="right-5" :time="message.time" />
                     </div>
                 </div>
             </div>
@@ -124,6 +127,10 @@ onUnmounted(() => window.removeEventListener(
     onRealtimeHandleMessage
 ))
 
+/**phân tích tên nv từ meta */
+function parserStaffName(meta?: string) {
+    return meta?.split('__')?.[1] || ''
+}
 /**xử lý socket message */
 function onRealtimeHandleMessage({ detail }: CustomEvent) {
     if (!detail) return

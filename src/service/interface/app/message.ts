@@ -18,6 +18,8 @@ export interface MessageInfo {
     message_attachments?: []
     /**id của tin nhắn ở hệ thống chính */
     message_mid?: string
+    /**thông tin thêm của tin nhắn này */
+    message_metadata?: string
 }
 
 /**đầu vào của api */

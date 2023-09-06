@@ -3,7 +3,7 @@
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
             <StaffAvatar v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)" size="20"
                 :class="`message-staff-read-${staff_id}`"
-                class="rounded-full ml-[-5px] hidden" />
+                class="rounded-full ml-[-5px] hidden my-1" />
         </template>
     </div>
 </template>
