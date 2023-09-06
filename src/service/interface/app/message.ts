@@ -59,4 +59,6 @@ export interface TempSendMessage {
     text: string
     /**thời gian gửi tin nhắn */
     time: string
+    /**lỗi khi gửi tin nhắn */
+    error?: boolean
 }

@@ -46,6 +46,7 @@
                 <div class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px]">
                         <PageTempTextMessage :text="message.text" />
+                        <PageMessageError v-if="message.error" />
                         <MessageDate class="right-5" :time="message.time" />
                     </div>
                 </div>
@@ -68,6 +69,7 @@ import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageL
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessage.vue'
 import PageTempTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTempTextMessage.vue'
+import PageMessageError from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageMessageError.vue'
 import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/SystemMessage.vue'
 import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/NoteMessage.vue'
 import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'

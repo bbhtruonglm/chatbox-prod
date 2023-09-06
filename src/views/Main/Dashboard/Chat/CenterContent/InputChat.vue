@@ -130,7 +130,10 @@ function submitInput($event: KeyboardEvent) {
 /**gửi tin nhắn */
 function sendMessage(text: string) {
     /**nội dung tin nhắn vừa được gửi */
-    const TEMP_SEND_MESSAGE: TempSendMessage = { text, time: new Date().toISOString() }
+    const TEMP_SEND_MESSAGE: TempSendMessage = { 
+        text, 
+        time: new Date().toISOString() 
+    }
 
     // thêm vào danh sách tin nhắn tạm
     messageStore.send_message_list.push(TEMP_SEND_MESSAGE)
@@ -143,7 +146,13 @@ function sendMessage(text: string) {
         text,
         type: 'FACEBOOK_MESSAGE'
     }, (e, r) => {
-        if (e || !r?.message_id) return handleSendMessageError(e || r)
+        if (e || !r?.message_id) {
+            TEMP_SEND_MESSAGE.error = true
+
+            handleSendMessageError(e || r)
+            
+            return 
+        }
 
         // sử dụng tính chất obj của js để thêm id tin nhắn vào phần tử trong mảng
         TEMP_SEND_MESSAGE.message_id = r?.message_id

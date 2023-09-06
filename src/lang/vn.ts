@@ -249,6 +249,9 @@ const source: Language = {
                         },
                         input: {
                             add_tag: 'Gắn thẻ',
+                        },
+                        message: {
+                            error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này'
                         }
                     }
                 }
