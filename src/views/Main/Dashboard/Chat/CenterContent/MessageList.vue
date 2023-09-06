@@ -1,8 +1,7 @@
 <template>
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
         <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
-        <div @scroll="loadMoreMessage" id="list-message"
-            class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto">
+        <div @scroll="loadMoreMessage" id="list-message" class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto">
             <div v-if="is_loading" class="relative z-10">
                 <div class="fixed left-[50%] translate-x-[-50%]">
                     <Loading class="mx-auto" />
@@ -40,23 +39,32 @@
                 <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
                 <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
             </div>
+            <div v-for="message of messageStore.send_message_list" class="pt-2 pr-5 relative">
+                <div class="flex flex-col items-end">
+                    <div class="w-fit max-w-[370px]">
+                        <PageTempTextMessage :text="message.text" />
+                        <MessageDate :time="message.time" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useMessageStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import { isNotPc } from '@/service/function'
-import { debounce } from 'lodash'
+import { isNotPc, scrollToBottomMessage } from '@/service/function'
+import { debounce, remove } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessage.vue'
+import PageTempTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTempTextMessage.vue'
 import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/SystemMessage.vue'
 import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/NoteMessage.vue'
 import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'
@@ -72,6 +80,7 @@ interface CustomEvent extends Event {
 }
 
 const conversationStore = useConversationStore()
+const messageStore = useMessageStore()
 
 /**danh sách tin nhắn hiện tại */
 const list_message = ref<MessageInfo[]>([])
@@ -93,6 +102,9 @@ const list_debounce_staff = ref<{
 watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
     list_message.value = []
+
+    // * reset danh sách tin nhắn chờ
+    messageStore.send_message_list = []
 
     // reset cờ đã load hết dữ liệu
     is_done.value = false
@@ -125,7 +137,11 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
     // thêm tin nhắn vào danh sách
     list_message.value.push(detail)
 
-    // TODO xử lý khi gặp trường hợp phát hiện tin nhắn chờ
+    // xử lý khi gặp trường hợp phát hiện tin nhắn chờ
+    if (detail?.message_mid) remove(
+        messageStore.send_message_list,
+        message => message.message_id === detail?.message_mid
+    )
 
     scrollToBottomMessage()
 }
@@ -249,17 +265,6 @@ function getListMessage(is_scroll?: boolean) {
         }
 
         if (e) return toastError(e)
-    })
-}
-/**cuộn xuống cuối trang */
-function scrollToBottomMessage() {
-    const LIST_MESSAGE = document.getElementById('list-message')
-
-    if (!LIST_MESSAGE) return
-
-    // html được render thì mới cuộn
-    nextTick(() => {
-        LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
     })
 }
 /**

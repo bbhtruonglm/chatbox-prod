@@ -7,6 +7,7 @@ import { toastError } from '../helper/alert'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
+import { nextTick } from 'vue'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -143,4 +144,16 @@ export const isTablet = () => {
 /**kiểm tra cỡ màn hình không phải là pc */
 export const isNotPc = () => {
     return isMobile() || isTablet()
+}
+
+/**cuộn xuống cuối trang */
+export const scrollToBottomMessage = () => {
+    const LIST_MESSAGE = document.getElementById('list-message')
+
+    if (!LIST_MESSAGE) return
+
+    // html được render thì mới cuộn
+    nextTick(() => {
+        LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
+    })
 }
