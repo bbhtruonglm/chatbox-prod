@@ -1,12 +1,18 @@
 <template>
     <div ref="input_chat_warper" class="w-full min-h-[50px] relative border-t flex items-center">
         <div @click="toggleLabelSelect()"
-            class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-25px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
+            class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <template v-if="!is_show_label_list">
-                <div class="flex items-center justify-center h-full w-full bg-slate-200">
-                    <div v-for="i of 5" class="bg-red-600 w-[10px] h-[10px] rounded-full mx-1" />
+                <div v-if="getCurrentLabel()?.length" class="flex items-center justify-center h-full w-full bg-slate-200">
+                    <div v-for="label_id of take(getCurrentLabel(), 5)"
+                        :style="{ background: getLabelInfo(conversationStore.select_conversation?.fb_page_id, label_id)?.bg_color }"
+                        class="w-[10px] h-[10px] rounded-full mx-1" />
+                    <div v-if="getCurrentLabelLength() > 5" class="text-xs mx-1 text-slate-600 font-bold">
+                        +
+                        {{ getCurrentLabelLength() - 5 }}
+                    </div>
                 </div>
-                <div class="text-slate-600 bg-slate-200 text-xs font-bold py-1 text-center">
+                <div v-else class="text-slate-600 bg-slate-200 text-xs font-bold py-1 text-center">
                     {{ $t('v1.view.main.dashboard.chat.input.add_tag') }}
                 </div>
             </template>
@@ -14,13 +20,25 @@
                 {{ $t('v1.common.close') }}
             </div>
         </div>
-        <div v-if="is_show_label_list"
-            class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-white overflow-hidden overflow-y-auto pt-2 pb-7 px-2 flex flex-wrap justify-center">
-            <div v-for="i of 100"
-                class="bg-green-100 text-green-700 text-sm w-fit px-2 py-[2px] rounded-full mr-2 mb-2 cursor-pointer">
-                {{ random_word() }}
+
+        <template v-if="is_show_label_list">
+            <div v-if="is_loading_label"
+                class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
+                <Loading />
             </div>
-        </div>
+            <div
+                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden overflow-y-auto pt-2 pb-7 px-2 ">
+                <div class="flex flex-wrap justify-center">
+                    <div v-for="label_info of sortLabelList()" @click="toggleLabel(label_info._id)" :style="{
+                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+                        'border-color': label_info?.bg_color,
+                    }" class="text-sm w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+                        {{ label_info?.title }}
+                    </div>
+                </div>
+            </div>
+        </template>
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/clip.svg" width="17" height="17" />
         </div>
@@ -52,15 +70,19 @@
     </div>
 </template>
 <script setup lang="ts">
-import { random_word } from '@/service/helper/random'
 import { onMounted, ref } from 'vue'
-import { send_message } from '@/service/api/chatbox/n4-service'
+import {
+    send_message, toggle_label_conversation
+} from '@/service/api/chatbox/n4-service'
 import { useConversationStore, useMessageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
-import { scrollToBottomMessage } from '@/service/function'
+import { getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel } from '@/service/function'
+
+import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
+import { map, take } from 'lodash'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -69,11 +91,56 @@ const messageStore = useMessageStore()
 const input_chat_warper = ref<ComponentRef>()
 /**gắn cờ có hiển thị danh sách nhãn hay không */
 const is_show_label_list = ref(false)
+/**gắn cờ đang loading label */
+const is_loading_label = ref(false)
 
-onMounted(() => {
-    onChangeHeightInput()
-})
+onMounted(() => onChangeHeightInput())
 
+/**thay đổi gắn nhãn của khách hàng này */
+function toggleLabel(label_id: string) {
+    is_loading_label.value = true
+
+    toggle_label_conversation({
+        page_id: conversationStore.select_conversation?.fb_page_id as string,
+        client_id: conversationStore.select_conversation?.fb_client_id as string,
+        label_id,
+    }, (e, r) => {
+        if (e) return toastError(e)
+
+        is_loading_label.value = false
+    })
+}
+/**kiểm tra label có được chọn hay không */
+function isActiveLabel(label_id?: string | number) {
+    if (!label_id) return false
+
+    return getCurrentLabel()?.includes(label_id as string)
+}
+/**sắp xếp danh sách nhãn được chọn lên đầu */
+function sortLabelList() {
+    /**chuyển đổi obj thành array */
+    let list_label = map(
+        getPageLabel(conversationStore.select_conversation?.fb_page_id)
+    )
+
+    // sort đã gắn nhãn lên đầu
+    return list_label?.sort(label_info => {
+        if (getCurrentLabel()?.includes(label_info._id)) return -1
+
+        return 1
+    })
+}
+/**đếm số nhãn của khách hàng hiện tại */
+function getCurrentLabelLength() {
+    return getCurrentLabel()?.length || 0
+}
+/**lấy danh sách id nhãn của khách hàng hiện tại */
+function getCurrentLabel() {
+    return getLabelValid(
+        conversationStore.select_conversation?.fb_page_id,
+        conversationStore.select_conversation?.label_id
+    )
+}
 /**ẩn hiện danh sách nhãn */
 function toggleLabelSelect() {
     is_show_label_list.value = !is_show_label_list.value
@@ -130,9 +197,9 @@ function submitInput($event: KeyboardEvent) {
 /**gửi tin nhắn */
 function sendMessage(text: string) {
     /**nội dung tin nhắn vừa được gửi */
-    const TEMP_SEND_MESSAGE: TempSendMessage = { 
-        text, 
-        time: new Date().toISOString() 
+    const TEMP_SEND_MESSAGE: TempSendMessage = {
+        text,
+        time: new Date().toISOString()
     }
 
     // thêm vào danh sách tin nhắn tạm
@@ -150,8 +217,8 @@ function sendMessage(text: string) {
             TEMP_SEND_MESSAGE.error = true
 
             handleSendMessageError(e || r)
-            
-            return 
+
+            return
         }
 
         // sử dụng tính chất obj của js để thêm id tin nhắn vào phần tử trong mảng

@@ -149,3 +149,13 @@ export interface QueryToggleSpamConversation {
     /**giá trị của cờ */
     is_spam: boolean
 }
+
+/**đầu vào api toggle nhãn */
+export interface QueryToggleLabelConversation {
+    /**id trang */
+    page_id: string
+    /**id khách hàng */
+    client_id: string
+    /**id của nhãn */
+    label_id: string
+}

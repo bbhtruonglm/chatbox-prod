@@ -157,3 +157,23 @@ export const scrollToBottomMessage = () => {
         LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
     })
 }
+
+/**lấy danh sách nhãn của trang */
+export const getPageLabel = (page_id?: string) => {
+    const pageStore = usePageStore()
+
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id as string]
+        ?.label_list
+}
+
+/**đọc dữ liệu của nhãn */
+export const getLabelInfo = (page_id?: string, label_id?: string) => {
+    return getPageLabel(page_id)?.[label_id as string]
+}
+
+/**lọc các nhãn chưa bị xoá */
+export const getLabelValid = (page_id?: string, label_list?: string[]) => {
+    return label_list?.filter(label_id => getLabelInfo(page_id, label_id))
+}

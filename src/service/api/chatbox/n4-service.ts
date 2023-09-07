@@ -5,7 +5,7 @@ import type { PageList, PageWebsiteCreate } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 import type { CreatePricing, PricingInfo, UpgradePricing } from '@/service/interface/app/pricing'
-import type { QueryConversationInput, QueryConversationResponse, QueryResetReadConversation, QuerySetAssignStaffConversation, QueryToggleSpamConversation } from '@/service/interface/app/conversation'
+import type { QueryConversationInput, QueryConversationResponse, QueryResetReadConversation, QuerySetAssignStaffConversation, QueryToggleLabelConversation, QueryToggleSpamConversation } from '@/service/interface/app/conversation'
 import type { MessageInfo, QueryMessage, SendMesageInput } from '@/service/interface/app/message'
 
 /**đăng nhập bằng token của fb */
@@ -222,5 +222,14 @@ export const send_message = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/message/send_message`,
+    body,
+}, proceed)
+
+/**toggle nhãn với hội thoại */
+export const toggle_label_conversation = (
+    body: QueryToggleLabelConversation,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/conversation/toggle_label_conversation`,
     body,
 }, proceed)

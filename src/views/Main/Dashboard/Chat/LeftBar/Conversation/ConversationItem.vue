@@ -36,20 +36,14 @@
                     <img src="@/assets/icons/reply.svg">
                 </div>
                 <div class="label-list w-[calc(100vw_-_128px)] overflow-hidden overflow-x-auto">
-                    <template v-for="label_id of source?.label_id">
-                        <div v-if="pageStore.selected_page_list_info?.[source?.fb_page_id as
-                            string]?.label_list?.[label_id]"
-                            :style="{ background: pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.label_list?.[label_id]?.bg_color }"
+                    <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
+                        <div v-if="getLabelInfo(source?.fb_page_id, label_id)"
+                            :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
                             class="text-white rounded-full text-xs px-2 mr-1">
-                            {{ pageStore.selected_page_list_info?.[source?.fb_page_id as
-                                string]?.label_list?.[label_id]?.title
-                            }}
+                            {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
                         </div>
                     </template>
                 </div>
-                <!-- <div class="text-xs rounded border-2 text-slate-500">
-                    +10
-                </div> -->
             </div>
         </div>
         <div class="w-[49px] flex flex-col items-end">
@@ -74,13 +68,14 @@
 </template>
 <script setup lang="ts">
 import {
-    useChatbotUserStore, usePageStore, useCommonStore, useStaffStore,
-    useConversationStore,
+    useChatbotUserStore, usePageStore, useCommonStore, useConversationStore
 } from '@/stores'
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { isMobile, selectConversation } from '@/service/function'
+import { 
+    isMobile, selectConversation, getLabelInfo, getLabelValid 
+} from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -95,7 +90,6 @@ const $props = withDefaults(defineProps<{
 const $router = useRouter()
 const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
-const staffStore = useStaffStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 
@@ -134,14 +128,6 @@ function formatLastMessageTime(timestamp?: number) {
 
     // hiện full
     return format_date(timestamp, 'dd/MM/yy')
-}
-/**mở modal staff info */
-function openStaffInfo() {
-    if (!$props.source?.fb_staff_id) return
-
-    staffStore.view_staff_info = staffStore
-        .staff_list_of_active_page
-        ?.[$props.source?.fb_staff_id]
 }
 </script>
 <style scoped lang="scss">

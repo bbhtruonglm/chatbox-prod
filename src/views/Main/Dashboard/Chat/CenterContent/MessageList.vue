@@ -2,20 +2,20 @@
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
         <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
         <div @scroll="loadMoreMessage" id="list-message"
-            class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto bg-slate-50">
+            class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto bg-gray-100">
             <div v-if="is_loading" class="relative z-10">
                 <div class="fixed left-[50%] translate-x-[-50%]">
                     <Loading class="mx-auto" />
                 </div>
             </div>
-            <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative group">
-                <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px]">
+            <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
+                <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px] group">
                     <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                     <UnsupportMessage v-else />
                     <MessageDate class="text-right" :time="message.time" />
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px]">
+                    <div class="w-fit max-w-[370px] group">
                         <PageTextMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
                         <MessageDate class="right-5" :time="message.time"
@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px]">
+                    <div class="w-fit max-w-[370px] group">
                         <NoteMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
                         <MessageDate class="right-5" :time="message.time"
@@ -44,7 +44,7 @@
             </div>
             <div v-for="message of messageStore.send_message_list" class="pt-[1px] pr-5 relative group">
                 <div class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px]">
+                    <div class="w-fit max-w-[370px] group">
                         <PageTempTextMessage :text="message.text" />
                         <PageMessageError v-if="message.error" />
                         <MessageDate class="right-5" :time="message.time" />
