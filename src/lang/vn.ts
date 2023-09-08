@@ -252,6 +252,11 @@ const source: Language = {
                         },
                         message: {
                             error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này'
+                        },
+                        widget: {
+                            title: 'Widget',
+                            setting: 'Tuỳ chỉnh widget',
+                            search: 'Tìm kiếm widget'
                         }
                     }
                 }

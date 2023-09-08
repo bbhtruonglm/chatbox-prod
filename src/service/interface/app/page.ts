@@ -1,5 +1,6 @@
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { LabelInfo } from './label'
+import type { AppInstalledInfo } from './widget'
 
 export type PageType = 'FB_MESS' | 'ZALO' | 'WEBSITE' | 'FB_WHATSAPP'
 
@@ -31,6 +32,7 @@ export interface PageData {
         [index: string]: LabelInfo
     }
     current_staff?: {}
+    widget_list: AppInstalledInfo[]
 }
 
 export interface PageList {

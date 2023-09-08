@@ -1,5 +1,5 @@
 <template>
-    <div ref="input_chat_warper" class="w-full min-h-[50px] relative border-t flex items-center">
+    <div ref="input_chat_warper" class="w-full min-h-[49px] relative border-t flex items-center">
         <div @click="toggleLabelSelect()"
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <template v-if="!is_show_label_list">
@@ -54,7 +54,7 @@
             <img src="@/assets/icons/send.svg" width="25" height="25" />
         </div>
     </div>
-    <div class="w-full flex items-center h-[50px] border-t relative">
+    <div class="w-full flex items-center h-[49px] border-t relative">
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
         </div>
@@ -62,19 +62,19 @@
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex">
-            <div v-for="i of 100"
+            <div v-for="widget of widget_list" @click="toggleWidget(widget)"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
-                W
+                <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
             </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
-import { useConversationStore, useMessageStore } from '@/stores'
+import { useConversationStore, useMessageStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel } from '@/service/function'
 
@@ -83,10 +83,16 @@ import Loading from '@/components/Loading.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
 import { map, take } from 'lodash'
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
+const $emit = defineEmits(['toggle_bottom_widget'])
+
+const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 
+/**danh sách widget */
+const widget_list = ref<AppInstalledInfo[]>([])
 /**ref của input chat */
 const input_chat_warper = ref<ComponentRef>()
 /**gắn cờ có hiển thị danh sách nhãn hay không */
@@ -94,8 +100,30 @@ const is_show_label_list = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
 
+watch(() => conversationStore.select_conversation, () => getListWidget())
+
 onMounted(() => onChangeHeightInput())
 
+function toggleWidget(widget: AppInstalledInfo) {
+    conversationStore.select_widget = widget
+
+    $emit('toggle_bottom_widget')
+}
+/**đọc danh sách các widget của trang này */
+function getListWidget() {
+    /**id trang */
+    const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+
+    if (!PAGE_ID) return []
+
+    // làm mới danh sách
+    widget_list.value = []
+
+    // render lại danh sách
+    nextTick(() => {
+        widget_list.value = pageStore.selected_page_list_info?.[PAGE_ID]?.widget_list || []
+    })
+}
 /**thay đổi gắn nhãn của khách hàng này */
 function toggleLabel(label_id: string) {
     is_loading_label.value = true

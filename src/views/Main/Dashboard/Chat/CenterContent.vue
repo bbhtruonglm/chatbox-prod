@@ -6,7 +6,7 @@
         <div v-show="conversationStore.select_conversation?.fb_client_id" class="h-full">
             <UserInfo @toggle_change_assign_staff="toggleChangeAssignStaff" />
             <MessageList />
-            <InputChat />
+            <InputChat @toggle_bottom_widget="toggleBottomWidget" />
         </div>
         <div v-if="!conversationStore.select_conversation?.fb_client_id"
             class="flex justify-center items-center flex-col h-full">
@@ -16,18 +16,20 @@
     </div>
     <template>
         <ChangeStaffModal ref="change_staff_modal_ref" />
+        <BottomWidgetModal ref="bottom_widget_modal_ref" />
     </template>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useCommonStore, useConversationStore } from '@/stores'
-import { teleportModelAssignStaffOnPcScreen } from '@/service/function'
+import { teleportCenterModelOnPcScreen } from '@/service/function'
 import { swipe_left } from '@/service/helper/touchGesture'
 
 import UserInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo.vue'
 import MessageList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList.vue'
 import InputChat from '@/views/Main/Dashboard/Chat/CenterContent/InputChat.vue'
 import ChangeStaffModal from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaffModal.vue'
+import BottomWidgetModal from '@/views/Main/Dashboard/Chat/CenterContent/BottomWidgetModal.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 
@@ -36,6 +38,8 @@ const conversationStore = useConversationStore()
 
 /**ref của modal thay đổi assign của nhân viên */
 const change_staff_modal_ref = ref<ComponentRef>()
+/**ref của modal widget bottom */
+const bottom_widget_modal_ref = ref<ComponentRef>()
 
 onMounted(() => allowMobileSwipeClose())
 
@@ -48,8 +52,14 @@ function allowMobileSwipeClose() {
 }
 /**ẩn hiện modal */
 function toggleChangeAssignStaff() {
-    teleportModelAssignStaffOnPcScreen()
+    teleportCenterModelOnPcScreen()
 
     change_staff_modal_ref.value?.toggleModal()
+}
+/**ẩn hiện modal */
+function toggleBottomWidget() {
+    teleportCenterModelOnPcScreen()
+
+    bottom_widget_modal_ref.value?.toggleModal()
 }
 </script>

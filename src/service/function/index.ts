@@ -86,13 +86,13 @@ export const teleportModelFilterOnPcScreen = () => {
 }
 
 /**nếu là giao diện pc hoặc tablet thì không hiển thị assign staff full màn hình nữa */
-export const teleportModelAssignStaffOnPcScreen = () => {
+export const teleportCenterModelOnPcScreen = () => {
     const commonStore = useCommonStore()
 
     // mobile thì hiển thị full
     if (window.innerWidth < 768) {
-        commonStore.assign_staff_modal_left = `0`
-        commonStore.assign_staff_modal_width = `100%`
+        commonStore.center_modal_left = `0`
+        commonStore.center_modal_width = `100%`
     }
     // tablet, pc thì hiển thị nhỏ
     // đợi 1 khoảng thời gian để div gốc di chuyển đến vị trí mong muốn
@@ -108,8 +108,8 @@ export const teleportModelAssignStaffOnPcScreen = () => {
 
         if (!left || !width) return
 
-        commonStore.assign_staff_modal_left = `${left}px`
-        commonStore.assign_staff_modal_width = `${width}px`
+        commonStore.center_modal_left = `${left}px`
+        commonStore.center_modal_width = `${width}px`
     }, 600)
 }
 

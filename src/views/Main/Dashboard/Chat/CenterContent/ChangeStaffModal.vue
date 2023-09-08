@@ -1,6 +1,6 @@
 <template>
-    <ModalBottom ref="change_staff_modal_ref" :left="commonStore.assign_staff_modal_left"
-        :width="commonStore.assign_staff_modal_width" @open_modal="getStaffsByPageId()">
+    <ModalBottom ref="change_staff_modal_ref" :left="commonStore.center_modal_left"
+        :width="commonStore.center_modal_width" @open_modal="getStaffsByPageId()">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
         </template>
@@ -30,7 +30,7 @@ import { map } from 'lodash'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCommonStore, usePageStore, useConversationStore } from '@/stores'
-import { teleportModelAssignStaffOnPcScreen } from '@/service/function'
+import { teleportCenterModelOnPcScreen } from '@/service/function'
 import { set_assign_staff_conversation } from '@/service/api/chatbox/n4-service'
 import { nonAccentVn } from '@/service/helper/format'
 import { flow } from '@/service/helper/async'
@@ -66,7 +66,7 @@ const fb_staff_id = ref<string>('')
 const search_staff_name = ref<string>('')
 
 onMounted(() => {
-    teleportModelAssignStaffOnPcScreen()
+    teleportCenterModelOnPcScreen()
 })
 
 /** ẩn hiện modal */
