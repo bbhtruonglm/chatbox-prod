@@ -1,6 +1,6 @@
 <template>
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
-        <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" />
+        <!-- <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" /> -->
         <div @scroll="loadMoreMessage" id="list-message"
             class="pt-0 p-2 pb-10 h-full overflow-hidden overflow-y-auto bg-gray-100">
             <div v-if="is_loading" class="relative z-10">

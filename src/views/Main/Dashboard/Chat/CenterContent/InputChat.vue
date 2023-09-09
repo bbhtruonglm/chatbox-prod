@@ -122,7 +122,7 @@ function getListWidget() {
     nextTick(() => {
         widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
             // thêm token cho url
-            widget.snap_app.url_app = getIframeUrl(widget)
+            widget.url = getIframeUrl(widget)
     
             return widget
         }) || []

@@ -9,7 +9,7 @@
         </template>
         <template v-slot:body>
             <div class="h-[300px]">
-                <iframe class="w-full h-full" :src="conversationStore.select_widget?.snap_app.url_app" frameborder="0" />
+                <iframe class="w-full h-full" :src="conversationStore.select_widget?.url" frameborder="0" />
             </div>
         </template>
     </ModalBottom>

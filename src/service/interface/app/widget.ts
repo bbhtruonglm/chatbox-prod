@@ -55,6 +55,8 @@ export interface AppInfo {
 export interface AppInstalledInfo {
     /**gắn cờ có hiển thị widget này không */
     is_show?: boolean
+    /**link để hiển thị */
+    url?: string
     /**id app được cài */
     _id: string
     /**trạng thái cài */

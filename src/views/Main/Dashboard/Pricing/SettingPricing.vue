@@ -296,7 +296,7 @@ function toggleItem(
 }
 /**kiểm tra xem có chọn toàn bộ item hay không */
 function isNotSelectAllItem(item_list?: PageList | StaffList) {
-    const FILTER_SELECT_ITEM = map(item_list).filter(item => item.is_select)
+    const FILTER_SELECT_ITEM = map(item_list as PageList ).filter(item => item.is_select)
 
     return size(item_list) > size(FILTER_SELECT_ITEM)
 }

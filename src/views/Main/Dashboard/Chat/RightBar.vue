@@ -29,7 +29,7 @@
                     <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12" height="12" />
                 </div>
                 <div v-show="widget.is_show" class="w-full h-[300px]">
-                    <iframe class="w-full h-full" :src="widget.snap_app.url_app" frameborder="0" />
+                    <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@ function getListWidget() {
             widget.is_show = true
 
             // thêm token cho url
-            widget.snap_app.url_app = getIframeUrl(widget)
+            widget.url = getIframeUrl(widget)
     
             return widget
         }) || []
