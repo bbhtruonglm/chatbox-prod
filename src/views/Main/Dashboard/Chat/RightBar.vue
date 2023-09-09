@@ -38,17 +38,17 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
 import { random_word } from '@/service/helper/random'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import { getIframeUrl, getPageWidget } from '@/service/function';
 
-const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
 
-watch(() => conversationStore.select_conversation, () => getListWidget())
+watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 /**ẩn hiện widget */
 function toggleWidget(widget: AppInstalledInfo) {
@@ -66,9 +66,12 @@ function getListWidget() {
 
     // render lại danh sách
     nextTick(() => {
-        widget_list.value = pageStore.selected_page_list_info?.[PAGE_ID]?.widget_list?.map(widget => {
+        widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
             // hiển thị toàn bộ widget
             widget.is_show = true
+
+            // thêm token cho url
+            widget.snap_app.url_app = getIframeUrl(widget)
     
             return widget
         }) || []

@@ -1,4 +1,4 @@
-import type { AllStaffList } from '@/service/interface/app/staff'
+import type { AllStaffList, StaffInfo } from '@/service/interface/app/staff'
 import type { LabelInfo } from './label'
 import type { AppInstalledInfo } from './widget'
 
@@ -31,8 +31,12 @@ export interface PageData {
     label_list?: {
         [index: string]: LabelInfo
     }
-    current_staff?: {}
+    current_staff?: StaffInfo
     widget_list: AppInstalledInfo[]
+    /**id nhóm admin */
+    group_admin_id?: string
+    /**id nhóm tổng */
+    group_all_id?: string
 }
 
 export interface PageList {

@@ -27,10 +27,16 @@ export const useConversationStore = defineStore('conversation_store', () => {
     /**widget được chọn để mở */
     const select_widget = ref<AppInstalledInfo>()
 
+    /**danh sách token của widget */
+    const list_widget_token = ref<{
+        [index: string]: string
+    }>({})
+
     return {
         option_filter_page_data,
         select_conversation,
         conversation_list,
         select_widget,
+        list_widget_token,
     }
 })

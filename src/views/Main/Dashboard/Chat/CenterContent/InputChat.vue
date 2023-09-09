@@ -76,7 +76,7 @@ import {
 } from '@/service/api/chatbox/n4-service'
 import { useConversationStore, useMessageStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
-import { getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel } from '@/service/function'
+import { getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, getPageWidget, getIframeUrl } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 
@@ -87,7 +87,6 @@ import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
 const $emit = defineEmits(['toggle_bottom_widget'])
 
-const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 
@@ -100,7 +99,7 @@ const is_show_label_list = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
 
-watch(() => conversationStore.select_conversation, () => getListWidget())
+watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
@@ -121,7 +120,12 @@ function getListWidget() {
 
     // render lại danh sách
     nextTick(() => {
-        widget_list.value = pageStore.selected_page_list_info?.[PAGE_ID]?.widget_list || []
+        widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
+            // thêm token cho url
+            widget.snap_app.url_app = getIframeUrl(widget)
+    
+            return widget
+        }) || []
     })
 }
 /**thay đổi gắn nhãn của khách hàng này */

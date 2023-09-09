@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
 import { useChatbotUserStore, usePageStore, useConversationStore } from '@/stores'
@@ -15,6 +15,7 @@ import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
+import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 
 import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
 import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
@@ -25,6 +26,7 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { getPageInfo, getPageWidget } from '@/service/function'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -37,12 +39,46 @@ const socket_connection = ref<WebSocket>()
 /**gắn cờ đóng kết nối hoàn toàn */
 const is_force_close_socket = ref(false)
 
+watch(() => conversationStore.select_conversation, () => getTokenOfWidget())
+
 onMounted(() => {
     getPageInfoToChat()
 })
 // tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => closeSocketConnect())
 
+/**khởi tạo token cho widget */
+function getTokenOfWidget() {
+    const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+
+    if (!PAGE_ID) return
+
+    /**danh sách id widget */
+    let list_app_installed_id: {
+        // app_installed_id: app_id
+        [index: string]: string
+    } = {}
+
+    // khởi tạo dữ liệu
+    getPageWidget(PAGE_ID)?.map(widget => {
+        list_app_installed_id[widget._id] = widget.app_id
+    })
+
+    create_token_app_installed({
+        page_id: PAGE_ID,
+        list_app_installed_id,
+        payload: {
+            fb_client_id: conversationStore.select_conversation?.fb_client_id,
+            page_name: getPageInfo()?.name,
+            current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
+            current_staff_name: chatbotUserStore.chatbot_user?.full_name
+        }
+    }, (e, r: any) => {
+        if (e) return
+
+        conversationStore.list_widget_token = r
+    })
+}
 /**đọc dữ liệu của các page được chọn lưu lại */
 function getPageInfoToChat() {
     flow([

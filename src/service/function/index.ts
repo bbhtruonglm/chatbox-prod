@@ -8,6 +8,8 @@ import { toastError } from '../helper/alert'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
 import { nextTick } from 'vue'
+import type { AppInstalledInfo } from '../interface/app/widget'
+import { getItem } from '../helper/localStorage'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -33,8 +35,8 @@ export const preGoToChat = (proceed: Cb) => {
         (cb: CbError) => {
             // nếu vẫn là các page cũ đã chọn thì bỏ qua
             if (isEqual(
-                keys(sortBy(pageStore.selected_page_id_list)),
-                keys(sortBy(pageStore.selected_page_list_info))
+                sortBy(keys(pageStore.selected_page_id_list)),
+                sortBy(keys(pageStore.selected_page_list_info))
             )) return cb()
 
             // nếu chọn khác page thì
@@ -168,6 +170,26 @@ export const getPageLabel = (page_id?: string) => {
         ?.label_list
 }
 
+/**lấy danh sách widget của trang */
+export const getPageWidget = (page_id?: string) => {
+    const pageStore = usePageStore()
+
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id as string]
+        ?.widget_list
+}
+
+/**lấy thông tin của trang */
+export const getPageInfo = (page_id?: string) => {
+    const pageStore = usePageStore()
+
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id as string]
+        ?.page
+}
+
 /**đọc dữ liệu của nhãn */
 export const getLabelInfo = (page_id?: string, label_id?: string) => {
     return getPageLabel(page_id)?.[label_id as string]
@@ -176,4 +198,34 @@ export const getLabelInfo = (page_id?: string, label_id?: string) => {
 /**lọc các nhãn chưa bị xoá */
 export const getLabelValid = (page_id?: string, label_list?: string[]) => {
     return label_list?.filter(label_id => getLabelInfo(page_id, label_id))
+}
+
+/**kiểm tra staff hiện tại có phải là admin của page không */
+export const isCurrentStaffIsPageAdmin = (page_id: string) => {
+    const pageStore = usePageStore()
+
+    /**dữ liệu của trang */
+    const PAGE_INFO = pageStore.selected_page_list_info?.[page_id]
+
+    // kiểm tra staff có nằm trong nhóm admin không
+    if (
+        !PAGE_INFO?.group_admin_id ||
+        !PAGE_INFO?.current_staff?.group_staff ||
+        !PAGE_INFO?.current_staff?.group_staff?.includes(PAGE_INFO?.group_admin_id)
+    ) return false
+
+    return true
+}
+
+/**khởi tạo url và token cho iframe */
+export const getIframeUrl = (widget: AppInstalledInfo) => {
+    const conversationStore = useConversationStore()
+
+    const URL_APP = widget.snap_app.url_app
+    const ACCESS_TOKEN = conversationStore.list_widget_token[widget._id]
+    const CHATBOX_TOKEN = getItem('access_token')
+    const LOCALE = localStorage.getItem('locale') || 'vn'
+    const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id)
+
+    return `${URL_APP}?access_token=${ACCESS_TOKEN}&locale=${LOCALE}&chatbox_token=${CHATBOX_TOKEN}&is_page_admin=${IS_PAGE_ADMIN}`
 }

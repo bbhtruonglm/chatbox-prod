@@ -80,3 +80,25 @@ export interface AppInstalledInfo {
     /**dữ liệu của app */
     snap_app: AppInfo
 }
+
+/**đầu vào api tạo token cho widget */
+export interface InputCreateTokenWidget {
+    /**id trang */
+    page_id: string
+    /**danh sách id các widget */
+    list_app_installed_id: {
+        // app_installed_id: app_id
+        [index: string]: string
+    },
+    /**dữ liệu client muốn thêm vào token */
+    payload: {
+        /**id khách hàng */
+        fb_client_id?: string
+        /**tên trang */
+        page_name?: string
+        /**id nv hiện tại đang chat */
+        current_staff_id?: string
+        /**tên nv hiện tại đang chat */
+        current_staff_name?: string
+    }
+}
