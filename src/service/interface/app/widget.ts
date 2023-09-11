@@ -53,7 +53,9 @@ export interface AppInfo {
 
 /**dữ liệu của app được page cài đặt */
 export interface AppInstalledInfo {
-    /**gắn cờ có hiển thị widget này không */
+    /**gắn cờ có hiển thị widget này không (sử dụng để filter) */
+    is_hidden?: boolean
+    /**gắn cờ có hiển thị widget này không (sử dụng để toogle) */
     is_show?: boolean
     /**link để hiển thị */
     url?: string
