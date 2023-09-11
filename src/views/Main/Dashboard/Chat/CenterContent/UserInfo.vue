@@ -5,13 +5,13 @@
             <button @click="backToConversation" class="block md:hidden mr-4">
                 <img class="rounded-full" width="13" height="13" src="@/assets/icons/arrow-left.svg">
             </button>
-            <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
+            <ClientAvatar @click="openClientInfo" :client_name="conversationStore.select_conversation?.client_name"
                 :client_id="conversationStore.select_conversation?.fb_client_id"
                 :page_id="conversationStore.select_conversation?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                :platform_type="conversationStore.select_conversation?.platform_type" size="37" class="rounded-full" />
+                :platform_type="conversationStore.select_conversation?.platform_type" size="37" class="rounded-full cursor-pointer" />
             <div class="ml-1">
-                <div class="text-sm font-medium">
+                <div @click="openClientInfo" class="text-sm font-medium cursor-pointer truncate w-[150px]">
                     {{ conversationStore.select_conversation?.client_name }}
                 </div>
                 <button @click="openAssignStaff"
@@ -46,6 +46,9 @@
             </button>
         </div>
     </div>
+    <template>
+        <ClientInfo ref="client_info_modal_ref" />
+    </template>
 </template>
 <script setup lang="ts">
 import {
@@ -54,13 +57,14 @@ import {
 import { reset_read_conversation, toggle_spam_conversation } from '@/service/api/chatbox/n4-service'
 import { ref } from 'vue'
 import { flow } from '@/service/helper/async'
+import { keyBy, map } from 'lodash'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
+import ClientInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo/ClientInfo.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-import { keyBy, map } from 'lodash'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 
@@ -69,6 +73,8 @@ const conversationStore = useConversationStore()
 const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
 
+/**ref của modal thông tin khách hàng */
+const client_info_modal_ref = ref<ComponentRef>()
 /**bật loading khi gọi api đánh dấu hội thoại chưa đọc */
 const is_loading_unread_conversation = ref(false)
 /**bật loading khi gọi api toggle spam */
@@ -76,6 +82,10 @@ const is_loading_spam_conversation = ref(false)
 /**vị trí của hội thoại vừa mới được ẩn */
 const index_of_spam_conversation = ref(0)
 
+/**mở popup thông tin chi tiết của khách hàng */
+function openClientInfo() {
+    client_info_modal_ref.value.toggleModal()
+}
 /**xử lý sự kiện thoát ra ngoài màn hình danh sách khách hàng của mobile */
 function backToConversation() {
     commonStore.is_show_message_mobile = false

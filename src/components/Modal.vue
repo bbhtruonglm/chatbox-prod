@@ -24,7 +24,7 @@
 </template>
 <script setup lang="ts">
 // xử dụng teleport để dịch chuyển modal lên body mỗi lần được hiển thị
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 
 const $emit = defineEmits(['close_modal'])
 

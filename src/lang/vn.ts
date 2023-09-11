@@ -26,7 +26,12 @@ const source: Language = {
             active: 'Kích hoạt',
             chatbox: 'Chatbox',
             unsupport_message: 'Nội dung tin nhắn này hiện tại chưa thể hiển thị được, vui lòng liên hệ với quản trị viên hệ thống',
-            close: 'Đóng'
+            close: 'Đóng',
+            phone: 'Số điện thoại',
+            email: 'Email',
+            client_id: 'Id Facebook',
+            uid: 'Uid',
+            edit: 'Chỉnh sửa'
         },
         view: {
             network: {
@@ -257,6 +262,9 @@ const source: Language = {
                             title: 'Widget',
                             setting: 'Tuỳ chỉnh widget',
                             search: 'Tìm kiếm widget'
+                        },
+                        client: {
+                            title: 'Thông tin khách hàng'
                         }
                     }
                 }
