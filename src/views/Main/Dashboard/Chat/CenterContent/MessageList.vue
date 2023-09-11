@@ -269,7 +269,7 @@ function getListMessage(is_scroll?: boolean) {
              * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
             if (!isNotPc() && list_message.value.length >= LIMIT) getListMessage()
-
+            
             scrollToBottomMessage()
         }
 

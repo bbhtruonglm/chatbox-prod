@@ -46,11 +46,11 @@
             <img src="@/assets/icons/slash.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_90px)] h-full">
-            <div @keydown.enter="submitInput"
+            <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                 class="max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                 contenteditable="true" />
         </div>
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div @click="sendMessage" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/send.svg" width="25" height="25" />
         </div>
     </div>
@@ -74,9 +74,12 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
-import { useConversationStore, useMessageStore, usePageStore } from '@/stores'
+import { useConversationStore, useMessageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
-import { getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, getPageWidget, getIframeUrl } from '@/service/function'
+import { 
+    getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, 
+    getPageWidget, getIframeUrl 
+} from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 
@@ -98,6 +101,8 @@ const input_chat_warper = ref<ComponentRef>()
 const is_show_label_list = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
+/**ref của ô chat tin nhắn */
+const input_chat_ref = ref<ComponentRef>()
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
@@ -212,8 +217,12 @@ function submitInput($event: KeyboardEvent) {
     // nếu bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
 
+    sendMessage()
+}
+/**gửi tin nhắn */
+function sendMessage() {
     /**div input */
-    const INPUT = $event.target as HTMLDivElement
+    const INPUT = input_chat_ref.value as HTMLDivElement
 
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
@@ -224,13 +233,9 @@ function submitInput($event: KeyboardEvent) {
     // tạm thời không có text thì không cho gửi tin
     if (!TEXT) return
 
-    sendMessage(TEXT)
-}
-/**gửi tin nhắn */
-function sendMessage(text: string) {
     /**nội dung tin nhắn vừa được gửi */
     const TEMP_SEND_MESSAGE: TempSendMessage = {
-        text,
+        text: TEXT,
         time: new Date().toISOString()
     }
 
@@ -242,7 +247,7 @@ function sendMessage(text: string) {
     send_message({
         page_id: conversationStore.select_conversation?.fb_page_id as string,
         client_id: conversationStore.select_conversation?.fb_client_id as string,
-        text,
+        text: TEXT,
         type: 'FACEBOOK_MESSAGE'
     }, (e, r) => {
         if (e || !r?.message_id) {
