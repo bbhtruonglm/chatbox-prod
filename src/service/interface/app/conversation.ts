@@ -91,6 +91,12 @@ export interface ConversationInfo {
         /**tên nhân viên */
         name?: string
     }
+    /**thời gian cuối cùng mà user đọc tin nhắn */
+    last_read_message?: string
+    /**id và thời gian cuối cùng nhân viên đã đọc hội thoại này */
+    staff_read?: {
+        [index: string]: number
+    }
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
@@ -114,4 +120,16 @@ export interface QueryResetReadConversation {
     client_id: string
     /**reset về mấy, mặc định là 0 */
     unread_message_amount?: number
+}
+
+/**đầu vào của api đói assign nhân viên */
+export interface QuerySetAssignStaffConversation {
+    /**id trang */
+    page_id: string
+    /**id khách hàng */
+    client_id: string
+    /**id của nhân viên mới được assign */
+    new_staff_id: string
+    /**id của nhân viên cũ */
+    old_staff_id?: string
 }

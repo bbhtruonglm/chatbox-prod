@@ -80,8 +80,7 @@ import {
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { reset_read_conversation } from '@/service/api/chatbox/n4-service'
-import { toastError } from '@/service/helper/alert'
+import { selectConversation } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -108,8 +107,7 @@ function clickConversation() {
     // hiện tin nhắn ở giao diện mobile
     commonStore.is_show_message_mobile = true
 
-    // chọn khách hàng này, lưu dữ liệu vào store
-    if ($props.source) conversationStore.select_conversation = $props.source
+    selectConversation($props.source)
 
     // đẩy id lên param
     $router.replace({
@@ -118,16 +116,7 @@ function clickConversation() {
             client_id: $props.source?.fb_client_id,
         }
     })
-
-    // đánh dấu tin nhắn là đã đọc
-    reset_read_conversation({
-        page_id: $props.source?.fb_page_id,
-        client_id: $props.source?.fb_client_id,
-    }, (e, r) => {
-        if (e) return toastError(e)
-    })
 }
-
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {
     if (!timestamp) return ''
@@ -144,7 +133,6 @@ function formatLastMessageTime(timestamp?: number) {
     // hiện full
     return format_date(timestamp, 'dd/MM/yy')
 }
-
 /**mở modal staff info */
 function openStaffInfo() {
     if (!$props.source?.fb_staff_id) return
@@ -157,9 +145,5 @@ function openStaffInfo() {
 <style scoped lang="scss">
 .label-list {
     display: -webkit-box;
-
-    &::-webkit-scrollbar {
-        height: 0px;
-    }
 }
 </style>

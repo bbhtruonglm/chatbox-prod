@@ -86,7 +86,6 @@ function getPageInfoToChat() {
 }
 /**lắng nghe sự kiện từ socket */
 function onSocketFromChatboxServer() {
-    console.log('mo socket')
     /**tạo kết nối đến socket */
     const CONNECTION = new WebSocket($env.host.n3_socket)
     socket_connection.value = CONNECTION

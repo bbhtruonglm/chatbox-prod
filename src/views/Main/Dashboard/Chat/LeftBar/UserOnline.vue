@@ -4,7 +4,7 @@
             <Loading class="mx-auto" />
         </div>
     </div>
-    <VirtualList class="user-online overflow-hidden overflow-x-auto mt-2 px-2 h-[37px]" wrap-class="inline-flex"
+    <VirtualList class="overflow-hidden overflow-x-auto mt-2 px-2 h-[37px]" wrap-class="inline-flex"
         :data-key="'data_key'" :data-sources="staff_list_array" :data-component="UserOnlineItem" direction="horizontal" />
 </template>
 <script setup lang="ts">
@@ -136,10 +136,3 @@ function sortUserOnlineToTop() {
     staff_list_array.value = sortBy(map(staff_list.value), 'is_online')
 }
 </script>
-<style scoped lang="scss">
-.user-online {
-    &::-webkit-scrollbar {
-        height: 0px;
-    }
-}
-</style>

@@ -5,7 +5,7 @@
         </div>
     </div>
     <VirtualList v-if="size(conversation_list)"
-        class="conversation h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
+        class="h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
         item-class="cursor-pointer hover:bg-slate-100 h-[69px]" :data-key="'data_key'"
         :data-sources="map(conversation_list)" :data-component="ConversationItem" v-on:scroll="loadMoreConversation" />
     <div v-else>
@@ -18,12 +18,14 @@
 <script setup lang="ts">
 import VirtualList from 'vue3-virtual-scroll-list'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { keys, map, mapValues, size } from 'lodash'
+import { find, keys, map, mapValues, size } from 'lodash'
 import { usePageStore } from '@/stores'
 import { read_conversation } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
 import { useConversationStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
+import { useRoute, useRouter } from 'vue-router'
+import { selectConversation } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import ConversationItem from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/ConversationItem.vue'
@@ -44,6 +46,8 @@ interface CustomEvent extends Event {
     }
 }
 
+const $route = useRoute()
+const $router = useRouter()
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 
@@ -121,10 +125,10 @@ function loadConversationFirstTime() {
     // reset phân trang
     after.value = undefined
 
-    getConversation()
+    getConversation(true)
 }
 /**đọc danh sách hội thoại */
-function getConversation() {
+function getConversation(is_first_time?: boolean) {
     const DATA: {
         current_conversation_list?: ConversationList
     } = {}
@@ -182,8 +186,39 @@ function getConversation() {
         // tắt loading
         is_loading.value = false
 
+        // tự động chọn khách hàng cho lần đầu tiên
+        if (is_first_time) selectDefaultConversation()
+
         if (e) return toastError(e)
     })
+}
+/**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
+function selectDefaultConversation() {
+    // nếu không có dữ liệu hội thoại thì bỏ qua
+    if (!size(conversation_list.value)) return
+
+    // lấy id hội thoại trên param
+    let { page_id, client_id } = $route.query
+
+    // tìm kiếm hội thoại thoả mãn param
+    let target_conversation = find(conversation_list.value, (conversation, key) => {
+        return `${page_id}_${client_id}` === key
+    })
+
+    // nếu không tìm thấy thì lấy hội thoại đầu tiên
+    if (!target_conversation) {
+        target_conversation = map(conversation_list.value)?.[0]
+
+        // đẩy id lên param
+        $router.replace({
+            query: {
+                page_id: target_conversation?.fb_page_id,
+                client_id: target_conversation?.fb_client_id,
+            }
+        })
+    }
+
+    selectConversation(target_conversation)
 }
 /**load thêm hội thoại khi lăn chuột xuống cuối */
 function loadMoreConversation($event: Event, range?: { padBehind?: number }) {
@@ -197,10 +232,3 @@ function loadMoreConversation($event: Event, range?: { padBehind?: number }) {
     getConversation()
 }
 </script>
-<style scoped lang="scss">
-.conversation {
-    &::-webkit-scrollbar {
-        width: 0px;
-    }
-}
-</style>
