@@ -45,7 +45,7 @@ import { useCommonStore, usePageStore } from '@/stores'
 import { computed, ref } from 'vue'
 import { size } from 'lodash'
 import { preGoToChat } from '@/service/function'
-import { teleportModelFilterOnPcScreen, teleportModelAssignStaffOnPcScreen } from '@/service/function'
+import { teleportModelFilterOnPcScreen, teleportCenterModelOnPcScreen } from '@/service/function'
 
 import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
@@ -111,7 +111,7 @@ function onToggleNavChange(value: boolean) {
     commonStore.dashboard_toggle_nav = value
 
     teleportModelFilterOnPcScreen()
-    teleportModelAssignStaffOnPcScreen()
+    teleportCenterModelOnPcScreen()
 }
 /**ẩn hiện nav */
 function toggleNav() {

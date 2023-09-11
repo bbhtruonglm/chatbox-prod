@@ -4,10 +4,11 @@
             <Loading class="mx-auto" />
         </div>
     </div>
-    <VirtualList v-if="size(conversation_list)"
+    <VirtualList v-if="size(conversationStore.conversation_list)"
         class="h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
         item-class="cursor-pointer hover:bg-slate-100 h-[69px]" :data-key="'data_key'"
-        :data-sources="map(conversation_list)" :data-component="ConversationItem" v-on:scroll="loadMoreConversation" />
+        :data-sources="map(conversationStore.conversation_list)" :data-component="ConversationItem"
+        v-on:scroll="loadMoreConversation" />
     <div v-else>
         <img src="@/assets/icons/empty-page.svg" width="250" class="mx-auto mt-5">
         <div class="text-center text-slate-400">
@@ -51,8 +52,6 @@ const $router = useRouter()
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 
-/**danh sách hội thoại */
-const conversation_list = ref<ConversationList>({})
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
 /**toàn bộ hội thoại đã được load hết chưa */
@@ -76,10 +75,15 @@ onMounted(() => window.addEventListener(
     'chatbox_socket_conversation',
     onRealtimeUpdateConversation
 ))
-onUnmounted(() => window.removeEventListener(
-    'chatbox_socket_conversation',
-    onRealtimeUpdateConversation
-))
+onUnmounted(() => {
+    // khi thoát khỏi component này thì xoá dữ liệu hội thoại hiện tại
+    conversationStore.conversation_list = {}
+
+    window.removeEventListener(
+        'chatbox_socket_conversation',
+        onRealtimeUpdateConversation
+    )
+})
 
 /**xử lý socket conversation */
 function onRealtimeUpdateConversation({ detail }: CustomEvent) {
@@ -92,12 +96,30 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // bỏ qua record của page chat cho page
     if (conversation.fb_page_id === conversation.fb_client_id) return
 
+
     // tạo ra key cho vitual scroll
     conversation.data_key = `${conversation?.fb_page_id}_${conversation?.fb_client_id}`
 
+    /**
+     * nếu dữ liệu được socket chính là hội thoại đang chọn, thì làm mới dữ liệu 
+     * được chọn
+     * map từng field để hàm watch store ở những chỗ khác không nhận
+     */
+    if (
+        conversationStore.select_conversation?.data_key === conversation.data_key
+    ) {
+        conversationStore.select_conversation.client_name = conversation.client_name
+        conversationStore.select_conversation.client_bio = conversation.client_bio
+        conversationStore.select_conversation.client_phone = conversation.client_phone
+        conversationStore.select_conversation.fb_staff_id = conversation.fb_staff_id
+        conversationStore.select_conversation.label_id = conversation.label_id
+        conversationStore.select_conversation.last_read_message = conversation.last_read_message
+        conversationStore.select_conversation.staff_read = conversation.staff_read
+    }
+
     // nếu chỉ đồng bộ dữ liệu thì không đẩy hội thoại lên đầu
     if (event === 'SYNC_DATA') {
-        conversation_list.value[conversation.data_key] = conversation
+        conversationStore.conversation_list[conversation.data_key] = conversation
     }
     // nạp dữ liệu vào danh sách hội thoại lên đầu
     else {
@@ -108,19 +130,19 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
         PAYLOAD[conversation.data_key] = conversation
 
         // xoá dữ liệu cũ
-        delete conversation_list.value[conversation.data_key]
+        delete conversationStore.conversation_list[conversation.data_key]
 
         // thêm dữ liệu mới lên đầu của obj
-        conversation_list.value = {
+        conversationStore.conversation_list = {
             ...PAYLOAD,
-            ...conversation_list.value
+            ...conversationStore.conversation_list
         }
     }
 }
 /**đọc danh sách hội thoại lần đầu tiên */
 function loadConversationFirstTime() {
     // reset data
-    conversation_list.value = {}
+    conversationStore.conversation_list = {}
 
     // reset phân trang
     after.value = undefined
@@ -175,8 +197,8 @@ function getConversation(is_first_time?: boolean) {
         },
         // * thêm vào danh sách conversation
         (cb: CbError) => {
-            conversation_list.value = {
-                ...conversation_list.value,
+            conversationStore.conversation_list = {
+                ...conversationStore.conversation_list,
                 ...DATA.current_conversation_list
             }
 
@@ -195,19 +217,19 @@ function getConversation(is_first_time?: boolean) {
 /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
 function selectDefaultConversation() {
     // nếu không có dữ liệu hội thoại thì bỏ qua
-    if (!size(conversation_list.value)) return
+    if (!size(conversationStore.conversation_list)) return
 
     // lấy id hội thoại trên param
     let { page_id, client_id } = $route.query
 
     // tìm kiếm hội thoại thoả mãn param
-    let target_conversation = find(conversation_list.value, (conversation, key) => {
+    let target_conversation = find(conversationStore.conversation_list, (conversation, key) => {
         return `${page_id}_${client_id}` === key
     })
 
     // nếu không tìm thấy thì lấy hội thoại đầu tiên
     if (!target_conversation) {
-        target_conversation = map(conversation_list.value)?.[0]
+        target_conversation = map(conversationStore.conversation_list)?.[0]
 
         // đẩy id lên param
         $router.replace({

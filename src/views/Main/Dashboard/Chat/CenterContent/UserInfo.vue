@@ -36,9 +36,13 @@
                     src="@/assets/icons/envelope-open-icon.svg">
                 <Loading v-else class="w-[16px] h-[16px]" />
             </button>
-            <button class="border border-slate-300 rounded-full p-2 mr-2">
-                <img width="16" height="16" src="@/assets/icons/block-user-unactive.svg">
-                <!-- <img src="@/assets/icons/block-user-active.svg"> -->
+            <button @click="toggleSpam" :class="{
+                'bg-red-500': conversationStore.select_conversation.is_spam_fb
+            }" class="border border-slate-300 rounded-full p-2 mr-2">
+                <Loading v-if="is_loading_spam_conversation" class="w-[16px] h-[16px]" />
+                <img v-else-if="!conversationStore.select_conversation.is_spam_fb" width="16" height="16"
+                    src="@/assets/icons/block-user-unactive.svg">
+                <img v-else src="@/assets/icons/block-user-active.svg">
             </button>
         </div>
     </div>
@@ -47,13 +51,16 @@
 import {
     useCommonStore, useConversationStore, useChatbotUserStore, usePageStore
 } from '@/stores'
-import { reset_read_conversation } from '@/service/api/chatbox/n4-service';
+import { reset_read_conversation, toggle_spam_conversation } from '@/service/api/chatbox/n4-service'
 import { ref } from 'vue'
 import { flow } from '@/service/helper/async'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
-import type { CbError } from '@/service/interface/function';
+
+import type { CbError } from '@/service/interface/function'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { keyBy, map } from 'lodash'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 
@@ -64,6 +71,10 @@ const pageStore = usePageStore()
 
 /**bật loading khi gọi api đánh dấu hội thoại chưa đọc */
 const is_loading_unread_conversation = ref(false)
+/**bật loading khi gọi api toggle spam */
+const is_loading_spam_conversation = ref(false)
+/**vị trí của hội thoại vừa mới được ẩn */
+const index_of_spam_conversation = ref(0)
 
 /**xử lý sự kiện thoát ra ngoài màn hình danh sách khách hàng của mobile */
 function backToConversation() {
@@ -98,6 +109,76 @@ function unreadConversation() {
     ], e => {
         // tắt loading
         is_loading_unread_conversation.value = false
+    })
+}
+/**toggle hội thoại này là spam */
+function toggleSpam() {
+    // api đang chạy thì không cho gọi
+    if (is_loading_spam_conversation.value) return
+
+    /**giá trị spam mới */
+    const NEW_IS_SPAM = !conversationStore.select_conversation?.is_spam_fb
+
+    flow([
+        // * bật loading
+        (cb: CbError) => {
+            is_loading_spam_conversation.value = true
+
+            cb()
+        },
+        // * gọi api
+        (cb: CbError) => toggle_spam_conversation({
+            page_id: conversationStore.select_conversation?.fb_page_id as string,
+            client_id: conversationStore.select_conversation?.fb_client_id as string,
+            is_spam: NEW_IS_SPAM
+        }, (e, r) => {
+            if (e) return cb(e)
+
+            cb()
+        }),
+        // * di chuyển hội thoại ra khỏi danh sách nếu cần thiết
+        (cb: CbError) => {
+            if (!conversationStore.select_conversation) return
+
+            /**key của hội thoại */
+            const KEY = conversationStore.select_conversation?.data_key
+
+            if (!KEY) return cb()
+
+            // thay đổi cờ của conversation đang chọn
+            conversationStore.select_conversation.is_spam_fb = NEW_IS_SPAM
+
+            // nếu trong danh sách đang tồn tại hội thoại thì xoá đi
+            if (conversationStore.conversation_list[KEY]) {
+                // lấy vị trí trước khi bị ẩn
+                index_of_spam_conversation.value = Object
+                    .keys(conversationStore.conversation_list)
+                    .indexOf(KEY)
+
+                // xoá khỏi danh sách
+                delete conversationStore.conversation_list[KEY]
+            }
+            // nếu trong danh sách không tồn tại hội thoại thì hiện lên
+            else {
+                // đổi danh sách hội thoại thành mảng
+                let conversation_array = map(conversationStore.conversation_list)
+
+                // thêm phần tử bị xoá vào đúng vị trí cũ của mảng
+                conversation_array.splice(
+                    index_of_spam_conversation.value,
+                    0,
+                    conversationStore.select_conversation
+                )
+
+                // biến đổi mảng thành obj
+                conversationStore.conversation_list = keyBy(conversation_array, 'data_key')
+            }
+
+            cb()
+        },
+    ], e => {
+        // tắt loading
+        is_loading_spam_conversation.value = false
     })
 }
 </script>

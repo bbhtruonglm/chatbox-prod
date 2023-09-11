@@ -1,6 +1,6 @@
 <template>
     <div @click="clickConversation" :class="{
-        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key
+        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
     }" class="border-l-4 border-l-white border-b py-1 px-2 flex h-full">
         <div class="w-fit h-fit relative">
             <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
@@ -16,7 +16,7 @@
         <div class="w-[calc(100%_-_86px)] pl-2">
             <div class="flex items-center">
                 <div v-if="source?.fb_staff_id" class="flex items-center">
-                    <StaffAvatar @click="openStaffInfo" :id="source?.fb_staff_id" size="20" class="rounded-full" />
+                    <StaffAvatar :id="source?.fb_staff_id" size="20" class="rounded-full" />
                     <div class="mx-1">
                         <img src="@/assets/icons/arrow-right.svg" width="8" height="8">
                     </div>
@@ -36,20 +36,14 @@
                     <img src="@/assets/icons/reply.svg">
                 </div>
                 <div class="label-list w-[calc(100vw_-_128px)] overflow-hidden overflow-x-auto">
-                    <template v-for="label_id of source?.label_id">
-                        <div v-if="pageStore.selected_page_list_info?.[source?.fb_page_id as
-                            string]?.label_list?.[label_id]"
-                            :style="{ background: pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.label_list?.[label_id]?.bg_color }"
+                    <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
+                        <div v-if="getLabelInfo(source?.fb_page_id, label_id)"
+                            :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
                             class="text-white rounded-full text-xs px-2 mr-1">
-                            {{ pageStore.selected_page_list_info?.[source?.fb_page_id as
-                                string]?.label_list?.[label_id]?.title
-                            }}
+                            {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
                         </div>
                     </template>
                 </div>
-                <!-- <div class="text-xs rounded border-2 text-slate-500">
-                    +10
-                </div> -->
             </div>
         </div>
         <div class="w-[49px] flex flex-col items-end">
@@ -74,20 +68,20 @@
 </template>
 <script setup lang="ts">
 import {
-    useChatbotUserStore, usePageStore, useCommonStore, useStaffStore,
-    useConversationStore,
+    useChatbotUserStore, usePageStore, useCommonStore, useConversationStore
 } from '@/stores'
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { selectConversation } from '@/service/function'
+import { 
+    isMobile, selectConversation, getLabelInfo, getLabelValid 
+} from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
-import { copy } from '@/service/helper/format'
 
 const $props = withDefaults(defineProps<{
     source?: ConversationInfo
@@ -96,12 +90,14 @@ const $props = withDefaults(defineProps<{
 const $router = useRouter()
 const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
-const staffStore = useStaffStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 
 /**click chuột vào 1 khách hàng */
 function clickConversation() {
+    // nếu mess đang được show thì không cho click nữa
+    if (isMobile() && commonStore.is_show_message_mobile) return
+
     if (!$props.source?.fb_page_id || !$props.source?.fb_client_id) return
 
     // hiện tin nhắn ở giao diện mobile
@@ -132,14 +128,6 @@ function formatLastMessageTime(timestamp?: number) {
 
     // hiện full
     return format_date(timestamp, 'dd/MM/yy')
-}
-/**mở modal staff info */
-function openStaffInfo() {
-    if (!$props.source?.fb_staff_id) return
-
-    staffStore.view_staff_info = staffStore
-        .staff_list_of_active_page
-        ?.[$props.source?.fb_staff_id]
 }
 </script>
 <style scoped lang="scss">

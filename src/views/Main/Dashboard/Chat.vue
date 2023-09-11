@@ -7,14 +7,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
 import { useChatbotUserStore, usePageStore, useConversationStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
-import { keys, size } from 'lodash'
+import { difference, intersection, keys, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
+import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 
 import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
 import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
@@ -25,6 +26,7 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { getPageInfo, getPageWidget } from '@/service/function'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -37,12 +39,46 @@ const socket_connection = ref<WebSocket>()
 /**gắn cờ đóng kết nối hoàn toàn */
 const is_force_close_socket = ref(false)
 
+watch(() => conversationStore.select_conversation, () => getTokenOfWidget())
+
 onMounted(() => {
     getPageInfoToChat()
 })
 // tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => closeSocketConnect())
 
+/**khởi tạo token cho widget */
+function getTokenOfWidget() {
+    const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+
+    if (!PAGE_ID) return
+
+    /**danh sách id widget */
+    let list_app_installed_id: {
+        // app_installed_id: app_id
+        [index: string]: string
+    } = {}
+
+    // khởi tạo dữ liệu
+    getPageWidget(PAGE_ID)?.map(widget => {
+        list_app_installed_id[widget._id] = widget.app_id
+    })
+
+    create_token_app_installed({
+        page_id: PAGE_ID,
+        list_app_installed_id,
+        payload: {
+            fb_client_id: conversationStore.select_conversation?.fb_client_id,
+            page_name: getPageInfo()?.name,
+            current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
+            current_staff_name: chatbotUserStore.chatbot_user?.full_name
+        }
+    }, (e, r: any) => {
+        if (e) return
+
+        conversationStore.list_widget_token = r
+    })
+}
 /**đọc dữ liệu của các page được chọn lưu lại */
 function getPageInfoToChat() {
     flow([
@@ -145,20 +181,6 @@ function onSocketFromChatboxServer() {
 
         let { staff, conversation, message, event } = socket_data
 
-        // nếu đang kích hoạt filter thì chỉ thêm dữ liệu nếu thoả mãn điều kiện
-        if (
-            // đang lọc inbox thì không cho post qua
-            (
-                conversationStore.option_filter_page_data.display_style === 'INBOX' &&
-                message?.platform_type === 'FB_POST'
-            ) ||
-            // đang lọc post thì không cho inbox qua
-            (
-                conversationStore.option_filter_page_data.display_style === 'COMMENT' &&
-                message?.platform_type === 'FB_MESS'
-            )
-        ) return
-
         // gửi thông điệp đến component xử lý user online
         if (size(staff)) window.dispatchEvent(new CustomEvent(
             'chatbox_socket_staff',
@@ -166,7 +188,9 @@ function onSocketFromChatboxServer() {
         ))
 
         // gửi thông điệp đến component xử lý danh sách hội thoại
-        if (size(conversation)) window.dispatchEvent(new CustomEvent(
+        if (
+            validateConversation(conversation, message)
+        ) window.dispatchEvent(new CustomEvent(
             'chatbox_socket_conversation',
             {
                 detail: {
@@ -175,7 +199,131 @@ function onSocketFromChatboxServer() {
                 }
             }
         ))
+
+        // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
+        if (size(message)) window.dispatchEvent(new CustomEvent(
+            'chatbox_socket_message',
+            { detail: message }
+        ))
     }
+}
+/**kiểm tra hội thoại có thoả mãn diều kiện lọc để được xuất hiện không */
+function validateConversation(
+    conversation?: ConversationInfo,
+    message?: MessageInfo
+) {
+    // nêu không có dữ liệu hội thoại thì chặn
+    if (!conversation || !size(conversation)) return
+
+    // đang lọc inbox thì không cho post qua
+    if (
+        conversationStore.option_filter_page_data.display_style === 'INBOX' &&
+        message?.platform_type === 'FB_POST'
+    ) return
+
+    // đang lọc post thì không cho inbox qua
+    if (
+        conversationStore.option_filter_page_data.display_style === 'COMMENT' &&
+        message?.platform_type === 'FB_MESS'
+    ) return
+
+    // lọc theo search: tên, sdt, email
+    if (
+        conversationStore.option_filter_page_data.search &&
+        (
+            !conversation.client_name ||
+            !new RegExp(conversationStore.option_filter_page_data.search, 'i').test(conversation.client_name)
+        ) &&
+        (
+            !conversation.client_phone ||
+            !new RegExp(conversationStore.option_filter_page_data.search, 'i').test(conversation.client_phone)
+        ) &&
+        (
+            !conversation.client_email ||
+            !new RegExp(conversationStore.option_filter_page_data.search, 'i').test(conversation.client_email)
+        )
+    ) return
+
+    // lọc có sdt
+    if (
+        conversationStore.option_filter_page_data.have_phone === 'YES' &&
+        !conversation.client_phone
+    ) return
+
+    // lọc không có sdt
+    if (
+        conversationStore.option_filter_page_data.have_phone === 'NO' &&
+        conversation.client_phone
+    ) return
+
+    // lọc theo thời gian
+    if (
+        !conversation.last_message_time ||
+        (
+            conversationStore.option_filter_page_data.time_range?.lte &&
+            conversationStore.option_filter_page_data.time_range?.lte < new Date(conversation.last_message_time).getTime()
+        ) ||
+        (
+            conversationStore.option_filter_page_data.time_range?.gte &&
+            conversationStore.option_filter_page_data.time_range?.gte > new Date(conversation.last_message_time).getTime()
+        )
+    ) return
+
+    // lọc theo nhân viên
+    if (
+        conversationStore.option_filter_page_data.staff_id &&
+        (
+            !conversation.fb_staff_id ||
+            !conversationStore.option_filter_page_data.staff_id.includes(conversation.fb_staff_id)
+        )
+    ) return
+
+    // lọc nhãn hoặc
+    if (
+        conversationStore.option_filter_page_data.label_id &&
+        !conversationStore.option_filter_page_data.label_and &&
+        !intersection(
+            conversationStore.option_filter_page_data.label_id,
+            conversation.label_id
+        ).length
+    ) return
+
+    // lọc nhãn và
+    if (
+        conversationStore.option_filter_page_data.label_id &&
+        conversationStore.option_filter_page_data.label_and &&
+        (
+            !conversation.label_id ||
+            !conversation.label_id.length ||
+            difference(
+                conversationStore.option_filter_page_data.label_id,
+                conversation.label_id
+            ).length
+        )
+    ) return
+
+    // lọc loại trừ nhãn
+    if (
+        conversationStore.option_filter_page_data.not_label_id &&
+        intersection(
+            conversationStore.option_filter_page_data.not_label_id,
+            conversation.label_id
+        ).length
+    ) return
+
+    // lọc khách spam
+    if (
+        conversationStore.option_filter_page_data.is_spam_fb === 'YES' &&
+        !conversation.is_spam_fb
+    ) return
+
+    // lọc hội thoại chưa gắn nhãn
+    if (
+        conversationStore.option_filter_page_data.not_exist_label &&
+        size(conversation.label_id)
+    ) return
+
+    return true
 }
 /**đóng kết nối socket */
 function closeSocketConnect() {

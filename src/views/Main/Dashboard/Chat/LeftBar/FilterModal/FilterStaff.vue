@@ -1,50 +1,33 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
+        :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
         </template>
         <template v-slot:body>
             <div class="py-3">
-                <input 
-                    type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none"
-                    v-on:keyup="searchStaff()"
-                    v-model="search_staff_name"
-                >
+                <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff()"
+                    v-model="search_staff_name">
             </div>
             <div class="h-[50vh] overflow-y-auto">
-                <div 
-                    class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
-                    v-for="staff, staff_id in staffs"
-                    @click="selectStaff(staff_id as string)"
-                >
+                <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
+                    v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
                     <div class="flex items-center">
-                        <StaffAvatar
-                            class="rounded-full w-6 h-6 mr-3" 
-                            :id="staff.fb_staff_id"
-                        />
+                        <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
                         <p class="text-sm">{{ staff.name }}</p>
                     </div>
-                    <img 
-                        v-if="staffs_selected[staff_id]"
-                        class="w-5 h-5"
-                        src="@/assets/icons/check-circle.svg"
-                    >
+                    <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                 </div>
             </div>
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
-                <FilterButton 
-                    @click="clearThisFilter" 
-                    type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" 
-                />
-                <FilterButton 
-                    @click="toggleModal"
+                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
+                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
+                <FilterButton @click="toggleModal"
                     type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.title')" 
-                />
+                    :title="$t('v1.view.main.dashboard.chat.filter.title')" />
             </div>
         </template>
     </ModalBottom>
@@ -52,7 +35,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
-import { map, get, debounce } from 'lodash'
+import { map, get, debounce, keys } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -74,7 +57,7 @@ const staffs = ref<{ [index: string]: StaffInfo }>({})
 /** Danh sách nhân viên */
 const snap_staffs = ref<{ [index: string]: StaffInfo }>({})
 /** Danh sách nhân viên đã lựa chọn khi lọc */
-const staffs_selected = ref<{[index: string]: boolean}>({})
+const staffs_selected = ref<{ [index: string]: boolean }>({})
 /** Search staff name */
 const search_staff_name = ref<string>('')
 
@@ -100,7 +83,7 @@ function getStaffs() {
 
 /** Lựa chọn nhân viên */
 function selectStaff(staff_id: string) {
-    if(staffs_selected.value[staff_id]) delete staffs_selected.value[staff_id]
+    if (staffs_selected.value[staff_id]) delete staffs_selected.value[staff_id]
     else staffs_selected.value[staff_id] = true
 
     filterByStaff()
@@ -108,17 +91,15 @@ function selectStaff(staff_id: string) {
 
 /** Lọc hội thoại theo nhân viên */
 function filterByStaff() {
-    let staff_id:string = ''
-    staff_id = Object.keys(staffs_selected.value).join(' ')
-    conversationStore.option_filter_page_data.staff_id = staff_id
+    conversationStore.option_filter_page_data.staff_id = keys(staffs_selected.value)
 }
 
 /** Lọc hội thoại theo nhân viên */
 function searchStaff() {
-    if(!search_staff_name.value) return staffs.value = snap_staffs.value
+    if (!search_staff_name.value) return staffs.value = snap_staffs.value
     staffs.value = {}
-    map(snap_staffs.value, (item:StaffInfo) => {
-        if(nonAccentVn(item.name).includes(nonAccentVn(search_staff_name.value))) {
+    map(snap_staffs.value, (item: StaffInfo) => {
+        if (nonAccentVn(item.name).includes(nonAccentVn(search_staff_name.value))) {
             staffs.value[item.fb_staff_id] = item
         }
     })
@@ -126,16 +107,10 @@ function searchStaff() {
 
 /** Hiển thị lại nhân viên đã chọn */
 function showLabelSelected() {
-    if(get(conversationStore.option_filter_page_data, 'staff_id')) {
-        let staff_id:string = get(conversationStore.option_filter_page_data, 'staff_id') || ''
-        let staffs:string[] = staff_id.split(' ')
-        staffs.map(item => {
-            staffs_selected.value[item] = true
-        })
-    }
+    conversationStore.option_filter_page_data?.staff_id?.map(item => {
+        staffs_selected.value[item] = true
+    })
 }
-
-
 
 onMounted(() => {
     setTimeout(function () {

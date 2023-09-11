@@ -14,7 +14,7 @@ const $emit = defineEmits(['change_last_read_message'])
 
 const $props = withDefaults(defineProps<{
     /**thời gian của tin nhắn */
-    time: string
+    time?: string
 }>(), {})
 
 const conversationStore = useConversationStore()
@@ -25,7 +25,7 @@ const chatbotUserStore = useChatbotUserStore()
  * đã đọc đến tin nhắn này hay không
  */
 function isClientLastReadThisMessage() {
-    if (!conversationStore.select_conversation?.last_read_message) return false
+    if (!conversationStore.select_conversation?.last_read_message || !$props.time) return false
 
     /**thời gian tin nhắn này được tạo */
     const CURRENT_MESSAGE_DATE = new Date($props.time).getTime()
