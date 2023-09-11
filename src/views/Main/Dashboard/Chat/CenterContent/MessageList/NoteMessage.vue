@@ -1,5 +1,5 @@
 <template>
-    <div class="text-sm break-words whitespace-pre-line bg-yellow-100 rounded-lg p-2">
+    <div class="text-sm break-words whitespace-pre-line bg-yellow-100 rounded-l-2xl rounded-r-md p-2">
         {{ text }}
     </div>
 </template>

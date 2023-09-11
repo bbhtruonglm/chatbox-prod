@@ -9,6 +9,7 @@ export interface Env {
     host: {
         n3_socket: string
         n4_service: string
+        n5_app: string
     }
     /**cài đặt cho riêng facebook */
     facebook: {

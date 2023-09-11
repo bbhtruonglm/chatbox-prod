@@ -11,11 +11,11 @@
 
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
+import { onMounted } from 'vue'
 
 import Loading from '@/components/Loading.vue'
 import Network from './components/Network.vue'
 import AdBlocker from './components/AdBlocker.vue'
-import { onMounted } from 'vue';
 
 const commonStore = useCommonStore()
 
