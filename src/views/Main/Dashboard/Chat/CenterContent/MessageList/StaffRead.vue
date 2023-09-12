@@ -71,7 +71,6 @@ function getStaffs() {
     map(pageStore.selected_page_list_info, item => {
         staffs.value = { ...staffs.value, ...item.staff_list }
     })
-    console.log("staffs.value", staffs.value)
 }
 
 /**kiểm tra xem nhân viên có đọc đến tin nhắn này hay không */
