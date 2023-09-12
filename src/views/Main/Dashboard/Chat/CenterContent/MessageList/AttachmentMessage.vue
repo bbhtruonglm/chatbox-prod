@@ -3,6 +3,7 @@
         'justify-end': type === 'PAGE'
     }" class="flex flex-wrap">
         <div v-for="(attachment, index) of message_attachments"
+            @click="viewAttachment(attachement_info?.[index])"
             class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden">
             <ImageAttachment v-if="attachement_info?.[index]?.type === 'image'" :url="attachement_info?.[index]?.payload?.url" />
         </div>
@@ -60,5 +61,11 @@ function getAttachmentInfo() {
         // cache dữ liệu
         messageStore.attachment_list[TARGET_ID] = r
     })
+}
+/**xem chi tiết file này */
+function viewAttachment(attachment?: AttachmentInfo) {
+    if (!attachment) return
+
+    messageStore.select_attachment = attachment
 }
 </script>

@@ -17,6 +17,7 @@
     <template>
         <ChangeStaffModal ref="change_staff_modal_ref" />
         <BottomWidgetModal ref="bottom_widget_modal_ref" />
+        <AttachmentViewModal />
     </template>
 </template>
 <script setup lang="ts">
@@ -30,6 +31,7 @@ import MessageList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList.v
 import InputChat from '@/views/Main/Dashboard/Chat/CenterContent/InputChat.vue'
 import ChangeStaffModal from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaffModal.vue'
 import BottomWidgetModal from '@/views/Main/Dashboard/Chat/CenterContent/BottomWidgetModal.vue'
+import AttachmentViewModal from '@/views/Main/Dashboard/Chat/CenterContent/AttachmentViewModal.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 

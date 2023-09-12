@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import type { 
-    AttachmentCacheList, TempSendMessage 
+    AttachmentCacheList, AttachmentInfo, TempSendMessage 
 } from '@/service/interface/app/message'
 
 export const useMessageStore = defineStore('message_store', () => {
@@ -12,8 +12,12 @@ export const useMessageStore = defineStore('message_store', () => {
     /**danh sách dữ liệu file được cache để không phải gọi lại nhiều lần */
     const attachment_list = ref<AttachmentCacheList>({})
 
+    /**dữ liệu 1 file được chọn xem chi tiết */
+    const select_attachment = ref<AttachmentInfo>()
+
     return {
         send_message_list,
         attachment_list,
+        select_attachment,
     }
 })

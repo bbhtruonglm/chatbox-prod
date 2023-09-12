@@ -31,7 +31,8 @@ const source: Language = {
             email: 'Email',
             client_id: 'Id Facebook',
             uid: 'Uid',
-            edit: 'Chỉnh sửa'
+            edit: 'Chỉnh sửa',
+            download: 'Tải về',
         },
         view: {
             network: {
@@ -256,7 +257,11 @@ const source: Language = {
                             add_tag: 'Gắn thẻ',
                         },
                         message: {
-                            error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này'
+                            error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
+                            attachment: {
+                                title: 'Chi tiết tập tin đính kèm',
+                                image_to_text: 'Ảnh sang chữ'
+                            }
                         },
                         widget: {
                             title: 'Widget',
