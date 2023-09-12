@@ -15,7 +15,7 @@ export interface MessageInfo {
     /**nội dung tin nhắn văn bản */
     message_text?: string
     /**nội dung tệp đính kèm */
-    message_attachments?: []
+    message_attachments?: AttachmentInfo[]
     /**id của tin nhắn ở hệ thống chính */
     message_mid?: string
     /**thông tin thêm của tin nhắn này */
@@ -61,4 +61,28 @@ export interface TempSendMessage {
     time: string
     /**lỗi khi gửi tin nhắn */
     error?: boolean
+}
+
+/**dữ liệu 1 file */
+export interface AttachmentInfo {
+    /**file là dạng gì */
+    type?: 'image'
+    payload?: {
+        /**đường dẫn của file */
+        url?: string
+    }
+}
+/**dữ liệu file được cache */
+export interface AttachmentCacheList {
+    [index: string]: AttachmentInfo[]
+}
+
+/**đầu vào api đọc nội dung file */
+export interface InputGetUrlAttachment {
+    /**id của đối tượng mục tiêu */
+    target_id: string
+    /**kiểu của đối tượng */
+    type: 'MESSAGE' | 'POST' | 'COMMENT'
+    /**id trang */
+    page_id: string
 }

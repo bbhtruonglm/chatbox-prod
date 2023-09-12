@@ -11,12 +11,18 @@
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px] group">
                     <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
+                    <AttachmentMessage v-else-if="message.message_attachments"
+                        :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                        :page_id="message.fb_page_id" type="CLIENT" />
                     <UnsupportMessage v-else />
                     <MessageDate class="text-right" :time="message.time" />
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] group">
                         <PageTextMessage v-if="message.message_text" :text="message.message_text" />
+                        <AttachmentMessage v-else-if="message.message_attachments"
+                            :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                            :page_id="message.fb_page_id" type="PAGE" />
                         <UnsupportMessage v-else />
                         <MessageDate class="right-5" :time="message.time"
                             :info="parserStaffName(message.message_metadata)" />
@@ -65,6 +71,7 @@ import { debounce, remove } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
+import AttachmentMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/PageTextMessage.vue'
@@ -269,8 +276,10 @@ function getListMessage(is_scroll?: boolean) {
              * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
             if (!isNotPc() && list_message.value.length >= LIMIT) getListMessage()
-            
+
             scrollToBottomMessage()
+
+            setTimeout(() => scrollToBottomMessage(), 500)
         }
 
         if (e) return toastError(e)

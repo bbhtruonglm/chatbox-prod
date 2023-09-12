@@ -10,6 +10,7 @@ export interface Env {
         n3_socket: string
         n4_service: string
         n5_app: string
+        n6_static: string
     }
     /**cài đặt cho riêng facebook */
     facebook: {
