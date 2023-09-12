@@ -1,10 +1,16 @@
 <template>
     <div class="md:w-[300px] xl:w-[400px] h-full hidden md:block">
         <div class="h-[50px] flex items-center py-2 pl-2">
-            <div class="w-[calc(100%_-_50px)] h-full relative">
+            <div 
+                class="w-[calc(100%_-_50px)] h-full relative"
+                :class="{ 'cursor-not-allowed':  widget_selected !== 'all' }"
+            >
                 <input 
                     class="focus:outline-none w-full h-full border rounded-full pl-3 pr-7" type="text"
-                    :placeholder="$t('v1.view.main.dashboard.chat.widget.search')" 
+                    :class="{
+                        'pointer-events-none': widget_selected !== 'all'
+                    }"
+                    :placeholder="$t('v1.view.main.dashboard.chat.widget.search')"
                     v-model="widget_search_name"
                     v-on:keyup="startSearch()" 
                     v-on:keydown="loading = true" 
@@ -109,6 +115,8 @@ function getListWidget() {
         }) || []
 
         snap_widget_list.value = widget_list.value
+        filterWidget()
+        searchWidget()
     })
 }
 /** Tìm kiếm widget theo tên */
