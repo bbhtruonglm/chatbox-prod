@@ -31,7 +31,6 @@
                         </template>
                     </span>
                     <img width="13" height="13" src="@/assets/icons/arrow-down.svg">
-                    {{ is_admin }}
                 </button>
             </div>
         </div>

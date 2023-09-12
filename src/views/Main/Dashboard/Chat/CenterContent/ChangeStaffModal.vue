@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { map } from 'lodash'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCommonStore, usePageStore, useConversationStore } from '@/stores'
 import { teleportCenterModelOnPcScreen } from '@/service/function'
@@ -64,6 +64,12 @@ const fb_staff_id = ref<string>('')
 
 /** Tên nhân viên đang tìm kiếm */
 const search_staff_name = ref<string>('')
+
+/** Khi chọn converstion khác thì ẩn modal assign nhân viên đi */
+watch(
+    () => conversationStore.select_conversation,
+    () => change_staff_modal_ref.value?.immediatelyHide()
+)
 
 onMounted(() => {
     teleportCenterModelOnPcScreen()
