@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="attachment_view_modal_ref">
+    <Modal @close_modal="clearComponent" ref="attachment_view_modal_ref">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.message.attachment.title') }}
         </template>
@@ -63,6 +63,14 @@ watch(() => messageStore.select_attachment, attachment => {
     attachment_view_modal_ref.value?.toggleModal()
 })
 
+/**xoá dữ liệu của component này */
+function clearComponent() {
+    // xoá dữ liệu store được lưu
+    messageStore.select_attachment = undefined
+
+    // xoá ocr
+    text.value = ''
+}
 /**tải về tập tin */
 function downloadFile() {
     window.open(messageStore.select_attachment?.payload?.url, '_blank')

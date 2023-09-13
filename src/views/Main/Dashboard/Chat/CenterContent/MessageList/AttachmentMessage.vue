@@ -2,10 +2,10 @@
     <div :class="{
         'justify-end': type === 'PAGE'
     }" class="flex flex-wrap">
-        <div v-for="(attachment, index) of message_attachments"
-            @click="viewAttachment(attachement_info?.[index])"
+        <div v-for="(attachment, index) of message_attachments" @click="viewAttachment(getAttachmentFromStore()?.[index])"
             class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden">
-            <ImageAttachment v-if="attachement_info?.[index]?.type === 'image'" :url="attachement_info?.[index]?.payload?.url" />
+            <ImageAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'image'"
+                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
         </div>
     </div>
 </template>
@@ -32,21 +32,24 @@ const $props = withDefaults(defineProps<{
 
 const messageStore = useMessageStore()
 
-/**danh sách dữ liệu file của tin nhắn này */
-const attachement_info = ref<AttachmentInfo[]>([])
-
 onMounted(() => getAttachmentInfo())
 
+function getAttachmentFromStore() {
+    const TARGET_ID = $props.message_mid as string
+
+    if (!TARGET_ID) return []
+
+    return messageStore.attachment_list?.[TARGET_ID] || []
+}
 /**đọc dữ liệu của file để hiển thị */
 function getAttachmentInfo() {
+    if (!size($props.message_attachments)) return
+
     const TARGET_ID = $props.message_mid as string
 
     if (!TARGET_ID) return
 
-    // lấy dữ liệu file từ trong cache
-    attachement_info.value = messageStore.attachment_list?.[TARGET_ID] || []
-
-    if (size(attachement_info.value)) return
+    if (size(getAttachmentFromStore())) return
 
     get_url_attachment({
         target_id: TARGET_ID,
@@ -55,10 +58,7 @@ function getAttachmentInfo() {
     }, (e, r) => {
         if (e || !r) return
 
-        // nạp dữ liệu
-        attachement_info.value = r
-
-        // cache dữ liệu
+        // nạp, cache dữ liệu
         messageStore.attachment_list[TARGET_ID] = r
     })
 }

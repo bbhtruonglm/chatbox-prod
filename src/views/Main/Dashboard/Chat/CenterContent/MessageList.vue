@@ -10,19 +10,23 @@
             </div>
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px] group">
-                    <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
-                    <AttachmentMessage v-else-if="message.message_attachments"
-                        :message_attachments="message.message_attachments" :message_mid="message.message_mid"
-                        :page_id="message.fb_page_id" type="CLIENT" />
+                    <template v-if="message.message_text || message.message_attachments">
+                        <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
+                        <AttachmentMessage v-if="message.message_attachments"
+                            :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                            :page_id="message.fb_page_id" type="CLIENT" />
+                    </template>
                     <UnsupportMessage v-else />
                     <MessageDate class="text-right" :time="message.time" />
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] group">
-                        <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-                        <AttachmentMessage v-else-if="message.message_attachments"
-                            :message_attachments="message.message_attachments" :message_mid="message.message_mid"
-                            :page_id="message.fb_page_id" type="PAGE" />
+                        <template v-if="message.message_text || message.message_attachments">
+                            <PageTextMessage v-if="message.message_text" :text="message.message_text" />
+                            <AttachmentMessage v-if="message.message_attachments"
+                                :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                                :page_id="message.fb_page_id" type="PAGE" />
+                        </template>
                         <UnsupportMessage v-else />
                         <MessageDate class="right-5" :time="message.time"
                             :info="parserStaffName(message.message_metadata)" />
