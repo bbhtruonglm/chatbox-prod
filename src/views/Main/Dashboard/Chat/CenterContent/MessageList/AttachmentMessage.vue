@@ -3,8 +3,10 @@
         'justify-end': type === 'PAGE'
     }" class="flex flex-wrap">
         <div v-for="(attachment, index) of message_attachments" @click="viewAttachment(getAttachmentFromStore()?.[index])"
-            class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden">
+            class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
             <ImageAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'image'"
+                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+            <VideoAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'video'"
                 :url="getAttachmentFromStore()?.[index]?.payload?.url" />
         </div>
     </div>
@@ -16,6 +18,7 @@ import { size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
 
 import ImageAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/ImageAttachment.vue'
+import VideoAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
 
 import type { AttachmentInfo } from '@/service/interface/app/message'
 
@@ -33,6 +36,8 @@ const $props = withDefaults(defineProps<{
 const messageStore = useMessageStore()
 
 onMounted(() => getAttachmentInfo())
+
+getAttachmentInfo()
 
 function getAttachmentFromStore() {
     const TARGET_ID = $props.message_mid as string

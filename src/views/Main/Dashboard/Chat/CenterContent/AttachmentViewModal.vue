@@ -9,6 +9,9 @@
                     <div v-if="messageStore.select_attachment?.type === 'image'" :style="{
                         'background-image': `url(${messageStore.select_attachment?.payload?.url})`
                     }" class="w-full h-full bg-no-repeat bg-center bg-origin-content bg-contain border rounded-lg" />
+                    <video v-else-if="messageStore.select_attachment?.type === 'video'" controls autoplay class="h-full w-full">
+                        <source :src="messageStore.select_attachment?.payload?.url" type="video/mp4">
+                    </video>
                     <div v-else class="w-full h-full flex justify-center items-center">
                         <img src="@/assets/icons/file.svg" class="w-[200px] h-[200px]" />
                     </div>
@@ -22,7 +25,8 @@
                             :class="{ 'bg-orange-300': is_loading }"
                             class="text-white bg-orange-500 py-1 px-4 rounded-lg relative">
                             📃{{ $t('v1.view.main.dashboard.chat.message.attachment.image_to_text') }}
-                            <div v-if="is_loading" class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                            <div v-if="is_loading"
+                                class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                                 <Loading />
                             </div>
                         </button>

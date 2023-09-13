@@ -1,5 +1,5 @@
 <template>
-    <img v-if="url" :src="url" class="w-full h-full cursor-pointer hover:opacity-50 bg-white" />
+    <img v-if="url" :src="url" class="w-full h-full bg-white" />
 </template>
 <script setup lang="ts">
 const $props = withDefaults(defineProps<{

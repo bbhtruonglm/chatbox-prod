@@ -66,7 +66,7 @@ export interface TempSendMessage {
 /**dữ liệu 1 file */
 export interface AttachmentInfo {
     /**file là dạng gì */
-    type?: 'image'
+    type?: 'image' | 'video'
     payload?: {
         /**đường dẫn của file */
         url?: string
