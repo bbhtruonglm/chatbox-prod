@@ -72,7 +72,8 @@ const source: Language = {
                         select_page: 'Chọn trang',
                         select_platform: 'Kết nối nền tảng',
                         upgrade: 'Quản lý nâng cấp',
-                        widget: 'Chợ ứng dụng'
+                        widget: 'Chợ ứng dụng',
+                        info: 'Hướng dẫn sử dụng'
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',

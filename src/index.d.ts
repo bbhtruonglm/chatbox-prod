@@ -4,4 +4,7 @@
  * 
  ******************************************************************************/
 
-declare module 'vue3-virtual-scroll-list';
+declare module 'vue3-virtual-scroll-list'
+
+/**phiên bản trong package.json */
+declare const npm_package_version: string

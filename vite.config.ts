@@ -11,6 +11,9 @@ export default defineConfig({
     vue(), 
     basicSsl()
   ],
+  define: {
+    npm_package_version: JSON.stringify(process.env.npm_package_version),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

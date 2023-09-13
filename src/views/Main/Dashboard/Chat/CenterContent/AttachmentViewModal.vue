@@ -47,6 +47,7 @@ import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import { toastError } from '@/service/helper/alert'
+import { openNewTab } from '@/service/function'
 
 const messageStore = useMessageStore()
 
@@ -73,7 +74,11 @@ function clearComponent() {
 }
 /**tải về tập tin */
 function downloadFile() {
-    window.open(messageStore.select_attachment?.payload?.url, '_blank')
+    const URL = messageStore.select_attachment?.payload?.url
+
+    if (!URL) return
+
+    openNewTab(URL)
 }
 /**chuyển đổi hình ảnh thành văn bản */
 function imageToText() {

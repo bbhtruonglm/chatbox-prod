@@ -1,6 +1,6 @@
 <template>
     <div class="h-full w-full flex relative">
-        <div class="bg-white duration-500 h-screen w-[300px] absolute z-[10]" :class="GenNavClass()">
+        <div class="bg-white duration-500 h-screen w-[300px] absolute z-[20]" :class="GenNavClass()">
             <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-2">
                 <div @click="toggleNav" v-if="this_toggle_nav"
                     class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />

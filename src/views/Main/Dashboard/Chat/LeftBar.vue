@@ -6,9 +6,14 @@
                 <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
             </div>
             <div class="flex items-center ml-4 w-full justify-between">
-                <span v-if="!is_show_search" class="font-medium text-2xl">
-                    {{ $t('v1.common.chatbox') }}
-                </span>
+                <div v-if="!is_show_search" >
+                    <span class="font-medium text-2xl">
+                        {{ $t('v1.common.chatbox') }}
+                    </span>
+                    <span class="text-xs text-slate-500">
+                        v{{ version }}
+                    </span>
+                </div>
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
                     class="h-[32px] w-full px-2 focus:outline-none" v-if="is_show_search" type="text"
                     :placeholder="$t('v1.view.main.dashboard.chat.search')">
@@ -43,6 +48,8 @@ import type { ComponentRef } from '@/service/interface/vue'
 const conversationStore = useConversationStore()
 const { t: $t } = useI18n()
 
+/**phiên bản trong package.json */
+const version = npm_package_version
 /**giá trị của ô tìm kiếm hội thoại */
 const search_conversation = ref<string>()
 /**ref của modal filter */
