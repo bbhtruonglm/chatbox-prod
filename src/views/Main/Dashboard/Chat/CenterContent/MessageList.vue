@@ -23,9 +23,13 @@
                     <div class="w-fit max-w-[370px] group">
                         <template v-if="message.message_text || message.message_attachments">
                             <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-                            <AttachmentMessage v-if="message.message_attachments"
+                            <AttachmentMessage
+                                v-if="message.message_attachments && message.message_attachments?.[0]?.type !== 'template'"
                                 :message_attachments="message.message_attachments" :message_mid="message.message_mid"
                                 :page_id="message.fb_page_id" type="PAGE" />
+                            <ChatbotMessage
+                                v-if="message.message_attachments && message.message_attachments?.[0]?.type === 'template'"
+                                :message_chatbot="message.message_attachments?.[0]" />
                         </template>
                         <UnsupportMessage v-else />
                         <MessageDate class="right-5" :time="message.time"
@@ -75,6 +79,7 @@ import { debounce, remove } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
+import ChatbotMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ChatbotMessage.vue'
 import AttachmentMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
 import ClientTextMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientTextMesage.vue'

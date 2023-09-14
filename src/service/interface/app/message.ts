@@ -66,11 +66,35 @@ export interface TempSendMessage {
 /**dữ liệu 1 file */
 export interface AttachmentInfo {
     /**file là dạng gì */
-    type?: 'image' | 'video' | 'audio'
+    type?: 'image' | 'video' | 'audio' | 'template'
+    /**tiêu đề */
+    title?: string
+    /**đường link */
+    url?: string
+    /**nội dung dữ liệu */
     payload?: {
         /**đường dẫn của file */
         url?: string
+        /**kiểu của tin nhắn này */
+        template_type?: 'button' | 'generic' | 'media'
+        /**dữ liệu tin nhắn dạng carousel */
+        elements?: ChatbotSlider[]
+        /**dữ liệu của nút bấm */
+        buttons?: ChatbotButton[]
     }
+}
+/**dữ liệu kiểu slider */
+export interface ChatbotSlider {
+    /**tiêu đề */
+    title?: string
+    /**chú thích */
+    subtitle?: string
+    /**link ảnh hiển thị */
+    image_url?: string
+    /**link của cả khối */
+    item_url?: string
+    /**dữ liệu của nút bấm */
+    buttons?: ChatbotButton[]
 }
 /**dữ liệu file được cache */
 export interface AttachmentCacheList {
@@ -85,4 +109,14 @@ export interface InputGetUrlAttachment {
     type: 'MESSAGE' | 'POST' | 'COMMENT'
     /**id trang */
     page_id: string
+}
+
+/**dữ liệu dạng nút bấm */
+export interface ChatbotButton {
+    /**dạng của nút này */
+    type?: 'postback'
+    /**tiêu đề của nút */
+    title?: string
+    /**hành động của nút này */
+    payload?: string
 }
