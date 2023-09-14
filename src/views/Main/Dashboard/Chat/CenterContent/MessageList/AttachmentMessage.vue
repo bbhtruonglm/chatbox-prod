@@ -6,8 +6,11 @@
             class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
             <ImageAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'image'"
                 :url="getAttachmentFromStore()?.[index]?.payload?.url" />
-            <VideoAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'video'"
+            <VideoAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'video'"
                 :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+            <AudioAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'audio'"
+                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+            <AnotherAttachment v-else :url="getAttachmentFromStore()?.[index]?.payload?.url" />
         </div>
     </div>
 </template>
@@ -19,6 +22,8 @@ import { get_url_attachment } from '@/service/api/chatbox/n6-static'
 
 import ImageAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/ImageAttachment.vue'
 import VideoAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
+import AudioAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/AudioAttachment.vue'
+import AnotherAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/AnotherAttachment.vue'
 
 import type { AttachmentInfo } from '@/service/interface/app/message'
 

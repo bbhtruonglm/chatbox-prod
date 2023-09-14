@@ -9,11 +9,16 @@
                     <div v-if="messageStore.select_attachment?.type === 'image'" :style="{
                         'background-image': `url(${messageStore.select_attachment?.payload?.url})`
                     }" class="w-full h-full bg-no-repeat bg-center bg-origin-content bg-contain border rounded-lg" />
-                    <video v-else-if="messageStore.select_attachment?.type === 'video'" controls autoplay class="h-full w-full">
-                        <source :src="messageStore.select_attachment?.payload?.url" type="video/mp4">
+                    <video v-else-if="messageStore.select_attachment?.type === 'video'" controls autoplay
+                        class="h-full w-full">
+                        <source :src="messageStore.select_attachment?.payload?.url">
                     </video>
-                    <div v-else class="w-full h-full flex justify-center items-center">
+                    <audio v-else-if="messageStore.select_attachment?.type === 'audio'" controls autoplay class="w-full">
+                        <source :src="messageStore.select_attachment?.payload?.url">
+                    </audio>
+                    <div v-else class="w-full h-full flex flex-col justify-center items-center">
                         <img src="@/assets/icons/file.svg" class="w-[200px] h-[200px]" />
+                        <div>{{ getFileName(messageStore.select_attachment?.payload?.url) }}</div>
                     </div>
                 </div>
                 <div>
@@ -45,6 +50,7 @@ import { useMessageStore } from '@/stores'
 import { ref, watch } from 'vue'
 import { size } from 'lodash'
 import { image_to_text } from '@/service/api/chatbox/widget'
+import { getFileName } from '@/service/helper/queryString'
 
 import Modal from '@/components/Modal.vue'
 import Loading from '@/components/Loading.vue'
