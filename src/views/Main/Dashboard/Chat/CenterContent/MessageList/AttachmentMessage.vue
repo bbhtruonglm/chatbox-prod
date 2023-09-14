@@ -12,7 +12,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useMessageStore } from '@/stores'
 import { size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
@@ -35,10 +35,11 @@ const $props = withDefaults(defineProps<{
 
 const messageStore = useMessageStore()
 
+watch(() => $props.message_attachments, () => getAttachmentInfo())
+
 onMounted(() => getAttachmentInfo())
 
-getAttachmentInfo()
-
+/**đọc dữ liệu của tập tin */
 function getAttachmentFromStore() {
     const TARGET_ID = $props.message_mid as string
 
@@ -50,11 +51,11 @@ function getAttachmentFromStore() {
 function getAttachmentInfo() {
     if (!size($props.message_attachments)) return
 
+    if (size(getAttachmentFromStore())) return
+
     const TARGET_ID = $props.message_mid as string
 
     if (!TARGET_ID) return
-
-    if (size(getAttachmentFromStore())) return
 
     get_url_attachment({
         target_id: TARGET_ID,
