@@ -229,3 +229,8 @@ export const getIframeUrl = (widget: AppInstalledInfo) => {
 
     return `${URL_APP}?access_token=${ACCESS_TOKEN}&locale=${LOCALE}&chatbox_token=${CHATBOX_TOKEN}&is_page_admin=${IS_PAGE_ADMIN}`
 }
+
+/**mở link tab mới */
+export const openNewTab = (url: string) => {
+    window.open(url, '_blank')
+}

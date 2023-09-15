@@ -26,7 +26,13 @@ const source: Language = {
             active: 'Kích hoạt',
             chatbox: 'Chatbox',
             unsupport_message: 'Nội dung tin nhắn này hiện tại chưa thể hiển thị được, vui lòng liên hệ với quản trị viên hệ thống',
-            close: 'Đóng'
+            close: 'Đóng',
+            phone: 'Số điện thoại',
+            email: 'Email',
+            client_id: 'Id Facebook',
+            uid: 'Uid',
+            edit: 'Chỉnh sửa',
+            download: 'Tải về',
         },
         view: {
             network: {
@@ -66,7 +72,8 @@ const source: Language = {
                         select_page: 'Chọn trang',
                         select_platform: 'Kết nối nền tảng',
                         upgrade: 'Quản lý nâng cấp',
-                        widget: 'Chợ ứng dụng'
+                        widget: 'Chợ ứng dụng',
+                        info: 'Hướng dẫn sử dụng'
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',
@@ -251,7 +258,11 @@ const source: Language = {
                             add_tag: 'Gắn thẻ',
                         },
                         message: {
-                            error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này'
+                            error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
+                            attachment: {
+                                title: 'Chi tiết tập tin đính kèm',
+                                image_to_text: 'Ảnh sang chữ'
+                            }
                         },
                         widget: {
                             title: 'Widget',
@@ -260,6 +271,9 @@ const source: Language = {
                         },
                         center_content: {
                             staff_read_time: 'Thời gian đọc tin nhắn'
+                        },
+                        client: {
+                            title: 'Thông tin khách hàng'
                         }
                     }
                 }

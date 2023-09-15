@@ -1,7 +1,7 @@
 /**
  * đọc param | query string trên url
  */
-const queryString = (
+export const queryString = (
     key: string,
     url: string = window.location.href
 ) => {
@@ -16,4 +16,14 @@ const queryString = (
     return decodeURIComponent(results[2].replace(/\+/g, ' '))
 }
 
-export { queryString }
+/**đọc ra tên file từ url */
+export const getFileName = (url?: string) => {
+    if (!url) return ''
+
+    return new URL(url)
+        ?.pathname
+        ?.split('/')
+        ?.pop()
+        ?.split('?')
+        ?.[0]
+}

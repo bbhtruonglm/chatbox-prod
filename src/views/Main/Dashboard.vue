@@ -12,16 +12,17 @@
                 </div>
             </div>
             <hr class="my-4" />
-            <div class="h-[calc(100%_-_145px)] md:h-[calc(100%_-_232px)] overflow-hidden overflow-y-auto">
+            <div class="h-[calc(100%_-_185px)] md:h-[calc(100%_-_256px)] overflow-hidden overflow-y-auto">
                 <NavItem v-if="size(pageStore.selected_page_id_list)"
-                    :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
-                    @click="goToChat" icon_class="w-[20px]" :is_only_show_icon="toggle_nav"
-                    :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
+                    :is_active="$route.path.indexOf('/main/dashboard/chat') === 0" @click="goToChat" icon_class="w-[20px]"
+                    :is_only_show_icon="toggle_nav" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
                 <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
                     @click="selectNav(nav.path)" :icon_class="nav.icon_class" :is_only_show_icon="toggle_nav"
                     :icon="nav.icon" :title="nav.title" />
             </div>
             <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
+                <NavItem :is_only_show_icon="toggle_nav" :icon="infoSvg" @click="openGuildLink"
+                    :title="$t('v1.view.main.dashboard.nav.info')" />
                 <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0"
                     @click="selectNav('/main/dashboard/noti')" :is_only_show_icon="toggle_nav" :icon="bellSvg"
                     :title="$t('v1.view.main.dashboard.nav.noti')" />
@@ -44,12 +45,13 @@ import { useI18n } from 'vue-i18n'
 import { useCommonStore, usePageStore } from '@/stores'
 import { computed, ref } from 'vue'
 import { size } from 'lodash'
-import { preGoToChat } from '@/service/function'
+import { openNewTab, preGoToChat } from '@/service/function'
 import { teleportModelFilterOnPcScreen, teleportCenterModelOnPcScreen } from '@/service/function'
 
 import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
 import arrowRightSvg from '@/assets/icons/arrow-right.svg'
+import infoSvg from '@/assets/icons/info.svg'
 import pageSvg from '@/assets/icons/page.svg'
 import chatSvg from '@/assets/icons/chat.svg'
 import crownSvg from '@/assets/icons/crown.svg'
@@ -99,6 +101,10 @@ const dashboard_menu_ref = ref<ComponentRef>()
 /**lắng nghe giá trị ẩn hiện nav từ component */
 const toggle_nav = computed(() => dashboard_menu_ref.value?.this_toggle_nav)
 
+/**mở link doc hướng dẫn sử dụng sản phẩm */
+function openGuildLink() {
+    openNewTab('https://docs.google.com/document/d/1w6jkqojCVmocEM5Ur0b5GvEym3sU4d6M2kEnQWgmuMw/edit?usp=sharing')
+}
 /**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
 function selectNav(path: string) {
     // check cỡ màn điện thoại

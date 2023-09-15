@@ -118,22 +118,22 @@ export interface QueryConversationResponse {
     result?: ConversationInfo[]
 }
 
-/**đầu vào api đánh dấu là đã đọc */
-export interface QueryResetReadConversation {
+/**đầu vào cần thiết để gọi api đến 1 khách hàng */
+export interface QueryOneConversation {
     /**id trang */
     page_id: string
     /**id khách hàng */
     client_id: string
+}
+
+/**đầu vào api đánh dấu là đã đọc */
+export interface QueryResetReadConversation extends QueryOneConversation {
     /**reset về mấy, mặc định là 0 */
     unread_message_amount?: number
 }
 
 /**đầu vào của api đói assign nhân viên */
-export interface QuerySetAssignStaffConversation {
-    /**id trang */
-    page_id: string
-    /**id khách hàng */
-    client_id: string
+export interface QuerySetAssignStaffConversation extends QueryOneConversation {
     /**id của nhân viên mới được assign */
     new_staff_id: string
     /**id của nhân viên cũ */
@@ -141,21 +141,21 @@ export interface QuerySetAssignStaffConversation {
 }
 
 /**đầu vào api toggle spam coversation */
-export interface QueryToggleSpamConversation {
-    /**id trang */
-    page_id: string
-    /**id khách hàng */
-    client_id: string
+export interface QueryToggleSpamConversation extends QueryOneConversation {
     /**giá trị của cờ */
     is_spam: boolean
 }
 
 /**đầu vào api toggle nhãn */
-export interface QueryToggleLabelConversation {
-    /**id trang */
-    page_id: string
-    /**id khách hàng */
-    client_id: string
+export interface QueryToggleLabelConversation extends QueryOneConversation {
     /**id của nhãn */
     label_id: string
+}
+
+/**đầu vào api cập nhật thông tin khách hàng */
+export interface QueryUpdateÌnoConversation extends QueryOneConversation {
+    /**sdt */
+    client_phone?: string
+    /**email */
+    client_email?: string
 }
