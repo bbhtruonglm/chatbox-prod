@@ -78,7 +78,7 @@ import { useConversationStore, useMessageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { 
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, 
-    getPageWidget, getIframeUrl 
+    getPageWidget, getIframeUrl, isMobile 
 } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
@@ -213,6 +213,9 @@ function resizeHeightMessageList(new_height: number) {
 function submitInput($event: KeyboardEvent) {
     // nếu bấm shift + enter thì chỉ xuống dòng
     if ($event.shiftKey) return
+
+    // nếu ở mobile thì nhấn enter chỉ xuống dòng, không xử lý sự kiện
+    if (isMobile()) return
 
     // nếu bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
