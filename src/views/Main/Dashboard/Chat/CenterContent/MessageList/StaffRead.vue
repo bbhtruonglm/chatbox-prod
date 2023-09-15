@@ -1,15 +1,15 @@
 <template>
-    <div class="flex justify-end">
+    <!-- Hiển thị nhân viên đã đọc tin nhắn -->
+    <div class="flex justify-end cursor-pointer" @click="toggleModal">
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
-            <StaffAvatar v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)" size="20"
-                :class="`message-staff-read-${staff_id}`"
-                class="rounded-full ml-[-5px] hidden my-1" />
+            <StaffAvatar v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
+                size="20" :class="`message-staff-read-${staff_id}`" class="rounded-full ml-[-5px] hidden my-1" />
         </template>
     </div>
 </template>
 <script setup lang="ts">
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useMessageStore } from '@/stores'
 
 const $emit = defineEmits(['change_last_read_message'])
 
@@ -19,6 +19,15 @@ const $props = withDefaults(defineProps<{
 }>(), {})
 
 const conversationStore = useConversationStore()
+const messageStore = useMessageStore()
+
+/** Ẩn hiện modal */
+function toggleModal() {
+    messageStore.staff_read = {
+        show: !messageStore.staff_read.show,
+        message_time: $props.time
+    }
+}
 
 /**kiểm tra xem nhân viên có đọc đến tin nhắn này hay không */
 function isStaffLastReadThisMessage(staff_id?: string, staff_read_time?: number) {
@@ -35,4 +44,6 @@ function isStaffLastReadThisMessage(staff_id?: string, staff_read_time?: number)
 
     return true
 }
+
+defineExpose({ toggleModal })
 </script>

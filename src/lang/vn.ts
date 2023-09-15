@@ -269,6 +269,9 @@ const source: Language = {
                             setting: 'Tuỳ chỉnh widget',
                             search: 'Tìm kiếm widget'
                         },
+                        center_content: {
+                            staff_read_time: 'Thời gian đọc tin nhắn'
+                        },
                         client: {
                             title: 'Thông tin khách hàng'
                         }

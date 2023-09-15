@@ -12,6 +12,7 @@ import Pricing from '@/views/Main/Dashboard/Pricing.vue'
 import Widget from '@/views/Main/Dashboard/Widget.vue'
 import Noti from '@/views/Main/Dashboard/Noti.vue'
 import User from '@/views/Main/Dashboard/User.vue'
+import WidgetsList from '@/views/Main/Dashboard/Widget/WidgetsList.vue'
 
 export const routes = [
   { path: '/', redirect: '/oauth' },
@@ -30,7 +31,14 @@ export const routes = [
           { path: 'select-page', component: SelectPage },
           { path: 'select-platform', component: SelectPlatform },
           { path: 'pricing', component: Pricing },
-          { path: 'widget', component: Widget },
+          { 
+            path: 'widget', 
+            component: Widget,
+            children: [
+              { path: '', redirect: '/main/dashboard/widget/list' },
+              { path: 'list', component: WidgetsList }
+            ]
+          },
           { path: 'noti', component: Noti },
           { path: 'user', component: User },
         ]

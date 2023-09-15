@@ -14,8 +14,12 @@
                 <div @click="openClientInfo" class="text-sm font-medium cursor-pointer truncate w-[150px]">
                     {{ conversationStore.select_conversation?.client_name }}
                 </div>
-                <button @click="openAssignStaff"
-                    class="text-xs bg-slate-200 text-slate-500 rounded px-2 py-[2px] flex items-center">
+                <button @click="openAssignStaff" class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
+                    :class="{
+                        'text-slate-500': is_admin,
+                        'text-slate-400': !is_admin,
+                        'cursor-not-allowed': !is_admin
+                    }">
                     <span class="mr-1">
                         <template v-if="conversationStore.select_conversation?.fb_staff_id" class="mr-2">
                             {{
@@ -55,7 +59,7 @@ import {
     useCommonStore, useConversationStore, useChatbotUserStore, usePageStore
 } from '@/stores'
 import { reset_read_conversation, toggle_spam_conversation } from '@/service/api/chatbox/n4-service'
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { flow } from '@/service/helper/async'
 import { keyBy, map } from 'lodash'
 
@@ -64,6 +68,8 @@ import Loading from '@/components/Loading.vue'
 import ClientInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo/ClientInfo.vue'
 
 import type { CbError } from '@/service/interface/function'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { isCurrentStaffIsPageAdmin } from '@/service/function'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
@@ -81,6 +87,11 @@ const is_loading_unread_conversation = ref(false)
 const is_loading_spam_conversation = ref(false)
 /**vị trí của hội thoại vừa mới được ẩn */
 const index_of_spam_conversation = ref(0)
+/** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
+const is_admin = computed(() => isCurrentStaffIsPageAdmin(
+    conversationStore.select_conversation?.fb_page_id as string
+))
+
 
 /**mở popup thông tin chi tiết của khách hàng */
 function openClientInfo() {
@@ -92,6 +103,10 @@ function backToConversation() {
 }
 /**mở modal thay đổi assign nhân viên */
 function openAssignStaff() {
+    /** Nếu tài khoản hiện tại không phải admin thì ko cho assign nhân viên */
+    if (!is_admin.value) return
+
+    /** Mở modal */
     $emit('toggle_change_assign_staff')
 }
 /**đánh dấu hội thoại này là chưa đọc */
