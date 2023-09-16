@@ -170,6 +170,16 @@ export const getPageLabel = (page_id?: string) => {
         ?.label_list
 }
 
+/**lấy danh sách nhân viên của trang */
+export const getPageStaff = (page_id?: string) => {
+    const pageStore = usePageStore()
+
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id as string]
+        ?.staff_list
+}
+
 /**lấy danh sách widget của trang */
 export const getPageWidget = (page_id?: string) => {
     const pageStore = usePageStore()

@@ -1,15 +1,19 @@
 <template>
     <!-- Hiển thị nhân viên đã đọc tin nhắn -->
-    <div class="flex justify-end cursor-pointer" @click="toggleModal">
+    <div ref="staff_read_warper_ref" class="flex justify-end cursor-pointer" @click="toggleModal">
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
             <StaffAvatar v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
-                size="20" :class="`message-staff-read-${staff_id}`" class="rounded-full ml-[-5px] hidden my-1" />
+                size="20" :class="`message-staff-read-${staff_id}`"
+                class="staff-read-item rounded-full ml-[-5px] hidden my-1" />
         </template>
     </div>
 </template>
 <script setup lang="ts">
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import { useConversationStore, useMessageStore } from '@/stores'
+import { ref } from 'vue'
+
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['change_last_read_message'])
 
@@ -21,14 +25,24 @@ const $props = withDefaults(defineProps<{
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 
+/**ref của div chứa staff read */
+const staff_read_warper_ref = ref<ComponentRef>()
+
 /** Ẩn hiện modal */
 function toggleModal() {
-    messageStore.staff_read = {
-        show: !messageStore.staff_read.show,
-        message_time: $props.time
-    }
-}
+    /**danh sách các staff read */
+    const STAFF_READ_ITEM_HTML: HTMLDivElement[] = staff_read_warper_ref
+        .value
+        ?.getElementsByClassName('staff-read-item')
 
+    // lấy danh sách id thoả mãn
+    messageStore.select_staff_read_id = Array
+        .from(STAFF_READ_ITEM_HTML)
+        // lọc ra các div đang hiển thị
+        ?.filter(staff_read => staff_read?.style?.display === 'block')
+        // lấy id_staff từ id của div
+        ?.map(staff_read => staff_read?.id?.substring(16))
+}
 /**kiểm tra xem nhân viên có đọc đến tin nhắn này hay không */
 function isStaffLastReadThisMessage(staff_id?: string, staff_read_time?: number) {
     if (!staff_read_time || !$props.time) return false
