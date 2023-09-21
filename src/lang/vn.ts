@@ -274,6 +274,19 @@ const source: Language = {
                         },
                         client: {
                             title: 'Thông tin khách hàng'
+                        },
+                        emoji: {
+                            search: 'Tìm kiếm',
+                            recent: 'Gần dây',
+                            smileys: 'Cảm xúc',
+                            people: 'Con người',
+                            nature: 'Thiên nhiên và động vật',
+                            foods: 'Đồ ăn và đồ uống',
+                            activity: 'Hoạt động',
+                            places: 'Du lịch',
+                            objects: 'Đối tượng',
+                            symbols: 'Biểu tượng',
+                            flags: 'Cờ'
                         }
                     }
                 }

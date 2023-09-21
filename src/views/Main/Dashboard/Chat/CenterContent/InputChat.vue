@@ -55,8 +55,9 @@
         </div>
     </div>
     <div class="w-full flex items-center h-[49px] border-t relative">
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative" @click="toggleEmoji">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
+            <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
         </div>
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
@@ -80,6 +81,7 @@ import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, 
     getPageWidget, getIframeUrl, isMobile 
 } from '@/service/function'
+import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 
 import Loading from '@/components/Loading.vue'
 
@@ -103,6 +105,8 @@ const is_show_label_list = ref(false)
 const is_loading_label = ref(false)
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<ComponentRef>()
+/**ref của component emoji */
+const emoji_ref = ref<ComponentRef>()
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
@@ -268,5 +272,13 @@ function sendMessage() {
 /**TODO xử lý báo lỗi khi gửi tin nhắn thất bại */
 function handleSendMessageError(error: any) {
     toastError(error)
+}
+/** Bật tắt modal chọn emoji */
+function toggleEmoji () {
+    emoji_ref.value.toogleEmoji()
+}
+/** Thêm emoji vào input chat */
+function addEmojiToInput (emoji: string) {
+    input_chat_ref.value.innerText += emoji
 }
 </script>
