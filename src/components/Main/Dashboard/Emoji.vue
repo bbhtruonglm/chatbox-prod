@@ -1,6 +1,6 @@
 <template>
     <div 
-        class=" absolute bottom-[100px] left-11" 
+        class=" absolute sm:bottom-[100px] bottom-[120px] left-6"
         :style="{ 'display': show_emoji ? 'block' : 'none' }"
     >
         <picker 
