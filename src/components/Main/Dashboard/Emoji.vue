@@ -1,7 +1,8 @@
 <template>
     <div 
-        class=" absolute sm:bottom-[100px] bottom-[120px] left-6"
+        class=" absolute bottom-[40px] left-[4px] z-20"
         :style="{ 'display': show_emoji ? 'block' : 'none' }"
+        ref="emoji_ref"
     >
         <picker 
             :data="emojiIndex" 
@@ -51,10 +52,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import data from "emoji-mart-vue-fast/data/all.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
+import type { ComponentRef } from '@/service/interface/vue'
 
 interface Emoji {
     native: string
@@ -68,14 +70,38 @@ const $props = withDefaults(defineProps<{
 const emojiIndex = new EmojiIndex(data)
 /** trạng thái ẩn hiện emoji */
 const show_emoji = ref<boolean>(false)
+/** ref của emoji */
+const emoji_ref = ref<ComponentRef>()
+/** Gắn cờ hành động click mở emoji */
+const flag_open = ref<boolean>(false)
+
+// lắng nghe sự kiện click ra ngoài
+onMounted(() => document.body.addEventListener('click', clickOutSide))
+// huỷ lắng nghe sự kiện khi un mount
+onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 
 /** Chọn emoji */
-const selectEmoji = (emoji: Emoji) => {
+function selectEmoji(emoji: Emoji) {
     $props.selectEmoji(emoji.native)
 }
 /** Bật tắt emoji */
-const toogleEmoji = () => {
+function toogleEmoji() {
     show_emoji.value = !show_emoji.value
+    if(show_emoji.value) flag_open.value = true
+    setTimeout(function() {
+        flag_open.value = false
+    }, 1000)
+}
+/** ẩn option lựa cho khi click outside */
+function clickOutSide($event: MouseEvent) {
+    if(flag_open.value) return
+
+    if (
+        emoji_ref.value == $event.target ||
+        emoji_ref.value.contains($event.target)
+    ) return
+
+    if(show_emoji.value) show_emoji.value = false
 }
 
 // public chức năng ẩn hiện emoji để có thể được gọi từ bên ngoài component

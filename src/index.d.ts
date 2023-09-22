@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 declare module 'vue3-virtual-scroll-list'
+declare module 'emoji-mart-vue-fast/src'
 
 /**phiên bản trong package.json */
 declare const npm_package_version: string
