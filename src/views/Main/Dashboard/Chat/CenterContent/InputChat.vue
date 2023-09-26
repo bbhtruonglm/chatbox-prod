@@ -42,7 +42,7 @@
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/clip.svg" width="17" height="17" />
         </div>
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/slash.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_90px)] h-full">
@@ -90,7 +90,7 @@ import type { TempSendMessage } from '@/service/interface/app/message'
 import { map, take } from 'lodash'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
-const $emit = defineEmits(['toggle_bottom_widget'])
+const $emit = defineEmits(['toggle_bottom_widget', 'toggle_quick_answer'])
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -107,6 +107,8 @@ const is_loading_label = ref(false)
 const input_chat_ref = ref<ComponentRef>()
 /**ref của component emoji */
 const emoji_ref = ref<ComponentRef>()
+/**ref của component quick_answer */
+const quick_answer_ref = ref<ComponentRef>()
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
@@ -116,6 +118,9 @@ function toggleWidget(widget: AppInstalledInfo) {
     conversationStore.select_widget = widget
 
     $emit('toggle_bottom_widget')
+}
+function toggleQuickAnswer() {
+    $emit('toggle_quick_answer')
 }
 /**đọc danh sách các widget của trang này */
 function getListWidget() {

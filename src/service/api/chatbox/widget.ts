@@ -12,3 +12,16 @@ export const image_to_text = (
         url
     }
 }, proceed)
+
+/**ảnh -> văn bản */
+export const get_quick_answer = (
+    params: { 
+        fb_page_id: string
+        skip?: number
+        limit?: number
+    },
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.widget}/v1/quick-answer/quickanswer/read_answer`,
+    body: params
+}, proceed)

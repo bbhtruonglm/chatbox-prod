@@ -120,3 +120,14 @@ export interface ChatbotButton {
     /**hành động của nút này */
     payload?: string
 }
+
+export interface QuickAnswerInfo {
+    /** Tiêu đề */
+    title: string
+    /** Nội dung */
+    content: string
+    /** ID page fb */
+    fb_page_id: string
+    /** Danh sách ảnh đính kèm */
+    list_images: string[]
+}
