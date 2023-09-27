@@ -1,25 +1,36 @@
 <template>
-    <ModalBottom ref="quick_anser_modal_ref" :left="commonStore.center_modal_left"
-        :width="commonStore.center_modal_width">
+    <ModalBottom ref="quick_anser_modal_ref" :left="commonStore.center_modal_left" :width="commonStore.center_modal_width">
         <template v-slot:header>
-           Trả lời nhanh
+            Trả lời nhanh
         </template>
         <template v-slot:body>
+            <!-- Loading -->
             <div class="h-[150px]" v-if="loading">
                 <Loading type="FULL" />
             </div>
-            <div class="h-[600px] overflow-y-auto" v-if="!loading">
-                <div class="flex justify-between bg-green-100 text-green-500 px-1 py-2 sticky top-0">
+
+            <!-- Answers -->
+            <div v-if="!loading">
+                <div class="flex justify-between bg-green-100 text-green-500 px-1 py-2">
                     <p>Enter hoặc click để chọn</p>
                     <p>Dùng ↑ hoặc ↓ để chọn</p>
                 </div>
-                <div v-for="answer in quick_answers" class=" border-t py-2 px-1.5 cursor-pointer hover:bg-slate-100">
+                <div class="h-[600px] overflow-y-auto">
                     <div 
-                        class=" bg-gray-500 text-white w-fit px-1 rounded text-xs font-bold"
+                        v-for="(answer, index) in quick_answers" 
+                        :id="answer.id"
+                        class=" border-t py-2 px-1.5 cursor-pointer hover:bg-slate-100"
+                        @click="selectQuickAnswer(answer.content)"
+                        :class="{ 
+                            'text-orange-500': answer.id === answer_selected,
+                            'bg-orange-100': answer.id === answer_selected
+                        }"
                     >
-                       <p class= " truncate max-w-xs" >{{ answer.title }}</p>
+                        <div class=" bg-gray-500 text-white w-fit px-1 rounded text-xs font-bold">
+                            <p class=" truncate max-w-xs">{{ answer.title }}</p>
+                        </div>
+                        <p>{{ answer.content }}</p>
                     </div>
-                    <p>{{ answer.content }}</p>
                 </div>
             </div>
         </template>
@@ -27,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, onUnmounted } from 'vue'
 import { useCommonStore, useConversationStore, usePageStore } from '@/stores'
 import { teleportCenterModelOnPcScreen } from '@/service/function'
 
@@ -49,6 +60,10 @@ const quick_anser_modal_ref = ref<ComponentRef>()
 const quick_answers = ref<QuickAnswerInfo[]>([])
 /** Trạng thái loading */
 const loading = ref<boolean>(true)
+/** Id của answer đang được chọn */
+const answer_selected = ref<string>('')
+/** Index của answer đang được chọn */
+const answer_index = ref<number>(0)
 
 watch(
     () => conversationStore.select_conversation,
@@ -62,19 +77,82 @@ onMounted(() => {
 /** ẩn hiện modal */
 function toggleModal(type?: string) {
     quick_anser_modal_ref.value?.toggleModal()
+    document.addEventListener('keyup', handleKeyUp)
     getQuickAnswer()
 }
-
+/** Lấy dữ liệu trả lời nhanh theo page */
 function getQuickAnswer() {
-    const page_id:string = conversationStore.select_conversation?.fb_page_id as string
+    const page_id: string = conversationStore.select_conversation?.fb_page_id as string
 
     get_quick_answer({
         fb_page_id: page_id
     }, (e, r) => {
         quick_answers.value = r
         loading.value = false
+
+        setDefaultQuickAnswer()
     })
 }
+/** Lựa chọn trả lời nhanh */
+function selectQuickAnswer(content: string) {
+    if (!content) return
+    const input_chat = document.getElementById('chat-text-input-message')
+    if (!input_chat) return
+    input_chat.innerText = content
+    quick_anser_modal_ref.value?.toggleModal()
+    document.removeEventListener('keyup', handleKeyUp)
+}
+/** Xử lý event */
+function handleKeyUp(event: KeyboardEvent) {
+    // * Mũi tên xuống
+    if(event.keyCode == 40) {
+        console.log("xuống")
+
+        if(answer_index.value === (quick_answers.value.length - 1)) {
+            answer_index.value = 0
+            answer_selected.value = quick_answers.value[answer_index.value].id
+            scrollIntoView(answer_selected.value)
+            return
+        }
+
+        answer_index.value =  answer_index.value + 1
+        answer_selected.value = quick_answers.value[answer_index.value].id
+        scrollIntoView(answer_selected.value)
+    }
+
+    // * Mũi tên lên
+    if(event.keyCode == 38) {
+        console.log("lên")
+
+        if(answer_index.value === 0) {
+            answer_index.value = quick_answers.value.length - 1
+            answer_selected.value = quick_answers.value[answer_index.value].id
+            scrollIntoView(answer_selected.value)
+            return
+        }
+
+        answer_index.value =  answer_index.value - 1
+        answer_selected.value = quick_answers.value[answer_index.value].id
+        scrollIntoView(answer_selected.value)
+    }
+
+    // * Enter
+    if(event.keyCode == 13) {
+        selectQuickAnswer(quick_answers.value[answer_index.value].content)
+    }
+}
+/** Gán câu trả lời nhanh mặc định */
+function setDefaultQuickAnswer() {
+    if(quick_answers.value.length === 0) return
+    answer_selected.value = quick_answers.value[0].id
+    answer_index.value = 0
+}
+/** Cuộn tới vị trí trả lời nhanh đang chọn */
+function scrollIntoView(id: string) {
+    const element:any = document.getElementById(id);
+    if(element) element.scrollIntoViewIfNeeded();
+}
+
 
 defineExpose({ toggleModal })
 </script>

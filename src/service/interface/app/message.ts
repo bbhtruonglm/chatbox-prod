@@ -122,6 +122,8 @@ export interface ChatbotButton {
 }
 
 export interface QuickAnswerInfo {
+    /** ID bản ghi */
+    id: string
     /** Tiêu đề */
     title: string
     /** Nội dung */
