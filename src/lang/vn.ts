@@ -270,7 +270,8 @@ const source: Language = {
                             search: 'Tìm kiếm widget'
                         },
                         center_content: {
-                            staff_read_time: 'Thời gian đọc tin nhắn'
+                            staff_read_time: 'Thời gian đọc tin nhắn',
+                            staff_read: 'đã đọc tin nhắn lúc'
                         },
                         client: {
                             title: 'Thông tin khách hàng'

@@ -1,5 +1,6 @@
 <template>
     <div 
+        :id="`staff-read-item-${id}`"
         :class="animate_pulse" 
         :style="`width:${size}px;height:${size}px;`" 
         class="overflow-hidden bg-slate-200"

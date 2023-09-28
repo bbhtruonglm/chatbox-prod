@@ -15,15 +15,13 @@ export const useMessageStore = defineStore('message_store', () => {
     /**dữ liệu 1 file được chọn xem chi tiết */
     const select_attachment = ref<AttachmentInfo>()
 
-    /** Trạng thái hiển thị modal nhân viên xem tin nhắn */
-    const staff_read = ref<{ show: boolean, message_time?: string }>({
-        show: false
-    })
+    /** danh sách id đã chọn */
+    const select_staff_read_id = ref<string[]>([])
 
     return {
         send_message_list,
         attachment_list,
         select_attachment,
-        staff_read
+        select_staff_read_id,
     }
 })
