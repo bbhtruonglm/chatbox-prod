@@ -12,7 +12,7 @@ export const toast = (
     icon: SweetAlertIcon,
     title: string,
     position: SweetAlertPosition = 'top-end',
-    timer: number = 3000
+    timer: number = 10000 // #note default 3000 s
 ) => Swal.fire({
     icon,
     title,

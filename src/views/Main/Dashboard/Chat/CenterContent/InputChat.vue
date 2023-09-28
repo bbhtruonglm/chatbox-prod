@@ -84,9 +84,12 @@
             </div>
         </div>
     </div>
+    <FacebookError ref="facebook_error_ref" :error="facebook_error"></FacebookError>
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { map, take, get } from 'lodash'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
@@ -96,16 +99,17 @@ import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, 
     getPageWidget, getIframeUrl, isMobile 
 } from '@/service/function'
-import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 
+import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
+import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
-import { map, take } from 'lodash'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
 const $emit = defineEmits(['toggle_bottom_widget', 'toggle_quick_answer'])
+const { t: $t } = useI18n()
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -122,8 +126,13 @@ const is_loading_label = ref(false)
 const input_chat_ref = ref<ComponentRef>()
 /**ref của component emoji */
 const emoji_ref = ref<ComponentRef>()
-/**ref của component quick_answer */
-const quick_answer_ref = ref<ComponentRef>()
+/**ref của component facebook error */
+const facebook_error_ref = ref<ComponentRef>()
+/** error fb trả về */
+const facebook_error = ref<{ 
+    code?: number
+    message?: string
+}>()
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
@@ -291,7 +300,21 @@ function sendMessage() {
 }
 /**TODO xử lý báo lỗi khi gửi tin nhắn thất bại */
 function handleSendMessageError(error: any) {
-    toastError(error)
+
+    switch (get(error, 'error.code')) {
+        case 10: toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
+            break;
+        // case 10: 
+        //     facebook_error.value = get(error, 'error')
+        //     facebook_error_ref.value.toggleModal()
+        //     break;
+        case 190:
+            facebook_error.value = get(error, 'error')
+            facebook_error_ref.value.toggleModal()
+            break;
+        default: toastError(error)
+            break;
+    }
 }
 /** Bật tắt modal chọn emoji */
 function toggleEmoji () {

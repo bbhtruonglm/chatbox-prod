@@ -288,6 +288,20 @@ const source: Language = {
                             objects: 'Đối tượng',
                             symbols: 'Biểu tượng',
                             flags: 'Cờ'
+                        },
+                        facebook_errors: {
+                            10: 'Đã hết thời gian tương tác với người nhận tin',
+                            190: {
+                                facebook_permission: 'Cấp quyền Facebook',
+                                session_expired: 'Bạn đã hết phiên sử dụng Facebook trên Bot Ban Hang do một số hoạt động của bạn như: Đổi mật khẩu, Checkpoint tài khoản hoặc các vấn đề khác do Facebook.',
+                                continue_get_permission: 'Để tiếp tục sử dụng, bạn cần ấn nút <strong>"Tiếp tục với Facebook"</strong> và cấp quyền sử dụng Page ',
+                                error_content: 'Mã lỗi của bạn từ phía Facebook phản hồi:',
+                                need_account: 'Bạn cần sử dụng đúng tài khoản Facebook',
+                                get_permission: 'để cấp quyền',
+                                continue_with_facebook: 'Tiếp tục với Facebook',
+                                or: 'hoặc',
+                                login_with_another_account: 'Đăng nhập với tài khoản khác'
+                            }
                         }
                     }
                 }

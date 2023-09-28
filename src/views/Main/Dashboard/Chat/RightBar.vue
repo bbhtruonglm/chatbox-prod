@@ -55,7 +55,7 @@
                         width="12" height="12" />
                     <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12" height="12" />
                 </div>
-                <div v-show="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
+                <div v-if="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
                     <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
                 </div>
             </div>
@@ -121,8 +121,6 @@ function getListWidget() {
 
             return widget
         }) || []
-
-        console.log("widget_list", widget_list.value)
 
         snap_widget_list.value = widget_list.value
         filterWidget()
