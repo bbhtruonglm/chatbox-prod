@@ -62,9 +62,24 @@
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex">
+        <div 
+            class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex"
+            v-if="isMobile()"
+        >
             <div v-for="widget of widget_list" @click="toggleWidget(widget)"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
+                <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
+            </div>
+        </div>
+        <div  
+            class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex"
+            v-if="!isMobile()"
+        >
+            <div 
+                v-for="widget of widget_list" @click="toggleWidget(widget)"
+                v-show="widget.position === 'BOTTOM'"
+                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2"
+            >
                 <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
             </div>
         </div>

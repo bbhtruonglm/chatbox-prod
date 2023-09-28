@@ -13,6 +13,7 @@ import Widget from '@/views/Main/Dashboard/Widget.vue'
 import Noti from '@/views/Main/Dashboard/Noti.vue'
 import User from '@/views/Main/Dashboard/User.vue'
 import WidgetsList from '@/views/Main/Dashboard/Widget/WidgetsList.vue'
+import WidgetsSetting from '@/views/Main/Dashboard/Widget/WidgetsSetting.vue'
 
 export const routes = [
   { path: '/', redirect: '/oauth' },
@@ -36,7 +37,8 @@ export const routes = [
             component: Widget,
             children: [
               { path: '', redirect: '/main/dashboard/widget/list' },
-              { path: 'list', component: WidgetsList }
+              { path: 'list', component: WidgetsList },
+              { path: 'page-setting', component: WidgetsSetting }
             ]
           },
           { path: 'noti', component: Noti },

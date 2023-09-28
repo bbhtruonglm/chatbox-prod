@@ -19,7 +19,7 @@
                 <Loading v-if="loading" class="absolute top-[5px] right-[7px] cursor-pointer"/>
             </div>
             <div class="w-[50px] flex justify-center">
-                <img class="cursor-pointer" src="@/assets/icons/edit.svg" />
+                <img @click="openWidgetsSetting()" class="cursor-pointer" src="@/assets/icons/edit.svg" />
             </div>
         </div>
         <div class="h-[calc(100%_-_50px)] overflow-hidden overflow-y-auto pb-10">
@@ -42,8 +42,12 @@
                     {{ widget.snap_app.name }}
                 </button>
             </div>
-            <div v-for="widget of widget_list" class="border-b" v-show="!widget.is_hidden">
-                <div @click="toggleWidget(widget)"
+            <div 
+                v-for="widget of widget_list" class="border-b" 
+                v-if="!isMobile()"
+                v-show="!widget.is_hidden" 
+            >
+                <div @click="toggleWidget(widget)" v-show="widget.position === 'RIGHT'"
                     class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer relative hover:bg-orange-100 py-3">
                     <img :src="widget.snap_app.icon" class="mr-1" width="20" height="20" />
                     {{ widget.snap_app.name }}
@@ -51,7 +55,7 @@
                         width="12" height="12" />
                     <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12" height="12" />
                 </div>
-                <div v-show="widget.is_show" class="w-full h-[300px]">
+                <div v-show="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
                     <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
                 </div>
             </div>
@@ -63,6 +67,7 @@ import { nextTick, ref, watch, onMounted } from 'vue'
 import { random_word } from '@/service/helper/random'
 import { useConversationStore } from '@/stores'
 import { debounce } from 'lodash';
+import { useRouter } from 'vue-router'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import { getIframeUrl, getPageWidget } from '@/service/function';
@@ -70,8 +75,11 @@ import { nonAccentVn } from '@/service/helper/format'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import { getItem, setItem } from '@/service/helper/localStorage';
 import Loading from '@/components/Loading.vue';
+import { isMobile } from '@/service/function';
 
 const conversationStore = useConversationStore()
+
+const $router = useRouter()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
@@ -113,6 +121,8 @@ function getListWidget() {
 
             return widget
         }) || []
+
+        console.log("widget_list", widget_list.value)
 
         snap_widget_list.value = widget_list.value
         filterWidget()
@@ -165,6 +175,10 @@ function filterWidget(widget_select?: AppInstalledInfo) {
 /** Hiển thị widget đã chọn sau 2s từ khi Mounted */
 function getWidgetSelected() {
     setTimeout(function () { searchWidget() }, 3000)
+}
+/** Mở widgets setting */
+function openWidgetsSetting() {
+    $router.push('/main/dashboard/widget/page-setting')
 }
 
 onMounted(() => {

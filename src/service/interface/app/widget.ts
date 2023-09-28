@@ -1,7 +1,7 @@
 /**các trạng thái của app được cài */
 export type AppInstalledStatus = 'SUCCESS'
 /**vị trí của app được cài */
-export type AppInstalledPosition = 'RIGHT'
+export type AppInstalledPosition = 'RIGHT' | 'BOTTOM'
 /**kích thước của app được cài */
 export type AppInstalledSize = 'MEDIUM'
 
