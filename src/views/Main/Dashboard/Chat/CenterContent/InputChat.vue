@@ -301,12 +301,12 @@ function sendMessage() {
 function handleSendMessageError(error: any) {
 
     switch (get(error, 'error.code')) {
-        // case 10: toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
-        //     break;
-        case 10:
-            facebook_error.value = get(error, 'error')
-            facebook_error_ref.value.toggleModal()
+        case 10: toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
             break;
+        // case 10:
+        //     facebook_error.value = get(error, 'error')
+        //     facebook_error_ref.value.toggleModal()
+        //     break;
         case 190:
             facebook_error.value = get(error, 'error')
             facebook_error_ref.value.toggleModal()

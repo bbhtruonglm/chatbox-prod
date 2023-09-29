@@ -302,6 +302,10 @@ const source: Language = {
                                 or: 'hoặc',
                                 login_with_another_account: 'Đăng nhập với tài khoản khác'
                             }
+                        },
+                        quick_answer: {
+                            title: 'Trả lời nhanh',
+                            search: 'Tìm kiếm câu trả lời nhanh'
                         }
                     }
                 }
