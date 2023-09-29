@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="modal_ref">
+    <Modal ref="modal_ref" :fit_content="true">
         <template v-slot:body>
             <div class="flex flex-col md:flex-row h-[70vh] overflow-y-auto md:h-full">
                 <div class="flex flex-col items-center p-5">
@@ -43,7 +43,7 @@
                         </p>
                     </div>
 
-                    <div class="rounded-lg bg-gray-300 p-3 w-full break-words">
+                    <div class="rounded-lg bg-gray-300 p-3 w-full break-words h-[170px] overflow-y-auto">
                         {{ $props.error }}
                     </div>
 
