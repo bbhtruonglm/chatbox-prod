@@ -20,6 +20,8 @@ export interface MessageInfo {
     message_mid?: string
     /**thông tin thêm của tin nhắn này */
     message_metadata?: string
+    /** id quảng cáo */
+    ad_id?:string
 }
 
 /**đầu vào của api */

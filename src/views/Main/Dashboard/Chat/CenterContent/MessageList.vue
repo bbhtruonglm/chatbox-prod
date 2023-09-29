@@ -9,8 +9,8 @@
                 </div>
             </div>
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
-                <div v-if="message.message_type === 'client'" class="w-fit max-w-[370px] group">
-                    <template v-if="message.message_text || message.message_attachments">
+                <div v-if="message.message_type === 'client' && !message.ad_id" class="w-fit max-w-[370px] group">
+                    <template v-if="message.message_text || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                         <AttachmentMessage v-if="message.message_attachments"
                             :message_attachments="message.message_attachments" :message_mid="message.message_mid"
@@ -49,6 +49,9 @@
                         <SystemMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
                     </div>
+                </div>
+                <div v-else-if="message.message_type === 'client' && message.ad_id">
+                    <AdMessage v-if="message.ad_id" :ad_id="message.ad_id" />
                 </div>
                 <div v-else class="text-center flex justify-center">
                     <UnsupportMessage class="w-[70%]" />
@@ -90,6 +93,7 @@ import SystemMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList
 import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/NoteMessage.vue'
 import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'
 import StaffRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/StaffRead.vue'
+import AdMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AdMessage.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'

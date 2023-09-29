@@ -239,6 +239,7 @@ function seachQuickAnswer(event: KeyboardEvent) {
     })
     setDefaultQuickAnswer()
 }
+/** Focus vào input search sau khi mở modal lên */
 function inputFocus() {
     setTimeout(function() { ref_search.value.focus() }, 500)
 }
