@@ -73,15 +73,14 @@
         </div>
         <div  
             class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex"
-            v-if="!isMobile()"
+            v-else
         >
-            <div 
+            <template 
                 v-for="widget of widget_list" @click="toggleWidget(widget)"
-                v-show="widget.position === 'BOTTOM'"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2"
             >
-                <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
-            </div>
+                <img v-if="widget.position === 'BOTTOM'" :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
+            </template>
         </div>
     </div>
     <FacebookError ref="facebook_error_ref" :error="facebook_error"></FacebookError>
@@ -304,7 +303,7 @@ function handleSendMessageError(error: any) {
     switch (get(error, 'error.code')) {
         // case 10: toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
         //     break;
-        case 10: 
+        case 10:
             facebook_error.value = get(error, 'error')
             facebook_error_ref.value.toggleModal()
             break;

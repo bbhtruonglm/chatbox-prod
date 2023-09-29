@@ -1,22 +1,14 @@
 <template>
     <div class="md:w-[300px] xl:w-[400px] h-full hidden md:block">
         <div class="h-[50px] flex items-center py-2 pl-2">
-            <div 
-                class="w-[calc(100%_-_50px)] h-full relative"
-                :class="{ 'cursor-not-allowed':  widget_selected !== 'all' }"
-            >
-                <input 
-                    class="focus:outline-none w-full h-full border rounded-full pl-3 pr-7" type="text"
-                    :class="{
-                        'pointer-events-none': widget_selected !== 'all'
-                    }"
-                    :placeholder="$t('v1.view.main.dashboard.chat.widget.search')"
-                    v-model="widget_search_name"
-                    v-on:keyup="startSearch()" 
-                    v-on:keydown="loading = true" 
-                />
-                <img v-if="!loading" class="absolute top-[7px] right-[7px] cursor-pointer" src="@/assets/icons/search.svg" />
-                <Loading v-if="loading" class="absolute top-[5px] right-[7px] cursor-pointer"/>
+            <div class="w-[calc(100%_-_50px)] h-full relative" :class="{ 'cursor-not-allowed': widget_selected !== 'all' }">
+                <input class="focus:outline-none w-full h-full border rounded-full pl-3 pr-7" type="text" :class="{
+                    'pointer-events-none': widget_selected !== 'all'
+                }" :placeholder="$t('v1.view.main.dashboard.chat.widget.search')" v-model="widget_search_name"
+                    v-on:keyup="startSearch()" v-on:keydown="loading = true" />
+                <img v-if="!loading" class="absolute top-[7px] right-[7px] cursor-pointer"
+                    src="@/assets/icons/search.svg" />
+                <Loading v-if="loading" class="absolute top-[5px] right-[7px] cursor-pointer" />
             </div>
             <div class="w-[50px] flex justify-center">
                 <img @click="openWidgetsSetting()" class="cursor-pointer" src="@/assets/icons/edit.svg" />
@@ -42,23 +34,22 @@
                     {{ widget.snap_app.name }}
                 </button>
             </div>
-            <div 
-                v-for="widget of widget_list" class="border-b" 
-                v-if="!isMobile()"
-                v-show="!widget.is_hidden" 
-            >
-                <div @click="toggleWidget(widget)" v-show="widget.position === 'RIGHT'"
-                    class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer relative hover:bg-orange-100 py-3">
-                    <img :src="widget.snap_app.icon" class="mr-1" width="20" height="20" />
-                    {{ widget.snap_app.name }}
-                    <img v-if="!widget.is_show" class="absolute top-5 right-2" src="@/assets/icons/arrow-down.svg"
-                        width="12" height="12" />
-                    <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12" height="12" />
+            <template v-for="widget of widget_list" class="border-b">
+                <div v-if="!isMobile() && !widget.is_hidden">
+                    <div @click="toggleWidget(widget)" v-if="widget.position === 'RIGHT'"
+                        class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer relative hover:bg-orange-100 py-3">
+                        <img :src="widget.snap_app.icon" class="mr-1" width="20" height="20" />
+                        {{ widget.snap_app.name }}
+                        <img v-if="!widget.is_show" class="absolute top-5 right-2" src="@/assets/icons/arrow-down.svg"
+                            width="12" height="12" />
+                        <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12"
+                            height="12" />
+                    </div>
+                    <div v-if="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
+                        <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
+                    </div>
                 </div>
-                <div v-if="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
-                    <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
-                </div>
-            </div>
+            </template>
         </div>
     </div>
 </template>
