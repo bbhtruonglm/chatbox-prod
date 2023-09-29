@@ -47,8 +47,10 @@
         </div>
         <div class="w-[calc(100%_-_90px)] h-full">
             <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
+                @keyup="checkOpenQuickAnswer"
                 class="max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
-                contenteditable="true" />
+                contenteditable="true"
+            />
         </div>
         <div @click="sendMessage" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/send.svg" width="25" height="25" />
@@ -62,24 +64,17 @@
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div 
-            class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex"
-            v-if="isMobile()"
-        >
+        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex" v-if="isMobile()">
             <div v-for="widget of widget_list" @click="toggleWidget(widget)"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
                 <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
             </div>
         </div>
-        <div  
-            class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex"
-            v-else
-        >
-            <template 
-                v-for="widget of widget_list" @click="toggleWidget(widget)"
-                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2"
-            >
-                <img v-if="widget.position === 'BOTTOM'" :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
+        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex" v-else>
+            <template v-for="widget of widget_list" @click="toggleWidget(widget)"
+                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
+                <img v-if="widget.position === 'BOTTOM'" :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20"
+                    height="20" />
             </template>
         </div>
     </div>
@@ -94,9 +89,9 @@ import {
 } from '@/service/api/chatbox/n4-service'
 import { useConversationStore, useMessageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
-import { 
-    getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel, 
-    getPageWidget, getIframeUrl, isMobile 
+import {
+    getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
+    getPageWidget, getIframeUrl, isMobile
 } from '@/service/function'
 
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
@@ -128,7 +123,7 @@ const emoji_ref = ref<ComponentRef>()
 /**ref của component facebook error */
 const facebook_error_ref = ref<ComponentRef>()
 /** error fb trả về */
-const facebook_error = ref<{ 
+const facebook_error = ref<{
     code?: number
     message?: string
 }>()
@@ -160,7 +155,7 @@ function getListWidget() {
         widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
             // thêm token cho url
             widget.url = getIframeUrl(widget)
-    
+
             return widget
         }) || []
     })
@@ -316,11 +311,23 @@ function handleSendMessageError(error: any) {
     }
 }
 /** Bật tắt modal chọn emoji */
-function toggleEmoji () {
+function toggleEmoji() {
     emoji_ref.value.toogleEmoji()
 }
 /** Thêm emoji vào input chat */
-function addEmojiToInput (emoji: string) {
+function addEmojiToInput(emoji: string) {
     input_chat_ref.value.innerText += emoji
 }
+/** Kiểm tra input xem đủ điều kiện mở modal trả lời nhanh hay không? */
+function checkOpenQuickAnswer() {
+    let input_value: string = input_chat_ref.value.innerText
+    console.log("input_value", input_value.length, input_value)
+    if (input_value.length === 1 && input_value === '/') toggleQuickAnswer()
+}
 </script>
+
+<style>
+#chat-text-input-message {
+    word-break: break-word !important;
+}
+</style>

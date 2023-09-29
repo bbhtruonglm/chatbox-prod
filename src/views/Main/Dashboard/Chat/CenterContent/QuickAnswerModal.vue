@@ -106,6 +106,7 @@ onMounted(() => {
 /** ẩn hiện modal */
 function toggleModal(type?: string) {
     quick_anser_modal_ref.value?.toggleModal()
+    search_content.value = ''
     getQuickAnswer()
 
     if(isMobile()) return
@@ -141,7 +142,7 @@ function handleKeyUp(event: KeyboardEvent) {
 
     // * Mũi tên xuống
     if (event.keyCode == 40) {
-        console.log("xuống")
+        // console.log("xuống")
 
         if (answer_index.value === (quick_answers.value.length - 1)) {
             answer_index.value = 0
@@ -151,16 +152,13 @@ function handleKeyUp(event: KeyboardEvent) {
         }
 
         answer_index.value = answer_index.value + 1
-
-        console.log("answer_index.value", answer_index.value)
-
         answer_selected.value = quick_answers.value[answer_index.value].id
         scrollIntoView(answer_selected.value)
     }
 
     // * Mũi tên lên
     if (event.keyCode == 38) {
-        console.log("lên")
+        // console.log("lên")
 
         if (answer_index.value === 0) {
             answer_index.value = quick_answers.value.length - 1
@@ -242,7 +240,7 @@ function seachQuickAnswer(event: KeyboardEvent) {
     setDefaultQuickAnswer()
 }
 function inputFocus() {
-    setTimeout(function() { ref_search.value.focus() }, 1000)
+    setTimeout(function() { ref_search.value.focus() }, 500)
 }
 
 
