@@ -7,12 +7,16 @@
         <Loading v-if="loading" />
         <img @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon">
     </div>
+    <div class="w-full mb-4">
+        <FacebookPost />
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 
 import Loading from '@/components/Loading.vue';
+import FacebookPost from './FacebookPost.vue';
 import RefreshIcon from '@/assets/icons/refresh-icon.svg'
 
 const $props = withDefaults(defineProps<{
