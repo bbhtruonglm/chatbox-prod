@@ -1,5 +1,5 @@
 <template>
-    <div class="py-4 w-full flex justify-center text-xs items-center">
+    <div class="pt-4 w-full flex justify-center text-xs items-center">
         <p class="text-slate-400 whitespace-nowrap mr-1">
             Khách hàng đã trả lời từ quảng cáo
         </p>
@@ -7,9 +7,7 @@
         <Loading v-if="loading" />
         <img @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon">
     </div>
-    <div class="w-full mb-4">
-        <FacebookPost />
-    </div>
+    <FacebookPost />
 </template>
 
 <script setup lang="ts">

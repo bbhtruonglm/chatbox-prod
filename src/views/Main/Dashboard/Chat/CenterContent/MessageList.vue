@@ -53,7 +53,7 @@
                 <div v-else-if="message.message_type === 'client' && message.ad_id">
                     <AdMessage :ad_id="message.ad_id" />
                 </div>
-                <div v-else-if="message.message_type === 'client' && message.fb_post_id">
+                <div v-else-if="message.platform_type === 'FB_POST' && message.fb_post_id">
                     <FacebookPost :fb_post_id="message.fb_post_id" />
                 </div>
                 <div v-else class="text-center flex justify-center">
