@@ -32,6 +32,10 @@
 import { ref } from 'vue';
 import { isMobile } from '@/service/function';
 
+const $props = withDefaults(defineProps<{
+    fb_post_id?: string
+}>(), {})
+
 import NoteIcon from "@/assets/icons/note.svg"
 
 </script>

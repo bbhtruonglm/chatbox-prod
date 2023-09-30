@@ -51,7 +51,10 @@
                     </div>
                 </div>
                 <div v-else-if="message.message_type === 'client' && message.ad_id">
-                    <AdMessage v-if="message.ad_id" :ad_id="message.ad_id" />
+                    <AdMessage :ad_id="message.ad_id" />
+                </div>
+                <div v-else-if="message.message_type === 'client' && message.fb_post_id">
+                    <FacebookPost :fb_post_id="message.fb_post_id" />
                 </div>
                 <div v-else class="text-center flex justify-center">
                     <UnsupportMessage class="w-[70%]" />
@@ -94,6 +97,7 @@ import NoteMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/N
 import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientRead.vue'
 import StaffRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/StaffRead.vue'
 import AdMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AdMessage.vue'
+import FacebookPost from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/FacebookPost.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
