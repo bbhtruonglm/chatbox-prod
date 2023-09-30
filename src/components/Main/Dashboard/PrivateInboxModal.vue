@@ -19,7 +19,9 @@
                     placeholder="Viết tin nhắn với vai trò trên trang"
                 />
             </div>
-            <div class="text-sm flex justify-end items-center mt-3 cursor-pointer">
+        </template>
+        <template v-slot:footer>
+            <div class="text-sm flex justify-end items-center cursor-pointer mb-2">
                 <p class="text-blue-500 mr-3" @click="toggleModal">
                     Hủy
                 </p>
