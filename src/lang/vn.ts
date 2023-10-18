@@ -306,6 +306,13 @@ const source: Language = {
                         quick_answer: {
                             title: 'Trả lời nhanh',
                             search: 'Tìm kiếm câu trả lời nhanh'
+                        },
+                        post: {
+                            copy_to_clipboard: 'Đã copy vào clipboard',
+                            post_by: 'Đăng bởi',
+                            cannot_get_post: 'Không lấy được dữ liệu bài viết...',
+                            open_on_facebook: 'Mở trên Facebook',
+                            open_message: 'Xem tin nhắn'
                         }
                     }
                 }

@@ -54,7 +54,7 @@
                     <AdMessage :ad_id="message.ad_id" />
                 </div>
                 <div v-else-if="message.platform_type === 'FB_POST' && message.fb_post_id">
-                    <FacebookPost :fb_post_id="message.fb_post_id" />
+                    <FacebookPost :fb_post_id="message.fb_post_id" :hide-post="() => { }" />
                 </div>
                 <div v-else class="text-center flex justify-center">
                     <UnsupportMessage class="w-[70%]" />

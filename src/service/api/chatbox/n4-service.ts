@@ -11,7 +11,7 @@ import type {
     QueryConversationInput, QueryConversationResponse, 
     QueryResetReadConversation, QuerySetAssignStaffConversation, 
     QueryToggleLabelConversation, QueryToggleSpamConversation, 
-    QueryUpdateÌnoConversation 
+    QueryUpdateÌnoConversation, QueryPostMessage
 } from '@/service/interface/app/conversation'
 import type { 
     MessageInfo, QueryMessage, SendMesageInput 
@@ -249,5 +249,23 @@ export const update_info_conversation = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/conversation/update_info_conversation`,
+    body,
+}, proceed)
+
+/** Lấy thông tin bài post từ ad_id */
+export const get_post_from_ad_id = (
+    body: QueryPostMessage,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/post/get_post_from_ad`,
+    body,
+}, proceed)
+
+/** Lấy thông tin bài post từ post_id */
+export const get_post_from_post_id = (
+    body: QueryPostMessage,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/post/get_post_from_id`,
     body,
 }, proceed)

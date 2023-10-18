@@ -7,7 +7,7 @@
         <Loading v-if="loading" />
         <img @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon">
     </div>
-    <FacebookPost />
+    <FacebookPost v-if="!hide_fb_post" :ad_id="$props.ad_id" :hide-post="hideFbPost"/>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +23,8 @@ const $props = withDefaults(defineProps<{
 
 /** Trạng thái loading */
 const loading = ref<boolean>(false)
+/** Trạng thái hiện bài post */
+const hide_fb_post = ref<boolean>(false)
 
 /** Tải lại dữ liệu ad */
 function reloadAd() {
@@ -30,6 +32,11 @@ function reloadAd() {
     setTimeout(function() { loading.value = false }, 3000)
 
     // TODO Cần gọi api để tải lại dữ liệu ad
+}
+
+/** Ẩn hiện bài post */
+function hideFbPost(status: boolean) {
+    hide_fb_post.value = status
 }
 
 </script>

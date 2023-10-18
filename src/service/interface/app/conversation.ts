@@ -159,3 +159,12 @@ export interface QueryUpdateÌnoConversation extends QueryOneConversation {
     /**email */
     client_email?: string
 }
+
+export interface QueryPostMessage {
+    /** ad_id */
+    ad_id?: string
+    /** post_id */
+    post_id?: string
+    /** page_id */
+    page_id?: string
+}
