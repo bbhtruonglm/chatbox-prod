@@ -269,3 +269,21 @@ export const get_post_from_post_id = (
     uri: `${$env.host.n4_service}/app/post/get_post_from_id`,
     body,
 }, proceed)
+
+/** Lấy bình luận từ bài post */
+export const get_fb_post_comments = (
+    body: QueryPostMessage,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/post/get_comment`,
+    body,
+}, proceed)
+
+/** Tạo bình luận phụ vào 1 bình luận trong bài post */
+export const send_post_comment = (
+    body: QueryPostMessage,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/post/send_comment`,
+    body,
+}, proceed)

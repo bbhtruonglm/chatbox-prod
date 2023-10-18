@@ -167,4 +167,10 @@ export interface QueryPostMessage {
     post_id?: string
     /** page_id */
     page_id?: string
+    /** client_id */
+    client_id?: string
+    /** target_id */
+    target_id?: string
+    /** Nội dung bình luận */
+    text?: string
 }
