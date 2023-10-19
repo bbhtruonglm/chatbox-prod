@@ -287,3 +287,11 @@ export const send_post_comment = (
     uri: `${$env.host.n4_service}/app/post/send_comment`,
     body,
 }, proceed)
+
+export const private_inbox = (
+    body: QueryPostMessage,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/post/private_reply`,
+    body,
+}, proceed)

@@ -35,10 +35,15 @@
                                 class="font-bold mr-3 cursor-pointer hover:text-orange-500"
                                 @click="focusInput(comment.comment_id)"
                             >
-                                Trả lời bình luận
+                                {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
                             </p>
-                            <p @click="openPrivateInbox" class="font-bold mr-3 cursor-pointer hover:text-orange-500">Nhắn tin inbox</p>
-                            <p>33 phút</p>
+                            <p 
+                                @click="openPrivateInbox({ target_id: comment.comment_id, target_name: comment.from?.name })"
+                                class="font-bold mr-3 cursor-pointer hover:text-orange-500"
+                            >
+                                {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
+                            </p>
+                            <p>{{ formatDistanceToNow(new Date(comment.createdAt as string), { locale: vi }) }}</p>
                         </div>
 
                         <div 
@@ -68,7 +73,7 @@
 
                             <div class="ml-3">
                                 <div class="rounded-lg bg-slate-100 p-2 text-sm w-fit">
-                                    <p class="font-bold">Tên trang</p>
+                                    <p class="font-bold">{{ chil_comment.from?.name }}</p>
                                     <p>{{ chil_comment.message }}</p>
                                     <img v-if="chil_comment.photo" class="w-[60px] mt-3" :src="chil_comment.photo" alt="">
                                 </div>
@@ -77,10 +82,16 @@
                                         class="font-bold mr-3 cursor-pointer hover:text-orange-500"
                                         @click="focusInput(comment.comment_id)"
                                     >
-                                        Trả lời bình luận
+                                        {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
                                     </p>
-                                    <p @click="openPrivateInbox" class="font-bold mr-3 cursor-pointer hover:text-orange-500">Nhắn tin inbox</p>
-                                    <p>33 phút</p>
+                                    <p 
+                                        @click="openPrivateInbox({ target_id: chil_comment.comment_id, target_name: chil_comment.from?.name })"
+                                        class="font-bold mr-3 cursor-pointer hover:text-orange-500"
+                                        v-if="chil_comment.from?.id !== conversationStore.select_conversation?.fb_page_id"
+                                    >
+                                        {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
+                                    </p>
+                                    <p>{{ formatDistanceToNow(new Date(chil_comment.createdAt as string), { locale: vi }) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +101,7 @@
                             v-if="comment?.child_comments && comment?.child_comments?.length>3 && !comment?.more_comments"
                             @click="comment.more_comments = true"
                         >
-                            Xem thêm phản hồi...
+                            {{ $t('v1.view.main.dashboard.chat.post.get_more_comments') }}
                         </p>
 
                         <div class="flex mt-3 w-full">
@@ -106,14 +117,14 @@
                                 <input
                                     v-model="comment.new_comment"
                                     :id="`input_${comment.comment_id}`"
-                                    class="w-full px-4 py-1.5 bg-slate-100 rounded-2xl text-sm focus:outline-none"
+                                    class="w-full pl-4 pr-10 py-1.5 bg-slate-100 rounded-2xl text-sm focus:outline-none"
                                     type="text" 
                                     :placeholder="`Bình luận với vai trò ${pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page?.name}`"
                                     v-on:keyup.enter="sendPostComment(comment.new_comment as string, comment.comment_id, index)"
                                 >
                                 <img 
                                     v-if="!comment.sending_message"
-                                    class=" absolute right-3 top-3" 
+                                    class=" absolute right-3 top-3 cursor-pointer"
                                     :src="SendMessageIcon" alt="" 
                                     @click="sendPostComment(comment.new_comment as string, comment.comment_id, index)"
                                 >
@@ -127,17 +138,24 @@
                     v-if="post_comments.length > 3" class="text-sm font-bold cursor-pointer mt-3"
                     @click="more_comments = true"
                 >
-                    Xem thêm phản hồi...
+                    {{ $t('v1.view.main.dashboard.chat.post.get_more_comments') }}
                 </p>
             </div>
         </template>
     </Modal>
-    <PrivateInboxModal ref="private_inbox_ref" />
+    <PrivateInboxModal
+        ref="private_inbox_ref" 
+        :page_id="conversationStore?.select_conversation?.fb_page_id"
+        :target_id="target_private_inbox?.target_id"
+        :target_name="target_private_inbox?.target_name"
+    />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { eachOfLimit } from 'async';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import vi from 'date-fns/locale/vi'
 
 // * Components
 import Modal from '@/components/Modal.vue';
@@ -169,6 +187,13 @@ interface FacebookCommentPost {
     // * Flag
     new_comment?: string
     sending_message?: boolean
+    
+    // * Time
+    createdAt?: string 
+}
+interface TargetPrivateInbox {
+    target_id?: string
+    target_name?: string 
 }
 
 // * Icon
@@ -204,6 +229,8 @@ const private_inbox_ref = ref<ComponentRef>()
 const post_comments = ref<FacebookCommentPost[]>([])
 /** Hiển thị thêm comments */
 const more_comments = ref<boolean>(false)
+/** Đối tượng private_inbox */
+const target_private_inbox = ref<TargetPrivateInbox>({})
 
 
 /** Dùng để bật tắt modal */
@@ -212,7 +239,8 @@ function toggleModal() {
     getFbPostComments()
 }
 /** Dùng để bật tắt modal private inbox */
-function openPrivateInbox() {
+function openPrivateInbox(target: TargetPrivateInbox) {
+    target_private_inbox.value = target
     private_inbox_ref.value?.toggleModal()
 }
 /** Lấy bình luận chính từ bài post của fb */
@@ -255,7 +283,7 @@ function getFbPostChildComments() {
                 }
             )
         },
-        (e) => e ?  console.log(e) : console.log('DONE', post_comments.value)
+        (e) => { if(e) console.log(e) }
     )
 }
 /** Focus vào input của bình luận */
@@ -292,7 +320,8 @@ function sendPostComment(
                         conversationStore.select_conversation?.fb_page_id as string
                     ]?.page?.name
                 },
-                message: comment
+                message: comment,
+                createdAt: new Date().toLocaleString()
             })
 
         }

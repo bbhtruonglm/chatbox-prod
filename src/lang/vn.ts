@@ -308,11 +308,17 @@ const source: Language = {
                             search: 'Tìm kiếm câu trả lời nhanh'
                         },
                         post: {
-                            copy_to_clipboard: 'Đã copy vào clipboard',
+                            copy_to_clipboard: 'Đã sao chép',
                             post_by: 'Đăng bởi',
                             cannot_get_post: 'Không lấy được dữ liệu bài viết...',
                             open_on_facebook: 'Mở trên Facebook',
-                            open_message: 'Xem tin nhắn'
+                            open_message: 'Xem tin nhắn',
+                            get_more_comments: 'Xem thêm phản hồi...',
+                            reply_comment: 'Trả lời bình luận',
+                            private_inbox: 'Nhắn tin inbox',
+                            cancel: 'Hủy',
+                            send_message: 'Gửi tin nhắn',
+                            send_message_success: 'Gửi tin thành công'
                         }
                     }
                 }
