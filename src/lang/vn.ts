@@ -33,6 +33,7 @@ const source: Language = {
             uid: 'Uid',
             edit: 'Chỉnh sửa',
             download: 'Tải về',
+            copy_to_clipboard: 'Đã sao chép',
         },
         view: {
             network: {
@@ -262,7 +263,8 @@ const source: Language = {
                             attachment: {
                                 title: 'Chi tiết tập tin đính kèm',
                                 image_to_text: 'Ảnh sang chữ'
-                            }
+                            },
+
                         },
                         widget: {
                             title: 'Widget',
@@ -308,14 +310,13 @@ const source: Language = {
                             search: 'Tìm kiếm câu trả lời nhanh'
                         },
                         post: {
-                            copy_to_clipboard: 'Đã sao chép',
                             post_by: 'Đăng bởi',
                             cannot_get_post: 'Không lấy được dữ liệu bài viết...',
                             open_on_facebook: 'Mở trên Facebook',
                             open_message: 'Xem bình luận',
                             get_more_comments: 'Xem thêm phản hồi...',
-                            reply_comment: 'Trả lời bình luận',
-                            private_inbox: 'Nhắn tin inbox',
+                            reply_comment: 'Trả lời',
+                            private_inbox: 'Inbox',
                             cancel: 'Hủy',
                             send_message: 'Gửi tin nhắn',
                             send_message_success: 'Gửi tin thành công'

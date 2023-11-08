@@ -73,7 +73,7 @@ export interface TempSendMessage {
 /**dữ liệu 1 file */
 export interface AttachmentInfo {
     /**file là dạng gì */
-    type?: 'image' | 'video' | 'audio' | 'template'
+    type?: 'image' | 'video' | 'audio' | 'template' | 'fallback'
     /**tiêu đề */
     title?: string
     /**đường link */
@@ -88,6 +88,8 @@ export interface AttachmentInfo {
         elements?: ChatbotSlider[]
         /**dữ liệu của nút bấm */
         buttons?: ChatbotButton[]
+        /**tiêu đề trang */
+        title?: string
     }
 }
 /**dữ liệu kiểu slider */

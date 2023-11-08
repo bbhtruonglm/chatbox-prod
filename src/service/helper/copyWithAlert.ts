@@ -1,12 +1,19 @@
+import { toast } from './alert'
+import { i18n } from '@/lang'
+
 /**
  * Custom copy to clipboard
  */
-import { toast } from "./alert";
-
 export const copyToClipboard = (
     text: string,
-    alert: string
-):void => {
+    alert?: string
+): void => {
+    const $t = i18n.global.t
+
     navigator.clipboard.writeText(text)
-    toast('success', alert)
+
+    toast(
+        'success',
+        alert || $t('v1.common.copy_to_clipboard')
+    )
 }

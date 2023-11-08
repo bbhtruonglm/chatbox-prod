@@ -190,6 +190,15 @@ export const read_conversation = (
     body,
 }, proceed)
 
+/**đếm số conversation thoả mãn */
+export const count_conversation = (
+    body: QueryConversationInput,
+    proceed: (e?: any, r?: number) => void
+) => chatbox({
+    uri: `${$env.host.n4_service}/app/conversation/count_conversation`,
+    body,
+}, proceed)
+
 /**đọc dữ liệu của message */
 export const read_message = (
     body: QueryMessage,

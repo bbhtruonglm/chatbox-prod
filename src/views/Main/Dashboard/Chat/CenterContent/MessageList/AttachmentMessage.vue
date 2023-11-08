@@ -2,16 +2,18 @@
     <div :class="{
         'justify-end': type === 'PAGE'
     }" class="flex flex-wrap">
-        <div v-for="(attachment, index) of message_attachments" @click="viewAttachment(getAttachmentFromStore()?.[index])"
-            class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
-            <ImageAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'image'"
-                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
-            <VideoAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'video'"
-                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
-            <AudioAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'audio'"
-                :url="getAttachmentFromStore()?.[index]?.payload?.url" />
-            <AnotherAttachment v-else :url="getAttachmentFromStore()?.[index]?.payload?.url" />
-        </div>
+        <template v-for="(attachment, index) of message_attachments">
+            <div @click="viewAttachment(getAttachmentFromStore()?.[index])" v-if="attachment.type !== 'fallback'"
+                class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
+                <ImageAttachment v-if="getAttachmentFromStore()?.[index]?.type === 'image'"
+                    :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+                <VideoAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'video'"
+                    :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+                <AudioAttachment v-else-if="getAttachmentFromStore()?.[index]?.type === 'audio'"
+                    :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+                <AnotherAttachment v-else :url="getAttachmentFromStore()?.[index]?.payload?.url" />
+            </div>
+        </template>
     </div>
 </template>
 <script setup lang="ts">

@@ -10,12 +10,12 @@
                     <span class="font-bold" v-if="!post_info?.admin_creator?.name && post_info?.from?.name">
                         {{ post_info?.from?.name }}
                     </span>
-                    <div v-if="post_info?.updated_time">
-                        {{ format(new Date(post_info?.updated_time as string), `dd/MM/yy HH:mm`) }}
-                    </div>
+                <div v-if="post_info?.updated_time">
+                    {{ format(new Date(post_info?.updated_time as string), `dd/MM/yy HH:mm`) }}
+                </div>
                 </p>
                 <div class="rounded-3xl p-1 bg-orange-200 text-orange-500 font-bold whitespace-nowrap cursor-pointer"
-                    @click="copyToClipboard(post_info?.id as string, $t('v1.view.main.dashboard.chat.post.copy_to_clipboard'))">
+                    @click="copyToClipboard(post_info?.id as string)">
                     <p class="flex">
                     <p class="w-[80px] md:hidden xl:block truncate">{{ post_info?.id }}</p>
                     <span>(Copy)</span>
