@@ -2,10 +2,13 @@
   "name": "bbh-chatbox-hybrid-chat",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
-    "dev": "vite --mode dev --open",
-    "staging": "vite --mode staging --open",
-    "prod": "vite --mode prod --open",
+    "dev": "vite --mode dev",
+    "staging": "vite --mode staging",
+    "prod": "vite --mode prod",
     "build-dev": "run-p type-check build-only-dev",
     "build-staging": "run-p type-check build-only-staging",
     "build-prod": "run-p type-check build-only-prod",

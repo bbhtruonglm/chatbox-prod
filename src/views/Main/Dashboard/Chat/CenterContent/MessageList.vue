@@ -81,7 +81,7 @@ import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
 import { isNotPc, scrollToBottomMessage } from '@/service/function'
-import { debounce, remove } from 'lodash'
+import { debounce, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
@@ -166,6 +166,12 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
         detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
         detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
     ) return
+
+    // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
+    if (size(detail.comment)) remove(
+        list_message.value,
+        message => message._id === detail._id
+    )
 
     // thêm tin nhắn vào danh sách
     list_message.value.push(detail)

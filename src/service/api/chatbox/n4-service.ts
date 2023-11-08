@@ -16,6 +16,7 @@ import type {
 import type { 
     MessageInfo, QueryMessage, SendMesageInput 
 } from '@/service/interface/app/message'
+import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 /**đăng nhập bằng token của fb */
 export const login_facebook = (
@@ -273,7 +274,7 @@ export const get_post_from_post_id = (
 /** Lấy bình luận từ bài post */
 export const get_fb_post_comments = (
     body: QueryPostMessage,
-    proceed: Cb
+    proceed: Cb<FacebookCommentPost[]>
 ) => chatbox({
     uri: `${$env.host.n4_service}/app/post/get_comment`,
     body,

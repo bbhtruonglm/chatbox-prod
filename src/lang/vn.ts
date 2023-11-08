@@ -312,7 +312,7 @@ const source: Language = {
                             post_by: 'Đăng bởi',
                             cannot_get_post: 'Không lấy được dữ liệu bài viết...',
                             open_on_facebook: 'Mở trên Facebook',
-                            open_message: 'Xem tin nhắn',
+                            open_message: 'Xem bình luận',
                             get_more_comments: 'Xem thêm phản hồi...',
                             reply_comment: 'Trả lời bình luận',
                             private_inbox: 'Nhắn tin inbox',

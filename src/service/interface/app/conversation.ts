@@ -173,4 +173,7 @@ export interface QueryPostMessage {
     target_id?: string
     /** Nội dung bình luận */
     text?: string
+    sort?: string
+    skip?: number
+    limit?: number
 }

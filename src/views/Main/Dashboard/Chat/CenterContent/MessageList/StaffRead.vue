@@ -1,10 +1,10 @@
 <template>
     <!-- Hiển thị nhân viên đã đọc tin nhắn -->
-    <div ref="staff_read_warper_ref" class="flex justify-end cursor-pointer" @click="toggleModal">
+    <div ref="staff_read_warper_ref" class="flex justify-end">
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
-            <StaffAvatar v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
+            <StaffAvatar @click="toggleModal" v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
                 size="20" :class="`message-staff-read-${staff_id}`"
-                class="staff-read-item rounded-full ml-[-5px] hidden my-1" />
+                class="staff-read-item rounded-full ml-[-5px] hidden my-1 cursor-pointer" />
         </template>
     </div>
 </template>

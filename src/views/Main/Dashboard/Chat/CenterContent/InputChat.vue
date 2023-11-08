@@ -48,7 +48,7 @@
         <div class="w-[calc(100%_-_90px)] h-full">
             <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                 @keyup="checkOpenQuickAnswer"
-                class="max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
+                class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                 contenteditable="true"
             />
         </div>

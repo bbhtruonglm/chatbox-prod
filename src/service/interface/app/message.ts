@@ -1,3 +1,5 @@
+import type { FacebookCommentPost } from '@/service/interface/app/post'
+
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
     /**id bản ghi mongo */
@@ -24,6 +26,7 @@ export interface MessageInfo {
     ad_id?:string
     /** id bài post fb */
     fb_post_id?: string
+    comment?: FacebookCommentPost
 }
 
 /**đầu vào của api */

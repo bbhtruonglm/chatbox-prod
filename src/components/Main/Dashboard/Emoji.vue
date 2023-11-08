@@ -9,6 +9,8 @@
             set="facebook" 
             :showSearch="false" 
             :showPreview="false" 
+            :showCategories="false"
+            :infiniteScroll="true"
             @select="selectEmoji"
             :i18n="{
                 categories: {
@@ -53,9 +55,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import data from "emoji-mart-vue-fast/data/all.json";
-import "emoji-mart-vue-fast/css/emoji-mart.css";
-import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
+import data from 'emoji-mart-vue-fast/data/all.json'
+import 'emoji-mart-vue-fast/css/emoji-mart.css'
+import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
 import type { ComponentRef } from '@/service/interface/vue'
 
 interface Emoji {
