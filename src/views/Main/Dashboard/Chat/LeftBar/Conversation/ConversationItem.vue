@@ -109,7 +109,7 @@ function clickConversation() {
     $router.replace({
         query: {
             page_id: $props.source?.fb_page_id,
-            client_id: $props.source?.fb_client_id,
+            user_id: $props.source?.fb_client_id,
         }
     })
 }

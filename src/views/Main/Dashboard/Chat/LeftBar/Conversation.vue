@@ -220,11 +220,11 @@ function selectDefaultConversation() {
     if (!size(conversationStore.conversation_list)) return
 
     // lấy id hội thoại trên param
-    let { page_id, client_id } = $route.query
+    let { page_id, user_id } = $route.query
 
     // tìm kiếm hội thoại thoả mãn param
     let target_conversation = find(conversationStore.conversation_list, (conversation, key) => {
-        return `${page_id}_${client_id}` === key
+        return `${page_id}_${user_id}` === key
     })
 
     // nếu không tìm thấy thì lấy hội thoại đầu tiên

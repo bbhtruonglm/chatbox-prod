@@ -4,7 +4,7 @@
             <div @click="toggleModal" class="w-full h-full" />
             <div 
                 :class="{
-                    animation,
+                    'opacity-50': animation,
                     'md:w-[70%]': !$props.fit_content,
                     'md:w-fit': $props.fit_content
                 }"
@@ -42,14 +42,14 @@ const $props = withDefaults(defineProps<{
 /**ẩn hiện modal */
 const is_open = ref(false)
 /**tạo hiệu ứng */
-const animation = ref('opacity-50')
+const animation = ref(true)
 
 /**ẩn hiện modal */
 function toggleModal() {
     // mở modal
     if (!is_open.value) {
         // tạo hiệu ứng hiện thị
-        setTimeout(() => animation.value = '', 50)
+        setTimeout(() => animation.value = false, 50)
 
         // mở modal
         is_open.value = true
@@ -57,7 +57,7 @@ function toggleModal() {
     // tắt modal
     else {
         // tạo hiệu ứng hiện thị
-        animation.value = 'opacity-50'
+        animation.value = true
 
         // delay một khoảng thời gian cho hiệu ứng hoạt động
         setTimeout(() => { 

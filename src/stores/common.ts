@@ -43,6 +43,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const center_modal_left = ref<string>()
     /**độ rộng của assign modal */
     const center_modal_width = ref<string>()
+    /**đánh dấu ext được phát hiện */
+    const is_active_extension = ref(false)
 
     return {
         is_loading_full_screen,
@@ -54,6 +56,7 @@ export const useCommonStore = defineStore('common_store', () => {
         is_show_message_mobile,
         center_modal_left,
         center_modal_width,
+        is_active_extension,
 
         triggerRequirePricing,
     }

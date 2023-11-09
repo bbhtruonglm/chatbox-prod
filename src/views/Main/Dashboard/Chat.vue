@@ -10,12 +10,13 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
-import { useChatbotUserStore, usePageStore, useConversationStore } from '@/stores'
+import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
+import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
 
 import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
 import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
@@ -26,12 +27,13 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
-import { getPageInfo, getPageWidget } from '@/service/function'
+import { getPageInfo, getPageWidget, isNotPc } from '@/service/function'
 
 const $router = useRouter()
 const pageStore = usePageStore()
 const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 
 /**kết nối socket đến server */
@@ -43,10 +45,42 @@ watch(() => conversationStore.select_conversation, () => getTokenOfWidget())
 
 onMounted(() => {
     getPageInfoToChat()
+
+    initExtensionLogic()
 })
 // tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => closeSocketConnect())
 
+/**gắn cờ nếu ext được kích hoạt + xử lý các logic */
+function initExtensionLogic() {
+    // chỉ chạy ở trên máy tính web
+    if (isNotPc()) return
+
+    /**số lần đã ping ext */
+    let count_check = 0
+
+    /**ping qua ext để check tồn tại */
+    const LOOP_ID = setInterval(() => {
+        count_check++
+
+        // dừng nếu quá số lần hoặc đã phát hiện
+        if (
+            commonStore.is_active_extension ||
+            count_check >= 10
+        ) return clearInterval(LOOP_ID)
+
+        // gọi ext
+        ext_ping()
+    }, 500)
+
+    // lắng nghe ext gửi thông điệp
+    ext_listen((event, e, r) => {
+        console.log('ext_listen::', event, e, r)
+
+        // đánh dấu đã phát hiện ext
+        if (event === 'EXTENSION_INSTALLED') commonStore.is_active_extension = true
+    })
+}
 /**khởi tạo token cho widget */
 function getTokenOfWidget() {
     const PAGE_ID = conversationStore.select_conversation?.fb_page_id
