@@ -23,9 +23,9 @@
   "dependencies": {
     "@capacitor-community/facebook-login": "^5.0.3",
     "@capacitor/android": "^5.0.4",
-    "@capacitor/cli": "^5.0.4",
     "@capacitor/core": "^5.0.4",
     "@capacitor/ios": "^5.0.4",
+    "@capacitor/keyboard": "^5.0.6",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.13",
     "date-fns": "2.30.0",
@@ -44,6 +44,7 @@
     "vue3-virtual-scroll-list": "^0.2.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.0.4",
     "@types/async": "^3.2.16",
     "@types/hammerjs": "^2.0.41",
     "@types/lodash": "^4.14.191",

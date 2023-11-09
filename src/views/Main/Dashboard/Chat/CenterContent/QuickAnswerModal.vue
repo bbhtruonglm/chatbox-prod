@@ -142,7 +142,6 @@ function handleKeyUp(event: KeyboardEvent) {
 
     // * Mũi tên xuống
     if (event.keyCode == 40) {
-        // console.log("xuống")
 
         if (answer_index.value === (quick_answers.value.length - 1)) {
             answer_index.value = 0
@@ -158,7 +157,6 @@ function handleKeyUp(event: KeyboardEvent) {
 
     // * Mũi tên lên
     if (event.keyCode == 38) {
-        // console.log("lên")
 
         if (answer_index.value === 0) {
             answer_index.value = quick_answers.value.length - 1
@@ -193,25 +191,29 @@ function scrollIntoView(id: string): void {
 function replaceTemplateMessage(content: string): string {
     content = content.replace(
         /#{FULL_NAME}/g,
-        conversationStore.select_conversation?.client_name as string
+        conversationStore.select_conversation?.client_name || ''
     )
     content = content.replace(
         /#{STAFF_NAME}/g,
-        conversationStore.select_conversation?.snap_staff?.name as string
+        pageStore.selected_page_list_info?.[
+            conversationStore.select_conversation?.fb_page_id || ''
+        ]?.staff_list?.[
+            conversationStore.select_conversation?.fb_staff_id || ''
+        ]?.name || ''
     )
     content = content.replace(
         /#{PHONE}/g,
-        conversationStore.select_conversation?.client_phone as string
+        conversationStore.select_conversation?.client_phone || ''
     )
     content = content.replace(
         /#{EMAIL}/g,
-        conversationStore.select_conversation?.client_email as string
+        conversationStore.select_conversation?.client_email || ''
     )
     content = content.replace(
         /#{PAGE_NAME}/g,
         pageStore.selected_page_list_info[
-            conversationStore.select_conversation?.fb_page_id as string
-        ].page?.name as string
+            conversationStore.select_conversation?.fb_page_id || ''
+        ].page?.name || ''
     )
     return content
 }
@@ -241,7 +243,7 @@ function seachQuickAnswer(event: KeyboardEvent) {
 }
 /** Focus vào input search sau khi mở modal lên */
 function inputFocus() {
-    setTimeout(function() { ref_search.value.focus() }, 500)
+    // setTimeout(function() { ref_search.value.focus() }, 500)
 }
 
 

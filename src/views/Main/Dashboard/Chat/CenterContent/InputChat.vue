@@ -45,14 +45,14 @@
         <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/slash.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_90px)] h-full">
+        <div class="w-[calc(100%_-_95px)] h-full">
             <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                 @keyup="checkOpenQuickAnswer"
                 class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                 contenteditable="true"
             />
         </div>
-        <div @click="sendMessage" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/send.svg" width="25" height="25" />
         </div>
     </div>
@@ -251,6 +251,9 @@ function submitInput($event: KeyboardEvent) {
 }
 /**gửi tin nhắn */
 function sendMessage() {
+    // nếu ở trên mobile, click gửi tin sẽ focus lại vào input, để bàn phím không bị mất
+    if (isMobile()) input_chat_ref.value.focus()
+
     /**div input */
     const INPUT = input_chat_ref.value as HTMLDivElement
 
@@ -321,7 +324,7 @@ function addEmojiToInput(emoji: string) {
 /** Kiểm tra input xem đủ điều kiện mở modal trả lời nhanh hay không? */
 function checkOpenQuickAnswer() {
     let input_value: string = input_chat_ref.value.innerText
-    console.log("input_value", input_value.length, input_value)
+
     if (input_value.length === 1 && input_value === '/') toggleQuickAnswer()
 }
 </script>
