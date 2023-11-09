@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@capacitor-community/facebook-login':
+    specifier: ^5.0.3
+    version: 5.0.3
   '@capacitor/android':
     specifier: ^5.0.4
     version: 5.5.1(@capacitor/core@5.5.1)
@@ -137,6 +140,13 @@ packages:
       '@babel/helper-string-parser': 7.22.5
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+
+  /@capacitor-community/facebook-login@5.0.3:
+    resolution: {integrity: sha512-MdVBkPHbtAqiVgj5YJdIzO+2DG5kBakvjkTPpnxkxEwOVCPNmshyhR5YzPqkkbG00rpgU2SArM/Ml2riceSi/A==}
+    engines: {node: '>=16.0.0'}
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
 
   /@capacitor/android@5.5.1(@capacitor/core@5.5.1):
     resolution: {integrity: sha512-WTnPnpaEvTtaEtTNRbh06Y1afF7A4plY/4uajAL0WW8tdR1FxieadF357yKGiAT6CudI/B+eOu6rxn6qWuphKg==}

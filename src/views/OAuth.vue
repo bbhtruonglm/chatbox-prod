@@ -8,16 +8,7 @@
                 src="@/assets/imgs/chatbox.svg" />
             <div class="text-2xl font-semibold md:text-center md:mt-5">
                 {{ $t('v1.view.oauth.login.login') }}
-
-                <!-- TODO START test đăng nhập -->
-                <button
-                    @click="loginChatbox('EAAEUCPkC4qIBO1WDYRb6f7TW7kAF67EF0hFqhxGZCGALOyZCSPVD8nSSoj1vND5Xu3SVLhfLsrnXCvxpDEuO5fK8LkyVDB0WOEtHaG0V4BVwvOUDkxceTDkoA5B4O0grRagt4GoFfhyH2Dj0A1yORKAIySOl3bdXoRKbgB1DVn5XB8VJ03kNtd')"
-                    class="">
-                    <img src="@/assets/icons/test.svg" width="20" height="20">
-                </button>
-                <!-- TODO END test đăng nhập -->
             </div>
-
             <div
                 class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full px-[33px] flex justify-center">
                 <Facebook :text="$t('v1.view.oauth.login.btn_text')" class="h-[40px] w-full md:w-[350px]"

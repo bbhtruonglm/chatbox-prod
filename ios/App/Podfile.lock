@@ -1,22 +1,49 @@
 PODS:
-  - Capacitor (5.0.4):
+  - Capacitor (5.5.1):
     - CapacitorCordova
-  - CapacitorCordova (5.0.4)
+  - CapacitorCommunityFacebookLogin (5.0.3):
+    - Capacitor
+    - FBSDKCoreKit (= 16.1.3)
+    - FBSDKLoginKit (= 16.1.3)
+  - CapacitorCordova (5.5.1)
+  - FBAEMKit (16.1.3):
+    - FBSDKCoreKit_Basics (= 16.1.3)
+  - FBSDKCoreKit (16.1.3):
+    - FBAEMKit (= 16.1.3)
+    - FBSDKCoreKit_Basics (= 16.1.3)
+  - FBSDKCoreKit_Basics (16.1.3)
+  - FBSDKLoginKit (16.1.3):
+    - FBSDKCoreKit (= 16.1.3)
 
 DEPENDENCIES:
-  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios`)"
+  - "CapacitorCommunityFacebookLogin (from `../../node_modules/.pnpm/@capacitor-community+facebook-login@5.0.3/node_modules/@capacitor-community/facebook-login`)"
+  - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios`)"
+
+SPEC REPOS:
+  trunk:
+    - FBAEMKit
+    - FBSDKCoreKit
+    - FBSDKCoreKit_Basics
+    - FBSDKLoginKit
 
 EXTERNAL SOURCES:
   Capacitor:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios"
+  CapacitorCommunityFacebookLogin:
+    :path: "../../node_modules/.pnpm/@capacitor-community+facebook-login@5.0.3/node_modules/@capacitor-community/facebook-login"
   CapacitorCordova:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
-  Capacitor: d3d4463573438b9fa65326d1f3549da6f4c21634
-  CapacitorCordova: b1fe6bf1f36974a8e4a9044b342d22d49c0996d6
+  Capacitor: 9da0a2415e3b6098511f8b5ffdb578d91ee79f8f
+  CapacitorCommunityFacebookLogin: c0e2bb54cb567d90443a80ae20569fdac0df3f89
+  CapacitorCordova: e128cc7688c070ca0bfa439898a5f609da8dbcfe
+  FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
+  FBSDKCoreKit: 19e2e18b3be578d7a51fed8fdd8c152bef0b9511
+  FBSDKCoreKit_Basics: dd9826ce3c9fd9f8cdf8dbbd0ef0a53e6c0c9e7e
+  FBSDKLoginKit: c395c63a1a6cf4a8a1e6103fd94b8c46329ee81c
 
-PODFILE CHECKSUM: 8ab55909c5de2b217f9841e5e5b329f5ec901553
+PODFILE CHECKSUM: 32fd1e5907cfe6c991c927ce519ca887a9c13257
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.13.0

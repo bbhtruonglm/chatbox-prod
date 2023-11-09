@@ -17,8 +17,13 @@ export interface Env {
     facebook: {
         /**id của app facebook */
         app_id: string
+        permissions: string[]
         /**các tuỳ chọn khi đăng nhập */
-        login_option: {}
+        login_option: {
+            return_scopes?: boolean
+            auth_type?: string
+            enable_profile_selector?: boolean
+        }
     }
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: string[]
