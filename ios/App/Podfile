@@ -12,6 +12,7 @@ def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/.pnpm/@capacitor+ios@5.5.1_@capacitor+core@5.5.1/node_modules/@capacitor/ios'
   pod 'CapacitorCommunityFacebookLogin', :path => '../../node_modules/.pnpm/@capacitor-community+facebook-login@5.0.3/node_modules/@capacitor-community/facebook-login'
+  pod 'CapacitorDevice', :path => '../../node_modules/.pnpm/@capacitor+device@5.0.6_@capacitor+core@5.5.1/node_modules/@capacitor/device'
   pod 'CapacitorKeyboard', :path => '../../node_modules/.pnpm/@capacitor+keyboard@5.0.6_@capacitor+core@5.5.1/node_modules/@capacitor/keyboard'
 end
 

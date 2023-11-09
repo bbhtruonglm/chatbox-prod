@@ -74,7 +74,9 @@ const source: Language = {
                         select_platform: 'Kết nối nền tảng',
                         upgrade: 'Quản lý nâng cấp',
                         widget: 'Chợ ứng dụng',
-                        info: 'Hướng dẫn sử dụng'
+                        info: 'Hướng dẫn sử dụng',
+                        page_setting: 'Cài đặt trang',
+                        analytic: 'Thống kê'
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',

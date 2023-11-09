@@ -19,6 +19,10 @@
                 <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0"
                     @click="selectNav(nav.path)" :icon_class="nav.icon_class" :is_only_show_icon="toggle_nav"
                     :icon="nav.icon" :title="nav.title" />
+                <NavItem :is_only_show_icon="toggle_nav" :icon="settingSvg" @click="openPageSetting"
+                    :title="$t('v1.view.main.dashboard.nav.page_setting')" />
+                <NavItem :is_only_show_icon="toggle_nav" :icon="analyticSvg" @click="openAnalytic"
+                    :title="$t('v1.view.main.dashboard.nav.analytic')" />
             </div>
             <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
                 <NavItem :is_only_show_icon="toggle_nav" :icon="infoSvg" @click="openGuildLink"
@@ -44,7 +48,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useCommonStore, usePageStore } from '@/stores'
 import { computed, ref } from 'vue'
-import { size } from 'lodash'
+import { keys, size } from 'lodash'
 import { openNewTab, preGoToChat } from '@/service/function'
 import { teleportModelFilterOnPcScreen, teleportCenterModelOnPcScreen } from '@/service/function'
 
@@ -52,6 +56,8 @@ import bellSvg from '@/assets/icons/bell.svg'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg'
 import arrowRightSvg from '@/assets/icons/arrow-right.svg'
 import infoSvg from '@/assets/icons/info.svg'
+import settingSvg from '@/assets/icons/setting.svg'
+import analyticSvg from '@/assets/icons/analytic.svg'
 import pageSvg from '@/assets/icons/page.svg'
 import chatSvg from '@/assets/icons/chat.svg'
 import crownSvg from '@/assets/icons/crown.svg'
@@ -62,11 +68,13 @@ import UserItem from '@/components/Main/Dashboard/UserItem.vue'
 import Menu from '@/components/Main/Menu.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
+import { getItem } from '@/service/helper/localStorage'
 
 const $router = useRouter()
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
 const pageStore = usePageStore()
+const locale = localStorage.getItem('locale') || ''
 
 /**danh sách menu item */
 const LIST_NAV = [
@@ -104,6 +112,14 @@ const toggle_nav = computed(() => dashboard_menu_ref.value?.this_toggle_nav)
 /**mở link doc hướng dẫn sử dụng sản phẩm */
 function openGuildLink() {
     openNewTab('https://docs.google.com/document/d/1w6jkqojCVmocEM5Ur0b5GvEym3sU4d6M2kEnQWgmuMw/edit?usp=sharing')
+}
+/**mở cài đặt trang */
+function openPageSetting() {
+    openNewTab(`${$env.host.page_setting_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list)?.[0]}&locale=${locale}`)
+}
+/**mở thống kê */
+function openAnalytic() {
+    openNewTab(`${$env.host.analytic_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
 }
 /**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
 function selectNav(path: string) {

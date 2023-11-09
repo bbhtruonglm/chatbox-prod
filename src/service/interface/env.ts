@@ -12,6 +12,8 @@ export interface Env {
         n5_app: string
         n6_static: string
         widget: string
+        page_setting_view: string
+        analytic_view: string
     }
     /**cài đặt cho riêng facebook */
     facebook: {

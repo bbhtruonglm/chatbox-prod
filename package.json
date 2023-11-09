@@ -24,6 +24,7 @@
     "@capacitor-community/facebook-login": "^5.0.3",
     "@capacitor/android": "^5.0.4",
     "@capacitor/core": "^5.0.4",
+    "@capacitor/device": "^5.0.6",
     "@capacitor/ios": "^5.0.4",
     "@capacitor/keyboard": "^5.0.6",
     "async": "^3.2.4",

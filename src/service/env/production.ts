@@ -14,6 +14,8 @@ const ENV: Env = {
         n5_app: 'https://dev.sellingpage.net/v1/n5_app',
         n6_static: 'https://dev.sellingpage.net/v1/n6_static',
         widget: 'https://chatbox-widget.botbanhang.vn',
+        page_setting_view: 'https://botbanhang.vn/setting/#/page',
+        analytic_view: 'https://botbanhang.vn/analytic-v2/#/'
     },
     facebook: {
         app_id: '303503746720418',
