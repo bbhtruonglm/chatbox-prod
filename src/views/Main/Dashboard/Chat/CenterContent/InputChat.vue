@@ -39,7 +39,7 @@
                 </div>
             </div>
         </template>
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div @click="selectAttachmentFromDevice" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/clip.svg" width="17" height="17" />
         </div>
         <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
@@ -49,8 +49,7 @@
             <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                 @keyup="checkOpenQuickAnswer"
                 class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
-                contenteditable="true"
-            />
+                contenteditable="true" />
         </div>
         <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/send.svg" width="25" height="25" />
@@ -93,6 +92,9 @@ import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
     getPageWidget, getIframeUrl, isMobile
 } from '@/service/function'
+import { eachOfLimit } from 'async'
+import { upload_temp_file } from '@/service/api/chatbox/n6-static'
+import { getFbFileType } from '@/service/helper/file'
 
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
@@ -132,11 +134,62 @@ watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
+/**chọn file từ thiết bị để gửi đi */
+function selectAttachmentFromDevice() {
+    /**input upload file */
+    const INPUT = document.createElement('input')
+
+    // thêm các thuộc tính cần thiết
+    INPUT.type = 'file'
+    INPUT.multiple = true
+    INPUT.style.display = 'none'
+
+    // hàm xử lý sau khi upload thành công
+    INPUT.onchange = () => {
+        const FILE_LIST = INPUT.files
+
+        eachOfLimit(FILE_LIST, 1, (file: File, i, next) => {
+            const formData = new FormData()
+
+            formData.append('file', file)
+
+            upload_temp_file(formData, (e, r) => {
+                console.log('ee', e, r)
+
+                send_message({
+                    page_id: conversationStore.select_conversation?.fb_page_id as string,
+                    client_id: conversationStore.select_conversation?.fb_client_id as string,
+                    attachment: {
+                        url: r as string,
+                        type: getFbFileType(file.type)
+                    },
+                    type: 'FACEBOOK_MESSAGE'
+                }, (e, r) => {
+                    console.log('done', e, r)
+
+                    next()
+                })
+            })
+
+        })
+
+        // xoá input sau khi xong việc
+        if (INPUT && INPUT.parentNode) INPUT.parentNode.removeChild(INPUT)
+    }
+
+    // thêm input vào html
+    document.body.appendChild(INPUT)
+
+    // click vào input
+    INPUT.click()
+}
+/**hiển thị widget bên dưới */
 function toggleWidget(widget: AppInstalledInfo) {
     conversationStore.select_widget = widget
 
     $emit('toggle_bottom_widget')
 }
+/**hiển thị trả lời nhanh */
 function toggleQuickAnswer() {
     $emit('toggle_quick_answer')
 }

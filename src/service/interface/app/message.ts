@@ -41,6 +41,9 @@ export interface QueryMessage {
     limit?: number
 }
 
+/**các loại tệp fb cho phép gửi */
+export type FileTypeInfo = 'audio' | 'file' | 'image' | 'template' | 'video'
+
 /**body khi gửi tin nhắn */
 export interface SendMesageInput {
     /**id trang */
@@ -49,6 +52,12 @@ export interface SendMesageInput {
     client_id: string
     /**nội dung tin nhắn dạng văn bản */
     text?: string
+    attachment?: {
+        /**link của file muốn gửi */
+        url: string
+        /**file muốn gửi là loại gì */
+        type: FileTypeInfo
+    }
     /**các dạng tin nhắn */
     type:
     'FACEBOOK_MESSAGE'      // tin nhắn dạng inbox
