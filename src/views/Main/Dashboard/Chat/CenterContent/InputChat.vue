@@ -1,5 +1,5 @@
 <template>
-    <div ref="input_chat_warper" class="w-full min-h-[49px] relative border-t flex items-center">
+    <div ref="input_chat_warper" class="w-full min-h-[49px] relative">
         <div @click="toggleLabelSelect()"
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <template v-if="!is_show_label_list">
@@ -39,20 +39,43 @@
                 </div>
             </div>
         </template>
-        <div @click="selectAttachmentFromDevice" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
-            <img src="@/assets/icons/clip.svg" width="17" height="17" />
+
+        <div v-if="size(upload_file_list)"
+            class="flex flex-wrap justify-center overflow-hidden overflow-y-auto h-[80px] p-[5px]">
+            <div v-for="(file, index) of upload_file_list"
+                class="mr-[5px] mb-[5px] overflow-hidden rounded-lg cursor-pointer relative">
+                <img v-if="!file.is_done && !file.is_loading" @click="deleteUploadFile(index)"
+                    class="absolute top-[1px] left-[1px]" src="@/assets/icons/close-circle.svg" />
+                <div v-if="file.is_loading" class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                    <Loading />
+                </div>
+                <img v-if="file.is_done" class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+                    src="@/assets/icons/check-circle.svg" />
+                <img v-if="file.preview" class="h-[70px] w-[70px]" :src="file.preview" />
+                <img v-else-if="file.type === 'image'" class="h-[70px] w-[70px]" src="@/assets/icons/picture.svg" />
+                <img v-else-if="file.type === 'video'" class="h-[70px] w-[70px]" src="@/assets/icons/play.svg" />
+                <img v-else-if="file.type === 'audio'" class="h-[70px] w-[70px]" src="@/assets/icons/audio.svg" />
+                <img v-else class="h-[70px] w-[70px]" src="@/assets/icons/file.svg" />
+            </div>
         </div>
-        <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
-            <img src="@/assets/icons/slash.svg" width="20" height="20" />
-        </div>
-        <div class="w-[calc(100%_-_95px)] h-full">
-            <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
-                @keyup="checkOpenQuickAnswer"
-                class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
-                contenteditable="true" />
-        </div>
-        <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
-            <img src="@/assets/icons/send.svg" width="25" height="25" />
+
+        <div class="border-t flex items-center">
+            <div @click="selectAttachmentFromDevice"
+                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+                <img src="@/assets/icons/clip.svg" width="17" height="17" />
+            </div>
+            <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+                <img src="@/assets/icons/slash.svg" width="20" height="20" />
+            </div>
+            <div class="w-[calc(100%_-_95px)] h-full">
+                <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
+                    @keyup="checkOpenQuickAnswer"
+                    class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
+                    contenteditable="true" />
+            </div>
+            <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
+                <img src="@/assets/icons/send.svg" width="25" height="25" />
+            </div>
         </div>
     </div>
     <div class="w-full flex items-center h-[49px] border-t relative">
@@ -82,7 +105,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { map, take, get } from 'lodash'
+import { map, take, get, size, remove, pullAt } from 'lodash'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
@@ -92,7 +115,7 @@ import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
     getPageWidget, getIframeUrl, isMobile
 } from '@/service/function'
-import { eachOfLimit } from 'async'
+import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
 import { getFbFileType } from '@/service/helper/file'
 
@@ -103,6 +126,22 @@ import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { FileTypeInfo } from '@/service/interface/app/message'
+import type { CbError } from '@/service/interface/function'
+
+/**dữ liệu file khi được upload */
+interface UploadFile {
+    /**dữ liệu gốc của file */
+    source: File
+    /**kiểu fb của file */
+    type: FileTypeInfo
+    /**gắn cờ đã gửi xong */
+    is_done?: boolean
+    /**có hiển thị loading không */
+    is_loading?: boolean
+    /**dùng để hiển thị hình ảnh */
+    preview?: any
+}
 
 const $emit = defineEmits(['toggle_bottom_widget', 'toggle_quick_answer'])
 const { t: $t } = useI18n()
@@ -129,13 +168,31 @@ const facebook_error = ref<{
     code?: number
     message?: string
 }>()
+/**các file được chọn để gửi đi */
+const upload_file_list = ref<UploadFile[]>([])
+/**gắn cờ file đang gửi */
+const is_send_file = ref(false)
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
+/**xoá file định gửi */
+function deleteUploadFile(index: number) {
+    pullAt(upload_file_list.value, index)
+
+    keepMobileKeyboard()
+}
+/**giữ bàn phím ảo trên mobile không mất */
+function keepMobileKeyboard() {
+    if (isMobile() && input_chat_ref.value?.innerText)
+        input_chat_ref.value.focus()
+}
 /**chọn file từ thiết bị để gửi đi */
 function selectAttachmentFromDevice() {
+    // đang gửi thì không cho chọn lại file để bị lỗi
+    if (is_send_file.value) return
+
     /**input upload file */
     const INPUT = document.createElement('input')
 
@@ -146,31 +203,28 @@ function selectAttachmentFromDevice() {
 
     // hàm xử lý sau khi upload thành công
     INPUT.onchange = () => {
-        const FILE_LIST = INPUT.files
+        // trên mobile, nếu đang chat dở thì mở lại bàn phím ảo
+        keepMobileKeyboard()
 
-        eachOfLimit(FILE_LIST, 1, (file: File, i, next) => {
-            const formData = new FormData()
+        // làm sạch danh sách file
+        upload_file_list.value = []
 
-            formData.append('file', file)
+        // ghi dữ liệu vào mảng
+        map(INPUT.files, file => {
+            /**kiểu fb của file */
+            const TYPE = getFbFileType(file.type)
 
-            upload_temp_file(formData, (e, r) => {
-                console.log('ee', e, r)
+            if (TYPE !== 'image')
+                return upload_file_list.value.push({ source: file, type: TYPE })
 
-                send_message({
-                    page_id: conversationStore.select_conversation?.fb_page_id as string,
-                    client_id: conversationStore.select_conversation?.fb_client_id as string,
-                    attachment: {
-                        url: r as string,
-                        type: getFbFileType(file.type)
-                    },
-                    type: 'FACEBOOK_MESSAGE'
-                }, (e, r) => {
-                    console.log('done', e, r)
-
-                    next()
-                })
+            // render hình ảnh để hiển thị preview
+            const READER = new FileReader()
+            READER.onload = $event => upload_file_list.value.push({
+                source: file,
+                type: TYPE,
+                preview: $event.target?.result
             })
-
+            READER.readAsDataURL(file)
         })
 
         // xoá input sau khi xong việc
@@ -304,8 +358,12 @@ function submitInput($event: KeyboardEvent) {
 }
 /**gửi tin nhắn */
 function sendMessage() {
-    // nếu ở trên mobile, click gửi tin sẽ focus lại vào input, để bàn phím không bị mất
-    if (isMobile()) input_chat_ref.value.focus()
+    // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
+    if (is_send_file.value) return
+
+    // lấy id trang và client để tránh trường hợp đang gửi dở thì chuyển khách khác
+    const PAGE_ID = conversationStore.select_conversation?.fb_page_id as string
+    const CLIENT_ID = conversationStore.select_conversation?.fb_client_id as string
 
     /**div input */
     const INPUT = input_chat_ref.value as HTMLDivElement
@@ -313,40 +371,105 @@ function sendMessage() {
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
 
-    // xoá dữ liệu trong input
-    INPUT.innerHTML = ''
+    // nếu ở trên mobile, click gửi tin sẽ focus lại vào input, để bàn phím không bị mất
+    keepMobileKeyboard()
 
-    // tạm thời không có text thì không cho gửi tin
-    if (!TEXT) return
+    // gửi text
+    if (TEXT) {
+        // xoá dữ liệu trong input
+        INPUT.innerHTML = ''
 
-    /**nội dung tin nhắn vừa được gửi */
-    const TEMP_SEND_MESSAGE: TempSendMessage = {
-        text: TEXT,
-        time: new Date().toISOString()
-    }
-
-    // thêm vào danh sách tin nhắn tạm
-    messageStore.send_message_list.push(TEMP_SEND_MESSAGE)
-
-    scrollToBottomMessage()
-
-    send_message({
-        page_id: conversationStore.select_conversation?.fb_page_id as string,
-        client_id: conversationStore.select_conversation?.fb_client_id as string,
-        text: TEXT,
-        type: 'FACEBOOK_MESSAGE'
-    }, (e, r) => {
-        if (e || !r?.message_id) {
-            TEMP_SEND_MESSAGE.error = true
-
-            handleSendMessageError(e || r)
-
-            return
+        /**nội dung tin nhắn vừa được gửi */
+        const TEMP_SEND_MESSAGE: TempSendMessage = {
+            text: TEXT,
+            time: new Date().toISOString()
         }
 
-        // sử dụng tính chất obj của js để thêm id tin nhắn vào phần tử trong mảng
-        TEMP_SEND_MESSAGE.message_id = r?.message_id
-    })
+        // thêm vào danh sách tin nhắn tạm
+        messageStore.send_message_list.push(TEMP_SEND_MESSAGE)
+
+        scrollToBottomMessage()
+
+        send_message({
+            page_id: PAGE_ID,
+            client_id: CLIENT_ID,
+            text: TEXT,
+            type: 'FACEBOOK_MESSAGE'
+        }, (e, r) => {
+            if (e || !r?.message_id) {
+                TEMP_SEND_MESSAGE.error = true
+
+                handleSendMessageError(e || r)
+
+                return
+            }
+
+            // sử dụng tính chất obj của js để thêm id tin nhắn vào phần tử trong mảng
+            TEMP_SEND_MESSAGE.message_id = r?.message_id
+        })
+    }
+
+    // gửi file
+    if (size(upload_file_list.value)) {
+        // đánh dấu đang gửi file
+        is_send_file.value = true
+
+        eachOfLimit(
+            upload_file_list.value,
+            1,
+            (file: UploadFile, i, next) => {
+                // đang gửi mà file bị xoá mất
+                if (!file) return next()
+
+                file.is_loading = true
+                /**dữ liệu upload */
+                const FORM = new FormData()
+                /**link file */
+                let url: string
+                waterfall([
+                    // * thêm file để upload
+                    (cb: CbError) => {
+                        FORM.append('file', file.source)
+
+                        cb()
+                    },
+                    // * upload file lên server lấy link
+                    (cb: CbError) => upload_temp_file(FORM, (e, r) => {
+                        if (e || !r) return cb('DONE')
+
+                        url = r
+                        cb()
+                    }),
+                    // * gửi file lên fb
+                    (cb: CbError) => send_message({
+                        page_id: PAGE_ID,
+                        client_id: CLIENT_ID,
+                        attachment: { url: url, type: file.type },
+                        type: 'FACEBOOK_MESSAGE'
+                    }, (e, r) => {
+                        if (e) return cb('DONE')
+
+                        cb()
+                    })
+                ], e => {
+                    file.is_loading = false
+                    file.is_done = true
+
+                    next()
+                })
+            },
+            e => {
+                // reset upload
+                setTimeout(() => {
+                    // làm mới list file
+                    upload_file_list.value = []
+
+                    // đã gửi xong
+                    is_send_file.value = false
+                }, 500)
+            }
+        )
+    }
 }
 /**TODO xử lý báo lỗi khi gửi tin nhắn thất bại */
 function handleSendMessageError(error: any) {
