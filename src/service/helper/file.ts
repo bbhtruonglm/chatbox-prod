@@ -1,4 +1,5 @@
 import type { FileTypeInfo } from '@/service/interface/app/message'
+import type { Cb } from '@/service/interface/function'
 
 /**các kiểu tệp fb cho phép khi upload */
 export const FB_VALID_FILE_TYPE = ['audio', 'file', 'image', 'video']
@@ -17,3 +18,12 @@ export const getFbFileType = (mine_type: string): FileTypeInfo => {
 
     return result
 }
+
+/**chuyển đổi img src thành file upload được */
+export const srcImageToFile = (src: string, proceed: Cb<File>) => fetch(src)
+    .then(r => r.blob())
+    .then(blob => proceed(
+        null,
+        new File([blob], 'image.jpg', { type: blob.type }))
+    )
+    .catch(proceed)

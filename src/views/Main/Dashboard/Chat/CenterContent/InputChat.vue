@@ -69,7 +69,7 @@
             </div>
             <div class="w-[calc(100%_-_95px)] h-full">
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
-                    @keyup="checkOpenQuickAnswer"
+                    @keyup="checkOpenQuickAnswer" @paste="onPasteImage"
                     class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                     contenteditable="true" />
             </div>
@@ -117,7 +117,7 @@ import {
 } from '@/service/function'
 import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
-import { getFbFileType } from '@/service/helper/file'
+import { getFbFileType, srcImageToFile } from '@/service/helper/file'
 
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
@@ -177,6 +177,35 @@ watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
+/**lấy ảnh khi được ctrl + v vào input */
+function onPasteImage() {
+    setTimeout(() => {
+        /**ô input */
+        const PARENT: HTMLDivElement = input_chat_ref.value
+
+        // loop dữ liệu input để tìm các img được paste vào
+        map(PARENT.children, (element: HTMLElement) => {
+            // chỉ xử lý img
+            if (element?.tagName !== 'IMG') return
+
+            // lấy source của hình ảnh
+            const SRC = (element as HTMLImageElement).src
+
+            // loại bỏ hình ảnh khỏi input
+            PARENT.removeChild(element)
+
+            srcImageToFile(SRC, (e, r) => {
+                if (e || !r) return
+
+                upload_file_list.value.push({
+                    source: r,
+                    type: 'image',
+                    preview: SRC
+                })
+            })
+        })
+    }, 100)
+}
 /**xoá file định gửi */
 function deleteUploadFile(index: number) {
     pullAt(upload_file_list.value, index)
