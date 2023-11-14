@@ -33,7 +33,10 @@ const source: Language = {
             uid: 'Uid',
             edit: 'Chỉnh sửa',
             download: 'Tải về',
+            upload: 'Tải lên',
             copy_to_clipboard: 'Đã sao chép',
+            delete: 'Xoá',
+            update: 'Cập nhật'
         },
         view: {
             network: {
@@ -322,7 +325,16 @@ const source: Language = {
                             cancel: 'Hủy',
                             send_message: 'Gửi tin nhắn',
                             send_message_success: 'Gửi tin thành công'
-                        }
+                        },
+                        album: {
+                            title: 'Quản lý tập tin',
+                            category: {
+                                new: 'Mới tải lên',
+                                folder: 'Tìm theo thư mục'
+                            },
+                            select: 'Chọn tập tin',
+                            name: 'Tên của tập tin/thư mục'
+                        },
                     }
                 }
             }

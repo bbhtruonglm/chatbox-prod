@@ -83,7 +83,7 @@
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
             <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
         </div>
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div @click="openAlbum" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex" v-if="isMobile()">
@@ -101,6 +101,7 @@
         </div>
     </div>
     <FacebookError ref="facebook_error_ref" :error="facebook_error"></FacebookError>
+    <Album ref="album_ref" />
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
@@ -122,6 +123,7 @@ import { getFbFileType, srcImageToFile } from '@/service/helper/file'
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
+import Album from '@/views/Main/Dashboard/Chat/CenterContent/Album.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
@@ -159,6 +161,8 @@ const is_show_label_list = ref(false)
 const is_loading_label = ref(false)
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<ComponentRef>()
+/**ref của quản lý album */
+const album_ref = ref<ComponentRef>()
 /**ref của component emoji */
 const emoji_ref = ref<ComponentRef>()
 /**ref của component facebook error */
@@ -177,6 +181,10 @@ watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
+/**mở album */
+function openAlbum() {
+    album_ref.value?.toggleAlbum()
+}
 /**lấy ảnh khi được ctrl + v vào input */
 function onPasteImage() {
     setTimeout(() => {
