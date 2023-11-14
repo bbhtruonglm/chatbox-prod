@@ -101,7 +101,7 @@
         </div>
     </div>
     <FacebookError ref="facebook_error_ref" :error="facebook_error"></FacebookError>
-    <Album ref="album_ref" />
+    <Album @pick_file="handlePickFile" ref="album_ref" />
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
@@ -128,22 +128,8 @@ import Album from '@/views/Main/Dashboard/Chat/CenterContent/Album.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import type { FileTypeInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
-
-/**dữ liệu file khi được upload */
-interface UploadFile {
-    /**dữ liệu gốc của file */
-    source: File
-    /**kiểu fb của file */
-    type: FileTypeInfo
-    /**gắn cờ đã gửi xong */
-    is_done?: boolean
-    /**có hiển thị loading không */
-    is_loading?: boolean
-    /**dùng để hiển thị hình ảnh */
-    preview?: any
-}
+import type { FileInfo, UploadFile } from '@/service/interface/app/album'
 
 const $emit = defineEmits(['toggle_bottom_widget', 'toggle_quick_answer'])
 const { t: $t } = useI18n()
@@ -181,6 +167,21 @@ watch(() => conversationStore.list_widget_token, () => getListWidget())
 
 onMounted(() => onChangeHeightInput())
 
+/**xử lý các file được chọn từ album */
+function handlePickFile(file_list: FileInfo[]) {
+    upload_file_list.value?.push(...file_list?.map(file => {
+        /**kiểu dữ liệu của fb */
+        const TYPE = getFbFileType(file.mimetype)
+
+        return {
+            type: TYPE,
+            is_done: false,
+            is_loading: false,
+            preview: TYPE === 'image' ? file.url : undefined,
+            url: file.url
+        }
+    }))
+}
 /**mở album */
 function openAlbum() {
     album_ref.value?.toggleAlbum()
@@ -466,17 +467,29 @@ function sendMessage() {
                 waterfall([
                     // * thêm file để upload
                     (cb: CbError) => {
-                        FORM.append('file', file.source)
+                        if (!file?.source) return cb()
+
+                        FORM.append('file', file?.source)
 
                         cb()
                     },
                     // * upload file lên server lấy link
-                    (cb: CbError) => upload_temp_file(FORM, (e, r) => {
-                        if (e || !r) return cb('DONE')
+                    (cb: CbError) => {
+                        // file từ album
+                        if (file.url) {
+                            url = file.url
 
-                        url = r
-                        cb()
-                    }),
+                            return cb()
+                        }
+
+                        // file upload trực tiếp
+                        upload_temp_file(FORM, (e, r) => {
+                            if (e || !r) return cb('DONE')
+
+                            url = r
+                            cb()
+                        })
+                    },
                     // * gửi file lên fb
                     (cb: CbError) => send_message({
                         page_id: PAGE_ID,

@@ -1,6 +1,8 @@
 /**
  * lib để request api
  */
+import query_string from 'query-string'
+import { size } from 'lodash'
 
 import type { Cb } from '@/service/interface/function'
 
@@ -11,6 +13,8 @@ export type Method = 'POST' | 'GET'
 interface InputRequest {
     /**đường dẫn */
     uri: string
+    /**query string */
+    qs?: any,
     /**phương thức */
     method: Method
     /**có thể là obj hoặc form upload */
@@ -25,7 +29,7 @@ interface InputRequest {
 
 /**adapter để gửi api bằng fetch */
 export const request = (
-    { uri, method, json, form, body = {}, headers = {} }: InputRequest,
+    { uri, method, json, form, body = {}, headers = {}, qs = {} }: InputRequest,
     proceed: Cb
 ) => {
     if (json && !form) {
@@ -38,6 +42,9 @@ export const request = (
     }
 
     if (method === 'GET') body = undefined
+
+    // thêm qs vào uri nếu có
+    if (size(qs)) uri += `?${query_string.stringify(qs)}`
 
     fetch(uri, { method, headers, body })
         .then(r => json ? r.json() : r)

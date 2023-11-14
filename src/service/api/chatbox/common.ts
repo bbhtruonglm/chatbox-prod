@@ -8,7 +8,7 @@ import type { Cb } from '@/service/interface/function'
  * - format lại response trước khi return
  */
 export const chatbox = (
-    { uri, body, form }: { uri: string, body?: any, form?: boolean },
+    { uri, body, form, qs }: { uri: string, body?: any, form?: boolean, qs?: any },
     proceed: Cb
 ) => request({
     uri,
@@ -16,6 +16,7 @@ export const chatbox = (
     // fix token cho toàn bộ api gọi lên server chatbox
     headers: { Authorization: getItem('access_token') },
     json: true,
+    qs,
     form,
     body
 }, (e, r) => {
