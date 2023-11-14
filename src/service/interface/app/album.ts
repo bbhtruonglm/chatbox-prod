@@ -51,3 +51,35 @@ export interface UpdateFileInfo {
     /**id tập tin */
     file_id: string
 }
+/**đầu vào api đọc danh sách thư mục */
+export interface GetFolderInput {
+    /**id trang */
+    page_id: string
+    /**phân trang */
+    skip?: number
+    /**phân trang */
+    limit?: number
+}
+/**dữ liệu của 1 thư mục */
+export interface FolderInfo {
+    /**id bản ghi */
+    _id: string
+    /**tên thư mục */
+    title: string
+}
+/**cập nhật dữ liệu thư mục */
+export interface UpdateFolderInput {
+    /**id trang */
+    page_id: string
+    /**lấy từ thư mục */
+    folder_id?: string
+    /**tên mới */
+    title: string
+}
+/**đầu vào api tạo mới thư mục */
+export interface CreateFolderInput {
+    /**id trang */
+    page_id: string
+    /**tên mới */
+    title: string
+}

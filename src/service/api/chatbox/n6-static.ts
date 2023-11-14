@@ -2,7 +2,7 @@ import { chatbox } from '@/service/api/chatbox/common'
 
 import type { AttachmentInfo, InputGetUrlAttachment } from '@/service/interface/app/message'
 import type { Cb } from '@/service/interface/function'
-import type { FileInfo, GetFileInput, FromFile, UpdateFileInfo } from '@/service/interface/app/album'
+import type { FileInfo, GetFileInput, FromFile, UpdateFileInfo, FolderInfo, GetFolderInput, UpdateFolderInput, CreateFolderInput } from '@/service/interface/app/album'
 
 /**đọc dữ liệu file của tin nhắn */
 export const get_url_attachment = (
@@ -29,6 +29,41 @@ export const read_file_album = (
     proceed: Cb<FileInfo[]>
 ) => chatbox({
     uri: `${$env.host.n6_static}/app/album/file/read_file`,
+    body,
+}, proceed)
+
+/**đọc danh sách thư mục */
+export const read_folder_album = (
+    body: GetFolderInput,
+    proceed: Cb<FolderInfo[]>
+) => chatbox({
+    uri: `${$env.host.n6_static}/app/album/folder/read_folder`,
+    body,
+}, proceed)
+
+/**cập nhật thư mục */
+export const update_folder_album = (
+    body: UpdateFolderInput,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n6_static}/app/album/folder/update_folder_info`,
+    body,
+}, proceed)
+
+/**xoá thư mục */
+export const delete_folder_album = (
+    body: FromFile,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n6_static}/app/album/folder/delete_folder`,
+    body,
+}, proceed)
+/**tạo mới thư mục */
+export const create_folder_album = (
+    body: CreateFolderInput,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n6_static}/app/album/folder/create_new_folder`,
     body,
 }, proceed)
 

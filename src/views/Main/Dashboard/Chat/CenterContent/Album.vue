@@ -9,12 +9,12 @@
                     <Loading v-if="is_loading" />
                 </div>
                 <div class="flex border-b mb-2">
-                    <div @click="selected_category = 'NEW'"
+                    <div @click="selectCategory('NEW')"
                         :class="selected_category === 'NEW' ? 'font-medium border-b-2 border-orange-500' : 'font-light'"
                         class="mr-2 cursor-pointer">
                         {{ $t('v1.view.main.dashboard.chat.album.category.new') }}
                     </div>
-                    <div @click="selected_category = 'FOLDER'"
+                    <div @click="selectCategory('FOLDER')"
                         :class="selected_category === 'FOLDER' ? 'font-medium border-b-2 border-orange-500' : 'font-light'"
                         class="cursor-pointer">
                         {{ $t('v1.view.main.dashboard.chat.album.category.folder') }}
@@ -22,27 +22,39 @@
                 </div>
                 <div class="grid grid-cols-2">
                     <div>
-                        <button @click="uploadFileFromDevice"
+                        <button v-if="selected_category === 'NEW' || selected_folder_id" @click="uploadFileFromDevice"
                             class="rounded-full bg-orange-500 text-white font-medium px-2 flex items-center py-1">
                             <img src="@/assets/icons/upload.svg" />
                             {{ $t('v1.common.upload') }}
                         </button>
                     </div>
                     <div class="font-medium flex justify-end">
-                        <div @click="selectAllFile(!isSelectAllFile())"
-                            class="flex items-center justify-end cursor-pointer">
+                        <div v-if="selected_category === 'NEW' || selected_folder_id"
+                            @click="selectAllFile(!isSelectAllFile())" class="flex items-center justify-end cursor-pointer">
                             {{ $t('v1.common.select_all') }}
                             <input :checked="isSelectAllFile()" type="checkbox"
                                 class="w-[15px] h-[15px] ml-1 accent-orange-600">
                         </div>
-                        <!-- <div class="cursor-pointer">
+                        <div v-else @click="openCreateFolder" class="cursor-pointer">
                             <img src="@/assets/icons/new-folder.svg" />
-                        </div> -->
+                        </div>
                     </div>
                 </div>
-                <div
-                    @scroll="loadMore"
+                <div @scroll="loadMore"
                     class="h-[calc(100vh_-_300px)] overflow-hidden overflow-y-auto flex justify-center flex-wrap mt-2 content-start">
+                    <div v-for="folder of folder_list" @click="selectFolder(folder)"
+                        class="relative w-[110px] h-[100px] m-1 cursor-pointer group hover:border-orange-500">
+                        <div @click.stop="openSettingFolder(folder)"
+                            class="absolute top-1 right-1 hidden group-hover:block">
+                            <img src="@/assets/icons/more.svg" />
+                        </div>
+                        <div class="w-full h-[80px]">
+                            <img src="@/assets/icons/folder.svg" class="w-full h-full" />
+                        </div>
+                        <div class="truncate text-center">
+                            {{ folder.title }}
+                        </div>
+                    </div>
                     <div v-for="file of file_list" @click="file.is_select = !file.is_select"
                         :class="file.is_select ? 'border-orange-500' : 'border-white'"
                         class="relative w-[110px] h-[100px] m-1 cursor-pointer group border-2  hover:border-orange-500">
@@ -78,20 +90,35 @@
     </Modal>
     <Modal @close_modal="onCloseSetting" ref="item_setting_ref">
         <template v-slot:header>
-            {{ $t('v1.common.setting') }}
+            <span v-if="is_create_folder">
+                {{ $t('v1.view.main.dashboard.chat.album.create_folder') }}
+            </span>
+            <span v-else>
+                {{ $t('v1.common.setting') }}
+            </span>
         </template>
         <template v-slot:body>
+            <div v-if="is_create_folder">
+                <input v-model="create_folder_title" type="text"
+                    class="border-2 rounded-md w-full h-[40px] px-2 focus:outline-none"
+                    :placeholder="$t('v1.view.main.dashboard.chat.album.name')">
+            </div>
             <div v-if="selected_folder">
-                <input type="text" class="border-2 rounded-md w-full h-[40px] px-2 focus:outline-none"
+                <input v-model="selected_folder.title" type="text"
+                    class="border-2 rounded-md w-full h-[40px] px-2 focus:outline-none"
                     :placeholder="$t('v1.view.main.dashboard.chat.album.name')">
             </div>
         </template>
         <template v-slot:footer>
+            <FilterButton v-if="is_create_folder" @click="createFolder"
+                type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
+                :title="$t('v1.view.main.dashboard.chat.album.create_folder')" />
             <FilterButton v-if="selected_file" @click="deleteFile" type="text-slate-500 hover:text-white hover:bg-slate-500"
                 :title="$t('v1.common.delete')" />
             <div v-if="selected_folder" class="grid grid-cols-2 gap-2">
-                <FilterButton type="text-slate-500 hover:text-white hover:bg-slate-500" :title="$t('v1.common.delete')" />
-                <FilterButton @click="updateInfo"
+                <FilterButton @click="deleteFolder" type="text-slate-500 hover:text-white hover:bg-slate-500"
+                    :title="$t('v1.common.delete')" />
+                <FilterButton @click="updateFolderInfo"
                     type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
                     :title="$t('v1.common.update')" />
             </div>
@@ -101,7 +128,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { eachOfLimit, waterfall } from 'async'
-import { read_file_album, upload_file_album, delete_file_album } from '@/service/api/chatbox/n6-static'
+import { read_file_album, upload_file_album, delete_file_album, read_folder_album, update_folder_album, delete_folder_album, create_folder_album } from '@/service/api/chatbox/n6-static'
 import { useConversationStore } from '@/stores'
 import { toast, toastError } from '@/service/helper/alert'
 
@@ -110,10 +137,13 @@ import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Filter
 import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import type { FileInfo } from '@/service/interface/app/album'
+import type { FileInfo, FolderInfo } from '@/service/interface/app/album'
 import type { CbError } from '@/service/interface/function'
 import { useI18n } from 'vue-i18n'
 import { remove } from 'lodash'
+
+/**các giá tị của danh mục */
+type CategoryType = 'NEW' | 'FOLDER'
 
 const $emit = defineEmits(['pick_file'])
 
@@ -130,11 +160,13 @@ const album_ref = ref<ComponentRef>()
 /**ref của cài đặt item */
 const item_setting_ref = ref<ComponentRef>()
 /**chọn danh mục nào */
-const selected_category = ref<'NEW' | 'FOLDER'>('NEW')
+const selected_category = ref<CategoryType>('NEW')
 /**id của thư mục đang chọn nếu có */
 const selected_folder_id = ref<string>()
 /**danh sách tập tin */
 const file_list = ref<FileInfo[]>([])
+/**danh sách thư mục */
+const folder_list = ref<FolderInfo[]>([])
 /**đánh dấu đã đọc hết dữ liệu */
 const is_done = ref(false)
 /**số bản ghi bỏ qua */
@@ -142,8 +174,63 @@ const skip = ref(0)
 /**file được chọn để cài đặt */
 const selected_file = ref<FileInfo>()
 /**thư mục được chọn để cài đặt */
-const selected_folder = ref<any>()
+const selected_folder = ref<FolderInfo>()
+/**gắn cờ tạo mới thư mục */
+const is_create_folder = ref(false)
+/**tên của thư mục muốn tạo */
+const create_folder_title = ref<string>()
 
+/**chọn thư mục */
+function selectFolder(folder: FolderInfo) {
+    selected_folder_id.value = folder._id
+
+    resetFileData()
+
+    getFile()
+}
+/**đọc danh sách thư mục */
+function getFolder() {
+    is_loading.value = true
+
+    waterfall([
+        // * đọc thư mục từ server
+        (cb: CbError) => read_folder_album({
+            page_id: conversationStore.select_conversation?.fb_page_id as string,
+            limit: LIMIT,
+            skip: skip.value
+        }, (e, r) => {
+            if (e) return cb(e)
+            if (!r?.length || r?.length < LIMIT) is_done.value = true
+
+            if (r) folder_list.value?.push(...r)
+            cb()
+        }),
+        // * next
+        (cb: CbError) => {
+            skip.value += LIMIT
+
+            cb()
+        },
+    ], e => {
+        is_loading.value = false
+
+        if (e) return toastError(e)
+    })
+}
+/**chọn danh mục */
+function selectCategory(type: CategoryType) {
+    // chọn danh mục
+    selected_category.value = type
+
+    // xoá thư mục đã chọn
+    selected_folder_id.value = undefined
+
+    resetFileData()
+
+    if (type === 'NEW') getFile()
+
+    if (type === 'FOLDER') getFolder()
+}
 /**lấy thêm dữ liệu file khi scroll xuống */
 function loadMore($event: Event) {
     // nếu đang chạy hoặc đã hết dữ liệu thì thôi
@@ -158,11 +245,17 @@ function loadMore($event: Event) {
     // kiểm tra xem đã scroll xuống cuối cùng chưa
     if (SCROLL_TOP + DIV_HEIGHT < SCROLL_HEIGHT - 100) return
 
-    getFile()
+    // nếu ở danh mục hiện toàn bộ file
+    if (selected_category.value === 'NEW') getFile()
+    // nếu ở danh sách thư mục
+    else if (!selected_folder_id) getFolder()
+    // nếu là danh sách các file của một thư mục
+    else getFile()
 }
 /**xử lý sự kiện khi đóng thiết lập file */
 function onCloseSetting() {
     selected_file.value = undefined
+    selected_folder.value = undefined
 }
 /**xoá tập tin */
 function deleteFile() {
@@ -183,9 +276,76 @@ function deleteFile() {
         item_setting_ref.value.toggleModal()
     })
 }
-/**cập nhật thông tin folder */
-function updateInfo() {
+/**mở modal tạo mới thư mục */
+function openCreateFolder() {
+    // gắn cờ tạo mới thư mục
+    is_create_folder.value = true
 
+    // sử dụng luôn modal setting
+    item_setting_ref.value.toggleModal()
+}
+/**tạo mới thư mục */
+function createFolder() {
+    if (!create_folder_title.value) return
+
+    is_loading.value = true
+
+    create_folder_album({
+        page_id: conversationStore.select_conversation?.fb_page_id as string,
+        title: create_folder_title.value
+    }, (e, r) => {
+        is_loading.value = false
+
+        // tắt modal
+        item_setting_ref.value.toggleModal()
+
+        create_folder_title.value = undefined
+        folder_list.value = []
+        skip.value = 0
+        is_done.value = false
+
+        getFolder()
+    })
+}
+/**xoá thư mục */
+function deleteFolder() {
+    if (!selected_folder.value) return
+
+    is_loading.value = true
+
+    delete_folder_album({
+        page_id: conversationStore.select_conversation?.fb_page_id as string,
+        folder_id: selected_folder.value?._id,
+    }, (e, r) => {
+        is_loading.value = false
+
+        // xoá thư mục khỏi danh sách
+        remove(folder_list.value, folder => folder._id === selected_folder.value?._id)
+
+        item_setting_ref.value.toggleModal()
+    })
+}
+/**cập nhật thông tin folder */
+function updateFolderInfo() {
+    if (!selected_folder.value) return
+
+    is_loading.value = true
+
+    update_folder_album({
+        page_id: conversationStore.select_conversation?.fb_page_id as string,
+        folder_id: selected_folder.value?._id,
+        title: selected_folder.value?.title,
+    }, (e, r) => {
+        is_loading.value = false
+
+        item_setting_ref.value.toggleModal()
+    })
+}
+/**mở cài đặt thư mục */
+function openSettingFolder(folder: FolderInfo) {
+    selected_folder.value = folder
+
+    item_setting_ref.value?.toggleModal()
 }
 /**mở cài đặt tập tin hoặc thư mục */
 function openSettingFile(file: FileInfo) {
@@ -212,14 +372,24 @@ function isSelectAllFile() {
 function selectAllFile(value: boolean) {
     file_list.value?.forEach(file => file.is_select = value)
 }
+/**làm sạch dữ liệu file */
+function resetFileData() {
+    is_done.value = false
+    skip.value = 0
+    file_list.value = []
+    folder_list.value = []
+}
 /**mở album */
 function toggleAlbum() {
     album_ref.value?.toggleModal()
 
-    // reset cờ khi mở modal
-    is_done.value = false
-    skip.value = 0
-    file_list.value = []
+    // chuyển danh mục về all
+    selected_category.value = 'NEW'
+
+    // xoá thư mục đã chọn
+    selected_folder_id.value = undefined
+
+    resetFileData()
 
     getFile()
 }

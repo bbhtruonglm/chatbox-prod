@@ -333,7 +333,8 @@ const source: Language = {
                                 folder: 'Tìm theo thư mục'
                             },
                             select: 'Chọn tập tin',
-                            name: 'Tên của tập tin/thư mục'
+                            name: 'Tên của tập tin/thư mục',
+                            create_folder: 'Tạo mới thư mục'
                         },
                     }
                 }
