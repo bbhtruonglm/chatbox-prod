@@ -45,6 +45,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const center_modal_width = ref<string>()
     /**đánh dấu ext được phát hiện */
     const is_active_extension = ref(false)
+    /**đánh dấu chuyển toàn bộ tin nhắn qua ext */
+    const force_send_message_over_inbox = ref(false)
 
     return {
         is_loading_full_screen,
@@ -57,6 +59,7 @@ export const useCommonStore = defineStore('common_store', () => {
         center_modal_left,
         center_modal_width,
         is_active_extension,
+        force_send_message_over_inbox,
 
         triggerRequirePricing,
     }

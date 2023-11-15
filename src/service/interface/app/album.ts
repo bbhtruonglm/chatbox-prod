@@ -43,6 +43,8 @@ export interface UploadFile {
     preview?: any
     /**link hình ảnh đã có sẵn từ album */
     url?: string
+    /**id tải trước của fb dành cho gửi ảnh qua ext */
+    fb_image_id?: string
 }
 /**đầu vào api cập nhật, xoá file */
 export interface UpdateFileInfo {

@@ -106,11 +106,11 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { map, take, get, size, remove, pullAt } from 'lodash'
+import { map, take, get, size, pullAt, uniqueId, remove, partition } from 'lodash'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
-import { useConversationStore, useMessageStore } from '@/stores'
+import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
@@ -119,6 +119,7 @@ import {
 import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
 import { getFbFileType, srcImageToFile } from '@/service/helper/file'
+import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
@@ -128,7 +129,7 @@ import Album from '@/views/Main/Dashboard/Chat/CenterContent/Album.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import type { CbError } from '@/service/interface/function'
+import type { Cb, CbError } from '@/service/interface/function'
 import type { FileInfo, UploadFile } from '@/service/interface/app/album'
 
 const $emit = defineEmits(['toggle_bottom_widget', 'toggle_quick_answer'])
@@ -136,6 +137,7 @@ const { t: $t } = useI18n()
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
+const commonStore = useCommonStore()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
@@ -178,7 +180,8 @@ function handlePickFile(file_list: FileInfo[]) {
             is_done: false,
             is_loading: false,
             preview: TYPE === 'image' ? file.url : undefined,
-            url: file.url
+            url: file.url,
+            fb_image_id: get(file, 'fb_image_id[0]')
         }
     }))
 }
@@ -413,28 +416,215 @@ function sendMessage() {
     keepMobileKeyboard()
 
     // gửi text
-    if (TEXT) {
-        // xoá dữ liệu trong input
-        INPUT.innerHTML = ''
+    if (TEXT) sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
 
+    // gửi file
+    if (size(upload_file_list.value)) sendFile(PAGE_ID, CLIENT_ID)
+}
+/**gửi tập tin */
+function sendFile(page_id: string, client_id: string) {
+    // đánh dấu đang gửi file
+    is_send_file.value = true
+
+    // cắt file gửi thành 2 loại
+    const [
+        /**danh sách hình ảnh */
+        IMAGE_LIST,
+        /**danh sách file còn lại */
+        FILE_LIST
+    ] = partition(upload_file_list.value, file => file.type === 'image')
+
+    waterfall([
+        // * loop qua các file ảnh để upload lên server nếu cần
+        (cb: CbError) => eachOfLimit(
+            IMAGE_LIST,
+            1,
+            (file: UploadFile, i, next) => {
+                file.is_loading = true
+
+                // đang gửi mà file bị xoá mất, hoặc đã có url rồi
+                if (!file || file.url) return next()
+
+                // file tự upload
+                getFileUrl(file?.source as File, (e, r) => {
+                    
+
+                    if (r) file.url = r
+
+                    next()
+                })
+            },
+            cb
+        ),
+        // * gửi các hình ảnh đã được upload
+        (cb: CbError) => {
+            // gửi ngang qua ext
+            if (commonStore.is_active_extension) {
+                // gắn cờ done
+                IMAGE_LIST.forEach(image => {
+                    image.is_loading = false
+                    image.is_done = true
+                })
+
+                // gửi qua ext
+                sendImageMessage(IMAGE_LIST.map(image => {
+                    return {
+                        url: image.url as string,
+                        fb_image_id: image.fb_image_id,
+                        type: 'image'
+                    }
+                }))
+
+                cb()
+            }
+            // gửi chính thống
+            else eachOfLimit(
+                IMAGE_LIST,
+                1,
+                (file: UploadFile, i, next) => {
+                    if (!file.url) return next()
+
+                    send_message({
+                        page_id,
+                        client_id,
+                        attachment: { url: file.url, type: file.type },
+                        type: 'FACEBOOK_MESSAGE'
+                    }, (e, r) => {
+                        file.is_loading = false
+                        file.is_done = true
+
+                        next()
+                    })
+                },
+                cb
+            )
+        },
+        // * loop qua các file còn lại
+        (cb: CbError) => eachOfLimit(
+            FILE_LIST,
+            1,
+            (file: UploadFile, i, next) => {
+                // đang gửi mà file bị xoá mất
+                if (!file) return next()
+
+                file.is_loading = true
+                /**link file */
+                let url: string
+                waterfall([
+                    // lấy link của file
+                    (_cb: CbError) => {
+                        // file từ album
+                        if (file.url) {
+                            url = file.url
+
+                            return _cb()
+                        }
+
+                        // file tự upload
+                        getFileUrl(file?.source as File, (e, r) => {
+                            if (e) return _cb(e)
+
+                            if (r) url = r
+                            _cb()
+                        })
+                    },
+                    // * gửi file lên fb
+                    (_cb: CbError) => send_message({
+                        page_id,
+                        client_id,
+                        attachment: { url: url, type: file.type },
+                        type: 'FACEBOOK_MESSAGE'
+                    }, (e, r) => {
+                        if (e) return _cb('DONE')
+
+                        _cb()
+                    })
+                ], e => {
+                    file.is_loading = false
+                    file.is_done = true
+
+                    next()
+                })
+            },
+            cb
+        ),
+    ], e => {
+        // reset upload
+        setTimeout(() => {
+            // làm mới list file
+            upload_file_list.value = []
+
+            // đã gửi xong
+            is_send_file.value = false
+        }, 500)
+    })
+}
+/**upload file lên server để lấy link tạm thời */
+function getFileUrl(source: File, proceed: Cb<string>) {
+    /**dữ liệu upload */
+    const FORM = new FormData()
+    /**link file */
+    let url: string
+
+    waterfall([
+        // * thêm file để upload
+        (cb: CbError) => {
+            FORM.append('file', source)
+
+            cb()
+        },
+        // * upload file lên server lấy link
+        (cb: CbError) => upload_temp_file(FORM, (e, r) => {
+            if (e || !r) return cb('DONE')
+
+            url = r
+            cb()
+        }),
+    ], e => proceed(e, url))
+}
+/**gửi tin nhắn dạng văn bản */
+function sendText(page_id: string, client_id: string, text: string, input: HTMLDivElement) {
+    // xoá dữ liệu trong input
+    input.innerHTML = ''
+
+    scrollToBottomMessage()
+
+    // gửi force qua ext
+    if (commonStore.force_send_message_over_inbox) sendTextMesage(text)
+    // gửi chính thống
+    else {
         /**nội dung tin nhắn vừa được gửi */
         const TEMP_SEND_MESSAGE: TempSendMessage = {
-            text: TEXT,
-            time: new Date().toISOString()
+            text,
+            time: new Date().toISOString(),
+            temp_id: uniqueId(text)
         }
 
         // thêm vào danh sách tin nhắn tạm
         messageStore.send_message_list.push(TEMP_SEND_MESSAGE)
 
-        scrollToBottomMessage()
-
+        // gửi tin nhắn bằng api chính thống
         send_message({
-            page_id: PAGE_ID,
-            client_id: CLIENT_ID,
-            text: TEXT,
+            page_id,
+            client_id,
+            text,
             type: 'FACEBOOK_MESSAGE'
         }, (e, r) => {
             if (e || !r?.message_id) {
+                // nếu bật ext thì gửi lại 1 lần nữa
+                if (commonStore.is_active_extension) {
+                    sendTextMesage(text)
+
+                    // xoá tin nhắn tạm
+                    remove(
+                        messageStore.send_message_list,
+                        message => message.temp_id === TEMP_SEND_MESSAGE.temp_id
+                    )
+
+                    return
+                }
+
+                // nếu không có ext thì báo lỗi
                 TEMP_SEND_MESSAGE.error = true
 
                 handleSendMessageError(e || r)
@@ -446,82 +636,8 @@ function sendMessage() {
             TEMP_SEND_MESSAGE.message_id = r?.message_id
         })
     }
-
-    // gửi file
-    if (size(upload_file_list.value)) {
-        // đánh dấu đang gửi file
-        is_send_file.value = true
-
-        eachOfLimit(
-            upload_file_list.value,
-            1,
-            (file: UploadFile, i, next) => {
-                // đang gửi mà file bị xoá mất
-                if (!file) return next()
-
-                file.is_loading = true
-                /**dữ liệu upload */
-                const FORM = new FormData()
-                /**link file */
-                let url: string
-                waterfall([
-                    // * thêm file để upload
-                    (cb: CbError) => {
-                        if (!file?.source) return cb()
-
-                        FORM.append('file', file?.source)
-
-                        cb()
-                    },
-                    // * upload file lên server lấy link
-                    (cb: CbError) => {
-                        // file từ album
-                        if (file.url) {
-                            url = file.url
-
-                            return cb()
-                        }
-
-                        // file upload trực tiếp
-                        upload_temp_file(FORM, (e, r) => {
-                            if (e || !r) return cb('DONE')
-
-                            url = r
-                            cb()
-                        })
-                    },
-                    // * gửi file lên fb
-                    (cb: CbError) => send_message({
-                        page_id: PAGE_ID,
-                        client_id: CLIENT_ID,
-                        attachment: { url: url, type: file.type },
-                        type: 'FACEBOOK_MESSAGE'
-                    }, (e, r) => {
-                        if (e) return cb('DONE')
-
-                        cb()
-                    })
-                ], e => {
-                    file.is_loading = false
-                    file.is_done = true
-
-                    next()
-                })
-            },
-            e => {
-                // reset upload
-                setTimeout(() => {
-                    // làm mới list file
-                    upload_file_list.value = []
-
-                    // đã gửi xong
-                    is_send_file.value = false
-                }, 500)
-            }
-        )
-    }
 }
-/**TODO xử lý báo lỗi khi gửi tin nhắn thất bại */
+/**xử lý báo lỗi khi gửi tin nhắn thất bại */
 function handleSendMessageError(error: any) {
 
     switch (get(error, 'error.code')) {

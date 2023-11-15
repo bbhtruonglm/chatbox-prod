@@ -77,6 +77,8 @@ export interface TempSendMessage {
     time: string
     /**lỗi khi gửi tin nhắn */
     error?: boolean
+    /**id tạm dưới client */
+    temp_id: string
 }
 
 /**dữ liệu 1 file */

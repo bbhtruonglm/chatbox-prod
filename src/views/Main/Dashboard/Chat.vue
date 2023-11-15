@@ -77,11 +77,15 @@ function initExtensionLogic() {
 
     // lắng nghe ext gửi thông điệp
     ext_listen((event, e, r) => {
-        console.log('ext_listen::', event, e, r)
-
         // đánh dấu đã phát hiện ext
-        if (event === 'EXTENSION_INSTALLED')
+        if (event === 'EXTENSION_INSTALLED') {
+            // gắn cờ phát hiện ext
             commonStore.is_active_extension = true
+
+            // gắn cờ force all tin nhắn qua ext
+            if (r?.force_send_message_over_inbox)
+                commonStore.force_send_message_over_inbox = true
+        }
 
         // nếu nhận được thông tin cá nhân của hội thoại thì update uid
         if (
