@@ -235,7 +235,7 @@ function selectDefaultConversation() {
         $router.replace({
             query: {
                 page_id: target_conversation?.fb_page_id,
-                client_id: target_conversation?.fb_client_id,
+                user_id: target_conversation?.fb_client_id,
             }
         })
     }

@@ -38,12 +38,15 @@
         <div class="flex items-center justify-end">
             <template
                 v-if="commonStore.is_active_extension && conversationStore.select_conversation?.platform_type === 'FB_MESS'">
-                <button @click="openFacebookProfile" class="border border-slate-300 rounded-full p-2 mr-2">
+                <button @click="openFbProfile" class="border border-slate-300 rounded-full p-2 mr-2">
                     <img width="16" height="16" src="@/assets/icons/facebook.svg">
                 </button>
-                <button @click="openInboxPage" class="border border-slate-300 rounded-full p-2 mr-2">
+                <button @click="openPageInbox" class="border border-slate-300 rounded-full p-2 mr-2">
                     <img width="16" height="16" src="@/assets/icons/filter_interact.svg">
                 </button>
+                <div class="conversation-info-fb-uid hidden">
+                    {{ conversationStore.select_conversation?.client_bio?.fb_uid }}
+                </div>
             </template>
             <button @click="unreadConversation" class="border border-slate-300 rounded-full p-2 mr-2">
                 <img v-if="!is_loading_unread_conversation" width="16" height="16"
@@ -72,14 +75,13 @@ import { reset_read_conversation, toggle_spam_conversation } from '@/service/api
 import { ref, computed } from 'vue'
 import { flow } from '@/service/helper/async'
 import { keyBy, map } from 'lodash'
-import { getFbUserInfo } from '@/service/helper/ext'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import ClientInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo/ClientInfo.vue'
 
 import type { CbError } from '@/service/interface/function'
-import { isCurrentStaffIsPageAdmin, openNewTab } from '@/service/function'
+import { isCurrentStaffIsPageAdmin } from '@/service/function'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
@@ -102,24 +104,15 @@ const is_admin = computed(() => isCurrentStaffIsPageAdmin(
     conversationStore.select_conversation?.fb_page_id as string
 ))
 
-/**mở trang cá nhân của khách hàng */
-function openFacebookProfile($event: MouseEvent) {
-    ($event.target as HTMLElement).style.cursor = 'wait'
-
-    // // nếu tồn tại thì mở tab mới
-    // if (conversationStore.select_conversation?.client_bio?.fb_uid) {
-    //     ($event.target as HTMLElement).style.cursor = 'pointer'
-    //     openNewTab(`https://fb.com/${conversationStore.select_conversation?.client_bio?.fb_uid}`)
-    //     return
-    // }
-
-    // getFbUserInfo()
-
-    // setTimeout(() => openFacebookProfile($event), 1000)
+/**mở fb của khách */
+function openFbProfile() {
+    // click vào btn tạo ở file index.html
+    (document.getElementsByClassName('open-fb-profile')?.[0] as HTMLButtonElement)?.click()
 }
-/**mở native chat page của fb */
-function openInboxPage($event: MouseEvent) {
-
+/**mở inbox chat page */
+function openPageInbox() {
+    // click vào btn tạo ở file index.html
+    (document.getElementsByClassName('open-fb-inbox-page')?.[0] as HTMLButtonElement)?.click()
 }
 /**mở popup thông tin chi tiết của khách hàng */
 function openClientInfo() {

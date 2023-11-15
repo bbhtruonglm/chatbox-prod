@@ -158,6 +158,8 @@ export interface QueryUpdateÌnoConversation extends QueryOneConversation {
     client_phone?: string
     /**email */
     client_email?: string
+    /**id của user fb */
+    fb_uid?: string
 }
 
 export interface QueryPostMessage {

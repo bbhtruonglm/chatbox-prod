@@ -21,6 +21,8 @@ export interface PageInfo {
     is_internal?: boolean
     /**page này bị hệ thống chặn */
     is_block?: boolean
+    /**token của page */
+    fb_page_token?: string
 }
 
 export interface PageData {

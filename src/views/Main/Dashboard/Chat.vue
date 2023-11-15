@@ -13,10 +13,13 @@ import { useRouter } from 'vue-router'
 import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
-import { difference, intersection, keys, size } from 'lodash'
+import { difference, intersection, keys, map, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
+import { update_info_conversation } from '@/service/api/chatbox/n4-service'
+import { getPageInfo, getPageWidget, isNotPc } from '@/service/function'
+import { getItem } from '@/service/helper/localStorage'
 
 import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
 import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
@@ -27,7 +30,6 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
-import { getPageInfo, getPageWidget, isNotPc } from '@/service/function'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -78,7 +80,34 @@ function initExtensionLogic() {
         console.log('ext_listen::', event, e, r)
 
         // đánh dấu đã phát hiện ext
-        if (event === 'EXTENSION_INSTALLED') commonStore.is_active_extension = true
+        if (event === 'EXTENSION_INSTALLED')
+            commonStore.is_active_extension = true
+
+        // nếu nhận được thông tin cá nhân của hội thoại thì update uid
+        if (
+            event === 'GET_FB_USER_INFO' &&
+            r?.page_id && r?.client_id && r?.id
+        ) {
+            /**obj dữ liệu uid */
+            const client_bio = { fb_uid: r?.id }
+
+            // ghi dữ liệu vào mảng
+            if (conversationStore.conversation_list[r?.client_id])
+                conversationStore.conversation_list[r?.client_id].client_bio = client_bio
+
+            // ghi dữ liệu vào user hiện tại đang chọn
+            if (
+                conversationStore.select_conversation &&
+                conversationStore.select_conversation?.fb_client_id === r?.client_id
+            ) conversationStore.select_conversation.client_bio = client_bio
+
+            // cập nhật data lên server
+            update_info_conversation({
+                page_id: r?.page_id,
+                client_id: r?.client_id,
+                fb_uid: r?.id
+            }, (e, r) => { })
+        }
     })
 }
 /**khởi tạo token cho widget */
@@ -127,6 +156,7 @@ function getPageInfoToChat() {
 
             cb()
         },
+        // * đọc dữ liệu trang từ server
         (cb: CbError) => get_page_info_to_chat(
             keys(pageStore.selected_page_id_list),
             (e, r) => {
@@ -134,6 +164,7 @@ function getPageInfoToChat() {
                 if (!r) return cb($t('v1.view.main.dashboard.chat.error.get_page_info'))
 
                 pageStore.selected_page_list_info = r
+                intergrateChatV1()
                 cb()
             }
         ),
@@ -153,6 +184,36 @@ function getPageInfoToChat() {
             cb()
         }
     ], undefined, true)
+}
+/**lưu trữ một số dữ liệu giống bản v1, để không cần phải sửa nhiều code */
+function intergrateChatV1() {
+    /**dữ liệu fake v1 */
+    let temp: any = {}
+
+    // format dữ liệu giống v1
+    map(pageStore.selected_page_list_info, (data, page_id) => {
+        temp[page_id] = {
+            name: data.page?.name,
+            page_id: data.current_staff?.fb_page_id,
+            fb_as_id: data.current_staff?.fb_staff_id,
+            isAdmin: !(
+                !data?.group_admin_id ||
+                !data?.current_staff?.group_staff ||
+                !data?.current_staff?.group_staff?.includes(data?.group_admin_id)
+            ),
+            fb_page_token: data.page?.fb_page_token,
+            type: data.page?.type
+        }
+    })
+
+    // sử dụng thư viện của bản v1, nên không ép kiểu nữa
+    // @ts-ignore
+    ldb.set('storage-token__Pages', JSON.stringify(temp))
+
+    // dữ liệu local của v1
+    localStorage.setItem('vuex', JSON.stringify({
+        login: { token: getItem('access_token') }
+    }))
 }
 /**lắng nghe sự kiện từ socket */
 function onSocketFromChatboxServer() {

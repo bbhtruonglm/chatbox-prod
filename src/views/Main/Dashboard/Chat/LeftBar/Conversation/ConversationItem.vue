@@ -73,9 +73,10 @@ import {
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
-import { 
-    isMobile, selectConversation, getLabelInfo, getLabelValid 
+import {
+    isMobile, selectConversation, getLabelInfo, getLabelValid
 } from '@/service/function'
+import { getFbUserInfo } from '@/service/helper/ext'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -112,6 +113,12 @@ function clickConversation() {
             user_id: $props.source?.fb_client_id,
         }
     })
+
+    // tìm uid fb nếu chưa có và đang bật ext
+    if (
+        commonStore.is_active_extension && 
+        !$props.source?.client_bio?.fb_uid
+    ) getFbUserInfo()
 }
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {
