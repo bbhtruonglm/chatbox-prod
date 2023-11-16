@@ -336,6 +336,9 @@ const source: Language = {
                             name: 'Tên của tập tin/thư mục',
                             create_folder: 'Tạo mới thư mục'
                         },
+                    },
+                    user: {
+                        logout: 'Đăng xuất'
                     }
                 }
             }
