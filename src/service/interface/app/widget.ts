@@ -3,7 +3,7 @@ export type AppInstalledStatus = 'SUCCESS'
 /**vị trí của app được cài */
 export type AppInstalledPosition = 'RIGHT' | 'BOTTOM'
 /**kích thước của app được cài */
-export type AppInstalledSize = 'MEDIUM'
+export type AppInstalledSize = 'MINIMUM' | 'MEDIUM' | 'FULL'
 
 /**các quyền có thể tiếp cận được */
 export interface AccessRoleInfo {

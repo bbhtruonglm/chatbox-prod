@@ -9,10 +9,10 @@ const ENV: Env = {
         prefix: 'chatbox_'
     },
     host: {
-        n3_socket: 'wss://socket.sellingpage.net',
-        n4_service: 'https://dev.sellingpage.net/v1/n4_service',
-        n5_app: 'https://dev.sellingpage.net/v1/n5_app',
-        n6_static: 'https://dev.sellingpage.net/v1/n6_static',
+        n3_socket: 'wss://chatbox-socket.botbanhang.vn',
+        n4_service: 'https://chatbox-service-v3.botbanhang.vn',
+        n5_app: 'https://chatbox-app-v2.botbanhang.vn',
+        n6_static: 'https://chatbox-static-v3.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://botbanhang.vn/setting/#/page',
         analytic_view: 'https://botbanhang.vn/analytic-v2/#/'
@@ -45,7 +45,7 @@ const ENV: Env = {
         }
     },
     platform: ['FB_MESS', 'WEBSITE'],
-    img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
+    img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar'
 }
 
 export default ENV

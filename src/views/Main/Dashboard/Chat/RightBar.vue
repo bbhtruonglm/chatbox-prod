@@ -24,15 +24,17 @@
                 }">
                     {{ $t('v1.common.all') }}
                 </button>
-                <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" v-for="widget in widget_list"
-                    @click="filterWidget(widget)" :class="{
-                        'bg-orange-500': widget_selected === widget._id,
-                        'text-white': widget_selected === widget._id,
-                        'bg-slate-100': widget_selected !== widget._id,
-                        'text-slate-600': widget_selected !== widget._id
-                    }">
-                    {{ widget.snap_app.name }}
-                </button>
+                <template v-for="widget in widget_list">
+                    <button v-if="widget.position === 'RIGHT'" class="text-xs py-1 px-2 rounded-full mr-1 mb-1"
+                        @click="filterWidget(widget)" :class="{
+                            'bg-orange-500': widget_selected === widget._id,
+                            'text-white': widget_selected === widget._id,
+                            'bg-slate-100': widget_selected !== widget._id,
+                            'text-slate-600': widget_selected !== widget._id
+                        }">
+                        {{ widget.snap_app.name }}
+                    </button>
+                </template>
             </div>
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!isMobile() && !widget.is_hidden">
@@ -45,7 +47,9 @@
                         <img v-else class="absolute top-5 right-2" src="@/assets/icons/arrow-up.svg" width="12"
                             height="12" />
                     </div>
-                    <div v-if="widget.is_show && widget.position === 'RIGHT'" class="w-full h-[300px]">
+                    <div v-if="widget.is_show && widget.position === 'RIGHT'"
+                        :class="widget.app_installed_size === 'FULL' ? 'h-[calc(100vh_-_200px)]' : 'h-[300px]'"
+                        class="w-full border-b">
                         <iframe class="w-full h-full" :src="widget.url" frameborder="0" />
                     </div>
                 </div>
@@ -55,7 +59,6 @@
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch, onMounted } from 'vue'
-import { random_word } from '@/service/helper/random'
 import { useConversationStore } from '@/stores'
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router'
@@ -103,15 +106,19 @@ function getListWidget() {
 
     // render lại danh sách
     nextTick(() => {
-        widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
-            // hiển thị toàn bộ widget
-            widget.is_show = true
+        widget_list.value = getPageWidget(PAGE_ID)
+            ?.filter(widget => widget.active_widget)
+            ?.map(widget => {
+                // nếu dạng nhỏ nhất thì auto ẩn luôn
+                if (widget.app_installed_size === 'MINIMUM') widget.is_show = false
+                // hiển thị toàn bộ widget
+                else widget.is_show = true
 
-            // thêm token cho url
-            widget.url = getIframeUrl(widget)
+                // thêm token cho url
+                widget.url = getIframeUrl(widget)
 
-            return widget
-        }) || []
+                return widget
+            }) || []
 
         snap_widget_list.value = widget_list.value
         filterWidget()

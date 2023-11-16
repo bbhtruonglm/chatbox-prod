@@ -8,7 +8,7 @@
             </div>
         </template>
         <template v-slot:body>
-            <div class="h-[300px]">
+            <div :class="conversationStore.select_widget?.app_installed_size === 'FULL' ? 'h-[calc(100vh_-_200px)]' : 'h-[300px]'">
                 <iframe class="w-full h-full" :src="conversationStore.select_widget?.url" frameborder="0" />
             </div>
         </template>

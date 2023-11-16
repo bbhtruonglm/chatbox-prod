@@ -86,17 +86,12 @@
         <div @click="openAlbum" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex" v-if="isMobile()">
-            <div v-for="widget of widget_list" @click="toggleWidget(widget)"
-                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
-                <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
-            </div>
-        </div>
-        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex" v-else>
-            <template v-for="widget of widget_list" @click="toggleWidget(widget)"
-                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
-                <img v-if="widget.position === 'BOTTOM'" :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20"
-                    height="20" />
+        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex">
+            <template v-for="widget of widget_list">
+                <div v-if="isMobile() || widget.position === 'BOTTOM'" @click="toggleWidget(widget)"
+                    class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
+                    <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
+                </div>
             </template>
         </div>
     </div>
@@ -280,6 +275,7 @@ function selectAttachmentFromDevice() {
 }
 /**hiển thị widget bên dưới */
 function toggleWidget(widget: AppInstalledInfo) {
+    console.log('alo')
     conversationStore.select_widget = widget
 
     $emit('toggle_bottom_widget')
@@ -300,12 +296,14 @@ function getListWidget() {
 
     // render lại danh sách
     nextTick(() => {
-        widget_list.value = getPageWidget(PAGE_ID)?.map(widget => {
-            // thêm token cho url
-            widget.url = getIframeUrl(widget)
+        widget_list.value = getPageWidget(PAGE_ID)
+            ?.filter(widget => widget.active_widget)
+            ?.map(widget => {
+                // thêm token cho url
+                widget.url = getIframeUrl(widget)
 
-            return widget
-        }) || []
+                return widget
+            }) || []
     })
 }
 /**thay đổi gắn nhãn của khách hàng này */
@@ -447,7 +445,7 @@ function sendFile(page_id: string, client_id: string) {
 
                 // file tự upload
                 getFileUrl(file?.source as File, (e, r) => {
-                    
+
 
                     if (r) file.url = r
 

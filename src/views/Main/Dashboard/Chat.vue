@@ -127,9 +127,11 @@ function getTokenOfWidget() {
     } = {}
 
     // khởi tạo dữ liệu
-    getPageWidget(PAGE_ID)?.map(widget => {
-        list_app_installed_id[widget._id] = widget.app_id
-    })
+    getPageWidget(PAGE_ID)
+        ?.filter(widget => widget.active_widget)
+        ?.map(widget => {
+            list_app_installed_id[widget._id] = widget.app_id
+        })
 
     create_token_app_installed({
         page_id: PAGE_ID,
