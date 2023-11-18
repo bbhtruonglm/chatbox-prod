@@ -1,11 +1,6 @@
 <template>
-    <ModalBottom 
-        @close_modal="removeEvent" 
-        @open_modal="inputFocus"
-        ref="quick_anser_modal_ref" 
-        :left="commonStore.center_modal_left" 
-        :width="commonStore.center_modal_width"
-    >
+    <ModalBottom @close_modal="removeEvent" @open_modal="inputFocus" ref="quick_anser_modal_ref"
+        :left="commonStore.center_modal_left" :width="commonStore.center_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.quick_answer.title') }}
         </template>
@@ -17,38 +12,32 @@
 
             <!-- Answers -->
             <div v-if="!loading">
-                <div 
-                    v-if="!isMobile()"
-                    class="flex justify-between bg-green-100 text-green-500 px-1 py-1 mb-2 text-sm"
-                >
+                <div v-if="!isMobile()" class="flex justify-between bg-green-100 text-green-500 px-1 py-1 mb-2 text-sm">
                     <p>Enter hoặc click để chọn</p>
                     <p>Dùng ↑ hoặc ↓ để chọn</p>
                 </div>
                 <div class="max-h-[500px] overflow-y-auto border rounded-md mb-2">
-                    <div 
-                        v-for="(answer, index) in quick_answers" :id="answer.id"
-                        class="py-2 px-1.5 cursor-pointer hover:bg-slate-100"
-                        @click="selectQuickAnswer(answer.content)" :class="{
+                    <div v-for="(answer, index) in quick_answers" :id="answer.id"
+                        class="py-2 px-1.5 cursor-pointer hover:bg-slate-100" @click="selectQuickAnswer(answer)" :class="{
                             'text-orange-500': answer.id === answer_selected,
                             'bg-orange-100': answer.id === answer_selected,
                             'border-b': index !== (quick_answers.length - 1)
-                        }"
-                    >
+                        }">
                         <div class=" bg-gray-500 text-white w-fit px-1 rounded font-bold">
                             <p class="max-w-xs break-words text-xs">{{ answer.title }}</p>
                         </div>
                         <p class="whitespace-pre-line text-xs">{{ answer.content }}</p>
+                        <div class="flex flex-wrap">
+                            <img v-for="url of answer.list_images" :src="url" class="w-[30px] h-[30px] mb-1 mr-1" />
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="w-full relative">
-                <input
-                    ref="ref_search"
-                    class="focus:outline-none w-full h-9 border rounded-md pl-3 pr-7" type="text" 
+                <input ref="ref_search" class="focus:outline-none w-full h-9 border rounded-md pl-3 pr-7" type="text"
                     :placeholder="$t('v1.view.main.dashboard.chat.quick_answer.search')" v-model="search_content"
-                    v-on:keyup="seachQuickAnswer"
-                />
+                    v-on:keyup="seachQuickAnswer" />
                 <img v-if="!loading" class="absolute top-[9px] right-[10px] cursor-pointer"
                     src="@/assets/icons/search.svg" />
             </div>
@@ -59,7 +48,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { useCommonStore, useConversationStore, usePageStore } from '@/stores'
+import { useCommonStore, useConversationStore, usePageStore, useMessageStore } from '@/stores'
 
 import Loading from '@/components/Loading.vue'
 import ModalBottom from '@/components/ModalBottom.vue'
@@ -70,12 +59,14 @@ import type { ComponentRef } from '@/service/interface/vue'
 import { get_quick_answer } from '@/service/api/chatbox/widget'
 import { teleportCenterModelOnPcScreen } from '@/service/function'
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
+import { size } from 'lodash'
 
 
 /** Sử dụng store */
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
+const messageStore = useMessageStore()
 
 /** ref của modal chính */
 const quick_anser_modal_ref = ref<ComponentRef>()
@@ -109,7 +100,7 @@ function toggleModal(type?: string) {
     search_content.value = ''
     getQuickAnswer()
 
-    if(isMobile()) return
+    if (isMobile()) return
     document.addEventListener('keyup', handleKeyUp)
 }
 /** Lấy dữ liệu trả lời nhanh theo page */
@@ -127,14 +118,32 @@ function getQuickAnswer() {
     })
 }
 /** Lựa chọn trả lời nhanh */
-function selectQuickAnswer(content: string) {
-    if (!content) return
+function selectQuickAnswer(answer: QuickAnswerInfo) {
+    if (!answer.content) return
+
+    let { content, list_images } = answer
+
     const input_chat = document.getElementById('chat-text-input-message')
     if (!input_chat) return
+
     content = replaceTemplateMessage(content)
+
     input_chat.innerText = content
+
     quick_anser_modal_ref.value?.toggleModal()
+
     document.removeEventListener('keyup', handleKeyUp)
+
+    if (list_images && size(list_images))
+        messageStore.upload_file_list = list_images?.map(url => {
+            return {
+                type: 'image',
+                is_done: false,
+                is_loading: false,
+                preview: url,
+                url,
+            }
+        })
 }
 /** Xử lý event */
 function handleKeyUp(event: KeyboardEvent) {
@@ -172,12 +181,12 @@ function handleKeyUp(event: KeyboardEvent) {
 
     // * Enter
     if (event.keyCode == 13) {
-        selectQuickAnswer(quick_answers.value[answer_index.value].content)
+        selectQuickAnswer(quick_answers.value[answer_index.value])
     }
 }
 /** Gán câu trả lời nhanh mặc định */
 function setDefaultQuickAnswer() {
-    if(isMobile()) return
+    if (isMobile()) return
     if (quick_answers.value.length === 0) return
     answer_selected.value = quick_answers.value[0].id
     answer_index.value = 0
@@ -224,9 +233,9 @@ function removeEvent() {
 /** Tìm kiếm quick answer */
 function seachQuickAnswer(event: KeyboardEvent) {
 
-    if(event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13) return
+    if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13) return
 
-    if(!search_content.value) {
+    if (!search_content.value) {
         quick_answers.value = snap_quick_answers.value
         setDefaultQuickAnswer()
         return
@@ -235,7 +244,7 @@ function seachQuickAnswer(event: KeyboardEvent) {
     quick_answers.value = snap_quick_answers.value.filter(item => {
         let search = nonAccentVn(search_content.value)
         let content = nonAccentVn(item.content)
-        let title =  nonAccentVn(item.title)
+        let title = nonAccentVn(item.title)
 
         return content.includes(search) || title.includes(search)
     })

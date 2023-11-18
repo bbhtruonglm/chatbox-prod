@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import type { 
-    AttachmentCacheList, AttachmentInfo, TempSendMessage 
+import type {
+    AttachmentCacheList, AttachmentInfo, TempSendMessage
 } from '@/service/interface/app/message'
+import type { UploadFile } from '@/service/interface/app/album'
 
 export const useMessageStore = defineStore('message_store', () => {
     /**danh sách tin nhắn tạm vừa được gửi */
@@ -18,10 +19,14 @@ export const useMessageStore = defineStore('message_store', () => {
     /** danh sách id đã chọn */
     const select_staff_read_id = ref<string[]>([])
 
+    /**các file được chọn để gửi đi */
+    const upload_file_list = ref<UploadFile[]>([])
+
     return {
         send_message_list,
         attachment_list,
         select_attachment,
         select_staff_read_id,
+        upload_file_list,
     }
 })

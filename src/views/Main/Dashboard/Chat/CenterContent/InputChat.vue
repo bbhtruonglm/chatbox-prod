@@ -40,9 +40,9 @@
             </div>
         </template>
 
-        <div v-if="size(upload_file_list)"
+        <div v-if="size(messageStore.upload_file_list)"
             class="flex flex-wrap justify-center overflow-hidden overflow-y-auto h-[80px] p-[5px]">
-            <div v-for="(file, index) of upload_file_list"
+            <div v-for="(file, index) of messageStore.upload_file_list"
                 class="mr-[5px] mb-[5px] overflow-hidden rounded-lg cursor-pointer relative">
                 <img v-if="!file.is_done && !file.is_loading" @click="deleteUploadFile(index)"
                     class="absolute top-[1px] left-[1px]" src="@/assets/icons/close-circle.svg" />
@@ -115,6 +115,7 @@ import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
 import { getFbFileType, srcImageToFile } from '@/service/helper/file'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
+import { onUnmounted } from 'vue'
 
 import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
@@ -123,7 +124,7 @@ import Album from '@/views/Main/Dashboard/Chat/CenterContent/Album.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
-import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { AppInstalledInfo, WidgetEventData } from '@/service/interface/app/widget'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { FileInfo, UploadFile } from '@/service/interface/app/album'
 
@@ -156,17 +157,44 @@ const facebook_error = ref<{
     message?: string
 }>()
 /**các file được chọn để gửi đi */
-const upload_file_list = ref<UploadFile[]>([])
+// const upload_file_list = ref<UploadFile[]>([])
 /**gắn cờ file đang gửi */
 const is_send_file = ref(false)
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
-onMounted(() => onChangeHeightInput())
+onMounted(() => {
+    window.addEventListener('message', onWidgetEvent)
 
+    onChangeHeightInput()
+})
+onUnmounted(() => window.removeEventListener('message', onWidgetEvent))
+
+/**xử lý dữ liệu widget truyền vào */
+function onWidgetEvent($event: MessageEvent<WidgetEventData>) {
+    let { _type, content, list_images } = $event.data
+
+    if (_type !== 'WIDGET') return true
+
+    // thêm văn bản vào input chat, lọc bỏ cũ pháp cũ
+    if (content)
+        input_chat_ref.value.innerText = content?.split('\n\n##attachment##')?.[0]
+
+    // nạp hình ảnh vào danh sách gửi
+    if (list_images && size(list_images))
+    messageStore.upload_file_list = list_images?.map(url => {
+            return {
+                type: 'image',
+                is_done: false,
+                is_loading: false,
+                preview: url,
+                url,
+            }
+        })
+}
 /**xử lý các file được chọn từ album */
 function handlePickFile(file_list: FileInfo[]) {
-    upload_file_list.value?.push(...file_list?.map(file => {
+    messageStore.upload_file_list?.push(...file_list?.map(file => {
         /**kiểu dữ liệu của fb */
         const TYPE = getFbFileType(file.mimetype)
 
@@ -204,7 +232,7 @@ function onPasteImage() {
             srcImageToFile(SRC, (e, r) => {
                 if (e || !r) return
 
-                upload_file_list.value.push({
+                messageStore.upload_file_list.push({
                     source: r,
                     type: 'image',
                     preview: SRC
@@ -215,7 +243,7 @@ function onPasteImage() {
 }
 /**xoá file định gửi */
 function deleteUploadFile(index: number) {
-    pullAt(upload_file_list.value, index)
+    pullAt(messageStore.upload_file_list, index)
 
     keepMobileKeyboard()
 }
@@ -243,7 +271,7 @@ function selectAttachmentFromDevice() {
         keepMobileKeyboard()
 
         // làm sạch danh sách file
-        upload_file_list.value = []
+        messageStore.upload_file_list = []
 
         // ghi dữ liệu vào mảng
         map(INPUT.files, file => {
@@ -251,11 +279,11 @@ function selectAttachmentFromDevice() {
             const TYPE = getFbFileType(file.type)
 
             if (TYPE !== 'image')
-                return upload_file_list.value.push({ source: file, type: TYPE })
+                return messageStore.upload_file_list.push({ source: file, type: TYPE })
 
             // render hình ảnh để hiển thị preview
             const READER = new FileReader()
-            READER.onload = $event => upload_file_list.value.push({
+            READER.onload = $event => messageStore.upload_file_list.push({
                 source: file,
                 type: TYPE,
                 preview: $event.target?.result
@@ -417,7 +445,7 @@ function sendMessage() {
     if (TEXT) sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
 
     // gửi file
-    if (size(upload_file_list.value)) sendFile(PAGE_ID, CLIENT_ID)
+    if (size(messageStore.upload_file_list)) sendFile(PAGE_ID, CLIENT_ID)
 }
 /**gửi tập tin */
 function sendFile(page_id: string, client_id: string) {
@@ -430,7 +458,7 @@ function sendFile(page_id: string, client_id: string) {
         IMAGE_LIST,
         /**danh sách file còn lại */
         FILE_LIST
-    ] = partition(upload_file_list.value, file => file.type === 'image')
+    ] = partition(messageStore.upload_file_list, file => file.type === 'image')
 
     waterfall([
         // * loop qua các file ảnh để upload lên server nếu cần
@@ -550,7 +578,7 @@ function sendFile(page_id: string, client_id: string) {
         // reset upload
         setTimeout(() => {
             // làm mới list file
-            upload_file_list.value = []
+            messageStore.upload_file_list = []
 
             // đã gửi xong
             is_send_file.value = false

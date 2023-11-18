@@ -9,7 +9,8 @@
                 </div>
             </div>
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
-                <div v-if="message.message_type === 'client' && !message.ad_id" class="w-fit max-w-[370px] group">
+                <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
+                    class="w-fit max-w-[370px] group">
                     <template v-if="message.message_text || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                         <AttachmentMessage v-if="message.message_attachments"
@@ -17,7 +18,7 @@
                             :page_id="message.fb_page_id" type="CLIENT" />
                     </template>
                     <UnsupportMessage v-else />
-                    <MessageDate class="text-right" :time="message.time" />
+                    <MessageDate class="text-right" :time="message.time || message.createdAt" />
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] group">
@@ -32,7 +33,7 @@
                             </template>
                         </template>
                         <UnsupportMessage v-else />
-                        <MessageDate class="right-5" :time="message.time"
+                        <MessageDate v-if="message.time" class="right-5" :time="message.time"
                             :info="parserStaffName(message.message_metadata)" />
                     </div>
                 </div>
@@ -40,7 +41,7 @@
                     <div class="w-fit max-w-[370px] group">
                         <NoteMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
-                        <MessageDate class="right-5" :time="message.time"
+                        <MessageDate v-if="message.createdAt" class="right-5" :time="message.createdAt"
                             :info="parserStaffName(message.message_metadata)" />
                     </div>
                 </div>
@@ -67,7 +68,7 @@
                     <div class="w-fit max-w-[370px] group">
                         <PageTempTextMessage :text="message.text" />
                         <PageMessageError v-if="message.error" />
-                        <MessageDate class="right-5" :time="message.time" />
+                        <MessageDate v-if="message.time" class="right-5" :time="message.time" />
                     </div>
                 </div>
             </div>

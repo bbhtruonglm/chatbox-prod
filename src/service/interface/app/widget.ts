@@ -106,3 +106,13 @@ export interface InputCreateTokenWidget {
         current_staff_name?: string
     }
 }
+
+/**dữ liệu được widget truyền sang */
+export interface WidgetEventData {
+    /**nội dung văn bản thay vào input */
+    content?: string
+    /**danh sách hình ảnh */
+    list_images?: string[]
+    /**được gửi từ widget */
+    _type?: 'WIDGET'
+}

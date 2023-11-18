@@ -11,7 +11,7 @@ export interface MessageInfo {
     /**id khách hàng */
     fb_client_id: string
     /**tin nhắn được gửi từ đâu */
-    message_type: 'page' | 'client' | 'system' | 'note'
+    message_type: 'page' | 'client' | 'system' | 'note' | 'activity'
     /**thời gian tin được gửi */
     time: string
     /**nội dung tin nhắn văn bản */
@@ -26,7 +26,10 @@ export interface MessageInfo {
     ad_id?:string
     /** id bài post fb */
     fb_post_id?: string
+    /**dữ liệu khi comment */
     comment?: FacebookCommentPost
+    /**thời gian tạo bản ghi của server */
+    createdAt: string
 }
 
 /**đầu vào của api */

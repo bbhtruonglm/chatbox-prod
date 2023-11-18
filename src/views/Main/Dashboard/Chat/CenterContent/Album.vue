@@ -55,15 +55,13 @@
                             {{ folder.title }}
                         </div>
                     </div>
-                    <div v-for="file of file_list" @click="file.is_select = !file.is_select"
+                    <div v-for="file of file_list" @click="selectFile(file)"
                         :class="file.is_select ? 'border-orange-500' : 'border-white'"
-                        class="relative w-[110px] h-[100px] m-1 cursor-pointer group border-2  hover:border-orange-500">
-                        <div @click.stop="openSettingFile(file)" class="absolute top-1 right-1 hidden group-hover:block">
+                        class="relative w-[110px] h-[100px] m-1 cursor-pointer border-2">
+                        <div @click.stop="openSettingFile(file)" class="absolute top-1 right-1">
                             <img src="@/assets/icons/more.svg" />
                         </div>
                         <div class="w-full h-[80px]">
-                            <!-- <img src="@/assets/icons/folder.svg" class="w-full h-full" /> -->
-
                             <img v-if="file.mimetype?.includes('image')" :src="file.url" class="w-full h-full" />
                             <img v-else-if="file.mimetype?.includes('video')" src="@/assets/icons/play.svg"
                                 class="w-full h-full" />
@@ -180,6 +178,12 @@ const is_create_folder = ref(false)
 /**tên của thư mục muốn tạo */
 const create_folder_title = ref<string>()
 
+/**click chọn file để gửi */
+function selectFile(file: FileInfo) {
+    console.log('chọn file', file)
+
+    file.is_select = !file.is_select
+}
 /**chọn thư mục */
 function selectFolder(folder: FolderInfo) {
     selected_folder_id.value = folder._id
