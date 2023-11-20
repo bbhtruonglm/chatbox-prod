@@ -7,8 +7,6 @@
 - build code with staging env: ```npm run build-staging```
 - build code with production env: ```npm run build``` or ```npm run build-prod```
 
-# feature
-
 # Lib
 - https://swiperjs.com/demos/430-slideable-menu/core
 
