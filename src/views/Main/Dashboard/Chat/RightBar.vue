@@ -14,7 +14,7 @@
                 <img @click="openWidgetsSetting()" class="cursor-pointer" src="@/assets/icons/edit.svg" />
             </div>
         </div>
-        <div class="h-[calc(100%_-_50px)] overflow-hidden overflow-y-auto pb-10">
+        <div class="h-[calc(100%_-_50px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
             <div class="px-2 pb-1 border-b">
                 <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" @click="filterWidget()" :class="{
                     'bg-orange-500': widget_selected === 'all',

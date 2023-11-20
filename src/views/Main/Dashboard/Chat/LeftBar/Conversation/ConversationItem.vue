@@ -1,6 +1,7 @@
 <template>
     <div @click="clickConversation" :class="{
         'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
+        'bg-slate-100': source?.unread_message_amount
     }" class="border-l-4 border-l-white border-b py-1 px-2 flex h-full">
         <div class="w-fit h-fit relative">
             <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
@@ -35,7 +36,7 @@
                 <div v-if="source?.last_message_type === 'page'" class="mr-1">
                     <img src="@/assets/icons/reply.svg">
                 </div>
-                <div class="label-list w-[calc(100vw_-_128px)] overflow-hidden overflow-x-auto">
+                <div class="label-list w-[calc(100vw_-_128px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
                     <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
                         <div v-if="getLabelInfo(source?.fb_page_id, label_id)"
                             :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"

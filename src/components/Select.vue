@@ -22,7 +22,7 @@
             <img width="15" height="15" src="@/assets/icons/search.svg" class="absolute top-[6px] left-1">
         </div>
         <div ref="select_option_ref" v-show="is_show_option" @click="selectOption"
-            class="p-2 rounded-lg border border-slate-300 bg-white mt-1 h-auto max-h-[200px] overflow-hidden overflow-y-auto absolute z-40 max-w-[100vw] w-[-webkit-fill-available]">
+            class="p-2 rounded-lg border border-slate-300 bg-white mt-1 h-auto max-h-[200px] overflow-hidden scrollbar-vertical overflow-y-auto absolute z-40 max-w-[100vw] w-[-webkit-fill-available]">
             <slot />
             <span class="text-gray-400">{{ placeholder }}</span>
         </div>

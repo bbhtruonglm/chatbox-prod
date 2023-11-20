@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-hidden overflow-x-auto px-4 mt-1 h-[34px]">
+    <div class="overflow-hidden scrollbar-horizontal overflow-x-auto px-4 mt-1 h-[34px]">
         <div class="flex w-max">
             <div @click="selectTab(key as string)"
                 class="font-semibold px-4 py-1 cursor-pointer border-b-2 border-white text-slate-400 hover:border-orange-500 hover:font-semibold hover:text-black"

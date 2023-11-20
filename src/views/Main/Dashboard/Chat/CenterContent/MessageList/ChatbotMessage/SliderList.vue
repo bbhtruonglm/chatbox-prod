@@ -8,7 +8,7 @@
             class="cursor-pointer rounded-full bg-slate-200 w-[30px] h-[30px] flex items-center justify-center absolute z-[1] top-[50%] translate-y-[-50%] right-[-15px]">
             <img src="@/assets/icons/arrow-right.svg" class="w-[13px] h-[13px]" />
         </div>
-        <div ref="slider_warper_ref" class="relative w-[216px] h-[280px] overflow-hidden overflow-x-auto scroll-smooth">
+        <div ref="slider_warper_ref" class="relative w-[216px] h-[280px] overflow-hidden scrollbar-horizontal overflow-x-auto scroll-smooth">
             <div class="absolute flex h-full">
                 <div v-for="item of data"
                     class="w-[216px] mr-[8px] bg-white rounded-b-xl rounded-t-xl overflow-hidden last:mr-0">

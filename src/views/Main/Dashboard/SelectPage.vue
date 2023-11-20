@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
-                class="max-h-[calc(100%_-_36px)] overflow-hidden overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+                class="max-h-[calc(100%_-_36px)] overflow-hidden scrollbar-vertical overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <PageItem @click="toggleSelectThisPage(page.page?.fb_page_id)" v-for="page of active_page_list"
                     :page_info="page.page">
                     <div @click.stop class="flex justify-end">

@@ -37,7 +37,7 @@
                         </button>
                     </div>
                     <div v-if="messageStore.select_attachment?.type === 'image'"
-                        class="h-[150px] md:h-[360px] overflow-hidden overflow-y-auto p-2 mt-2 text-slate-500 break-words whitespace-pre-line">
+                        class="h-[150px] md:h-[360px] overflow-hidden scrollbar-vertical overflow-y-auto p-2 mt-2 text-slate-500 break-words whitespace-pre-line">
                         {{ text }}
                     </div>
                 </div>

@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div
-                    class="grid grid-cols-1 gap-4 max-h-[calc(100vh_-_394px)] md:max-h-[calc(100vh_-_274px)] overflow-hidden overflow-y-auto">
+                    class="grid grid-cols-1 gap-4 max-h-[calc(100vh_-_394px)] md:max-h-[calc(100vh_-_274px)] overflow-hidden scrollbar-vertical overflow-y-auto">
                     <div v-for="page of sorted_inactive_page" class="flex items-center bg-slate-50 rounded-lg p-2">
                         <div>
                             <PageAvatar class="rounded-full" :page_id="page?.fb_page_id" :page_type="page?.type"

@@ -5,8 +5,8 @@
         </div>
     </div>
     <VirtualList v-if="size(conversationStore.conversation_list)"
-        class="h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
-        item-class="cursor-pointer hover:bg-slate-100 h-[69px]" :data-key="'data_key'"
+        class="scrollbar-vertical h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
+        item-class="cursor-pointer hover:bg-slate-100 h-[80px]" :data-key="'data_key'"
         :data-sources="map(conversationStore.conversation_list)" :data-component="ConversationItem"
         v-on:scroll="loadMoreConversation" />
     <div v-else>

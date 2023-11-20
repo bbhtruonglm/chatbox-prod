@@ -27,7 +27,7 @@
                 <Loading />
             </div>
             <div
-                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden overflow-y-auto pt-2 pb-7 px-2 ">
+                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden scrollbar-vertical overflow-y-auto pt-2 pb-7 px-2 ">
                 <div class="flex flex-wrap justify-center">
                     <div v-for="label_info of sortLabelList()" @click="toggleLabel(label_info._id)" :style="{
                         color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
@@ -41,7 +41,7 @@
         </template>
 
         <div v-if="size(messageStore.upload_file_list)"
-            class="flex flex-wrap justify-center overflow-hidden overflow-y-auto h-[80px] p-[5px]">
+            class="flex flex-wrap justify-center overflow-hidden scrollbar-vertical overflow-y-auto h-[80px] p-[5px]">
             <div v-for="(file, index) of messageStore.upload_file_list"
                 class="mr-[5px] mb-[5px] overflow-hidden rounded-lg cursor-pointer relative">
                 <img v-if="!file.is_done && !file.is_loading" @click="deleteUploadFile(index)"
@@ -70,7 +70,7 @@
             <div class="w-[calc(100%_-_95px)] h-full">
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                     @keyup="checkOpenQuickAnswer" @paste="onPasteImage"
-                    class="min-h-[24px] max-h-[150px] overflow-hidden overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
+                    class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                     contenteditable="true" />
             </div>
             <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
@@ -78,7 +78,7 @@
             </div>
         </div>
     </div>
-    <div class="w-full flex items-center h-[49px] border-t relative">
+    <div class="w-full flex items-center h-[49px] relative">
         <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative" @click="toggleEmoji">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
             <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
@@ -86,7 +86,7 @@
         <div @click="openAlbum" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden overflow-x-auto flex">
+        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex">
             <template v-for="widget of widget_list">
                 <div v-if="isMobile() || widget.position === 'BOTTOM'" @click="toggleWidget(widget)"
                     class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">

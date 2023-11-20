@@ -4,7 +4,7 @@
             <Loading class="mx-auto" />
         </div>
     </div>
-    <VirtualList class="overflow-hidden overflow-x-auto mt-2 px-2 h-[37px]" wrap-class="inline-flex"
+    <VirtualList class="scrollbar-horizontal overflow-hidden overflow-x-auto mt-2 px-2 h-[37px]" wrap-class="inline-flex"
         :data-key="'data_key'" :data-sources="staff_list_array" :data-component="UserOnlineItem" direction="horizontal" />
 </template>
 <script setup lang="ts">

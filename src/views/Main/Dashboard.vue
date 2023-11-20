@@ -12,7 +12,7 @@
                 </div>
             </div>
             <hr class="my-4" />
-            <div class="h-[calc(100%_-_185px)] md:h-[calc(100%_-_256px)] overflow-hidden overflow-y-auto">
+            <div class="h-[calc(100%_-_185px)] md:h-[calc(100%_-_256px)] overflow-hidden scrollbar-vertical overflow-y-auto">
                 <NavItem v-if="size(pageStore.selected_page_id_list)"
                     :is_active="$route.path.indexOf('/main/dashboard/chat') === 0" @click="goToChat" icon_class="w-[20px]"
                     :is_only_show_icon="toggle_nav" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />

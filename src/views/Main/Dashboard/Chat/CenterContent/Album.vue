@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div @scroll="loadMore"
-                    class="h-[calc(100vh_-_300px)] overflow-hidden overflow-y-auto flex justify-center flex-wrap mt-2 content-start">
+                    class="h-[calc(100vh_-_300px)] overflow-hidden scrollbar-vertical overflow-y-auto flex justify-center flex-wrap mt-2 content-start">
                     <div v-for="folder of folder_list" @click="selectFolder(folder)"
                         class="relative w-[110px] h-[100px] m-1 cursor-pointer group hover:border-orange-500">
                         <div @click.stop="openSettingFolder(folder)"

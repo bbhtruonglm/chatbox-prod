@@ -44,7 +44,7 @@
                 <Loading class="mx-auto" />
             </div>
             <div
-                class="max-h-[calc(100vh_-_339px)] overflow-hidden overflow-y-auto mt-1 grid grid-cols-1 gap-2 md:grid-cols-3 xl:grid-cols-4 md:pt-2 md:gap-3">
+                class="max-h-[calc(100vh_-_339px)] overflow-hidden scrollbar-vertical overflow-y-auto mt-1 grid grid-cols-1 gap-2 md:grid-cols-3 xl:grid-cols-4 md:pt-2 md:gap-3">
                 <template v-if="current_select_tab === 'PAGE'">
                     <PricingActiveItem @click="toggleItem(page_data, page_data.page?.pricing_id)"
                         v-for="page_data of filter_page_list" :page_data="page_data" :pricing_id="pricing?._id" />

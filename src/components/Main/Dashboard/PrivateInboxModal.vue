@@ -9,6 +9,7 @@
                     class="
                         h-[100px] 
                         overflow-hidden 
+                        scrollbar-vertical
                         overflow-y-auto 
                         relative pl-2 
                         w-full px-3 py-1 

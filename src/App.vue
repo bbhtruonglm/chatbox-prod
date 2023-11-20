@@ -7,7 +7,7 @@
     <Network />
     <AdBlocker />
     <Loading v-if="commonStore.is_loading_full_screen" type="FULL" />
-    <div class="h-full overflow-hidden overflow-y-auto">
+    <div class="h-full overflow-hidden scrollbar-vertical overflow-y-auto">
       <router-view />
     </div>
   </div>
