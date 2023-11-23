@@ -113,7 +113,7 @@ import {
 } from '@/service/function'
 import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
-import { getFbFileType, srcImageToFile } from '@/service/helper/file'
+import { getFbFileType, srcImageToFile, handleFileLocal } from '@/service/helper/file'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { onUnmounted } from 'vue'
 
@@ -156,10 +156,6 @@ const facebook_error = ref<{
     code?: number
     message?: string
 }>()
-/**các file được chọn để gửi đi */
-// const upload_file_list = ref<UploadFile[]>([])
-/**gắn cờ file đang gửi */
-const is_send_file = ref(false)
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
@@ -255,7 +251,7 @@ function keepMobileKeyboard() {
 /**chọn file từ thiết bị để gửi đi */
 function selectAttachmentFromDevice() {
     // đang gửi thì không cho chọn lại file để bị lỗi
-    if (is_send_file.value) return
+    if (messageStore.is_send_file) return
 
     /**input upload file */
     const INPUT = document.createElement('input')
@@ -274,22 +270,7 @@ function selectAttachmentFromDevice() {
         messageStore.upload_file_list = []
 
         // ghi dữ liệu vào mảng
-        map(INPUT.files, file => {
-            /**kiểu fb của file */
-            const TYPE = getFbFileType(file.type)
-
-            if (TYPE !== 'image')
-                return messageStore.upload_file_list.push({ source: file, type: TYPE })
-
-            // render hình ảnh để hiển thị preview
-            const READER = new FileReader()
-            READER.onload = $event => messageStore.upload_file_list.push({
-                source: file,
-                type: TYPE,
-                preview: $event.target?.result
-            })
-            READER.readAsDataURL(file)
-        })
+        map(INPUT.files, file => handleFileLocal(file))
 
         // xoá input sau khi xong việc
         if (INPUT && INPUT.parentNode) INPUT.parentNode.removeChild(INPUT)
@@ -426,7 +407,7 @@ function submitInput($event: KeyboardEvent) {
 /**gửi tin nhắn */
 function sendMessage() {
     // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
-    if (is_send_file.value) return
+    if (messageStore.is_send_file) return
 
     // lấy id trang và client để tránh trường hợp đang gửi dở thì chuyển khách khác
     const PAGE_ID = conversationStore.select_conversation?.fb_page_id as string
@@ -450,7 +431,7 @@ function sendMessage() {
 /**gửi tập tin */
 function sendFile(page_id: string, client_id: string) {
     // đánh dấu đang gửi file
-    is_send_file.value = true
+    messageStore.is_send_file = true
 
     // cắt file gửi thành 2 loại
     const [
@@ -581,7 +562,7 @@ function sendFile(page_id: string, client_id: string) {
             messageStore.upload_file_list = []
 
             // đã gửi xong
-            is_send_file.value = false
+            messageStore.is_send_file = false
         }, 500)
     })
 }

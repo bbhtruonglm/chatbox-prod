@@ -22,11 +22,15 @@ export const useMessageStore = defineStore('message_store', () => {
     /**các file được chọn để gửi đi */
     const upload_file_list = ref<UploadFile[]>([])
 
+    /**gắn cờ file đang gửi */
+    const is_send_file = ref(false)
+
     return {
         send_message_list,
         attachment_list,
         select_attachment,
         select_staff_read_id,
         upload_file_list,
+        is_send_file,
     }
 })

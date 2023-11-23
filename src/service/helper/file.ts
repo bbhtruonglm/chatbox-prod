@@ -1,3 +1,5 @@
+import { useMessageStore } from '@/stores'
+
 import type { FileTypeInfo } from '@/service/interface/app/message'
 import type { Cb } from '@/service/interface/function'
 
@@ -27,3 +29,23 @@ export const srcImageToFile = (src: string, proceed: Cb<File>) => fetch(src)
         new File([blob], 'image.jpg', { type: blob.type }))
     )
     .catch(proceed)
+
+/**xử lý dữ liệu trên máy tính */
+export const handleFileLocal = (file: File) => {
+    const messageStore = useMessageStore()
+
+    /**kiểu fb của file */
+    const TYPE = getFbFileType(file.type)
+
+    if (TYPE !== 'image')
+        return messageStore.upload_file_list.push({ source: file, type: TYPE })
+
+    // render hình ảnh để hiển thị preview
+    const READER = new FileReader()
+    READER.onload = $event => messageStore.upload_file_list.push({
+        source: file,
+        type: TYPE,
+        preview: $event.target?.result
+    })
+    READER.readAsDataURL(file)
+}

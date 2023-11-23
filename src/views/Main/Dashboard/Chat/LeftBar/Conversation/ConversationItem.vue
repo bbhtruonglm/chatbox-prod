@@ -26,7 +26,7 @@
                     {{ source?.client_name }}
                 </div>
             </div>
-            <div class="text-slate-400 text-xs truncate mt-1">
+            <div class="text-xs truncate mt-1">
                 <span v-if="source?.last_message_type === 'page'">
                     {{ $t('v1.view.main.dashboard.chat.you') }}
                 </span>

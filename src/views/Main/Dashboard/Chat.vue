@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full pt-[65px] md:pt-8 xl:pt-0 md:flex relative">
+    <div @dragover.prevent @drop="onDropFile" class="w-full h-full pt-[65px] md:pt-8 xl:pt-0 md:flex relative">
         <LeftBar />
         <CenterContent />
         <RightBar />
@@ -10,7 +10,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
-import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore } from '@/stores'
+import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore, useMessageStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, map, size } from 'lodash'
@@ -20,6 +20,7 @@ import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import { getPageInfo, getPageWidget, isNotPc } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
+import { handleFileLocal } from '@/service/helper/file'
 
 import LeftBar from '@/views/Main/Dashboard/Chat/LeftBar.vue'
 import CenterContent from '@/views/Main/Dashboard/Chat/CenterContent.vue'
@@ -36,6 +37,7 @@ const pageStore = usePageStore()
 const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
+const messageStore = useMessageStore()
 const { t: $t } = useI18n()
 
 /**kết nối socket đến server */
@@ -53,6 +55,17 @@ onMounted(() => {
 // tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => closeSocketConnect())
 
+/**xử lý sự kiện vứt file vào để gửi */
+function onDropFile($event: DragEvent) {
+    // chặn các hành động mặc định, vd như mở file ở tab mới
+    $event.stopPropagation()
+    $event.preventDefault()
+
+    // đang gửi thì không cho chọn lại file để bị lỗi
+    if (messageStore.is_send_file) return
+
+    map($event.dataTransfer?.files, file => handleFileLocal(file))
+}
 /**gắn cờ nếu ext được kích hoạt + xử lý các logic */
 function initExtensionLogic() {
     // chỉ chạy ở trên máy tính web
@@ -138,7 +151,7 @@ function getTokenOfWidget() {
         list_app_installed_id,
         payload: {
             fb_client_id: conversationStore.select_conversation?.fb_client_id,
-            page_name: getPageInfo()?.name,
+            page_name: getPageInfo(conversationStore.select_conversation?.fb_page_id)?.name,
             current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
             current_staff_name: chatbotUserStore.chatbot_user?.full_name
         }
