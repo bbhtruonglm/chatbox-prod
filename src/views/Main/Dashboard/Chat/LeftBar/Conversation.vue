@@ -4,11 +4,11 @@
             <Loading class="mx-auto" />
         </div>
     </div>
-    <VirtualList v-if="size(conversationStore.conversation_list)"
-        class="scrollbar-vertical h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)]  xl:h-[calc(100vh_-_93px)]  overflow-hidden overflow-y-auto  pb-[40px]"
-        item-class="cursor-pointer hover:bg-slate-100 h-[80px]" :data-key="'data_key'"
-        :data-sources="map(conversationStore.conversation_list)" :data-component="ConversationItem"
-        v-on:scroll="loadMoreConversation" />
+    <RecycleScroller @scroll="loadMoreConversation" v-if="size(conversationStore.conversation_list)"
+        class="scrollbar-vertical h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)] xl:h-[calc(100vh_-_93px)] overflow-hidden overflow-y-auto pb-[40px]"
+        :items="map(conversationStore.conversation_list)" :item-size="80" key-field="data_key" v-slot="{ item }">
+        <ConversationItem :source="item" />
+    </RecycleScroller>
     <div v-else>
         <img src="@/assets/icons/empty-page.svg" width="250" class="mx-auto mt-5">
         <div class="text-center text-slate-400">
@@ -17,7 +17,8 @@
     </div>
 </template>
 <script setup lang="ts">
-import VirtualList from 'vue3-virtual-scroll-list'
+import { RecycleScroller } from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { find, keys, map, mapValues, size } from 'lodash'
 import { usePageStore } from '@/stores'
@@ -243,10 +244,16 @@ function selectDefaultConversation() {
     selectConversation(target_conversation)
 }
 /**load thêm hội thoại khi lăn chuột xuống cuối */
-function loadMoreConversation($event: Event, range?: { padBehind?: number }) {
+function loadMoreConversation($event: UIEvent) {
+    /**div đang scroll */
+    const TARGET: HTMLDivElement = $event.target as HTMLDivElement
+
+    /**khoảng cách scroll với bottom */
+    let padBehind = TARGET?.scrollHeight - TARGET?.scrollTop - TARGET?.clientHeight
+
     if (
-        !range ||
-        range?.padBehind as number > 1000 || // chỉ load thêm khi lăn chuột xuống gần cuối
+        !padBehind ||
+        padBehind as number > 1000 || // chỉ load thêm khi lăn chuột xuống gần cuối
         is_loading.value || // chỉ load thêm khi không có tiến trình khác đang load
         is_done.value // nếu đã hết dữ liệu thì không load nữa
     ) return

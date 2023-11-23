@@ -71,6 +71,9 @@ dependencies:
   vue-router:
     specifier: ^4.1.6
     version: 4.2.5(vue@3.3.8)
+  vue-virtual-scroller:
+    specifier: 2.0.0-beta.8
+    version: 2.0.0-beta.8(vue@3.3.8)
   vue3-virtual-scroll-list:
     specifier: ^0.2.1
     version: 0.2.1(vue@3.3.8)
@@ -1748,6 +1751,10 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /mitt@2.1.0:
+    resolution: {integrity: sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==}
+    dev: false
+
   /mkdirp@1.0.4:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
     engines: {node: '>=10'}
@@ -2647,6 +2654,22 @@ packages:
       vue: 3.3.8(typescript@4.7.4)
     dev: false
 
+  /vue-observe-visibility@2.0.0-alpha.1(vue@3.3.8):
+    resolution: {integrity: sha512-flFbp/gs9pZniXR6fans8smv1kDScJ8RS7rEpMjhVabiKeq7Qz3D9+eGsypncjfIyyU84saU88XZ0zjbD6Gq/g==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      vue: 3.3.8(typescript@4.7.4)
+    dev: false
+
+  /vue-resize@2.0.0-alpha.1(vue@3.3.8):
+    resolution: {integrity: sha512-7+iqOueLU7uc9NrMfrzbG8hwMqchfVfSzpVlCMeJQe4pyibqyoifDNbKTZvwxZKDvGkB+PdFeKvnGZMoEb8esg==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      vue: 3.3.8(typescript@4.7.4)
+    dev: false
+
   /vue-router@4.2.5(vue@3.3.8):
     resolution: {integrity: sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==}
     peerDependencies:
@@ -2674,6 +2697,17 @@ packages:
       semver: 7.5.4
       typescript: 4.7.4
     dev: true
+
+  /vue-virtual-scroller@2.0.0-beta.8(vue@3.3.8):
+    resolution: {integrity: sha512-b8/f5NQ5nIEBRTNi6GcPItE4s7kxNHw2AIHLtDp+2QvqdTjVN0FgONwX9cr53jWRgnu+HRLPaWDOR2JPI5MTfQ==}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      mitt: 2.1.0
+      vue: 3.3.8(typescript@4.7.4)
+      vue-observe-visibility: 2.0.0-alpha.1(vue@3.3.8)
+      vue-resize: 2.0.0-alpha.1(vue@3.3.8)
+    dev: false
 
   /vue3-virtual-scroll-list@0.2.1(vue@3.3.8):
     resolution: {integrity: sha512-G4KxITUOy9D4ro15zOp40D6ogmMefzjIyMsBKqN3xGbV1P6dlKYMx+BBXCKm3Nr/6iipcUKM272Sh2AJRyWMyQ==}

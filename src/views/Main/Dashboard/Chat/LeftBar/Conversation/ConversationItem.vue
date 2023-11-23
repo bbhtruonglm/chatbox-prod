@@ -2,7 +2,7 @@
     <div @click="clickConversation" :class="{
         'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
         'bg-slate-100': source?.unread_message_amount
-    }" class="border-l-4 border-l-white border-b py-1 px-2 flex h-full">
+    }" class="border-l-4 border-l-white border-b py-1 px-2 flex cursor-pointer hover:bg-slate-100 h-[80px]">
         <div class="w-fit h-fit relative">
             <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id" :platform_type="source?.platform_type" size="37"
@@ -117,7 +117,7 @@ function clickConversation() {
 
     // tìm uid fb nếu chưa có và đang bật ext
     if (
-        commonStore.is_active_extension && 
+        commonStore.is_active_extension &&
         !$props.source?.client_bio?.fb_uid
     ) getFbUserInfo()
 }
