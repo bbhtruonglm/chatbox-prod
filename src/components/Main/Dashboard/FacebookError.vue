@@ -21,8 +21,7 @@
                     <p class="mt-5 text-base text-slate-600">{{ $t('v1.view.main.dashboard.chat.facebook_errors.190.or') }}</p>
                     <p @click="signout" class="mt-5 underline text-slate-800 cursor-pointer">{{ $t('v1.view.main.dashboard.chat.facebook_errors.190.login_with_another_account') }}</p>
                 </div>
-
-                <div class="flex flex-col items-center sm:w-[480px] w-full mt-3">
+                <div v-if="error" class="flex flex-col items-center sm:w-[480px] w-full mt-3">
                     <p class="text-xl font-bold mb-6">{{ $t('v1.view.main.dashboard.chat.facebook_errors.190.facebook_permission') }}</p>
 
                     <p class="mb-6">{{ $t('v1.view.main.dashboard.chat.facebook_errors.190.session_expired') }}</p>
@@ -48,7 +47,6 @@
                     </div>
 
                 </div>
-
             </div>
         </template>
     </Modal>

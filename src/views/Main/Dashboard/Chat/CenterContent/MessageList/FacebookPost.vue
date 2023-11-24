@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="flex mt-2 bg-slate-100 py-1 px-2 rounded-md justify-between">
-                <p class="text-sm font-semibold truncate w-[70%]">
+                <p class="text-sm font-semibold truncate w-[150px] md:w-[100px] xl:w-[200px]">
                     {{ post_info?.attachments?.data?.[0].title }}
                 </p>
                 <div class="flex">

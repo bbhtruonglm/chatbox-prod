@@ -16,6 +16,8 @@ export interface MessageInfo {
     time: string
     /**nội dung tin nhắn văn bản */
     message_text?: string
+    /**nội dung tin nhắn dạng postback - người dùng click vào button */
+    postback_title?: string
     /**nội dung tệp đính kèm */
     message_attachments?: AttachmentInfo[]
     /**id của tin nhắn ở hệ thống chính */

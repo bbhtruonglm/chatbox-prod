@@ -13,9 +13,11 @@ const ENV: Env = {
         n4_service: 'https://dev.sellingpage.net/v1/n4_service',
         n5_app: 'https://dev.sellingpage.net/v1/n5_app',
         n6_static: 'https://dev.sellingpage.net/v1/n6_static',
+        n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://sellingpage.net/setting/#/page',
-        analytic_view: 'https://sellingpage.net/analytic/#/'
+        analytic_view: 'https://sellingpage.net/analytic/#/',
+        download_client: 'https://sellingpage.net/download/'
     },
     facebook: {
         app_id: '303503746720418',

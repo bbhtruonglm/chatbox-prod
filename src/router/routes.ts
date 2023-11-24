@@ -11,6 +11,7 @@ import SelectPlatform from '@/views/Main/Dashboard/SelectPlatform.vue'
 import Pricing from '@/views/Main/Dashboard/Pricing.vue'
 import Widget from '@/views/Main/Dashboard/Widget.vue'
 import Noti from '@/views/Main/Dashboard/Noti.vue'
+import Download from '@/views/Main/Dashboard/Download.vue'
 import User from '@/views/Main/Dashboard/User.vue'
 
 export const routes = [
@@ -32,6 +33,7 @@ export const routes = [
           { path: 'pricing', component: Pricing },
           { path: 'widget', component: Widget },
           { path: 'noti', component: Noti },
+          { path: 'download', component: Download },
           { path: 'user', component: User },
         ]
       },

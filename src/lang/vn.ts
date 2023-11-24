@@ -79,7 +79,8 @@ const source: Language = {
                         widget: 'Chợ ứng dụng',
                         info: 'Hướng dẫn sử dụng',
                         page_setting: 'Cài đặt trang',
-                        analytic: 'Thống kê'
+                        analytic: 'Thống kê',
+                        download: 'Tải dữ liệu'
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',
@@ -232,7 +233,7 @@ const source: Language = {
                                 filteration_condition: 'Điều kiện lọc:',
                                 and: 'Và',
                                 or: 'Hoặc',
-                                find_tag : 'Tìm kiếm nhãn'
+                                find_tag: 'Tìm kiếm nhãn'
                             },
                             exclude_label: {
                                 title: 'Loại trừ nhãn'
@@ -298,6 +299,8 @@ const source: Language = {
                         },
                         facebook_errors: {
                             10: 'Đã hết thời gian tương tác với người nhận tin',
+                            551: 'Người này hiện không có mặt',
+                            100: 'Tài khoản này đã bị khoá',
                             190: {
                                 facebook_permission: 'Cấp quyền Facebook',
                                 session_expired: 'Bạn đã hết phiên sử dụng Facebook trên Bot Ban Hang do một số hoạt động của bạn như: Đổi mật khẩu, Checkpoint tài khoản hoặc các vấn đề khác do Facebook.',
@@ -338,7 +341,18 @@ const source: Language = {
                         },
                     },
                     user: {
+                        grant_fb_permission: 'Cấp lại quyền Facebook thủ công',
                         logout: 'Đăng xuất'
+                    },
+                    download: {
+                        page_list: 'Danh sách trang sẽ tải dữ liệu',
+                        total: 'Số lượng khách hàng',
+                        no: 'Không',
+                        start_download: 'Tải xuống dữ liệu khách hàng',
+                        create_data: 'Khởi tạo dữ liệu tải xuống',
+                        warning: 'Hành động này sẽ xóa file cũ, và sau khi file mới được tạo, bạn sẽ phải chờ 24h nếu muốn tạo file tiếp theo',
+                        faild: 'Tạo dữ liệu tải về thất bại',
+                        success: 'Đang tạo dữ liệu tải về'
                     }
                 }
             }

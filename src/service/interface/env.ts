@@ -11,9 +11,11 @@ export interface Env {
         n4_service: string
         n5_app: string
         n6_static: string
+        n8_merge: string
         widget: string
         page_setting_view: string
         analytic_view: string
+        download_client: string
     }
     /**cài đặt cho riêng facebook */
     facebook: {

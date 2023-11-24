@@ -1,6 +1,5 @@
 <template>
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
-        <!-- <div class="w-[calc(100vw_/_8)] h-full absolute z-10 top-0 left-0 md:hidden" /> -->
         <div @scroll="loadMoreMessage" id="list-message"
             class="pt-0 p-2 pb-10 h-full overflow-hidden scrollbar-vertical overflow-y-auto bg-gray-100">
             <div v-if="is_loading" class="relative z-10">
@@ -11,8 +10,9 @@
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
                     class="w-fit max-w-[370px] group">
-                    <template v-if="message.message_text || message.message_attachments?.length">
+                    <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
+                        <ClientTextMessage v-if="message.postback_title" :text="message.postback_title" />
                         <AttachmentMessage v-if="message.message_attachments"
                             :message_attachments="message.message_attachments" :message_mid="message.message_mid"
                             :page_id="message.fb_page_id" type="CLIENT" />

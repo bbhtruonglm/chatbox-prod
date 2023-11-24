@@ -95,7 +95,7 @@
             </template>
         </div>
     </div>
-    <FacebookError ref="facebook_error_ref" :error="facebook_error"></FacebookError>
+    <FacebookError ref="facebook_error_ref" :error="facebook_error" />
     <Album @pick_file="handlePickFile" ref="album_ref" />
 </template>
 <script setup lang="ts">
@@ -178,7 +178,7 @@ function onWidgetEvent($event: MessageEvent<WidgetEventData>) {
 
     // nạp hình ảnh vào danh sách gửi
     if (list_images && size(list_images))
-    messageStore.upload_file_list = list_images?.map(url => {
+        messageStore.upload_file_list = list_images?.map(url => {
             return {
                 type: 'image',
                 is_done: false,
@@ -646,7 +646,6 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
 }
 /**xử lý báo lỗi khi gửi tin nhắn thất bại */
 function handleSendMessageError(error: any) {
-
     switch (get(error, 'error.code')) {
         case 10: toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
             break;
@@ -654,6 +653,10 @@ function handleSendMessageError(error: any) {
         //     facebook_error.value = get(error, 'error')
         //     facebook_error_ref.value.toggleModal()
         //     break;
+        case 551: toastError($t('v1.view.main.dashboard.chat.facebook_errors.551'))
+            break;
+        case 100: toastError($t('v1.view.main.dashboard.chat.facebook_errors.100'))
+            break;
         case 190:
             facebook_error.value = get(error, 'error')
             facebook_error_ref.value.toggleModal()

@@ -253,7 +253,7 @@ function loadMoreConversation($event: UIEvent) {
 
     if (
         !padBehind ||
-        padBehind as number > 1000 || // chỉ load thêm khi lăn chuột xuống gần cuối
+        padBehind > TARGET?.scrollHeight * 0.3 || // khi đạt mốc 70% scroll thì load thêm dữ liệu
         is_loading.value || // chỉ load thêm khi không có tiến trình khác đang load
         is_done.value // nếu đã hết dữ liệu thì không load nữa
     ) return

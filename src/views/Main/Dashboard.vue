@@ -12,7 +12,8 @@
                 </div>
             </div>
             <hr class="my-4" />
-            <div class="h-[calc(100%_-_185px)] md:h-[calc(100%_-_256px)] overflow-hidden scrollbar-vertical overflow-y-auto">
+            <div
+                class="h-[calc(100%_-_185px)] md:h-[calc(100%_-_256px)] overflow-hidden scrollbar-vertical overflow-y-auto">
                 <NavItem v-if="size(pageStore.selected_page_id_list)"
                     :is_active="$route.path.indexOf('/main/dashboard/chat') === 0" @click="goToChat" icon_class="w-[20px]"
                     :is_only_show_icon="toggle_nav" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
@@ -23,6 +24,11 @@
                     :title="$t('v1.view.main.dashboard.nav.page_setting')" />
                 <NavItem :is_only_show_icon="toggle_nav" :icon="analyticSvg" @click="openAnalytic"
                     :title="$t('v1.view.main.dashboard.nav.analytic')" />
+                <NavItem v-if="size(pageStore.selected_page_id_list)"
+                    :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
+                    @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]"
+                    :is_only_show_icon="toggle_nav" :icon="downloadSvg"
+                    :title="$t('v1.view.main.dashboard.nav.download')" />
             </div>
             <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
                 <NavItem :is_only_show_icon="toggle_nav" :icon="infoSvg" @click="openGuildLink"
@@ -60,6 +66,7 @@ import settingSvg from '@/assets/icons/setting.svg'
 import analyticSvg from '@/assets/icons/analytic.svg'
 import pageSvg from '@/assets/icons/page.svg'
 import chatSvg from '@/assets/icons/chat.svg'
+import downloadSvg from '@/assets/icons/download.svg'
 import crownSvg from '@/assets/icons/crown.svg'
 import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'

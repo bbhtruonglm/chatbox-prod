@@ -13,9 +13,11 @@ const ENV: Env = {
         n4_service: 'https://chatbox-service-v3.botbanhang.vn',
         n5_app: 'https://chatbox-app-v2.botbanhang.vn',
         n6_static: 'https://chatbox-static-v3.botbanhang.vn',
+        n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://botbanhang.vn/setting/#/page',
-        analytic_view: 'https://botbanhang.vn/analytic-v2/#/'
+        analytic_view: 'https://botbanhang.vn/analytic-v2/#/',
+        download_client: 'https://chatbox-merge.botbanhang.vn/download'
     },
     facebook: {
         app_id: '303503746720418',
