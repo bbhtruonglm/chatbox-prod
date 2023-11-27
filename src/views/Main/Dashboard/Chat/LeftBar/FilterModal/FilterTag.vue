@@ -7,7 +7,7 @@
         <template v-slot:body>
             <div class="py-3">
                 <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel()"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
             <div class="flex justify-between py-3 border-t border-b">
@@ -23,22 +23,9 @@
                         class="accent-orange-600 w-[20px] h-[20px] mr-3">
                 </div>
             </div>
-            <div class="h-[40vh] overflow-y-auto">
-                <div class="flex justify-between py-2 border-b items-center cursor-pointer hover:bg-orange-100 px-2"
-                    v-for="item, index in labels" @click="selectLabel(index as string)">
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 rounded-full mr-3" :style="{ 'background': item.bg_color }">
-                        </div>
-                        <span>{{ item.title }}</span>
-                        <span v-if="Object.keys(pageStore.selected_page_id_list).length > 1"
-                            class="ml-3 text-xs text-slate-400">
-                            {{ pageStore.active_page_list[item.fb_page_id].page?.name }}
-                            <br>
-                            {{ pageStore.active_page_list[item.fb_page_id].page?.fb_page_id }}
-                        </span>
-                    </div>
-                    <img v-if="labels_selected[index]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
-                </div>
+            <div class="h-[40vh] scrollbar-vertical overflow-hidden overflow-y-auto">
+                <TagItem v-for="item, index in labels" @click="selectLabel(index as string)" :label="item"
+                    :is_selected="labels_selected[index]" />
             </div>
         </template>
         <template v-slot:footer>
@@ -55,12 +42,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
-import { map, isString, get, keys } from 'lodash'
+import { map, isString, debounce, keys } from 'lodash'
+import { nonAccentVn } from '@/service/helper/format'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
-
-import { nonAccentVn } from '@/service/helper/format'
+import TagItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
@@ -121,7 +108,7 @@ function filterByLabel() {
 }
 
 /** Tìm kiếm nhãn theo tên */
-function searchLabel() {
+const searchLabel = debounce(($event: Event) => {
     if (!label_search_name.value) return labels.value = snap_labels.value
     labels.value = {}
     map(snap_labels.value, (item: LabelInfo) => {
@@ -129,7 +116,7 @@ function searchLabel() {
             labels.value[item._id] = item
         }
     })
-}
+}, 300)
 
 onMounted(() => {
     /**Trường hợp điều kiện lọc theo nhãn and là string thì ghi đè lại thành boolean  */

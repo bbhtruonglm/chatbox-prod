@@ -7,7 +7,7 @@
         <div class="ml-1 w-[calc(100%_-_44px)]">
             {{ title }}
         </div>
-        <input :checked="checkInputChecker()" :value="value" @input="emitValue" ref="checkbox_ref" type="checkbox"
+        <input @click.stop :checked="checkInputChecker()" :value="value" @input="emitValue" ref="checkbox_ref" type="checkbox"
             class="accent-orange-600 w-[20px] h-[20px]">
     </div>
 </template>
@@ -15,7 +15,7 @@
 import { ref } from 'vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import { isArray } from 'lodash';
+import { isArray } from 'lodash'
 
 const $emit = defineEmits(['update:modelValue'])
 

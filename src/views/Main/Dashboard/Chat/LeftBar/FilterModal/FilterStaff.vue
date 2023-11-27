@@ -7,7 +7,7 @@
         <template v-slot:body>
             <div class="py-3">
                 <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff()"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
                     v-model="search_staff_name">
             </div>
             <div class="h-[50vh] overflow-y-auto">
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
-import { map, get, debounce, keys } from 'lodash'
+import { map, keys, debounce } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -95,7 +95,8 @@ function filterByStaff() {
 }
 
 /** Lọc hội thoại theo nhân viên */
-function searchStaff() {
+const searchStaff = debounce(($event: Event) => {
+    console.log(search_staff_name.value)
     if (!search_staff_name.value) return staffs.value = snap_staffs.value
     staffs.value = {}
     map(snap_staffs.value, (item: StaffInfo) => {
@@ -103,7 +104,7 @@ function searchStaff() {
             staffs.value[item.fb_staff_id] = item
         }
     })
-}
+}, 300)
 
 /** Hiển thị lại nhân viên đã chọn */
 function showLabelSelected() {

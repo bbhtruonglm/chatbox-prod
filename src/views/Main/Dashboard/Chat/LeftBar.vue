@@ -77,8 +77,9 @@ function openConversationFilter() {
 }
 /**delay tìm kiếm hội thoại */
 const onSearchConversation = debounce(($event: Event) => {
+    
     const INPUT = $event.target as HTMLInputElement
-
+    
     conversationStore.option_filter_page_data.search = INPUT.value
 }, 300)
 /**check xem có đang kích hoạt lọc hội thoại hay không */

@@ -53,3 +53,19 @@ export const toastError = (e: any) => {
 
     toast('error', title)
 }
+
+/**tạo một modal dạng input */
+export const modal_input = (
+    title: string,
+    description: string,
+    proceed: Cb
+) => Swal.fire({
+    title,
+    input: 'text',
+    inputLabel: description,
+    showCancelButton: true,
+}).then(({ value }) => {
+    if (!value) return proceed(true)
+
+    proceed(null, value)
+})
