@@ -11,7 +11,8 @@ const ENV: Env = {
     host: {
         n3_socket: 'wss://socket.sellingpage.net',
         n4_service: 'https://dev.sellingpage.net/v1/n4_service',
-        n5_app: 'https://dev.sellingpage.net/v1/n5_app',
+        n5_app_v1: 'https://dev.sellingpage.net/v1/n5_app',
+        n5_app_v2: 'https://dev.sellingpage.net/v1/n5_app',
         n6_static: 'https://dev.sellingpage.net/v1/n6_static',
         n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',

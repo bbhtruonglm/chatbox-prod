@@ -116,3 +116,14 @@ export interface WidgetEventData {
     /**được gửi từ widget */
     _type?: 'WIDGET'
 }
+
+/**đầu vào api danh sách widget trên chợ */
+export interface InputMarketWidget {
+    status: 'APPROVED'
+    _type: 'marketplace'
+    skip?: number
+    limit?: number
+    sort?: string
+    search?: string
+}
+

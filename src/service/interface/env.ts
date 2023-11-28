@@ -9,7 +9,8 @@ export interface Env {
     host: {
         n3_socket: string
         n4_service: string
-        n5_app: string
+        n5_app_v1: string
+        n5_app_v2: string
         n6_static: string
         n8_merge: string
         widget: string

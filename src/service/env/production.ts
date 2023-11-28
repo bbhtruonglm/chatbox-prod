@@ -11,7 +11,8 @@ const ENV: Env = {
     host: {
         n3_socket: 'wss://chatbox-socket.botbanhang.vn',
         n4_service: 'https://chatbox-service-v3.botbanhang.vn',
-        n5_app: 'https://chatbox-app-v2.botbanhang.vn',
+        n5_app_v1: 'https://chatbox-app.botbanhang.vn',
+        n5_app_v2: 'https://chatbox-app-v2.botbanhang.vn',
         n6_static: 'https://chatbox-static-v3.botbanhang.vn',
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',

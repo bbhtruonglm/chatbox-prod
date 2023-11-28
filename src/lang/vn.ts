@@ -11,6 +11,7 @@ const source: Language = {
             search: 'Tìm kiếm',
             success: 'Thành công',
             page: 'Trang',
+            config: 'Thiết lập',
             setting: 'Cài đặt',
             page_search_placeholder: 'Tìm kiếm trang hoặc ID trang',
             upcoming_feature: 'Tính năng sắp được ra mắt!',
@@ -353,7 +354,14 @@ const source: Language = {
                         warning: 'Hành động này sẽ xóa file cũ, và sau khi file mới được tạo, bạn sẽ phải chờ 24h nếu muốn tạo file tiếp theo',
                         faild: 'Tạo dữ liệu tải về thất bại',
                         success: 'Đang tạo dữ liệu tải về'
-                    }
+                    },
+                    widget: {
+                        tab: {
+                            market: 'Chợ ứng dụng',
+                            installed: 'Đã cài đặt',
+                            my_app: 'Đã tạo'
+                        }
+                    },
                 }
             }
         }
