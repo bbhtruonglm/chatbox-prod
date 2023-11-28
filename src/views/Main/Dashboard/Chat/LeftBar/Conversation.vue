@@ -245,6 +245,9 @@ function selectDefaultConversation() {
 }
 /**load thêm hội thoại khi lăn chuột xuống cuối */
 function loadMoreConversation($event: UIEvent) {
+    /**sẽ scroll khi đã đi được số phần trăm trên độ dài  */
+    const PERCENT_SCROLL = 90
+
     /**div đang scroll */
     const TARGET: HTMLDivElement = $event.target as HTMLDivElement
 
@@ -253,7 +256,7 @@ function loadMoreConversation($event: UIEvent) {
 
     if (
         !padBehind ||
-        padBehind > TARGET?.scrollHeight * 0.3 || // khi đạt mốc 70% scroll thì load thêm dữ liệu
+        padBehind > TARGET?.scrollHeight * (1 - PERCENT_SCROLL / 100) || // khi đạt mốc 70% scroll thì load thêm dữ liệu
         is_loading.value || // chỉ load thêm khi không có tiến trình khác đang load
         is_done.value // nếu đã hết dữ liệu thì không load nữa
     ) return
