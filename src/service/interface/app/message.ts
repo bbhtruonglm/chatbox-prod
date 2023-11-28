@@ -88,6 +88,8 @@ export interface TempSendMessage {
 
 /**dữ liệu 1 file */
 export interface AttachmentInfo {
+    /**thêm index để mapping */
+    index?: number
     /**file là dạng gì */
     type?: 'image' | 'video' | 'audio' | 'template' | 'fallback'
     /**tiêu đề */
