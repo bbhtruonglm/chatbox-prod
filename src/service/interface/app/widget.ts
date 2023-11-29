@@ -127,3 +127,32 @@ export interface InputMarketWidget {
     search?: string
 }
 
+/**gắn cờ trang đã cài đặt hay chưa */
+export interface ListPageIsInstall {
+    [index: string]: {
+        is_installed?: boolean
+    }
+}
+/**đầu vào api kiểm tra trang đã cài đặt widget hay chưa */
+export interface InputCheckPageInstallWidget {
+    _type: 'check-page-is-installed-app'
+    app_id: string
+    list_page: ListPageIsInstall
+}
+
+/**đầu vào api cài đặt widget */
+export interface InputInstallWidget {
+    app_id: string
+    fb_page_id: string
+    position: AppInstalledPosition
+    app_installed_size: AppInstalledSize
+    access_role_select: {
+        [index: string]: boolean
+    },
+    access_group: string[]
+    hide_pc: boolean
+}
+/**đầu ra api cài đặt widget */
+export interface ResponseInstallWidget {
+    access_token: string
+}

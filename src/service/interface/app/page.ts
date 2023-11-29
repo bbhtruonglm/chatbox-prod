@@ -64,3 +64,22 @@ export interface SelectPageData extends PageData {
     /**page có được chọn mới hay không */
     is_select?: boolean
 }
+
+/**đầu vào api lấy danh sách nhóm nhân viên */
+export interface GetPageGroupStaff {
+    fb_page_id: string
+    sort?: string
+    limit?: number
+    skip?: number
+}
+
+/**dữ liệu của một nhóm nhân viên */
+export interface GroupStaffInfo {
+    /**thêm field vào để chọn */
+    is_select?: boolean
+    _id: string
+    fb_page_id: string
+    name: string
+    type?: 'SYSTEM' | string
+    description: string
+}

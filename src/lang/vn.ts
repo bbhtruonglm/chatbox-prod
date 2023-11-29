@@ -359,8 +359,57 @@ const source: Language = {
                         tab: {
                             market: 'Chợ ứng dụng',
                             installed: 'Đã cài đặt',
-                            my_app: 'Đã tạo'
-                        }
+                            my_app: 'Đã tạo',
+                        },
+                        select_page: 'Nhấn vào đây để chọn trang',
+                        role: 'Cấp quyền',
+                        position: 'Vị trí hiển thị',
+                        role_list: {
+                            conversation_chatbot: {
+                                title: 'Chatbot Bot Bán Hàng',
+                                description: 'Dữ liệu của Chatbot',
+                            },
+                            conversation_contact: {
+                                title: 'Dữ liệu liên lạc',
+                                description: 'Số điện thoại, email của khách hàng',
+                            },
+                            conversation_label: {
+                                title: 'Dữ liệu nhãn dán',
+                                description: 'Nhãn dán cho các khách hàng',
+                            },
+                            conversation_last_note: {
+                                title: 'Ghi chú',
+                                description: 'Các ghi chú của khách hàng',
+                            },
+                            conversation_message: {
+                                title: 'Nhắn tin',
+                                description: 'Tin nhắn của khách hàng đến trang',
+                            },
+                            conversation_staff: {
+                                title: 'Nhân viên',
+                                description: 'Dữ liệu của nhân viên chăm sóc khách hàng',
+                            },
+                            public_profile: {
+                                title: 'Hồ sơ công khai',
+                                description: 'Dữ liệu công khai của khách hàng',
+                            },
+                        },
+                        position_list: {
+                            bottom: 'Phía dưới',
+                            right: 'Bên phải',
+                        },
+                        size: 'Kích cỡ',
+                        size_list: {
+                            small: 'Cỡ nhỏ',
+                            medium: 'Trung bình',
+                            big: 'Cỡ lớn'
+                        },
+                        staff_group: 'Nhóm nhân viên hiển thị',
+                        special: 'Nâng cao',
+                        special_list: {
+                            hide_pc: 'Ẩn trên PC'
+                        },
+                        widget_installed: 'Ứng dụng đã được cài đặt trên trang này rồi'
                     },
                 }
             }

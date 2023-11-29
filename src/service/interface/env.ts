@@ -8,7 +8,8 @@ export interface Env {
     /**danh sách các domain của api */
     host: {
         n3_socket: string
-        n4_service: string
+        n4_service_v1: string
+        n4_service_v2: string
         n5_app_v1: string
         n5_app_v2: string
         n6_static: string

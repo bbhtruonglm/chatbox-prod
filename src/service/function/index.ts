@@ -244,3 +244,16 @@ export const getIframeUrl = (widget: AppInstalledInfo) => {
 export const openNewTab = (url: string) => {
     window.open(url, '_blank')
 }
+
+/**mở link tab mới */
+export const openPopup = (url: string, width = 800, height = 600) => {
+    // Tính vị trí bên trái sao cho cửa sổ nằm giữa màn hình
+    var left = (screen.width - width) / 2
+    // Tính vị trí trên cùng sao cho cửa sổ nằm giữa màn hình
+    var top = (screen.height - height) / 2
+
+    var params = `width=${width}, height=${height}, top=${top}, left=${left}, resizable=yes, scrollbars=yes`
+
+    // Mở cửa sổ popup    
+    window.open(url, 'PopupWindow', params)
+}

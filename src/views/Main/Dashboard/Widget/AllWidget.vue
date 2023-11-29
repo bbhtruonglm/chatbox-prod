@@ -4,7 +4,9 @@
         <div v-for="widget of widget_list" @click="openInstallWidget(widget)"
             class="bg-white rounded-md border-b-2 hover:border-orange-500 md:bg-slate-100 p-2 flex items-center cursor-pointer">
             <div>
-                <img :src="widget.icon" class="w-[50px] h-[50px]" />
+                <object :data="widget.icon" type="image/png" class="w-[50px] h-[50px]">
+                    <img src="@/assets/imgs/chatbox.svg" class="w-[50px] h-[50px]" />
+                </object>
             </div>
             <div class="w-[calc(100%_-_60px)] ml-[10px]">
                 <div class="font-semibold">
