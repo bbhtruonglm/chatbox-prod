@@ -1,22 +1,7 @@
 <template>
     <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
-        class="max-h-full overflow-hidden scrollbar-vertical overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
-        <div v-for="widget of widget_list" @click="openInstallWidget(widget)"
-            class="bg-white rounded-md border-b-2 hover:border-orange-500 md:bg-slate-100 p-2 flex items-center cursor-pointer">
-            <div>
-                <object :data="widget.icon" type="image/png" class="w-[50px] h-[50px]">
-                    <img src="@/assets/imgs/chatbox.svg" class="w-[50px] h-[50px]" />
-                </object>
-            </div>
-            <div class="w-[calc(100%_-_60px)] ml-[10px]">
-                <div class="font-semibold">
-                    {{ widget.name }}
-                </div>
-                <div class="text-slate-500 text-sm truncate">
-                    {{ widget.description }}
-                </div>
-            </div>
-        </div>
+        class="h-full overflow-hidden scrollbar-vertical overflow-y-auto grid grid-cols-1 pb-5 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+        <Item v-for="widget of widget_list" @click="openInstallWidget(widget)" :widget="widget" />
     </div>
     <template>
         <InstallWidget ref="install_widget_ref" :widget="selected_widget" />
@@ -31,6 +16,7 @@ import { toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
 
 import InstallWidget from '@/views/Main/Dashboard/Widget/InstallWidget.vue'
+import Item from '@/views/Main/Dashboard/Widget/Item.vue'
 
 import type { AppInfo } from '@/service/interface/app/widget'
 import type { CbError } from '@/service/interface/function'

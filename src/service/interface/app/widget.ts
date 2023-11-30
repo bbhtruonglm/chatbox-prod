@@ -1,5 +1,5 @@
 /**các trạng thái của app được cài */
-export type AppInstalledStatus = 'SUCCESS'
+export type AppInstalledStatus = 'SUCCESS' | 'INIT'
 /**vị trí của app được cài */
 export type AppInstalledPosition = 'RIGHT' | 'BOTTOM'
 /**kích thước của app được cài */
@@ -8,19 +8,19 @@ export type AppInstalledSize = 'MINIMUM' | 'MEDIUM' | 'FULL'
 /**các quyền có thể tiếp cận được */
 export interface AccessRoleInfo {
     /**quyền thông tin cơ bản */
-    public_profile: boolean
+    public_profile?: boolean
     /**quyền tin nhắn */
-    conversation_message: boolean
+    conversation_message?: boolean
     /**quyền thông tin khách hàng */
-    conversation_contact: boolean
+    conversation_contact?: boolean
     /**quyền nhãn */
-    conversation_label: boolean
+    conversation_label?: boolean
     /**quyền ghi chú */
-    conversation_last_note: boolean
+    conversation_last_note?: boolean
     /**quyền nhân viên được assign */
-    conversation_staff: boolean
+    conversation_staff?: boolean
     /**quyền chatbot */
-    conversation_chatbot: boolean
+    conversation_chatbot?: boolean
 }
 
 /**dữ liệu của 1 app */
@@ -63,7 +63,7 @@ export interface AppInstalledInfo {
     _id: string
     /**trạng thái cài */
     status: AppInstalledStatus
-    /**? */
+    /**đánh dấu widget này có được kích hoạt hay không */
     active_widget: boolean
     /**vị trí hiển thị */
     position: AppInstalledPosition
@@ -83,6 +83,8 @@ export interface AppInstalledInfo {
     fb_page_id: string
     /**dữ liệu của app */
     snap_app: AppInfo
+    /**token được tạo kém nếu có */
+    access_token?: string
 }
 
 /**đầu vào api tạo token cho widget */
@@ -155,4 +157,27 @@ export interface InputInstallWidget {
 /**đầu ra api cài đặt widget */
 export interface ResponseInstallWidget {
     access_token: string
+}
+
+/**đầu vào api lấy danh sách widget đã cài đặt và token */
+export interface InputGetInstalledWidget {
+    _type: 'short-time-token'
+    skip?: number
+    limit?: number
+    fb_page_id: string
+}
+/**đầu vào api cài đặt widget */
+export interface InputUpdateWidget {
+    _id: string
+    active_widget?: boolean
+    /**vị trí hiển thị */
+    position?: AppInstalledPosition
+    /**kích cỡ hiển thị */
+    app_installed_size?: AppInstalledSize
+    /**hiển thị với staff có những nhóm quyền nào */
+    access_group?: string[]
+    /**các quyền của app */
+    access_role_select?: AccessRoleInfo,
+    /**ẩn ở màn hình pc */
+    hide_pc?: boolean
 }

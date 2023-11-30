@@ -10,10 +10,11 @@
             <PlatformTab v-model="current_selected_tab" :platform_list="ROOT_TAB" />
         </div>
         <div class="px-2 pt-2 relative h-[calc(100%_-_138px)] md:h-[calc(100%_-_114px)]">
-            <div v-if="is_loading" class="absolute left-[50%] translate-x-[-50%]">
+            <div v-if="is_loading" class="absolute left-[50%] translate-x-[-50%] z-[1]">
                 <Loading class="mx-auto" />
             </div>
             <AllWidget v-if="current_selected_tab === 'ALL'" @is_loading="$event => is_loading = $event" />
+            <InstalledWidget v-else-if="current_selected_tab === 'INSTALLED'" @is_loading="$event => is_loading = $event" />
             <div v-else class="text-blue-500 text-center">
                 {{ $t('v1.common.upcoming_feature') }}
             </div>
@@ -28,6 +29,7 @@ import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Loading.vue'
 import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
 import AllWidget from '@/views/Main/Dashboard/Widget/AllWidget.vue'
+import InstalledWidget from '@/views/Main/Dashboard/Widget/InstalledWidget.vue'
 
 const { t: $t } = useI18n()
 
@@ -49,5 +51,5 @@ const ROOT_TAB = {
 /**gắn cờ loading cho danh sách pricing */
 const is_loading = ref(false)
 /**tab đang được chọn */
-const current_selected_tab = ref('ALL')
+const current_selected_tab = ref<'ALL' | 'INSTALLED' | 'CREATED'>('ALL')
 </script>

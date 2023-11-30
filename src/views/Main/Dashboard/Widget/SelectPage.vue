@@ -1,0 +1,58 @@
+<template>
+    <div class="relative">
+        <div @click="is_show_select_page = !is_show_select_page"
+            class="rounded-full h-[40px] border flex items-center cursor-pointer bg-white">
+            <div class="w-[calc(100%_-_25px)] flex items-center">
+                <template v-if="selected_page">
+                    <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="selected_page?.page?.fb_page_id"
+                        :page_type="selected_page?.page?.type" :page_avatar="selected_page?.page?.avatar" />
+                    <div class="w-[calc(100%_-_36px)] px-2 truncate">
+                        {{ selected_page?.page?.name }}
+                    </div>
+                </template>
+                <div v-else class="text-xs text-slate-500 pl-2">
+                    {{ $t('v1.view.main.dashboard.widget.select_page') }}
+                </div>
+            </div>
+            <img src="@/assets/icons/arrow-down.svg" class="w-[15px] h-[15px]" />
+        </div>
+        <div v-if="is_show_select_page"
+            class="absolute top-[45px] border rounded-lg py-2 mt-1 scrollbar-vertical overflow-hidden overflow-y-auto h-[150px] bg-white z-[10] w-full">
+            <div @click="selectPage(page)" v-for="page of pageStore.active_page_list"
+                class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">
+                <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="page?.page?.fb_page_id"
+                    :page_type="page?.page?.type" :page_avatar="page?.page?.avatar" />
+                <div class="ml-2">
+                    {{ page?.page?.name }}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { usePageStore } from '@/stores'
+
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+
+import type { PageData } from '@/service/interface/app/page'
+
+const $emit = defineEmits(['update_select_page'])
+
+const $props = withDefaults(defineProps<{
+    /**giá trị widget đang chọn */
+    selected_page?: PageData
+}>(), {})
+
+const pageStore = usePageStore()
+
+/**có hiện chọn trang không */
+const is_show_select_page = ref(false)
+
+/**chọn trang */
+function selectPage(page: PageData) {
+    $emit('update_select_page', page)
+
+    is_show_select_page.value = false
+}
+</script>

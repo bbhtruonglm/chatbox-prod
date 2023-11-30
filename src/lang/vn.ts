@@ -37,7 +37,8 @@ const source: Language = {
             upload: 'Tải lên',
             copy_to_clipboard: 'Đã sao chép',
             delete: 'Xoá',
-            update: 'Cập nhật'
+            update: 'Cập nhật',
+            update_success: 'Đã cập nhật'
         },
         view: {
             network: {
@@ -409,7 +410,23 @@ const source: Language = {
                         special_list: {
                             hide_pc: 'Ẩn trên PC'
                         },
-                        widget_installed: 'Ứng dụng đã được cài đặt trên trang này rồi'
+                        widget_installed: 'Ứng dụng đã được cài đặt trên trang này rồi',
+                        installed: {
+                            active: 'Ứng dụng đang kích hoạt',
+                            unactive: 'Ứng dụng đã ngắt kích hoạt',
+                            link: 'Ứng dụng chờ liên kết',
+                            delete_warning: 'Bạn có chắc chắn muốn xoá ứng dụng',
+                            delete_description: 'Ứng dụng sẽ được loại bỏ hoàn toàn khỏi trang',
+                            delete_success: 'Đã xoá ứng dụng',
+                            active_warning: 'Bạn có chắc chắn muốn tái kích hoạt ứng dụng này',
+                            active_description: 'Sau khi tái kích hoạt, ứng dụng sẽ có khả năng truy cập vào dữ liệu của trang',
+                            active_success: 'Đã kích hoạt ứng dụng',
+                            unactive_warning: 'Bạn có chắc chắn muốn huỷ kích hoạt ứng dụng này',
+                            unactive_description: 'Ứng dụng sẽ không thể truy cập được các dữ liệu của trang nữa',
+                            unactive_success: 'Đã huỷ kích hoạt ứng dụng',
+                            link_warning: 'Bạn muốn liên kết/tái liên kết ứng dụng với trang',
+                            link_description: 'Bạn sẽ được chuyển sang trang kết nối của ứng dụng để tiến hành liên kết, sau khi liên kết thành công, ứng dụng sẽ được kích hoạt tự động',
+                        }
                     },
                 }
             }
