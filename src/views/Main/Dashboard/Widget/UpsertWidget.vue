@@ -49,7 +49,7 @@
                 </div>
                 <div>
                     <Title :title="$t('v1.view.main.dashboard.widget.create.form.role')" />
-                    <div>
+                    <div v-if="upsert_widget_data.access_role">
                         <Role :access_role_select="upsert_widget_data.access_role"
                             @update="$event => upsert_widget_data.access_role = $event" />
                     </div>
