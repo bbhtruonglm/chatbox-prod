@@ -1,6 +1,6 @@
 import { chatbox } from '@/service/api/chatbox/common'
 
-import type { AppInfo, AppInstalledInfo, InputCheckPageInstallWidget, InputCreateTokenWidget, InputGetInstalledWidget, InputInstallWidget, InputMarketWidget, InputUpdateWidget, ListPageIsInstall, ResponseInstallWidget } from '@/service/interface/app/widget'
+import type { AppInfo, AppInstalledInfo, InputCheckPageInstallWidget, InputCreateTokenWidget, InputCreateWidget, InputGetInstalledWidget, InputInstallWidget, InputMarketWidget, InputUpdateMyWidget, InputUpdateWidget, ListPageIsInstall, ResponseInstallWidget } from '@/service/interface/app/widget'
 import type { Cb } from '@/service/interface/function'
 
 /**đăng nhập bằng token của fb */
@@ -67,4 +67,31 @@ export const update_widget = (
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/update`,
     body
+}, proceed)
+
+/**tạo mới ứng dụng */
+export const create_widget = (
+    body: InputCreateWidget,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n5_app_v1}/v1/app/app/create`,
+    body
+}, proceed)
+
+/**sửa cài đặt ứng dụng */
+export const update_my_widget = (
+    body: InputUpdateMyWidget,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n5_app_v1}/v1/app/app/update`,
+    body
+}, proceed)
+
+/**xoá ứng dụng */
+export const delete_my_widget = (
+    _id: string,
+    proceed: Cb
+) => chatbox({
+    uri: `${$env.host.n5_app_v1}/v1/app/app/delete`,
+    body: { _id }
 }, proceed)

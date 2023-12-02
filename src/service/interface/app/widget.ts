@@ -49,6 +49,10 @@ export interface AppInfo {
     url_auth: string
     /**icon đặc biệt hiển thị ở bottom */
     mini_icon: string
+    /**trạng thái của ứng dụng */
+    status?: 'APPROVED' | 'REJECT' | 'PRIVATE'
+    /**mã bí mật để lấy dữ liệu */
+    secret_key?: string
 }
 
 /**dữ liệu của app được page cài đặt */
@@ -121,12 +125,14 @@ export interface WidgetEventData {
 
 /**đầu vào api danh sách widget trên chợ */
 export interface InputMarketWidget {
-    status: 'APPROVED'
-    _type: 'marketplace'
+    status?: 'APPROVED'
+    _type?: 'marketplace'
     skip?: number
     limit?: number
     sort?: string
     search?: string
+    /**id người tạo */
+    user_created?: string
 }
 
 /**gắn cờ trang đã cài đặt hay chưa */
@@ -180,4 +186,31 @@ export interface InputUpdateWidget {
     access_role_select?: AccessRoleInfo,
     /**ẩn ở màn hình pc */
     hide_pc?: boolean
+}
+
+/**đầu vào api tạo mới ứng dụng */
+export interface InputCreateWidget {
+    name?: string
+    partner_name?: string
+    url_app?: string
+    url_auth?: string
+    icon?: string
+    mini_icon?: string
+    description?: string
+    document?: string
+    access_role?: AccessRoleInfo
+    user_created?: string
+    fb_as_id?: string
+
+    category_id?: string
+    email?: string
+    phone?: string
+    website_offical?: string
+    partner_icon?: string
+}
+
+/**đầu vào api cập nhật ứng dụng */
+export interface InputUpdateMyWidget extends InputCreateWidget {
+    _id: string
+    _type?: 'tranfer'
 }

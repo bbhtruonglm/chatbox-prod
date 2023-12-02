@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <div @click="is_show_select_page = !is_show_select_page"
-            class="rounded-full h-[40px] border flex items-center cursor-pointer bg-white">
+            class="rounded-full h-[40px] border flex items-center cursor-pointer bg-white md:bg-slate-100">
             <div class="w-[calc(100%_-_25px)] flex items-center">
                 <template v-if="selected_page">
                     <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="selected_page?.page?.fb_page_id"

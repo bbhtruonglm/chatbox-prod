@@ -15,9 +15,7 @@
             </div>
             <AllWidget v-if="current_selected_tab === 'ALL'" @is_loading="$event => is_loading = $event" />
             <InstalledWidget v-else-if="current_selected_tab === 'INSTALLED'" @is_loading="$event => is_loading = $event" />
-            <div v-else class="text-blue-500 text-center">
-                {{ $t('v1.common.upcoming_feature') }}
-            </div>
+            <MyWidget v-else @is_loading="$event => is_loading = $event" />
         </div>
     </div>
 </template>
@@ -30,6 +28,7 @@ import Loading from '@/components/Loading.vue'
 import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
 import AllWidget from '@/views/Main/Dashboard/Widget/AllWidget.vue'
 import InstalledWidget from '@/views/Main/Dashboard/Widget/InstalledWidget.vue'
+import MyWidget from '@/views/Main/Dashboard/Widget/MyWidget.vue'
 
 const { t: $t } = useI18n()
 

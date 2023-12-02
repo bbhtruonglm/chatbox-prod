@@ -8,7 +8,8 @@
         </div>
 
         <template v-if="selected_page">
-            <Title :title="$t('v1.view.main.dashboard.widget.installed.active')" />
+            <Title v-if="app_installed_list?.filter(app => app.active_widget)?.length"
+                :title="$t('v1.view.main.dashboard.widget.installed.active')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <template v-for="app of app_installed_list">
@@ -17,7 +18,7 @@
                         :is_control="true" />
                 </template>
             </div>
-            <Title :title="$t('v1.view.main.dashboard.widget.installed.unactive')" />
+            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'SUCCESS')?.length" :title="$t('v1.view.main.dashboard.widget.installed.unactive')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <template v-for="app of app_installed_list">
@@ -26,7 +27,7 @@
                         :widget="app.snap_app" :app="app" :is_control="true" />
                 </template>
             </div>
-            <Title :title="$t('v1.view.main.dashboard.widget.installed.link')" />
+            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'INIT')?.length" :title="$t('v1.view.main.dashboard.widget.installed.link')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <template v-for="app of app_installed_list">
@@ -53,6 +54,7 @@ import { waterfall } from 'async'
 import { findIndex, remove } from 'lodash'
 import { openPopup } from '@/service/function'
 import { get_page_group_staff } from '@/service/api/chatbox/n4-service'
+import { copy } from '@/service/helper/format'
 
 import SelectPage from '@/views/Main/Dashboard/Widget/SelectPage.vue'
 import Title from '@/views/Main/Dashboard/Widget/Title.vue'
@@ -64,7 +66,6 @@ import type { AppInstalledInfo, InputUpdateWidget } from '@/service/interface/ap
 import type { GroupStaffInfo } from '@/service/interface/app/page'
 import type { CbError } from '@/service/interface/function'
 import type { ComponentRef } from '@/service/interface/vue'
-import { copy } from '@/service/helper/format'
 
 const $emit = defineEmits(['is_loading'])
 

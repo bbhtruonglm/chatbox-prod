@@ -38,7 +38,8 @@ const source: Language = {
             copy_to_clipboard: 'Đã sao chép',
             delete: 'Xoá',
             update: 'Cập nhật',
-            update_success: 'Đã cập nhật'
+            update_success: 'Đã cập nhật',
+            create: 'Tạo'
         },
         view: {
             network: {
@@ -426,6 +427,46 @@ const source: Language = {
                             unactive_success: 'Đã huỷ kích hoạt ứng dụng',
                             link_warning: 'Bạn muốn liên kết/tái liên kết ứng dụng với trang',
                             link_description: 'Bạn sẽ được chuyển sang trang kết nối của ứng dụng để tiến hành liên kết, sau khi liên kết thành công, ứng dụng sẽ được kích hoạt tự động',
+                        },
+                        create: {
+                            title: 'Tạo mới ứng dụng của riêng bạn',
+                            public: 'Ứng dụng đã công khai',
+                            private: 'Ứng dụng riêng tư',
+                            disable: 'Ứng dụng đã huỷ đăng',
+                            form: {
+                                name: 'Tên ứng dụng',
+                                name_description: 'Tên ứng dụng sẽ được hiển thị với người dùng',
+                                company: 'Tên tổ chức',
+                                company_description: 'Tên tổ chức phát triển ứng dụng này',
+                                app_url: 'Url của ứng dụng (Iframe)',
+                                app_url_description: 'Được hiển thị dưới dạng thẻ Iframe bên trong Chatbox',
+                                app_oauth: 'Url đăng nhập (OAuth)',
+                                app_oauth_description: 'Sử dụng để chủ sở hữu trang xác thực ứng dụng',
+                                icon: 'Url icon ứng dụng',
+                                icon_description: 'Icon ứng dụng sẽ được hiển thị với người dùng',
+                                mini_icon: 'Url mini icon ứng dụng',
+                                mini_icon_description: 'Hiển thị ở thiết bị di động',
+                                role: 'Quyền truy cập dữ liệu',
+                                description: 'Mô tả về ứng dụng',
+                                guild: 'Hướng dẫn sử dụng',
+                                not_empty: 'Bạn nhập thiếu trường dữ liệu bắt buộc',
+                                create_success: 'Đã tạo mới ứng dụng',
+                                update_success: 'Đã cập nhật ứng dụng'
+                            },
+                            delete: {
+                                title: 'Bạn có chắc chắn muốn xoá ứng dụng',
+                                success: 'Đã xoá ứng dụng'
+                            },
+                            copy_success: 'Đã sao chép mã bí mật',
+                            tranfer: {
+                                title: 'Chuyển nhượng quyền sở hữu ứng dụng',
+                                guild_copy: 'Gửi id dưới đây cho người dùng khác nếu bạn muốn nhận ứng dụng (Nhấp để sao chép)',
+                                guild_tranfer: 'Hoặc nhập id người dùng khác vào đây để chuyển nhượng ứng dụng cho họ',
+                                copy: 'Đã sao chép mã chuyển nhượng ứng dụng',
+                                action: 'Chuyển nhượng',
+                                id: 'ID người dùng',
+                                success: 'Đã chuyển nhương ứng dụng'
+                            }
                         }
                     },
                 }
