@@ -3,7 +3,7 @@
     class "container-fluid" để intergrate với ext, không phải là bootstrap
     không được xoá
   -->
-  <div class="w-screen h-screen bg-white select-none xl:select-auto container-fluid">
+  <div class="w-screen h-screen bg-white select-none md:select-auto container-fluid">
     <Network />
     <AdBlocker />
     <Loading v-if="commonStore.is_loading_full_screen" type="FULL" />

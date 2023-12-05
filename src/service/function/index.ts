@@ -131,6 +131,9 @@ export const selectConversation = (conversation: ConversationInfo) => {
     }, (e, r) => {
         if (e) return toastError(e)
     })
+
+    // tự động focus vào input chat
+    document.getElementById('chat-text-input-message')?.focus()
 }
 
 /**kiểm tra cỡ màn hình, từ đó suy luận ra có đang ở chế độ dt hay không */

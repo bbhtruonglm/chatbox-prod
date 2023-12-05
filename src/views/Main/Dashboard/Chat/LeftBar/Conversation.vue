@@ -242,6 +242,12 @@ function selectDefaultConversation() {
     }
 
     selectConversation(target_conversation)
+
+    // tự động focus vào input chat
+    // đơi nửa giây cho div được render
+    setTimeout(() => {
+        document.getElementById('chat-text-input-message')?.focus()
+    }, 500)
 }
 /**load thêm hội thoại khi lăn chuột xuống cuối */
 function loadMoreConversation($event: UIEvent) {

@@ -118,6 +118,12 @@ function getListWidget() {
                 widget.url = getIframeUrl(widget)
 
                 return widget
+            })
+            ?.sort((a, b) => {
+                // sort theo index từ 0 -> n
+                if (a.index_position > b.index_position) return 1
+
+                else return -1
             }) || []
 
         snap_widget_list.value = widget_list.value
