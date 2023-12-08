@@ -21,10 +21,9 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { find, keys, map, mapValues, size } from 'lodash'
-import { usePageStore } from '@/stores'
 import { read_conversation } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
 import { selectConversation } from '@/service/function'
@@ -52,6 +51,7 @@ const $route = useRoute()
 const $router = useRouter()
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
@@ -97,7 +97,6 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // bỏ qua record của page chat cho page
     if (conversation.fb_page_id === conversation.fb_client_id) return
 
-
     // tạo ra key cho vitual scroll
     conversation.data_key = `${conversation?.fb_page_id}_${conversation?.fb_client_id}`
 
@@ -118,10 +117,13 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
         conversationStore.select_conversation.staff_read = conversation.staff_read
     }
 
-    // nếu chỉ đồng bộ dữ liệu thì không đẩy hội thoại lên đầu
-    if (event === 'SYNC_DATA') {
-        conversationStore.conversation_list[conversation.data_key] = conversation
-    }
+    if (
+        // nếu thời gian giống nhau, thì cũng không thay đổi vị trí
+        conversation?.last_message_time ===
+        conversationStore.conversation_list[conversation.data_key]?.last_message_time ||
+        // nếu chỉ đồng bộ dữ liệu thì không đẩy hội thoại lên đầu
+        event === 'SYNC_DATA'
+    ) conversationStore.conversation_list[conversation.data_key] = conversation
     // nạp dữ liệu vào danh sách hội thoại lên đầu
     else {
         /**gói dữ liệu */
@@ -152,6 +154,9 @@ function loadConversationFirstTime() {
 }
 /**đọc danh sách hội thoại */
 function getConversation(is_first_time?: boolean) {
+    // nếu đang mất mạng thì không cho gọi api
+    if (!commonStore.is_connected_internet) return
+
     const DATA: {
         current_conversation_list?: ConversationList
     } = {}
@@ -212,6 +217,7 @@ function getConversation(is_first_time?: boolean) {
         // tự động chọn khách hàng cho lần đầu tiên
         if (is_first_time) selectDefaultConversation()
 
+        // khi goi api bị lỗi, thì chặn không cho gọi nữa
         if (e) return toastError(e)
     })
 }

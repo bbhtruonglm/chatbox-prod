@@ -1,26 +1,29 @@
 <template>
     <div v-if="is_alert" class="text-white absolute w-screen z-50 top-[50px] py-1 flex items-end justify-center md:top-0"
-        :class="is_connected_internet ? 'bg-green-500' : 'bg-red-500'">
-        <span v-if="is_connected_internet">{{ $t('v1.view.network.connected') }}</span>
+        :class="commonStore.is_connected_internet ? 'bg-green-500' : 'bg-red-500'">
+        <span v-if="commonStore.is_connected_internet">{{ $t('v1.view.network.connected') }}</span>
         <span v-else>{{ $t('v1.view.network.disconnect') }}</span>
     </div>
 </template>
 <script setup lang="ts">
+import { useCommonStore } from '@/stores';
 import { onMounted, onUnmounted, ref } from 'vue'
+
+const commonStore = useCommonStore()
 
 /**có hiện thông báo hay không */
 const is_alert = ref(false)
 /**có đang kết nối vào mạng hay không */
-const is_connected_internet = ref(true)
+// const is_connected_internet = ref(true)
 
 /**xử lý sự kiện khi online/offline */
 function handleNetworkChange($event: Event) {
     if ($event.type === 'offline') {
         is_alert.value = true
-        is_connected_internet.value = false
+        commonStore.is_connected_internet = false
     }
     if ($event.type === 'online') {
-        is_connected_internet.value = true
+        commonStore.is_connected_internet = true
         setTimeout(() => {
             is_alert.value = false
         }, 3000)

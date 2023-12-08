@@ -14,7 +14,7 @@
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                         <ClientTextMessage v-if="message.postback_title" :text="message.postback_title" />
-                        <AttachmentMessage v-if="message.message_attachments"
+                        <AttachmentMessage v-if="message.message_attachments?.length"
                             :message_attachments="message.message_attachments" :message_mid="message.message_mid"
                             :page_id="message.fb_page_id" type="CLIENT" />
                     </template>
@@ -24,9 +24,9 @@
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] group">
                         <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
-                        <template v-if="message.message_text || message.message_attachments">
+                        <template v-if="message.message_text || message.message_attachments?.length">
                             <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-                            <template v-if="message.message_attachments">
+                            <template v-if="message.message_attachments?.length">
                                 <AttachmentMessage
                                     v-if="!['template', 'fallback', 'receipt'].includes(message.message_attachments?.[0]?.type || '')"
                                     :message_attachments="message.message_attachments" :message_mid="message.message_mid"
@@ -79,7 +79,7 @@
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useConversationStore, useMessageStore } from '@/stores'
+import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
@@ -114,6 +114,7 @@ interface CustomEvent extends Event {
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
+const commonStore = useCommonStore()
 
 /**danh sách tin nhắn hiện tại */
 const list_message = ref<MessageInfo[]>([])
@@ -221,6 +222,9 @@ function loadMoreMessage($event: Event) {
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
+    // nếu đang mất mạng thì không cho gọi api
+    if (!commonStore.is_connected_internet) return
+
     /**id tin nhắn trên đầu của lần loading trước */
     let old_first_message_id = list_message.value?.[0]?._id
 
