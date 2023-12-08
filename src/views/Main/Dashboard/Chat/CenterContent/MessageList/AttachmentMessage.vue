@@ -1,7 +1,7 @@
 <template>
     <div :class="{
         'justify-end': type === 'PAGE'
-    }" class="flex flex-wrap mt-[1px]">
+    }" class="flex flex-wrap mt-[1px] relative z-1">
         <template v-if="isMobile()" v-for="(attachment, index) of message_attachments">
             <div v-if="attachment.type !== 'fallback'" @click="viewAttachment(getFile(index))"
                 class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">

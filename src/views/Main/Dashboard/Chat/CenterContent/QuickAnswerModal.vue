@@ -49,18 +49,17 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { useCommonStore, useConversationStore, usePageStore, useMessageStore } from '@/stores'
+import { isMobile } from '@/service/function'
+import { nonAccentVn } from '@/service/helper/format'
+import { get_quick_answer } from '@/service/api/chatbox/widget'
+import { teleportCenterModelOnPcScreen } from '@/service/function'
+import { size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import ModalBottom from '@/components/ModalBottom.vue'
 
-import { isMobile } from '@/service/function'
-import { nonAccentVn } from '@/service/helper/format'
 import type { ComponentRef } from '@/service/interface/vue'
-import { get_quick_answer } from '@/service/api/chatbox/widget'
-import { teleportCenterModelOnPcScreen } from '@/service/function'
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
-import { size } from 'lodash'
-
 
 /** Sử dụng store */
 const commonStore = useCommonStore()
@@ -123,7 +122,8 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
 
     let { content, list_images } = answer
 
-    const input_chat = document.getElementById('chat-text-input-message')
+    const input_chat = document.getElementById('chat-text-input-message') as HTMLInputElement
+
     if (!input_chat) return
 
     content = replaceTemplateMessage(content)
@@ -144,6 +144,8 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
                 url,
             }
         })
+
+    if (!isMobile()) setTimeout(() => input_chat?.focus(), 500)
 }
 /** Xử lý event */
 function handleKeyUp(event: KeyboardEvent) {
@@ -250,9 +252,11 @@ function seachQuickAnswer(event: KeyboardEvent) {
     })
     setDefaultQuickAnswer()
 }
-/** Focus vào input search sau khi mở modal lên */
+/** Focus vào input search sau khi mở modal lên ở pc */
 function inputFocus() {
-    // setTimeout(function() { ref_search.value.focus() }, 500)
+    if (isMobile()) return
+
+    setTimeout(function () { ref_search.value.focus() }, 500)
 }
 
 

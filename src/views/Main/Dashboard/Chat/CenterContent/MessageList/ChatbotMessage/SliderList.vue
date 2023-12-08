@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div class="relative z-1">
         <div @click="moveSlider('LEFT')"
             class="cursor-pointer rounded-full bg-slate-200 w-[30px] h-[30px] flex items-center justify-center absolute z-[1] top-[50%] translate-y-[-50%] left-[-15px]">
             <img src="@/assets/icons/arrow-left.svg" class="w-[13px] h-[13px]" />

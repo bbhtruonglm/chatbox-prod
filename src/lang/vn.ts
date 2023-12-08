@@ -273,7 +273,7 @@ const source: Language = {
                                 title: 'Chi tiết tập tin đính kèm',
                                 image_to_text: 'Ảnh sang chữ'
                             },
-
+                            file: 'Tệp đính kèm'
                         },
                         widget: {
                             title: 'Widget',

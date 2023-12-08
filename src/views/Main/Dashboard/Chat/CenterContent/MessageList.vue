@@ -10,6 +10,7 @@
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
                     class="w-fit max-w-[370px] group">
+                    <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
                         <ClientTextMessage v-if="message.postback_title" :text="message.postback_title" />
@@ -22,6 +23,7 @@
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] group">
+                        <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                         <template v-if="message.message_text || message.message_attachments">
                             <PageTextMessage v-if="message.message_text" :text="message.message_text" />
                             <template v-if="message.message_attachments">
@@ -99,6 +101,7 @@ import ClientRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/Cl
 import StaffRead from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/StaffRead.vue'
 import AdMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AdMessage.vue'
 import FacebookPost from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/FacebookPost.vue'
+import ReplyMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ReplyMessage.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'

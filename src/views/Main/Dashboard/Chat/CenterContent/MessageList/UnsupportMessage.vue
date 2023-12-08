@@ -1,5 +1,5 @@
 <template>
-    <div class="text-xs bg-slate-200 text-slate-500 rounded-lg p-1 cursor-not-allowed">
+    <div class="text-xs bg-slate-200 text-slate-500 rounded-lg p-1 cursor-not-allowed relative z-1">
         {{ $t('v1.common.unsupport_message') }}
     </div>
 </template>

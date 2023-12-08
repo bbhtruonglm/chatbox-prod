@@ -32,6 +32,10 @@ export interface MessageInfo {
     comment?: FacebookCommentPost
     /**thời gian tạo bản ghi của server */
     createdAt: string
+    /**mid của tin được reply nếu có */
+    replay_mid?: string
+    /**nội dung tin nhắn trước đó được reply nếu có */
+    snap_replay_message?: MessageInfo
 }
 
 /**đầu vào của api */

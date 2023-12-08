@@ -1,6 +1,6 @@
 <template>
     <div @click="onClickMessage" v-html="renderText(text)"
-        class="text-sm break-words whitespace-pre-line bg-white rounded-r-2xl rounded-l-md p-2" />
+        class="text-sm break-words whitespace-pre-line bg-white rounded-r-2xl rounded-l-md p-2 relative z-1" />
 </template>
 <script setup lang="ts">
 import { copyToClipboard } from '@/service/helper/copyWithAlert';
