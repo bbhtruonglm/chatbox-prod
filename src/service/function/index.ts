@@ -1,5 +1,5 @@
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
-import { isEqual, keys, size, sortBy } from 'lodash'
+import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { reset_read_conversation } from '../api/chatbox/n4-service'
@@ -133,7 +133,7 @@ export const selectConversation = (conversation: ConversationInfo) => {
     })
 
     // tự động focus vào input chat
-    document.getElementById('chat-text-input-message')?.focus()
+    if (!isMobile()) document.getElementById('chat-text-input-message')?.focus()
 }
 
 /**kiểm tra cỡ màn hình, từ đó suy luận ra có đang ở chế độ dt hay không */
@@ -259,4 +259,33 @@ export const openPopup = (url: string, width = 800, height = 600) => {
 
     // Mở cửa sổ popup    
     window.open(url, 'PopupWindow', params)
+}
+
+/**kiểm tra xem có đang kích hoạt filter tin nhắn hay không */
+export function isActiveMessageFilter() {
+    const conversationStore = useConversationStore()
+
+    if (
+        conversationStore.option_filter_page_data.unread_message ||
+        conversationStore.option_filter_page_data.not_response_client ||
+        conversationStore.option_filter_page_data.not_exist_label ||
+        conversationStore.option_filter_page_data.is_spam_fb === 'YES'
+    ) return true
+
+    return false
+}
+/**check xem có đang kích hoạt lọc hội thoại hay không */
+export function isFilterActive() {
+    const conversationStore = useConversationStore()
+
+    // đọc lấy dữ liệu lọc không có search
+    let filter = omit(conversationStore.option_filter_page_data, ['search'])
+
+    // loại bỏ các giá trị bị undefied trong object
+    filter = pickBy(filter, identity)
+
+    // kiểm tra lọc
+    if (isEqual(filter, { is_spam_fb: 'NO' })) return false
+
+    return true
 }

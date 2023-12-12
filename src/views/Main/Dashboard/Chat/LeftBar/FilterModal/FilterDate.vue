@@ -4,7 +4,7 @@
             {{ $t('v1.view.main.dashboard.chat.filter.time.title') }}
         </template>
         <template v-slot:body>
-            <div class="h-[440px]">
+            <div class="h-[calc(100vh_-_239px)]">
                 <div class="grid grid-cols-2 gap-2">
                     <div @click="selectExactlyTimeRange(name)" v-for="name of EXACTLY_TIME_RANGE" :class="{
                         'bg-orange-100': isActiveExactlyTime(name)
@@ -26,7 +26,7 @@
                         <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.gte"
                             v-model="conversationStore.option_filter_page_data.time_range.gte" :max="TOMORROW_TIME"
                             :max_another_range="conversationStore.option_filter_page_data.time_range.lte"
-                            class="text-xs border rounded-xl mt-1" />
+                            class="border rounded-xl mt-1" />
                     </div>
                     <div>
                         <div class="text-slate-500">
@@ -41,7 +41,7 @@
                         <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.lte"
                             v-model="conversationStore.option_filter_page_data.time_range.lte"
                             :min_another_range="conversationStore.option_filter_page_data.time_range.gte"
-                            :max="TOMORROW_TIME" class="text-xs border rounded-xl mt-1" />
+                            :max="TOMORROW_TIME" class="border rounded-xl mt-1" />
                     </div>
 
                 </div>
@@ -183,12 +183,16 @@ function selectExactlyTimeRange(name: string) {
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.time_range
 
-    toggleModal()
+    immediatelyHide()
 }
 /**ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

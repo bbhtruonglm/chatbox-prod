@@ -1,18 +1,22 @@
 <template>
+    <FilterBar />
     <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-4">
-        <div class="pl-14 pr-4 md:pl-4 flex items-center">
-            <div @click="openConversationFilter()" class="cursor-pointer">
+        <div class="pl-14 pr-4 md:pl-0 flex items-center">
+            <div v-if="isMobile()" @click="openConversationFilter()" class="cursor-pointer">
                 <img v-if="isFilterActive()" src="@/assets/icons/filter-active.svg" width="23" height="23">
                 <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
             </div>
-            <div class="flex items-center ml-4 w-full justify-between">
-                <div v-if="!is_show_search" >
-                    <span class="font-medium text-2xl">
+            <div class="flex items-center ml-4 md:ml-0 w-full justify-between">
+                <div v-if="!is_show_search" class="flex items-end">
+                    <div class="font-medium text-2xl">
                         {{ $t('v1.common.chatbox') }}
-                    </span>
-                    <span class="text-xs text-slate-500">
-                        v{{ version }}
-                    </span>
+                    </div>
+                    <div class="text-sm text-slate-700 ml-1">
+                        {{ total_conversation?.toLocaleString() }}
+                    </div>
+                    <div class="mb-[3px]">
+                        <img src="@/assets/icons/user-list.svg" class="w-[15px] h-[15px]" />
+                    </div>
                 </div>
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
                     class="h-[32px] w-full px-2 focus:outline-none" v-if="is_show_search" type="text"
@@ -34,18 +38,23 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
-import {  useConversationStore } from '@/stores'
-import { debounce, identity, isEqual, omit, pickBy } from 'lodash'
+import {  useConversationStore, usePageStore } from '@/stores'
+import { debounce, keys } from 'lodash'
 import { useI18n } from 'vue-i18n'
-import { teleportModelFilterOnPcScreen } from '@/service/function'
+import { isFilterActive, isMobile, teleportModelFilterOnPcScreen } from '@/service/function'
+import { count_conversation } from '@/service/api/chatbox/n4-service'
 
 import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/LeftBar/Conversation.vue'
 import FilterModal from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal.vue'
 import StaffInfoModal from '@/views/Main/Dashboard/Chat/LeftBar/StaffInfoModal.vue'
+import FilterBar from '@/views/Main/Dashboard/Chat/LeftBar/FilterBar.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
+import { watch } from 'vue'
+
 const conversationStore = useConversationStore()
+const pageStore = usePageStore()
 const { t: $t } = useI18n()
 
 /**phiên bản trong package.json */
@@ -58,6 +67,8 @@ const filter_modal_ref = ref<ComponentRef>()
 const is_show_search = ref(false)
 /**ref của input tìm kiếm hội thoại */
 const search_conversation_input = ref<ComponentRef>()
+/**đếm tổng số khách hàng thoả mãn điều kiện lọc */
+const total_conversation = ref<number>()
 
 onMounted(() => {
     if (conversationStore.option_filter_page_data.search) {
@@ -67,8 +78,29 @@ onMounted(() => {
         // hiện input tìm kiếm
         is_show_search.value = true
     }
+
+    countTotalConversationValid()
 })
 
+// khi thay đổi giá trị lọc tin nhắn thì load lại dữ liệu
+watch(
+    () => conversationStore.option_filter_page_data,
+    () => countTotalConversationValid(),
+    { deep: true }
+)
+
+/**xử lý sự kiện khi modal mở ra */
+function countTotalConversationValid() {
+    count_conversation(
+        {
+            ...{
+                page_id: keys(pageStore.selected_page_id_list),
+            },
+            ...conversationStore.option_filter_page_data
+        },
+        (e, r) => total_conversation.value = r
+    )
+}
 /**toggle modal */
 function openConversationFilter() {
     teleportModelFilterOnPcScreen()
@@ -82,19 +114,6 @@ const onSearchConversation = debounce(($event: Event) => {
     
     conversationStore.option_filter_page_data.search = INPUT.value
 }, 300)
-/**check xem có đang kích hoạt lọc hội thoại hay không */
-function isFilterActive() {
-    // đọc lấy dữ liệu lọc không có search
-    let filter = omit(conversationStore.option_filter_page_data, ['search'])
-
-    // loại bỏ các giá trị bị undefied trong object
-    filter = pickBy(filter, identity)
-
-    // kiểm tra lọc
-    if (isEqual(filter, { is_spam_fb: 'NO' })) return false
-
-    return true
-}
 /**ẩn hiện ô tìm kiếm hội thoại */
 function toogleSearch() {
     // toggle value

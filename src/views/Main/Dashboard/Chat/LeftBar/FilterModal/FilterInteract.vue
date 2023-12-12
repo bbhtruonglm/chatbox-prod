@@ -4,10 +4,12 @@
             {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
         </template>
         <template v-slot:body>
-            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
-                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
-            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
-                :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
+            <div class="h-[calc(100vh_-_239px)]">
+                <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
+                    :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
+                <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
+                    :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
+            </div>
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -43,12 +45,16 @@ const filter_modal_ref = ref<ComponentRef>()
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.display_style
 
-    toggleModal()
+    immediatelyHide()
 }
 /**ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

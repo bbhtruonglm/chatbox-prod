@@ -39,7 +39,8 @@ const source: Language = {
             delete: 'Xoá',
             update: 'Cập nhật',
             update_success: 'Đã cập nhật',
-            create: 'Tạo'
+            create: 'Tạo',
+            incomming: 'Sắp ra mắt'
         },
         view: {
             network: {

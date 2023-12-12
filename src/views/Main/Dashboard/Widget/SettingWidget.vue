@@ -143,7 +143,7 @@ watch(() => $props.widget, () => setDefaultValueSetting())
 /**tạo ra các ref động */
 const setGroupStaffRef = (id: string) => (el: any) => {
     if (el) group_staff_refs[id] = el
-};
+}
 /**cài đặt widget */
 function updateWidget() {
     if (!$props.widget?._id) return

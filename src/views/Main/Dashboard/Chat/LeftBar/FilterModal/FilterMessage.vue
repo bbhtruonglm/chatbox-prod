@@ -4,14 +4,16 @@
             {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
         </template>
         <template v-slot:body>
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
-                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
-                :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label"
-                :icon="notTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
-            <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
+            <div class="h-[calc(100vh_-_239px)]">
+                <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
+                    :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
+                <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
+                    :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
+                <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label"
+                    :icon="notTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
+                <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
+                    :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
+            </div>
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -67,12 +69,16 @@ function clearThisFilter() {
     delete conversationStore.option_filter_page_data.not_exist_label
     conversationStore.option_filter_page_data.is_spam_fb = 'NO'
 
-    toggleModal()
+    immediatelyHide()
 }
 /**ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

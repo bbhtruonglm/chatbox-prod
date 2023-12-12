@@ -2,7 +2,7 @@
     <div :class="{
         'bg-orange-100': is_active,
         'md:justify-center': is_only_show_icon
-    }" class="flex cursor-pointer items-center rounded-md hover:bg-orange-100">
+    }" class="flex cursor-pointer items-center rounded-md hover:bg-orange-100 mb-1">
         <div class="w-[40px] h-[40px] flex items-center justify-center">
             <img :class="icon_class" :src="icon">
         </div>

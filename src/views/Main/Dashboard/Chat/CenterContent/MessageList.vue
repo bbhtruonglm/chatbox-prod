@@ -9,7 +9,7 @@
             </div>
             <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
-                    class="w-fit max-w-[370px] group">
+                    class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                     <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
                         <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
@@ -22,7 +22,7 @@
                     <MessageDate class="text-right" :time="message.time || message.createdAt" />
                 </div>
                 <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] group">
+                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                         <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                         <template v-if="message.message_text || message.message_attachments?.length">
                             <PageTextMessage v-if="message.message_text" :text="message.message_text" />
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] group">
+                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                         <NoteMessage v-if="message.message_text" :text="message.message_text" />
                         <UnsupportMessage v-else />
                         <MessageDate v-if="message.createdAt" class="right-5" :time="message.createdAt"
@@ -67,7 +67,7 @@
             </div>
             <div v-for="message of messageStore.send_message_list" class="pt-[1px] pr-5 relative group">
                 <div class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] group">
+                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                         <PageTempTextMessage :text="message.text" />
                         <PageMessageError v-if="message.error" />
                         <MessageDate v-if="message.time" class="right-5" :time="message.time" />

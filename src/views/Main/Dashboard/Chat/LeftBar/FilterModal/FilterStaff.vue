@@ -5,19 +5,21 @@
             {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
         </template>
         <template v-slot:body>
-            <div class="py-3">
-                <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
-                    v-model="search_staff_name">
-            </div>
-            <div class="h-[50vh] overflow-y-auto">
-                <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
-                    v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
-                    <div class="flex items-center">
-                        <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
-                        <p class="text-sm">{{ staff.name }}</p>
+            <div class="h-[calc(100vh_-_239px)]">
+                <div class="py-3">
+                    <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
+                        class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
+                        v-model="search_staff_name">
+                </div>
+                <div class="h-[calc(100%_-_206px)] overflow-y-auto">
+                    <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
+                        v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
+                        <div class="flex items-center">
+                            <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
+                            <p class="text-sm">{{ staff.name }}</p>
+                        </div>
+                        <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                     </div>
-                    <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                 </div>
             </div>
         </template>
@@ -65,7 +67,7 @@ const search_staff_name = ref<string>('')
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.staff_id
     staffs_selected.value = {}
-    toggleModal()
+    immediatelyHide()
 }
 
 /** Ẩn hiện modal */
@@ -119,6 +121,10 @@ onMounted(() => {
         showLabelSelected()
     }, 2000)
 })
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

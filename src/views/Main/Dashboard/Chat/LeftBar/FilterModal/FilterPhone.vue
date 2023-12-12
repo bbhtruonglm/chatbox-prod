@@ -4,10 +4,12 @@
             {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
         </template>
         <template v-slot:body>
-            <FilterRadio value="YES" v-model="conversationStore.option_filter_page_data.have_phone" :icon="includePhoneSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')" />
-            <FilterRadio value="NO" v-model="conversationStore.option_filter_page_data.have_phone" :icon="excludePhoneSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.phone.exclude_phone')" />
+            <div class="h-[calc(100vh_-_239px)]">
+                <FilterRadio value="YES" v-model="conversationStore.option_filter_page_data.have_phone" :icon="includePhoneSvg"
+                    :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')" />
+                <FilterRadio value="NO" v-model="conversationStore.option_filter_page_data.have_phone" :icon="excludePhoneSvg"
+                    :title="$t('v1.view.main.dashboard.chat.filter.phone.exclude_phone')" />
+            </div>
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -43,12 +45,16 @@ const filter_modal_ref = ref<ComponentRef>()
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.have_phone
 
-    toggleModal()
+    immediatelyHide()
 }
 /**ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

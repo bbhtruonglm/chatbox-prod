@@ -22,9 +22,9 @@ export const chatbox = (
 }, (e, r) => {
     // format lại response trước khi return
     if (e) return proceed(e)
-    if (r && r.mean) return proceed(r.mean)
-    if (r && r.message) return proceed(r.message)
-    if (r && r.data) return proceed(null, r.data)
+    if (r?.mean) return proceed(r.mean)
+    if (r?.message) return proceed(r.message)
+    if (r?.data || r?.data === 0) return proceed(null, r.data)
 
     proceed(e, r)
 })

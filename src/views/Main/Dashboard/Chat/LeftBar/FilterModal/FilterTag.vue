@@ -5,27 +5,29 @@
             {{ $t('v1.view.main.dashboard.chat.filter.label.title') }}
         </template>
         <template v-slot:body>
-            <div class="py-3">
-                <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
-                    v-model="label_search_name">
-            </div>
-            <div class="flex justify-between py-3 border-t border-b">
-                <p>{{ $t('v1.view.main.dashboard.chat.filter.label.filteration_condition') }}</p>
-                <div class="flex items-center">
-                    <p class="mr-3">{{ $t('v1.view.main.dashboard.chat.filter.label.or') }}</p>
-                    <input :checked="!conversationStore.option_filter_page_data.label_and" :value="false"
-                        v-model="conversationStore.option_filter_page_data.label_and" type="radio"
-                        class="accent-orange-600 w-[20px] h-[20px]">
-                    <p class="mr-3 ml-8">{{ $t('v1.view.main.dashboard.chat.filter.label.and') }}</p>
-                    <input v-model="conversationStore.option_filter_page_data.label_and" :value="true"
-                        :checked="conversationStore.option_filter_page_data.label_and" type="radio"
-                        class="accent-orange-600 w-[20px] h-[20px] mr-3">
+            <div class="h-[calc(100vh_-_239px)]">
+                <div class="py-3">
+                    <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                        class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                        v-model="label_search_name">
                 </div>
-            </div>
-            <div class="h-[40vh] scrollbar-vertical overflow-hidden overflow-y-auto">
-                <TagItem v-for="item, index in labels" @click="selectLabel(index as string)" :label="item"
-                    :is_selected="labels_selected[index]" />
+                <div class="flex justify-between py-3 border-t border-b">
+                    <p>{{ $t('v1.view.main.dashboard.chat.filter.label.filteration_condition') }}</p>
+                    <div class="flex items-center">
+                        <p class="mr-3">{{ $t('v1.view.main.dashboard.chat.filter.label.or') }}</p>
+                        <input :checked="!conversationStore.option_filter_page_data.label_and" :value="false"
+                            v-model="conversationStore.option_filter_page_data.label_and" type="radio"
+                            class="accent-orange-600 w-[20px] h-[20px]">
+                        <p class="mr-3 ml-8">{{ $t('v1.view.main.dashboard.chat.filter.label.and') }}</p>
+                        <input v-model="conversationStore.option_filter_page_data.label_and" :value="true"
+                            :checked="conversationStore.option_filter_page_data.label_and" type="radio"
+                            class="accent-orange-600 w-[20px] h-[20px] mr-3">
+                    </div>
+                </div>
+                <div class="h-[calc(100%_-_264px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+                    <TagItem v-for="item, index in labels" @click="selectLabel(index as string)" :label="item"
+                        :is_selected="labels_selected[index]" />
+                </div>
             </div>
         </template>
         <template v-slot:footer>
@@ -72,7 +74,7 @@ const label_search_name = ref<string>('')
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.label_id
     labels_selected.value = {}
-    toggleModal()
+    immediatelyHide()
 }
 
 /** Ẩn hiện modal */
@@ -130,6 +132,10 @@ onMounted(() => {
         showLabelSelected()
     }, 3000)
 })
+/**tắt ngay lập tức */
+function immediatelyHide(){
+    filter_modal_ref.value?.immediatelyHide()
+}
 
-defineExpose({ toggleModal })
+defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
 </script>

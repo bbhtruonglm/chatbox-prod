@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white p-2">
+    <div class="bg-white p-2 text-[10px]">
         <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center justify-between">
                 <div @click="changeDate('MONTH', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"
@@ -41,7 +41,7 @@
                     'hover:bg-orange-600 hover:text-white cursor-pointer': !max || getDayInfo(index_row, index_col)?.timestamp < max,
                     'text-slate-400 cursor-not-allowed': max && getDayInfo(index_row, index_col)?.timestamp >= max,
                     'bg-orange-100': (modelValue && min_another_range && getDayInfo(index_row, index_col)?.timestamp < modelValue && getDayInfo(index_row, index_col)?.timestamp > min_another_range) || (modelValue && max_another_range && getDayInfo(index_row, index_col)?.timestamp > modelValue && getDayInfo(index_row, index_col)?.timestamp <  max_another_range)
-                }" class="w-[23px] h-[23px] rounded-full flex justify-center items-center">
+                }" class="w-[18px] h-[18px] rounded-full flex justify-center items-center">
                     {{ getDayInfo(index_row, index_col)?.date }}
                 </div>
             </div>

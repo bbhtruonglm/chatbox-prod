@@ -75,5 +75,5 @@ function immediatelyHide() {
 }
 
 // public chức năng ẩn hiện modal để có thể được gọi từ bên ngoài component
-defineExpose({ toggleModal, immediatelyHide })
+defineExpose({ toggleModal, immediatelyHide, is_open })
 </script>

@@ -26,7 +26,7 @@ import { flow } from '@/service/helper/async'
 import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
-import { selectConversation } from '@/service/function'
+import { isMobile, selectConversation } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import ConversationItem from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/ConversationItem.vue'
@@ -251,7 +251,8 @@ function selectDefaultConversation() {
 
     // tự động focus vào input chat
     // đơi nửa giây cho div được render
-    setTimeout(() => {
+    // chỉ cho chạy ở pc, nếu ở mobile sẽ gây lỗi vỡ giao diện
+    if (!isMobile()) setTimeout(() => {
         document.getElementById('chat-text-input-message')?.focus()
     }, 500)
 }
