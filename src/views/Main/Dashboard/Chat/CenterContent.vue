@@ -2,7 +2,7 @@
     <div id="center-content" :class="{
         'translate-x-[100vw]': !commonStore.is_show_message_mobile
     }"
-        class="md:translate-x-0 duration-200 pt-[58px] pb-[30px] md:pt-0 md:pb-0 top-0 absolute md:static md:w-[calc(100%_-_710px)] xl:w-[calc(100%_-_810px)] h-full w-full bg-white">
+        class="md:translate-x-0 duration-200 pt-[58px] pb-[30px] md:pt-0 md:pb-0 top-0 absolute md:static md:w-[calc(100%_-_650px)] xl:w-[calc(100%_-_750px)] h-full w-full bg-white">
         <div v-show="conversationStore.select_conversation?.fb_client_id" class="h-full">
             <UserInfo @toggle_change_assign_staff="toggleChangeAssignStaff" />
             <MessageList />

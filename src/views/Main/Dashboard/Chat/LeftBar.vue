@@ -1,5 +1,5 @@
 <template>
-    <FilterBar />
+    <!-- <FilterBar /> -->
     <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-4">
         <div class="pl-14 pr-4 md:pl-0 flex items-center">
             <div v-if="isMobile()" @click="openConversationFilter()" class="cursor-pointer">
@@ -48,7 +48,7 @@ import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/LeftBar/Conversation.vue'
 import FilterModal from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal.vue'
 import StaffInfoModal from '@/views/Main/Dashboard/Chat/LeftBar/StaffInfoModal.vue'
-import FilterBar from '@/views/Main/Dashboard/Chat/LeftBar/FilterBar.vue'
+// import FilterBar from '@/views/Main/Dashboard/Chat/LeftBar/FilterBar.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import { watch } from 'vue'

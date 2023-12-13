@@ -1,0 +1,96 @@
+<template>
+    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
+        @click="goToChat" icon_class="w-[20px]" :is_only_show_icon="is_hide_title" :icon="chatSvg"
+        :title="$t('v1.view.main.dashboard.nav.chat')" />
+    <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav(nav.path)"
+        :icon_class="nav.icon_class" :is_only_show_icon="is_hide_title" :icon="nav.icon" :title="nav.title" />
+    <NavItem :is_only_show_icon="is_hide_title" :icon="settingSvg" @click="openPageSetting"
+        :title="$t('v1.view.main.dashboard.nav.page_setting')" />
+    <NavItem :is_only_show_icon="is_hide_title" :icon="analyticSvg" @click="openAnalytic"
+        :title="$t('v1.view.main.dashboard.nav.analytic')" />
+    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
+        @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]"
+        :is_only_show_icon="is_hide_title" :icon="downloadSvg" :title="$t('v1.view.main.dashboard.nav.download')" />
+</template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useCommonStore, usePageStore } from '@/stores'
+import { computed } from 'vue'
+import { keys, size } from 'lodash'
+import { openNewTab, preGoToChat } from '@/service/function'
+import { getItem } from '@/service/helper/localStorage'
+
+import settingSvg from '@/assets/icons/setting.svg'
+import analyticSvg from '@/assets/icons/analytic.svg'
+import pageSvg from '@/assets/icons/page.svg'
+import chatSvg from '@/assets/icons/chat.svg'
+import downloadSvg from '@/assets/icons/download.svg'
+import crownSvg from '@/assets/icons/crown.svg'
+import widgetSvg from '@/assets/icons/widget.svg'
+import linkSvg from '@/assets/icons/link.svg'
+import NavItem from '@/components/Main/Dashboard/NavItem.vue'
+
+const $props = withDefaults(defineProps<{
+    /**gắn cờ luôn luôn hiện full, không ẩn */
+    alway_full?: boolean
+}>(), {})
+
+const $router = useRouter()
+const { t: $t } = useI18n()
+const commonStore = useCommonStore()
+const pageStore = usePageStore()
+const locale = localStorage.getItem('locale') || ''
+
+/**danh sách menu item */
+const LIST_NAV = [
+    {
+        path: '/main/dashboard/select-page',
+        icon: pageSvg,
+        icon_class: 'w-[20px]',
+        title: $t('v1.view.main.dashboard.nav.select_page')
+    },
+    {
+        path: '/main/dashboard/select-platform',
+        icon: linkSvg,
+        icon_class: 'w-[20px]',
+        title: $t('v1.view.main.dashboard.nav.select_platform')
+    },
+    {
+        path: '/main/dashboard/pricing',
+        icon: crownSvg,
+        icon_class: 'w-[20px]',
+        title: $t('v1.view.main.dashboard.nav.upgrade')
+    },
+    {
+        path: '/main/dashboard/widget',
+        icon: widgetSvg,
+        icon_class: 'w-[20px]',
+        title: $t('v1.view.main.dashboard.nav.widget')
+    },
+]
+
+/**ẩn title ở chế độ nhỏ */
+const is_hide_title = computed(() => commonStore.this_toggle_nav && !$props.alway_full)
+
+/**mở cài đặt trang */
+function openPageSetting() {
+    openNewTab(`${$env.host.page_setting_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list)?.[0]}&locale=${locale}`)
+}
+/**mở thống kê */
+function openAnalytic() {
+    openNewTab(`${$env.host.analytic_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
+}
+/**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
+function selectNav(path: string) {
+    // check cỡ màn điện thoại
+    if (window.innerWidth < 768) commonStore.dashboard_toggle_nav = false
+
+    $router.push(path)
+}
+/**đi đến trang chat */
+function goToChat() {
+    preGoToChat(() => selectNav('/main/dashboard/chat'))
+}
+</script>

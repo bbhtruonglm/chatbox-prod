@@ -1,6 +1,6 @@
 <template>
     <Teleport :to="teleport_to">
-        <div v-if="is_open" class="absolute top-0 left-0 h-screen w-screen z-10">
+        <div v-if="is_open" class="absolute top-0 left-0 h-screen w-screen z-20">
             <div @click="toggleDropdown()" class="w-full h-full"></div>
             <div ref="dropdown_ref" :style="{
                 width: _width,

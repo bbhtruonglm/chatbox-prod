@@ -74,6 +74,7 @@ const source: Language = {
             main: {
                 dashboard: {
                     nav: {
+                        menu: 'Danh mục',
                         chat: 'Chat',
                         noti: 'Thông báo',
                         toggle: 'Thu nhỏ',

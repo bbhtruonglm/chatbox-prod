@@ -2,10 +2,10 @@
     <div class="h-full w-full flex relative">
         <div class="bg-white duration-500 h-screen w-[300px] absolute z-[20]" :class="genNavClass()">
             <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-2">
-                <div @click="toggleNav" v-if="this_toggle_nav"
+                <div @click="toggleNav" v-if="commonStore.this_toggle_nav"
                     class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
                 <button @click="toggleNav" class="absolute top-[70px] right-[-40px] md:hidden">
-                    <img v-if="this_toggle_nav" src="@/assets/icons/close.svg">
+                    <img v-if="commonStore.this_toggle_nav" src="@/assets/icons/close.svg">
                     <img v-else src="@/assets/icons/toggle.svg">
                 </button>
                 <slot name="menu" />
@@ -17,7 +17,8 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
+import { useCommonStore } from '@/stores'
 
 const $emit = defineEmits(['toggle_nav_change'])
 
@@ -26,8 +27,7 @@ const $props = withDefaults(defineProps<{
     init_toggle_nav?: boolean
 }>(), {})
 
-/**giá trị toggle nav hiện tại */
-const this_toggle_nav = ref(false)
+const commonStore = useCommonStore()
 
 // thay đổi giá trị ẩn hiện nếu bên ngoài thay đổi
 watch(() => $props.init_toggle_nav, val => initToggleNavValue(val))
@@ -37,15 +37,15 @@ onMounted(() => initToggleNavValue($props.init_toggle_nav))
 
 /**thay đổi giá trị của toggle */
 function initToggleNavValue(value: boolean) {
-    this_toggle_nav.value = value
+    commonStore.this_toggle_nav = value
 }
 /**thay đổi trạng thái của nav */
 function toggleNav() {
     // thay đổi giá trị của biến
-    this_toggle_nav.value = !this_toggle_nav.value
+    commonStore.this_toggle_nav = !commonStore.this_toggle_nav
 
     // xuất giá trị của biến ra bên ngoài
-    $emit('toggle_nav_change', this_toggle_nav.value)
+    $emit('toggle_nav_change', commonStore.this_toggle_nav)
 }
 /**
  * css lại nav khi ẩn / hiên
@@ -58,7 +58,7 @@ function genNavClass() {
      * mobile: ẩn nav
      * tablet/pc: hiển thị cỡ lớn
      */
-    if (!this_toggle_nav.value) return 'left-[-300px] md:static md:w-[220px]'
+    if (!commonStore.this_toggle_nav) return 'left-[-300px] md:static md:w-[220px]'
 
     /**
      * trạng thái kích hoạt
@@ -72,10 +72,10 @@ function genNavClass() {
  * ở giao diện tablet/pc
  */
 function genContentClass() {
-    if (!this_toggle_nav.value) return 'md:w-[calc(100%_-_220px)]'
+    if (!commonStore.this_toggle_nav) return 'md:w-[calc(100%_-_220px)]'
 
     return `md:w-[calc(100%_-_60px)]`
 }
 
-defineExpose({ toggleNav, this_toggle_nav })
+defineExpose({ toggleNav })
 </script>
