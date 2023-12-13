@@ -15,7 +15,7 @@
         </div>
     </div>
     <template>
-        <ChangeStaffModal ref="change_staff_modal_ref" />
+        <ChangeStaff ref="change_staff_ref" />
         <BottomWidgetModal ref="bottom_widget_modal_ref" />
         <QuickAnswerModal ref="quick_anser_modal_ref" />
         <AttachmentViewModal />
@@ -31,7 +31,8 @@ import { swipe_left } from '@/service/helper/touchGesture'
 import UserInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo.vue'
 import MessageList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList.vue'
 import InputChat from '@/views/Main/Dashboard/Chat/CenterContent/InputChat.vue'
-import ChangeStaffModal from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaffModal.vue'
+import ChangeStaff from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
+
 import BottomWidgetModal from '@/views/Main/Dashboard/Chat/CenterContent/BottomWidgetModal.vue'
 import QuickAnswerModal from '@/views/Main/Dashboard/Chat/CenterContent/QuickAnswerModal.vue'
 import AttachmentViewModal from '@/views/Main/Dashboard/Chat/CenterContent/AttachmentViewModal.vue'
@@ -42,11 +43,11 @@ import type { ComponentRef } from '@/service/interface/vue'
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 
-/**ref của modal thay đổi assign của nhân viên */
-const change_staff_modal_ref = ref<ComponentRef>()
+const change_staff_ref = ref<ComponentRef>()
+
 /**ref của modal widget bottom */
 const bottom_widget_modal_ref = ref<ComponentRef>()
-/** */
+/**ref của câu trả lời nhanh */
 const quick_anser_modal_ref = ref<ComponentRef>()
 
 onMounted(() => allowMobileSwipeClose())
@@ -59,10 +60,10 @@ function allowMobileSwipeClose() {
     )
 }
 /**ẩn hiện modal */
-function toggleChangeAssignStaff() {
+function toggleChangeAssignStaff($event: MouseEvent) {
     teleportCenterModelOnPcScreen()
 
-    change_staff_modal_ref.value?.toggleModal()
+    change_staff_ref.value?.toggle($event)
 }
 /**ẩn hiện modal */
 function toggleBottomWidget() {

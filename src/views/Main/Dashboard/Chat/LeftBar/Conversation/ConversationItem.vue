@@ -2,20 +2,22 @@
     <div @click="clickConversation" :class="{
         'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
         'bg-slate-300': source?.unread_message_amount
-    }" class="border-l-4 border-l-white border-b py-1 px-2 flex cursor-pointer hover:bg-slate-100 h-[80px]">
-        <div class="w-fit h-fit relative">
-            <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id" :page_id="source?.fb_page_id"
-                :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id" :platform_type="source?.platform_type" size="37"
-                class="rounded-full" />
-            <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px]">
-                <PageAvatar :page_id="source?.fb_page_id"
-                    :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
-                    :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar" size="20"
-                    class="rounded-full border-2 border-white" />
+    }" class="border-l-4 border-l-white border-b py-2 px-2 flex cursor-pointer hover:bg-slate-100 h-[80px]">
+        <div class="flex items-center">
+            <div class="w-fit h-fit relative">
+                <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
+                    :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
+                    :platform_type="source?.platform_type" size="37" class="rounded-full" />
+                <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px]">
+                    <PageAvatar :page_id="source?.fb_page_id"
+                        :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
+                        :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
+                        size="20" class="rounded-full border-2 border-white" />
+                </div>
             </div>
         </div>
-        <div class="w-[calc(100%_-_86px)] pl-2">
-            <div class="flex items-center">
+        <div class="w-[calc(100%_-_86px)] pl-2 flex flex-col justify-between">
+            <div class="flex items-center h-[16px]">
                 <div v-if="source?.fb_staff_id" class="flex items-center">
                     <StaffAvatar :id="source?.fb_staff_id" size="20" class="rounded-full" />
                     <div class="mx-1">
@@ -26,17 +28,17 @@
                     {{ source?.client_name }}
                 </div>
             </div>
-            <div class="text-xs truncate mt-1">
+            <div class="text-xs truncate h-[16px]">
                 <span v-if="source?.last_message_type === 'page'">
                     {{ $t('v1.view.main.dashboard.chat.you') }}
                 </span>
                 {{ source?.last_message }}
             </div>
-            <div class="flex items-center mt-1">
-                <div v-if="source?.last_message_type === 'page'" class="mr-1">
-                    <img src="@/assets/icons/reply.svg">
+            <div class="flex items-center h-[16px]">
+                <div v-if="source?.last_message_type === 'page'" class="w-[16px] h-[16px] mr-1">
+                    <img src="@/assets/icons/reply.svg" class="w-full h-full">
                 </div>
-                <div class="label-list w-[calc(100vw_-_128px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
+                <div class="label-list w-[calc(100%_-_16px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
                     <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
                         <div v-if="getLabelInfo(source?.fb_page_id, label_id)"
                             :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
@@ -47,16 +49,16 @@
                 </div>
             </div>
         </div>
-        <div class="w-[49px] flex flex-col items-end">
-            <div class="h-[24px]">
+        <div class="w-[49px] flex flex-col items-end justify-between">
+            <div class="h-[16px]">
                 <span v-if="source?.unread_message_amount" class="text-xs text-white bg-red-500 px-1 rounded-full">
                     {{ source?.unread_message_amount }}
                 </span>
             </div>
-            <div class="text-slate-500 text-xs">
+            <div class="text-slate-500 text-xs h-[16px]">
                 {{ formatLastMessageTime(source?.last_message_time) }}
             </div>
-            <div class="flex items-center">
+            <div class="flex items-center h-[16px]">
                 <div v-if="source?.client_bio?.fb_uid">
                     <img src="@/assets/icons/facebook.svg" width="13" height="13">
                 </div>

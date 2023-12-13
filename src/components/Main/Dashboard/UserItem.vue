@@ -2,9 +2,9 @@
     <div :class="{
         'bg-orange-100': is_active,
         'md:justify-center': is_only_show_icon
-    }" class="flex cursor-pointer items-center rounded-md hover:bg-orange-100">
+    }" class="flex cursor-pointer items-center rounded-md hover:bg-orange-100 mt-[18px]">
         <div class="w-[40px] h-[40px] flex items-center justify-center relative">
-            <img v-if="isActiveUser(chatbotUserStore.chatbot_user)" class="absolute top-[-4px] w-[17px]" src="@/assets/icons/crown.svg">
+            <img v-if="isActiveUser(chatbotUserStore.chatbot_user)" class="absolute top-[-14px] w-[17px]" src="@/assets/icons/crown.svg">
             <StaffAvatar class="rounded-full" :id="chatbotUserStore.chatbot_user?.fb_staff_id" />
         </div>
         <div :class="is_only_show_icon ? 'md:hidden' : 'md:block'" class="ml-2">

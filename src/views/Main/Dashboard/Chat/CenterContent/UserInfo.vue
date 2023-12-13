@@ -15,7 +15,7 @@
                 <div @click="openClientInfo" class="text-sm font-medium cursor-pointer truncate w-[150px]">
                     {{ conversationStore.select_conversation?.client_name }}
                 </div>
-                <button @click="openAssignStaff" class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
+                <button @click="openAssignStaff"  class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
                     :class="{
                         'text-slate-500': is_admin,
                         'text-slate-400': !is_admin,
@@ -75,13 +75,13 @@ import { reset_read_conversation, toggle_spam_conversation } from '@/service/api
 import { ref, computed } from 'vue'
 import { flow } from '@/service/helper/async'
 import { keyBy, map } from 'lodash'
+import { isCurrentStaffIsPageAdmin } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import ClientInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo/ClientInfo.vue'
 
 import type { CbError } from '@/service/interface/function'
-import { isCurrentStaffIsPageAdmin } from '@/service/function'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
@@ -123,12 +123,12 @@ function backToConversation() {
     commonStore.is_show_message_mobile = false
 }
 /**mở modal thay đổi assign nhân viên */
-function openAssignStaff() {
+function openAssignStaff($event: MouseEvent) {
     /** Nếu tài khoản hiện tại không phải admin thì ko cho assign nhân viên */
     if (!is_admin.value) return
 
     /** Mở modal */
-    $emit('toggle_change_assign_staff')
+    $emit('toggle_change_assign_staff', $event)
 }
 /**đánh dấu hội thoại này là chưa đọc */
 function unreadConversation() {

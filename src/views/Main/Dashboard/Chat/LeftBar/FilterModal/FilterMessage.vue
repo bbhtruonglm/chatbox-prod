@@ -36,7 +36,7 @@ import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Filter
 
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
 import notReplySvg from '@/assets/icons/not_reply.svg'
-import notTagSvg from '@/assets/icons/not_tag.svg'
+import notTagSvg from '@/assets/icons/filter_not_tag.svg'
 import SpamSvg from '@/assets/icons/spam.svg'
 
 import type { ComponentRef } from '@/service/interface/vue'
