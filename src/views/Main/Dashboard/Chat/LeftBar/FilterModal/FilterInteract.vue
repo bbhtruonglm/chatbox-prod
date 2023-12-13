@@ -1,15 +1,16 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left" :width="commonStore.conversation_filter_modal_width">
+    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
+        :width="commonStore.conversation_filter_modal_width">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
         </template>
         <template v-slot:body>
-            <div class="h-[calc(100vh_-_239px)]">
-                <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
-                    :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
-                <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
-                    :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
-            </div>
+            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
+                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')"
+                class="border-b" />
+            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
+                :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')"
+                class="border-b" />
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -21,12 +22,22 @@
             </div>
         </template>
     </ModalBottom>
+    <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
+        <div class="border-b font-semibold pb-1">
+            {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
+        </div>
+        <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
+            :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
+        <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
+            :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
+    </Popover>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 
 import ModalBottom from '@/components/ModalBottom.vue'
+import Popover from '@/components/Popover.vue'
 import FilterRadio from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterRadio.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
@@ -40,6 +51,8 @@ const commonStore = useCommonStore()
 
 /**ref của modal */
 const filter_modal_ref = ref<ComponentRef>()
+/**ref của popover */
+const filter_popover_ref = ref<ComponentRef>()
 
 /**xoá lọc */
 function clearThisFilter() {
@@ -52,9 +65,9 @@ function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
 /**tắt ngay lập tức */
-function immediatelyHide(){
+function immediatelyHide() {
     filter_modal_ref.value?.immediatelyHide()
 }
 
-defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
+defineExpose({ toggleModal, filter_modal_ref, filter_popover_ref, clearThisFilter })
 </script>

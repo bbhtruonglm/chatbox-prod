@@ -2,27 +2,31 @@
     <NavItem @click="menu_ref?.toggleDropdown" :is_only_show_icon="commonStore.this_toggle_nav" :icon="toggleSvg"
         :title="$t('v1.view.main.dashboard.nav.menu')" />
 
-    <FilterBarItem @click="clickFilterItem('filter_interact')" @cancel_filter="clearThisFilter('filter_interact')"
+    <FilterBarItem @mouseover="filter_interact?.filter_popover_ref?.mouseover"
+        @mouseleave="filter_interact?.filter_popover_ref?.mouseleave" @cancel_filter="filter_interact?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.display_style" :icon="filterInteractSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.interact.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_message')" @cancel_filter="clearThisFilter('filter_message')"
+    <FilterBarItem @mouseover="filter_message?.filter_popover_ref?.mouseover"
+        @mouseleave="filter_message?.filter_popover_ref?.mouseleave" @cancel_filter="filter_message?.clearThisFilter()"
         :is_active="isActiveMessageFilter()" :icon="filterMessageSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.message.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_phone')" @cancel_filter="clearThisFilter('filter_phone')"
+    <FilterBarItem @mouseover="filter_phone?.filter_popover_ref?.mouseover"
+        @mouseleave="filter_phone?.filter_popover_ref?.mouseleave" @cancel_filter="filter_phone?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.have_phone" :icon="filterPhoneSvg"
-        :title="$t('v1.view.main.dashboard.chat.filter.interact.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_date')" @cancel_filter="clearThisFilter('filter_date')"
+        :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
+    <FilterBarItem @click="filter_date?.toggle" @cancel_filter="filter_date?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.time_range" :icon="filterDateSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_tag')" @cancel_filter="clearThisFilter('filter_tag')"
+    <FilterBarItem @click="filter_tag?.toggle" @cancel_filter="filter_tag?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.label_id" :icon="filterTagSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.label.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_not_tag')" @cancel_filter="clearThisFilter('filter_not_tag')"
+    <FilterBarItem @click="filter_not_tag?.toggle" @cancel_filter="filter_not_tag?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.not_label_id" :icon="filterNotTagSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')" />
-    <FilterBarItem @click="clickFilterItem('filter_staff')" @cancel_filter="clearThisFilter('filter_staff')"
+    <FilterBarItem @click="filter_staff?.toggle" @cancel_filter="filter_staff?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.staff_id" :icon="filterStaffSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
+
     <FilterBarItem :is_disable="true" :icon="filterCommentSvg" :title="$t('v1.common.incomming')" />
     <FilterBarItem v-if="isFilterActive()" @click="resetConversationFilter()" :icon="closeRedSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
@@ -30,13 +34,13 @@
         <Dropdown ref="menu_ref" :is_fit="false" width="220px" height="auto" position="RIGHT">
             <MenuBar :alway_full="true" />
         </Dropdown>
-        <FilterInteract :ref="setFilterModalfRef('filter_interact')" />
-        <FilterMessage :ref="setFilterModalfRef('filter_message')" />
-        <FilterPhone :ref="setFilterModalfRef('filter_phone')" />
-        <FilterDate :ref="setFilterModalfRef('filter_date')" />
-        <FilterNotTag :ref="setFilterModalfRef('filter_not_tag')" />
-        <FilterTag :ref="setFilterModalfRef('filter_tag')" />
-        <FilterStaff :ref="setFilterModalfRef('filter_staff')" />
+        <FilterInteract ref="filter_interact" />
+        <FilterMessage ref="filter_message" />
+        <FilterPhone ref="filter_phone" />
+        <FilterDate ref="filter_date" />
+        <FilterTag ref="filter_tag" />
+        <FilterNotTag ref="filter_not_tag" />
+        <FilterStaff ref="filter_staff" />
     </template>
 </template>
 <script setup lang="ts">
@@ -78,25 +82,18 @@ const commonStore = useCommonStore()
 const filter_modal_refs = reactive<any>({})
 /**ref của dropdown */
 const menu_ref = ref<ComponentRef>()
-
-/**tạo ra các ref động */
-const setFilterModalfRef = (id: string) => (el: any) => {
-    if (el) filter_modal_refs[id] = el
-}
-/**mở modal lọc */
-function clickFilterItem(id: string) {
-    // loop qua toàn bộ các modal
-    map(filter_modal_refs, (el, el_id) => {
-        // ẩn hiện modal được click
-        if (el_id === id) el?.toggleModal()
-
-        // tắt toàn bộ các modal khác đang được mở
-        else if (el?.filter_modal_ref?.is_open)
-            el?.filter_modal_ref?.immediatelyHide()
-    })
-}
-/**huỷ filter này */
-function clearThisFilter(id: string) {
-    filter_modal_refs?.[id]?.clearThisFilter()
-}
+/** */
+const filter_interact = ref<ComponentRef>()
+/** */
+const filter_message = ref<ComponentRef>()
+/** */
+const filter_phone = ref<ComponentRef>()
+/** */
+const filter_date = ref<ComponentRef>()
+/** */
+const filter_tag = ref<ComponentRef>()
+/** */
+const filter_not_tag = ref<ComponentRef>()
+/** */
+const filter_staff = ref<ComponentRef>()
 </script>

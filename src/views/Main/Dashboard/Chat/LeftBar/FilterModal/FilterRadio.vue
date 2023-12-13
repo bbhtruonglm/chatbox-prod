@@ -1,6 +1,6 @@
 <template>
     <div @click="radio_ref?.click()"
-        class="flex items-center mb-2 cursor-pointer hover:bg-orange-100 p-2 border-b rounded-lg">
+        class="flex items-center mb-2 cursor-pointer hover:bg-orange-100 p-2 rounded-lg">
         <div>
             <img :src="icon">
         </div>

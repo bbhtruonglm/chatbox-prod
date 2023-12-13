@@ -1,11 +1,14 @@
 <template>
     <Teleport :to="teleport_to">
-        <div v-if="is_open" class="absolute top-0 left-0 h-screen w-screen z-20">
-            <div @click="toggleDropdown()" class="w-full h-full"></div>
-            <div ref="dropdown_ref" :style="{
-                width: _width,
-                height: _height,
-            }" class="absolute border rounded-md p-2 bg-white">
+        <div @mouseover="hoverPopover" @mouseleave="leavePopover" v-if="is_open" ref="popover_ref" :style="{
+            width: _width,
+            height: _height,
+            paddingLeft: position === 'RIGHT' ? `${distance}px` : 0,
+            paddingRight: position === 'LEFT' ? `${distance}px` : 0,
+            paddingTop: position === 'BOTTOM' ? `${distance}px` : 0,
+            paddingBottom: position === 'TOP' ? `${distance}px` : 0,
+        }" class="absolute z-20">
+            <div class="border rounded-md p-2 bg-white w-full h-full">
                 <slot />
             </div>
         </div>
@@ -31,8 +34,6 @@ const $props = withDefaults(defineProps<{
     is_fit?: boolean
     /**khoảng cách so với mục tiêu */
     distance?: number
-    /**lùi div lại một khoảng */
-    back?: number
 }>(), {
     teleport_to: 'body',
     width: '200px',
@@ -40,7 +41,6 @@ const $props = withDefaults(defineProps<{
     position: 'BOTTOM',
     is_fit: true,
     distance: 5,
-    back: 0
 })
 
 /**chiều rộng thực tế */
@@ -49,9 +49,24 @@ const _width = ref($props.width)
 const _height = ref($props.height)
 /**ẩn hiện modal */
 const is_open = ref(false)
+/**gắn cờ đang hover vào tooltip, để chặn hành động ẩn khi level div target */
+const is_hover = ref(false)
 /**ref của dropdown */
-const dropdown_ref = ref<ComponentRef>()
+const popover_ref = ref<ComponentRef>()
 
+/**xử lý sự kiện khi hover vào popover */
+function hoverPopover() {
+    // gắn cờ là đang di chuyển trên popover, chặn không cho popover bị ẩn đi
+    is_hover.value = true
+}
+/**xử lý sự kiện khi di chuột ra khỏi popover */
+function leavePopover() {
+    // đánh dấu là đã dời khỏi popover, không được xoá dòng này nếu không sẽ lỗi
+    is_hover.value = false
+
+    // ẩn popover khi dời khỏi
+    is_open.value = false
+}
 /**dịch chuyển dropdown đến vị trí */
 function teleportToTarget($event?: MouseEvent) {
     // tịnh tiến vị trí
@@ -67,8 +82,8 @@ function teleportToTarget($event?: MouseEvent) {
         // bên phải
         if ($props.position === 'RIGHT') {
             // căn chỉnh vị trí
-            dropdown_ref.value.style.left = `${x + width + $props.distance}px`
-            dropdown_ref.value.style.top = `${y - $props.back}px`
+            popover_ref.value.style.left = `${x + width}px`
+            popover_ref.value.style.top = `${y}px`
 
             // căn lại kích thước nếu cần
             if ($props.is_fit) _height.value = `${height}px`
@@ -76,8 +91,8 @@ function teleportToTarget($event?: MouseEvent) {
         // bên dưới
         if ($props.position === 'BOTTOM') {
             // căn chỉnh vị trí
-            dropdown_ref.value.style.left = `${x - $props.back}px`
-            dropdown_ref.value.style.top = `${y + height + $props.distance}px`
+            popover_ref.value.style.left = `${x}px`
+            popover_ref.value.style.top = `${y + height}px`
 
             // căn lại kích thước nếu cần
             if ($props.is_fit) _width.value = `${width}px`
@@ -85,8 +100,8 @@ function teleportToTarget($event?: MouseEvent) {
         // bên trái
         if ($props.position === 'LEFT') {
             // căn chỉnh vị trí
-            dropdown_ref.value.style.left = `${x - dropdown_ref.value.offsetWidth - $props.distance}px`
-            dropdown_ref.value.style.top = `${y - $props.back}px`
+            popover_ref.value.style.left = `${x - popover_ref.value.offsetWidth}px`
+            popover_ref.value.style.top = `${y}px`
 
             // căn lại kích thước nếu cần
             if ($props.is_fit) _height.value = `${height}px`
@@ -94,40 +109,45 @@ function teleportToTarget($event?: MouseEvent) {
         // bên trên
         if ($props.position === 'TOP') {
             // căn chỉnh vị trí
-            dropdown_ref.value.style.left = `${x - $props.back}px`
-            dropdown_ref.value.style.top = `${y - dropdown_ref.value.offsetHeight - $props.distance}px`
+            popover_ref.value.style.left = `${x}px`
+            popover_ref.value.style.top = `${y - popover_ref.value.offsetHeight}px`
 
             // căn lại kích thước nếu cần
             if ($props.is_fit) _width.value = `${width}px`
         }
     })
 }
-/**ẩn hiện modal */
-function toggleDropdown($event?: MouseEvent) {
+/**xử lý sự kiện khi di chuột vào mục tiêu */
+function mouseover($event: any) {
+    // nếu popover đã hiện rồi thì thôi
+    if (is_open.value) return
+
     // mở modal
     if (!is_open.value) {
-
         // mở modal
         is_open.value = true
 
-        // bắn sự kiện ra ngoài khi tắt modal
-        $emit('open_dropdown')
-
+        // dịch chuyển popover đến vị chí cần thiết
         teleportToTarget($event)
     }
     // tắt modal
-    else immediatelyHide()
+    else is_open.value = false
 }
-/**tắt ngay lập tức */
-function immediatelyHide() {
-    if (!is_open.value) return
-
-    is_open.value = false
-
-    // bắn sự kiện ra ngoài khi tắt modal
-    $emit('close_dropdown')
+/**xử lý sự kiện khi di chuột ra ngoài mục tiêu */
+function mouseleave() {
+    /**
+     * chờ một khoảng thời gian cho trường hợp di chuột từ mục tiêu vào popover 
+     * mới hiện 
+     */
+    setTimeout(() => {
+        // check nếu con chuột đang ở popover thì thôi không tắt nữa
+        if (is_hover.value) return
+        
+        // tắt bỏ popover
+        is_open.value = false
+    }, 50)
 }
 
-// public chức năng ẩn hiện modal để có thể được gọi từ bên ngoài component
-defineExpose({ toggleDropdown, immediatelyHide, is_open })
+// public hành động ra bên ngoài
+defineExpose({ mouseover, mouseleave })
 </script>

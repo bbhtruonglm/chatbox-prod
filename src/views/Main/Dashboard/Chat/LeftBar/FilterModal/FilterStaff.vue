@@ -11,7 +11,7 @@
                         class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
                         v-model="search_staff_name">
                 </div>
-                <div class="h-[calc(100%_-_206px)] overflow-y-auto">
+                <div class="h-[calc(100%_-_58px)] overflow-y-auto">
                     <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
                         v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
                         <div class="flex items-center">
@@ -33,6 +33,26 @@
             </div>
         </template>
     </ModalBottom>
+    <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="500px" position="RIGHT" :back="250">
+        <div class="border-b font-semibold pb-1">
+            {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
+        </div>
+        <div class="py-3">
+            <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
+                class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
+                v-model="search_staff_name">
+        </div>
+        <div class="h-[calc(100%_-_88px)] overflow-y-auto">
+            <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
+                v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
+                <div class="flex items-center">
+                    <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
+                    <p class="text-sm">{{ staff.name }}</p>
+                </div>
+                <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
+            </div>
+        </div>
+    </Dropdown>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
@@ -40,6 +60,7 @@ import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { map, keys, debounce } from 'lodash'
 
 import ModalBottom from '@/components/ModalBottom.vue'
+import Dropdown from '@/components/Dropdown.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
@@ -47,6 +68,7 @@ import { nonAccentVn } from '@/service/helper/format'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { StaffInfo } from '@/service/interface/app/staff'
+import { isMobile } from '@/service/function'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
@@ -62,6 +84,8 @@ const snap_staffs = ref<{ [index: string]: StaffInfo }>({})
 const staffs_selected = ref<{ [index: string]: boolean }>({})
 /** Search staff name */
 const search_staff_name = ref<string>('')
+/**ref của dropdown */
+const filter_dropdown_ref = ref<ComponentRef>()
 
 /** Xoá lọc */
 function clearThisFilter() {
@@ -122,9 +146,16 @@ onMounted(() => {
     }, 2000)
 })
 /**tắt ngay lập tức */
-function immediatelyHide(){
+function immediatelyHide() {
     filter_modal_ref.value?.immediatelyHide()
 }
+/**hiện thị */
+function toggle($event: MouseEvent) {
+    // nếu mobile thì mở bottom modal
+    if (isMobile()) toggleModal()
+    // nếu là pc thỉ mở dropdown
+    else filter_dropdown_ref.value?.toggleDropdown($event)
+}
 
-defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
+defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
 </script>

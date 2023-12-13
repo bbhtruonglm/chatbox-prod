@@ -11,7 +11,7 @@
                         class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
                         v-model="label_search_name">
                 </div>
-                <div class="h-[calc(100%_-_224px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+                <div class="h-[calc(100%_-_58px)] scrollbar-vertical overflow-hidden overflow-y-auto">
                     <TagItem v-for="item, index in labels" @click="selectLabel(index as string)" :label="item"
                         :is_selected="labels_selected[index]" />
                 </div>
@@ -27,6 +27,20 @@
             </div>
         </template>
     </ModalBottom>
+    <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="500px" position="RIGHT" :back="200">
+        <div class="border-b font-semibold pb-1">
+            {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
+        </div>
+        <div class="py-3">
+            <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                v-model="label_search_name">
+        </div>
+        <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+            <TagItem v-for="item, index in labels" @click="selectLabel(index as string)" :label="item"
+                :is_selected="labels_selected[index]" />
+        </div>
+    </Dropdown>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
@@ -35,13 +49,13 @@ import { map, isString, debounce, keys } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 
 import ModalBottom from '@/components/ModalBottom.vue'
+import Dropdown from '@/components/Dropdown.vue'
 import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 import TagItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
 
-
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
-
+import { isMobile } from '@/service/function'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
@@ -57,6 +71,8 @@ const snap_labels = ref<{ [index: string]: LabelInfo }>({})
 const labels_selected = ref<{ [index: string]: boolean }>({})
 /** ID page hiện tại đang được chọn */
 const label_search_name = ref<string>('')
+/**ref của dropdown */
+const filter_dropdown_ref = ref<ComponentRef>()
 
 /** Xoá lọc */
 function clearThisFilter() {
@@ -123,9 +139,16 @@ onMounted(() => {
     }, 3000)
 })
 /**tắt ngay lập tức */
-function immediatelyHide(){
+function immediatelyHide() {
     filter_modal_ref.value?.immediatelyHide()
 }
+/**hiện thị */
+function toggle($event: MouseEvent) {
+    // nếu mobile thì mở bottom modal
+    if (isMobile()) toggleModal()
+    // nếu là pc thỉ mở dropdown
+    else filter_dropdown_ref.value?.toggleDropdown($event)
+}
 
-defineExpose({ toggleModal, filter_modal_ref, clearThisFilter })
+defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
 </script>
