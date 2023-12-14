@@ -11,6 +11,10 @@
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
         @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]"
         :is_only_show_icon="is_hide_title" :icon="downloadSvg" :title="$t('v1.view.main.dashboard.nav.download')" />
+    <NavItem :is_only_show_icon="is_hide_title" :icon="infoSvg" @click="openGuildLink"
+        :title="$t('v1.view.main.dashboard.nav.info')" />
+    <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0" @click="selectNav('/main/dashboard/noti')"
+        :is_only_show_icon="is_hide_title" :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +35,8 @@ import crownSvg from '@/assets/icons/crown.svg'
 import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
+import bellSvg from '@/assets/icons/bell.svg'
+import infoSvg from '@/assets/icons/info.svg'
 
 const $props = withDefaults(defineProps<{
     /**gắn cờ luôn luôn hiện full, không ẩn */
@@ -92,5 +98,9 @@ function selectNav(path: string) {
 /**đi đến trang chat */
 function goToChat() {
     preGoToChat(() => selectNav('/main/dashboard/chat'))
+}
+/**mở link doc hướng dẫn sử dụng sản phẩm */
+function openGuildLink() {
+    openNewTab('https://docs.google.com/document/d/1w6jkqojCVmocEM5Ur0b5GvEym3sU4d6M2kEnQWgmuMw/edit?usp=sharing')
 }
 </script>

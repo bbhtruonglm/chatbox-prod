@@ -28,6 +28,11 @@
         </template>
     </ModalBottom>
     <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="500px" position="RIGHT" :back="200">
+        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+            v-if="!!conversationStore.option_filter_page_data.not_label_id" @click="clearThisFilter"
+            class="absolute top-[8px] right-[14px]">
+            <img src="@/assets/icons/close-red.svg">
+        </button>
         <div class="border-b font-semibold pb-1">
             {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
         </div>

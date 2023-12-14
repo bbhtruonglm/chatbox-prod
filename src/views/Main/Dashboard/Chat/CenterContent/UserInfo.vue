@@ -15,7 +15,7 @@
                 <div @click="openClientInfo" class="text-sm font-medium cursor-pointer truncate w-[150px]">
                     {{ conversationStore.select_conversation?.client_name }}
                 </div>
-                <button @click="openAssignStaff"  class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.assign_staff.title')" @click="openAssignStaff" class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
                     :class="{
                         'text-slate-500': is_admin,
                         'text-slate-400': !is_admin,
@@ -38,24 +38,29 @@
         <div class="flex items-center justify-end">
             <template
                 v-if="commonStore.is_active_extension && conversationStore.select_conversation?.platform_type === 'FB_MESS'">
-                <button @click="openFbProfile" class="border border-slate-300 rounded-full p-2 mr-2">
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_facebook')" @click="openFbProfile"
+                    class="border border-slate-300 rounded-full p-2 mr-2">
                     <img width="16" height="16" src="@/assets/icons/facebook.svg">
                 </button>
-                <button @click="openPageInbox" class="border border-slate-300 rounded-full p-2 mr-2">
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_inbox')" @click="openPageInbox"
+                    class="border border-slate-300 rounded-full p-2 mr-2">
                     <img width="16" height="16" src="@/assets/icons/filter_interact.svg">
                 </button>
                 <div class="conversation-info-fb-uid hidden">
                     {{ conversationStore.select_conversation?.client_bio?.fb_uid }}
                 </div>
             </template>
-            <button @click="unreadConversation" class="border border-slate-300 rounded-full p-2 mr-2">
+            <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.mark_unread')" @click="unreadConversation"
+                class="border border-slate-300 rounded-full p-2 mr-2">
                 <img v-if="!is_loading_unread_conversation" width="16" height="16"
                     src="@/assets/icons/envelope-open-icon.svg">
                 <Loading v-else class="w-[16px] h-[16px]" />
             </button>
-            <button @click="toggleSpam" :class="{
-                'bg-red-500': conversationStore.select_conversation.is_spam_fb
-            }" class="border border-slate-300 rounded-full p-2 mr-2">
+            <button
+                v-tooltip.bottom="conversationStore.select_conversation.is_spam_fb ? $t('v1.view.main.dashboard.chat.action.alow_user') : $t('v1.view.main.dashboard.chat.action.block_user')"
+                @click="toggleSpam" :class="{
+                    'bg-red-500': conversationStore.select_conversation.is_spam_fb
+                }" class="border border-slate-300 rounded-full p-2 mr-2">
                 <Loading v-if="is_loading_spam_conversation" class="w-[16px] h-[16px]" />
                 <img v-else-if="!conversationStore.select_conversation.is_spam_fb" width="16" height="16"
                     src="@/assets/icons/block-user-unactive.svg">

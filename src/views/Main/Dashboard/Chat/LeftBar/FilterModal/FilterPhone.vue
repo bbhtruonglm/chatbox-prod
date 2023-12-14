@@ -21,6 +21,11 @@
         </template>
     </ModalBottom>
     <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
+        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+            v-if="!!conversationStore.option_filter_page_data.have_phone" @click="clearThisFilter"
+            class="absolute top-[8px] right-[14px]">
+            <img src="@/assets/icons/close-red.svg">
+        </button>
         <div class="border-b font-semibold pb-1">
             {{ $t('v1.view.main.dashboard.chat.filter.phone.title') }}
         </div>

@@ -1,5 +1,5 @@
 <template>
-    <div @click="openStaffInfo" class="relative w-[35px] cursor-pointer">
+    <div v-tooltip="source?.name" @click="openStaffInfo" class="relative w-[35px] cursor-pointer">
         <StaffAvatar class="rounded-full" :id="source?.fb_staff_id" size="30" />
         <span v-if="staffStore.staff_list_of_active_page?.[source?.fb_staff_id as string]?.is_online"
             class="absolute bg-green-500 w-[13px] h-[13px] rounded-full bottom-[-3px] right-[3px]" />

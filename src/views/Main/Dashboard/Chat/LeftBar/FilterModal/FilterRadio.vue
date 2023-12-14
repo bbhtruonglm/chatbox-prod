@@ -1,7 +1,7 @@
 <template>
     <div @click="radio_ref?.click()"
         class="flex items-center mb-2 cursor-pointer hover:bg-orange-100 p-2 rounded-lg">
-        <div>
+        <div class="w-[20px]">
             <img :src="icon">
         </div>
         <div class="ml-1 w-[calc(100%_-_44px)]">

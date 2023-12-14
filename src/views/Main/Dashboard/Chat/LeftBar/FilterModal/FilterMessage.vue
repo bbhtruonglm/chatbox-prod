@@ -26,6 +26,11 @@
         </template>
     </ModalBottom>
     <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
+        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+            v-if="isActiveMessageFilter()" @click="clearThisFilter"
+            class="absolute top-[8px] right-[14px]">
+            <img src="@/assets/icons/close-red.svg">
+        </button>
         <div class="border-b font-semibold pb-1">
             {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
         </div>
@@ -54,6 +59,7 @@ import notTagSvg from '@/assets/icons/filter_not_tag.svg'
 import SpamSvg from '@/assets/icons/spam.svg'
 
 import type { ComponentRef } from '@/service/interface/vue'
+import { isActiveMessageFilter } from '@/service/function'
 
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()

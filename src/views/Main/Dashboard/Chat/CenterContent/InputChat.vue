@@ -1,6 +1,7 @@
 <template>
     <div ref="input_chat_warper" class="w-full min-h-[49px] relative">
-        <div @click="toggleLabelSelect()"
+        <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
+            @click="toggleLabelSelect()"
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <template v-if="!is_show_label_list">
                 <div v-if="getCurrentLabel()?.length" class="flex items-center justify-center h-full w-full bg-slate-200">
@@ -60,11 +61,12 @@
         </div>
 
         <div class="border-t flex items-center">
-            <div @click="selectAttachmentFromDevice"
+            <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_file')" @click="selectAttachmentFromDevice"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
                 <img src="@/assets/icons/clip.svg" width="17" height="17" />
             </div>
-            <div @click="toggleQuickAnswer" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+            <div v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')" @click="toggleQuickAnswer"
+                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
                 <img src="@/assets/icons/slash.svg" width="20" height="20" />
             </div>
             <div class="w-[calc(100%_-_95px)] h-full">
@@ -73,17 +75,20 @@
                     class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                     contenteditable="true" />
             </div>
-            <div @click="sendMessage" class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
+            <div v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')" @click="sendMessage"
+                class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
                 <img src="@/assets/icons/send.svg" width="25" height="25" />
             </div>
         </div>
     </div>
     <div class="w-full flex items-center h-[49px] relative">
-        <div class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative" @click="toggleEmoji">
+        <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_emoji')"
+            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative" @click="toggleEmoji">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
             <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
         </div>
-        <div @click="openAlbum" class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+        <div v-tooltip="$t('v1.view.main.dashboard.chat.action.open_album')" @click="openAlbum"
+            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
         <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex">

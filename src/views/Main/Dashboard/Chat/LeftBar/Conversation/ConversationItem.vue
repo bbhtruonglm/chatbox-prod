@@ -9,7 +9,8 @@
                     :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                     :platform_type="source?.platform_type" size="37" class="rounded-full" />
                 <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px]">
-                    <PageAvatar :page_id="source?.fb_page_id"
+                    <PageAvatar v-tooltip="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.name"
+                        :page_id="source?.fb_page_id"
                         :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                         :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
                         size="20" class="rounded-full border-2 border-white" />
@@ -19,12 +20,14 @@
         <div class="w-[calc(100%_-_86px)] pl-2 flex flex-col justify-between">
             <div class="flex items-center h-[16px]">
                 <div v-if="source?.fb_staff_id" class="flex items-center">
-                    <StaffAvatar :id="source?.fb_staff_id" size="20" class="rounded-full" />
+                    <StaffAvatar
+                        v-tooltip="pageStore.selected_page_list_info?.[source?.fb_page_id]?.staff_list?.[source?.fb_staff_id]?.name"
+                        :id="source?.fb_staff_id" size="16" class="rounded-full" />
                     <div class="mx-1">
-                        <img src="@/assets/icons/arrow-right.svg" width="8" height="8">
+                        <img src="@/assets/icons/arrow-right.svg" width="4" height="4">
                     </div>
                 </div>
-                <div class="w-[calc(100%_-_33px)] truncate text-sm">
+                <div class="w-[calc(100%_-_33px)] truncate text-sm font-medium">
                     {{ source?.client_name }}
                 </div>
             </div>
@@ -35,17 +38,33 @@
                 {{ source?.last_message }}
             </div>
             <div class="flex items-center h-[16px]">
-                <div v-if="source?.last_message_type === 'page'" class="w-[16px] h-[16px] mr-1">
+                <div v-tooltip="$t('v1.view.main.dashboard.chat.action.has_reply')"
+                    v-if="source?.last_message_type === 'page'" class="w-[16px] h-[16px] mr-1">
                     <img src="@/assets/icons/reply.svg" class="w-full h-full">
                 </div>
                 <div class="label-list w-[calc(100%_-_16px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
-                    <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
+                    <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(0, 3)">
+                        <div v-tooltip.bottom="getLabelInfo(source?.fb_page_id, label_id)?.title"
+                            v-if="getLabelInfo(source?.fb_page_id, label_id)"
+                            :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
+                            class="text-white rounded-full text-[10px] px-1 mr-[2px] max-w-[58px] truncate">
+                            {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
+                        </div>
+                    </template>
+                    <div @mouseover="label_popover_ref?.mouseover" @mouseleave="label_popover_ref?.mouseleave"
+                        v-if="Number(getLabelValid(source?.fb_page_id, source?.label_id)?.length) > 3"
+                        class="text-slate-500 rounded-full text-[10px] px-1 truncate border">
+                        +
+                        {{ Number(getLabelValid(source?.fb_page_id, source?.label_id)?.length) - 3 }}
+                    </div>
+
+                    <!-- <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)">
                         <div v-if="getLabelInfo(source?.fb_page_id, label_id)"
                             :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
                             class="text-white rounded-full text-xs px-2 mr-1">
                             {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
                         </div>
-                    </template>
+                    </template> -->
                 </div>
             </div>
         </div>
@@ -59,15 +78,29 @@
                 {{ formatLastMessageTime(source?.last_message_time) }}
             </div>
             <div class="flex items-center h-[16px]">
-                <div v-if="source?.client_bio?.fb_uid">
+                <div v-tooltip.bottom="source?.client_bio?.fb_uid" v-if="source?.client_bio?.fb_uid">
                     <img src="@/assets/icons/facebook.svg" width="13" height="13">
                 </div>
-                <div v-if="source?.client_phone" class="ml-1">
+                <div v-tooltip.bottom="source?.client_phone" v-if="source?.client_phone" class="ml-1">
                     <img src="@/assets/icons/phone.svg" width="13" height="13">
                 </div>
             </div>
         </div>
     </div>
+    <template>
+        <Popover ref="label_popover_ref" position="RIGHT" :is_fit="false" width="auto" height="auto">
+            <div class="max-w-[300px] max-h-[200px] flex flex-wrap justify-center">
+                <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(3)">
+                    <div v-tooltip.bottom="getLabelInfo(source?.fb_page_id, label_id)?.title"
+                        v-if="getLabelInfo(source?.fb_page_id, label_id)"
+                        :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
+                        class="text-white rounded-full text-[10px] px-1 mr-[2px] mb-[2px] max-w-[58px] truncate cursor-pointer">
+                        {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
+                    </div>
+                </template>
+            </div>
+        </Popover>
+    </template>
 </template>
 <script setup lang="ts">
 import {
@@ -80,12 +113,15 @@ import {
     isMobile, selectConversation, getLabelInfo, getLabelValid
 } from '@/service/function'
 import { getFbUserInfo } from '@/service/helper/ext'
+import { ref } from 'vue'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+import Popover from '@/components/Popover.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const $props = withDefaults(defineProps<{
     source?: ConversationInfo
@@ -96,6 +132,9 @@ const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
+
+/**ref của popover */
+const label_popover_ref = ref<ComponentRef>()
 
 /**click chuột vào 1 khách hàng */
 function clickConversation() {

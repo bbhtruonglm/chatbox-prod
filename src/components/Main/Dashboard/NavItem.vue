@@ -1,5 +1,5 @@
 <template>
-    <div :class="{
+    <div v-tooltip.right="title" :tooltip-disabled="is_disable_tooltip" :class="{
         'bg-orange-100': is_active,
         'md:justify-center': is_only_show_icon
     }" class="flex cursor-pointer items-center rounded-md hover:bg-orange-100 mb-1">
@@ -24,5 +24,7 @@ withDefaults(defineProps<{
     is_active?: boolean
     /** chế độ thu nhỏ */
     is_only_show_icon?: boolean
+    /**có huỷ bỏ tooltip không */
+    is_disable_tooltip?: boolean
 }>(), {})
 </script>

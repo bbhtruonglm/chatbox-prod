@@ -266,6 +266,23 @@ const source: Language = {
                         assign_staff: {
                             title: 'Phân công nhân viên'
                         },
+                        action: {
+                            open_facebook: 'Mở trang cá nhân',
+                            open_inbox: 'Mở hộp thư Facebook',
+                            mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
+                            block_user: 'Chặn người dùng',
+                            alow_user: 'Bỏ chặn người dùng',
+                            send_message: 'Nhấn để gửi tin nhắn',
+                            open_quick_anwser: 'Chọn câu trả lời nhanh',
+                            select_file: 'Đính kèm tập tin',
+                            select_emoji: 'Chọn biểu tượng cảm xúc',
+                            open_album: 'Chọn tập tin từ album',
+                            toggle_label: 'Hiển thị danh sách nhãn',
+                            has_reply: 'Trang đã trả lời khách hàng',
+                            total_client: 'Tổng số khách hàng thoả mãn điều kiện lọc',
+                            search_conversation: 'Tìm kiếm khách hàng',
+                            cancel_search: 'Huỷ tìm kiếm'
+                        },
                         input: {
                             add_tag: 'Gắn thẻ',
                         },

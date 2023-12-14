@@ -2,15 +2,15 @@
     <NavItem @click="menu_ref?.toggleDropdown" :is_only_show_icon="commonStore.this_toggle_nav" :icon="toggleSvg"
         :title="$t('v1.view.main.dashboard.nav.menu')" />
 
-    <FilterBarItem @mouseover="filter_interact?.filter_popover_ref?.mouseover"
+    <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_interact?.filter_popover_ref?.mouseover"
         @mouseleave="filter_interact?.filter_popover_ref?.mouseleave" @cancel_filter="filter_interact?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.display_style" :icon="filterInteractSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.interact.title')" />
-    <FilterBarItem @mouseover="filter_message?.filter_popover_ref?.mouseover"
+    <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_message?.filter_popover_ref?.mouseover"
         @mouseleave="filter_message?.filter_popover_ref?.mouseleave" @cancel_filter="filter_message?.clearThisFilter()"
         :is_active="isActiveMessageFilter()" :icon="filterMessageSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.message.title')" />
-    <FilterBarItem @mouseover="filter_phone?.filter_popover_ref?.mouseover"
+    <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_phone?.filter_popover_ref?.mouseover"
         @mouseleave="filter_phone?.filter_popover_ref?.mouseleave" @cancel_filter="filter_phone?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.have_phone" :icon="filterPhoneSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
@@ -47,7 +47,6 @@
 import { reactive, ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 import { isActiveMessageFilter, isFilterActive, resetConversationFilter } from '@/service/function'
-import { map } from 'lodash'
 
 import FilterBarItem from '@/views/Main/Dashboard/Menu/FilterBarItem.vue'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'

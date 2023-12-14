@@ -8,10 +8,11 @@
             </div>
             <div class="flex items-center ml-4 md:ml-0 w-full justify-between">
                 <div v-if="!is_show_search" class="flex items-end">
-                    <div class="font-medium text-2xl">
+                    <div v-tooltip.bottom="`v${version}`" class="font-medium text-2xl">
                         {{ $t('v1.common.chatbox') }}
                     </div>
-                    <div class="text-sm text-slate-700 ml-1">
+                    <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
+                        class="text-sm text-slate-700 ml-1">
                         {{ total_conversation?.toLocaleString() }}
                     </div>
                     <div class="mb-[3px]">
@@ -21,7 +22,8 @@
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
                     class="h-[32px] w-full px-2 focus:outline-none" v-if="is_show_search" type="text"
                     :placeholder="$t('v1.view.main.dashboard.chat.search')">
-                <div @click="toogleSearch" class="cursor-pointer">
+                <div v-tooltip.bottom="is_show_search ? $t('v1.view.main.dashboard.chat.action.cancel_search') : $t('v1.view.main.dashboard.chat.action.search_conversation')" @click="toogleSearch"
+                    class="cursor-pointer">
                     <img v-if="!is_show_search" src="@/assets/icons/search.svg" width="28" height="28">
                     <img v-else src="@/assets/icons/close-red.svg">
                 </div>
@@ -38,7 +40,7 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
-import {  useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 import { debounce, keys } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { isFilterActive, isMobile, teleportModelFilterOnPcScreen } from '@/service/function'
@@ -109,9 +111,9 @@ function openConversationFilter() {
 }
 /**delay tìm kiếm hội thoại */
 const onSearchConversation = debounce(($event: Event) => {
-    
+
     const INPUT = $event.target as HTMLInputElement
-    
+
     conversationStore.option_filter_page_data.search = INPUT.value
 }, 300)
 /**ẩn hiện ô tìm kiếm hội thoại */
