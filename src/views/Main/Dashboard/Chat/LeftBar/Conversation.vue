@@ -5,7 +5,7 @@
         </div>
     </div>
     <RecycleScroller @scroll="loadMoreConversation" v-if="size(conversationStore.conversation_list)"
-        class="scrollbar-vertical h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_109px)] xl:h-[calc(100vh_-_93px)] overflow-hidden overflow-y-auto pb-[40px]"
+        class="scrollbar-vertical h-[calc(100vh_-_142px)] md:h-[calc(100vh_-_65px)] xl:h-[calc(100vh_-_49px)] overflow-hidden overflow-y-auto pb-[40px]"
         :items="map(conversationStore.conversation_list)" :item-size="80" key-field="data_key" v-slot="{ item }">
         <ConversationItem :source="item" />
     </RecycleScroller>

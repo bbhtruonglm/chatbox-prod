@@ -11,9 +11,9 @@
             </div>
         </template>
     </ModalBottom>
-    <Dropdown ref="change_staff_dropdown_ref" @open_dropdown="getStaffsByPageId()" :is_fit="false" width="350px"
+    <Dropdown ref="change_staff_dropdown_ref" @open_dropdown="onOpenDropdown()" :is_fit="false" width="350px"
         height="360px">
-        <SearchStaff @search_staff="searchStaff" />
+        <SearchStaff ref="search_ref" @search_staff="searchStaff" />
         <StaffItem @select_staff="assignConversationtoStaff" :staffs="staffs" :select_staff_id="fb_staff_id" />
     </Dropdown>
 </template>
@@ -56,6 +56,8 @@ const snap_staffs = ref<{ [index: string]: StaffInfo }>({})
 const fb_staff_id = ref<string>('')
 /** Tên nhân viên đang tìm kiếm */
 const search_staff_name = ref<string>('')
+/** ref của modal */
+const search_ref = ref<ComponentRef>()
 
 /** Khi chọn converstion khác thì ẩn modal assign nhân viên đi */
 watch(
@@ -71,6 +73,12 @@ function toggle($event: MouseEvent) {
     if (isMobile()) change_staff_modal_ref.value?.toggleModal()
     // nếu là pc thỉ mở dropdown
     else change_staff_dropdown_ref.value?.toggleDropdown($event)
+}
+/**tự động focus vào search trên pc */
+function onOpenDropdown() {
+    setTimeout(() => search_ref.value?.focus(), 50)    
+
+    getStaffsByPageId()
 }
 /** Lấy ra danh sách user theo page hiện tại đang chọn */
 function getStaffsByPageId() {

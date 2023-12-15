@@ -25,6 +25,9 @@ export const useMessageStore = defineStore('message_store', () => {
     /**gắn cờ file đang gửi */
     const is_send_file = ref(false)
 
+    /**gắn cờ hiện nút đi scroll xuống bottom */
+    const is_show_to_bottom = ref(false)
+
     return {
         send_message_list,
         attachment_list,
@@ -32,5 +35,6 @@ export const useMessageStore = defineStore('message_store', () => {
         select_staff_read_id,
         upload_file_list,
         is_send_file,
+        is_show_to_bottom,
     }
 })

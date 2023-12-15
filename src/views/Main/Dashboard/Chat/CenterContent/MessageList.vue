@@ -1,6 +1,6 @@
 <template>
     <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
-        <div @scroll="loadMoreMessage" id="list-message"
+        <div @scroll="onScrollMessage" id="list-message"
             class="pt-0 pl-6 pb-10 h-full overflow-hidden scrollbar-vertical overflow-y-auto bg-gray-100">
             <div v-if="is_loading" class="relative z-10">
                 <div class="fixed left-[50%] translate-x-[-50%]">
@@ -189,8 +189,36 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
 
     scrollToBottomMessage()
 }
+/**lắng nghe sự kiện khi scroll danh sách tin nhắn */
+function onScrollMessage($event: UIEvent) {
+    handleButtonToBottom($event)
+
+    loadMoreMessage($event)
+}
+/**ẩn hiện nút về bottom */
+function handleButtonToBottom($event: UIEvent) {
+    /**div chưa danh sách tin nhắn */
+    const LIST_MESSAGE = $event?.target as HTMLElement
+    
+    let { scrollHeight, scrollTop, clientHeight } = LIST_MESSAGE
+
+    /**giá trị khoảng cách scroll với bottom */
+    const SCROLL_BOTTOM = scrollHeight - scrollTop - clientHeight 
+
+    /**
+     * xử lý như thế này để giảm tải việc thay đổi store liên tục, nếu không
+     * có khả năng bị lag, treo, khi có nhiều nơi watch store, send event mà
+     * mình không phát hiện ra
+     */
+    if (SCROLL_BOTTOM > 400 && !messageStore.is_show_to_bottom) {
+        messageStore.is_show_to_bottom = true
+    } 
+    if (SCROLL_BOTTOM <= 400 && messageStore.is_show_to_bottom) {
+        messageStore.is_show_to_bottom = false
+    }
+}
 /**load thêm dữ liệu khi lăn chuột lên trên */
-function loadMoreMessage($event: Event) {
+function loadMoreMessage($event: UIEvent) {
     /**div chưa danh sách tin nhắn */
     const LIST_MESSAGE = $event?.target as HTMLElement
 

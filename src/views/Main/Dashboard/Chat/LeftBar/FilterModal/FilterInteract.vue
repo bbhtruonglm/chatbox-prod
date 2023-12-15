@@ -22,19 +22,21 @@
             </div>
         </template>
     </ModalBottom>
-    <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
-        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
-            v-if="!!conversationStore.option_filter_page_data.display_style" @click="clearThisFilter"
-            class="absolute top-[8px] right-[14px]">
-            <img src="@/assets/icons/close-red.svg">
-        </button>
-        <div class="border-b font-semibold pb-1">
-            {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
+    <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto" >
+        <div class="text-sm">
+            <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+                v-if="!!conversationStore.option_filter_page_data.display_style" @click="clearThisFilter"
+                class="absolute top-[8px] right-[14px]">
+                <img src="@/assets/icons/close-red.svg">
+            </button>
+            <div class="border-b font-semibold pb-1">
+                {{ $t('v1.view.main.dashboard.chat.filter.interact.title') }}
+            </div>
+            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
+                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
+            <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
+                :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
         </div>
-        <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="INBOX"
-            :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.message')" />
-        <FilterRadio v-model="conversationStore.option_filter_page_data.display_style" value="COMMENT"
-            :icon="filterCommentSvg" :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')" />
     </Popover>
 </template>
 <script setup lang="ts">

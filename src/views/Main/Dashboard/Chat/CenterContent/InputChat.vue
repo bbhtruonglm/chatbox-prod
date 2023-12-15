@@ -1,5 +1,8 @@
 <template>
     <div ref="input_chat_warper" class="w-full min-h-[49px] relative">
+        <div @click="scrollToBottomMessage()" v-tooltip="$t('v1.view.main.dashboard.chat.message.back')" v-if="messageStore.is_show_to_bottom" :class="is_show_label_list ? 'top-[-210px]' : 'top-[-85px]'" class="absolute left-[50%] translate-x-[-50%] border rounded-full flex items-center justify-center w-[35px] h-[35px] bg-white cursor-pointer">
+            <img src="@/assets/icons/arrow-down-orange.svg" />
+        </div>
         <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
             @click="toggleLabelSelect()"
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
@@ -62,7 +65,7 @@
 
         <div class="border-t flex items-center">
             <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_file')" @click="selectAttachmentFromDevice"
-                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
+                class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center mr-2">
                 <img src="@/assets/icons/clip.svg" width="17" height="17" />
             </div>
             <div v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')" @click="toggleQuickAnswer"
@@ -83,7 +86,7 @@
     </div>
     <div class="w-full flex items-center h-[49px] relative">
         <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_emoji')"
-            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative" @click="toggleEmoji">
+            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative mr-2" @click="toggleEmoji">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
             <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
         </div>
@@ -91,7 +94,7 @@
             class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_60px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex">
+        <div class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
             <template v-for="widget of widget_list">
                 <div v-if="isMobile() || widget.position === 'BOTTOM'" @click="toggleWidget(widget)"
                     class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">

@@ -18,6 +18,7 @@
 import { ref, nextTick } from 'vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
+import { isMobile } from '@/service/function';
 
 const $emit = defineEmits(['close_dropdown', 'open_dropdown'])
 
@@ -119,6 +120,9 @@ function teleportToTarget($event?: MouseEvent) {
 }
 /**xử lý sự kiện khi di chuột vào mục tiêu */
 function mouseover($event: any) {
+    // chỉ chạy ở pc
+    if (isMobile()) return
+
     // nếu popover đã hiện rồi thì thôi
     if (is_open.value) return
 

@@ -26,22 +26,24 @@
         </template>
     </ModalBottom>
     <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
-        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
-            v-if="isActiveMessageFilter()" @click="clearThisFilter"
-            class="absolute top-[8px] right-[14px]">
-            <img src="@/assets/icons/close-red.svg">
-        </button>
-        <div class="border-b font-semibold pb-1">
-            {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
+        <div class="text-sm">
+            <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+                v-if="isActiveMessageFilter()" @click="clearThisFilter"
+                class="absolute top-[8px] right-[14px]">
+                <img src="@/assets/icons/close-red.svg">
+            </button>
+            <div class="border-b font-semibold pb-1">
+                {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
+            </div>
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
+                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
+                :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
+            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label" :icon="notTagSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
+            <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
         </div>
-        <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
-            :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')" />
-        <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
-            :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" />
-        <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label" :icon="notTagSvg"
-            :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" />
-        <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
-            :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" />
     </Popover>
 </template>
 <script setup lang="ts">

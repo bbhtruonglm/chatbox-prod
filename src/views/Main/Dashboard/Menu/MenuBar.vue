@@ -15,6 +15,8 @@
         :title="$t('v1.view.main.dashboard.nav.info')" />
     <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0" @click="selectNav('/main/dashboard/noti')"
         :is_only_show_icon="is_hide_title" :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
+    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0" @click="selectNav('/main/dashboard/user')"
+        :is_only_show_icon="is_hide_title" />
 </template>
 
 <script setup lang="ts">
@@ -26,6 +28,9 @@ import { keys, size } from 'lodash'
 import { openNewTab, preGoToChat } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
 
+import UserItem from '@/components/Main/Dashboard/UserItem.vue'
+import NavItem from '@/components/Main/Dashboard/NavItem.vue'
+
 import settingSvg from '@/assets/icons/setting.svg'
 import analyticSvg from '@/assets/icons/analytic.svg'
 import pageSvg from '@/assets/icons/page.svg'
@@ -34,7 +39,6 @@ import downloadSvg from '@/assets/icons/download.svg'
 import crownSvg from '@/assets/icons/crown.svg'
 import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
-import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 import bellSvg from '@/assets/icons/bell.svg'
 import infoSvg from '@/assets/icons/info.svg'
 

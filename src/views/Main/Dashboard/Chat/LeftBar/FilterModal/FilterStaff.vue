@@ -33,28 +33,30 @@
             </div>
         </template>
     </ModalBottom>
-    <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="500px" position="RIGHT" :back="250">
-        <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
-            v-if="!!conversationStore.option_filter_page_data.staff_id" @click="clearThisFilter"
-            class="absolute top-[8px] right-[14px]">
-            <img src="@/assets/icons/close-red.svg">
-        </button>
-        <div class="border-b font-semibold pb-1">
-            {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
-        </div>
-        <div class="py-3">
-            <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-                class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
-                v-model="search_staff_name">
-        </div>
-        <div class="h-[calc(100%_-_88px)] overflow-y-auto">
-            <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
-                v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
-                <div class="flex items-center">
-                    <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
-                    <p class="text-sm">{{ staff.name }}</p>
+    <Dropdown ref="filter_dropdown_ref" @open_dropdown="onOpenDropdown" :is_fit="false" width="450px" height="500px" position="RIGHT" :back="250">
+        <div class="text-sm  h-full w-full">
+            <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
+                v-if="!!conversationStore.option_filter_page_data.staff_id" @click="clearThisFilter"
+                class="absolute top-[8px] right-[14px]">
+                <img src="@/assets/icons/close-red.svg">
+            </button>
+            <div class="border-b font-semibold pb-1">
+                {{ $t('v1.view.main.dashboard.chat.filter.staff.title') }}
+            </div>
+            <div class="py-3">
+                <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
+                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchStaff"
+                    v-model="search_staff_name">
+            </div>
+            <div class="h-[calc(100%_-_88px)] overflow-y-auto">
+                <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
+                    v-for="staff, staff_id in staffs" @click="selectStaff(staff_id as string)">
+                    <div class="flex items-center">
+                        <StaffAvatar class="rounded-full w-6 h-6 mr-3" :id="staff.fb_staff_id" />
+                        <p class="text-sm">{{ staff.name }}</p>
+                    </div>
+                    <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
                 </div>
-                <img v-if="staffs_selected[staff_id]" class="w-5 h-5" src="@/assets/icons/check-circle.svg">
             </div>
         </div>
     </Dropdown>
@@ -91,19 +93,30 @@ const staffs_selected = ref<{ [index: string]: boolean }>({})
 const search_staff_name = ref<string>('')
 /**ref của dropdown */
 const filter_dropdown_ref = ref<ComponentRef>()
+/**ref của dropdown search */
+const search_ref = ref<ComponentRef>()
 
+onMounted(() => {
+    setTimeout(function () {
+        getStaffs()
+        showLabelSelected()
+    }, 2000)
+})
+
+/**tự động focus vào search */
+function onOpenDropdown() {
+    setTimeout(() => search_ref.value?.focus(), 50)
+}
 /** Xoá lọc */
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.staff_id
     staffs_selected.value = {}
     immediatelyHide()
 }
-
 /** Ẩn hiện modal */
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
-
 /** Lấy danh sách nhân viên */
 function getStaffs() {
     map(pageStore.selected_page_list_info, item => {
@@ -111,7 +124,6 @@ function getStaffs() {
     })
     snap_staffs.value = staffs.value
 }
-
 /** Lựa chọn nhân viên */
 function selectStaff(staff_id: string) {
     if (staffs_selected.value[staff_id]) delete staffs_selected.value[staff_id]
@@ -119,12 +131,10 @@ function selectStaff(staff_id: string) {
 
     filterByStaff()
 }
-
 /** Lọc hội thoại theo nhân viên */
 function filterByStaff() {
     conversationStore.option_filter_page_data.staff_id = keys(staffs_selected.value)
 }
-
 /** Lọc hội thoại theo nhân viên */
 const searchStaff = debounce(($event: Event) => {
     console.log(search_staff_name.value)
@@ -136,20 +146,12 @@ const searchStaff = debounce(($event: Event) => {
         }
     })
 }, 300)
-
 /** Hiển thị lại nhân viên đã chọn */
 function showLabelSelected() {
     conversationStore.option_filter_page_data?.staff_id?.map(item => {
         staffs_selected.value[item] = true
     })
 }
-
-onMounted(() => {
-    setTimeout(function () {
-        getStaffs()
-        showLabelSelected()
-    }, 2000)
-})
 /**tắt ngay lập tức */
 function immediatelyHide() {
     filter_modal_ref.value?.immediatelyHide()

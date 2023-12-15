@@ -1,7 +1,6 @@
 <template>
-    <!-- <FilterBar /> -->
-    <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-4">
-        <div class="pl-14 pr-4 md:pl-0 flex items-center">
+    <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-2">
+        <div class="pl-14 pr-4 md:pl-0 flex items-center mb-2">
             <div v-if="isMobile()" @click="openConversationFilter()" class="cursor-pointer">
                 <img v-if="isFilterActive()" src="@/assets/icons/filter-active.svg" width="23" height="23">
                 <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
@@ -29,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <UserOnline />
+        <!-- <UserOnline /> -->
         <Conversation />
     </div>
     <template>
@@ -46,11 +45,10 @@ import { useI18n } from 'vue-i18n'
 import { isFilterActive, isMobile, teleportModelFilterOnPcScreen } from '@/service/function'
 import { count_conversation } from '@/service/api/chatbox/n4-service'
 
-import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
+// import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/LeftBar/Conversation.vue'
 import FilterModal from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal.vue'
 import StaffInfoModal from '@/views/Main/Dashboard/Chat/LeftBar/StaffInfoModal.vue'
-// import FilterBar from '@/views/Main/Dashboard/Chat/LeftBar/FilterBar.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import { watch } from 'vue'
