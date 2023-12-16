@@ -11,7 +11,7 @@
                         <div class="flex items-center mb-2">
                             <StaffAvatar :id="staff_id" size="35" class="rounded-full" />
                             <div class="ml-2 text-slate-600 w-[calc(100%_-_43px)]">
-                                <span class="font-semibold">{{ getStaffName(staff_id) }}</span>
+                                <span class="font-semibold">{{ getStaffName(conversationStore.select_conversation?.fb_page_id, staff_id) }}</span>
                                 {{ $t('v1.view.main.dashboard.chat.center_content.staff_read') }}
                                 {{ getStaffReadDate(staff_id) }}
                             </div>
@@ -26,8 +26,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { format as format_date } from 'date-fns'
-import { useConversationStore, usePageStore, useMessageStore } from '@/stores'
-import { getPageStaff } from '@/service/function'
+import { useConversationStore, useMessageStore } from '@/stores'
+import { getPageStaff,getStaffReadDate,  getStaffName } from '@/service/function'
+import { useI18n } from 'vue-i18n'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import Modal from '@/components/Modal.vue'
@@ -36,6 +37,7 @@ import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
+const $t = useI18n().t
 
 /**ref của modal */
 const staff_read_modal_ref = ref<ComponentRef>()
@@ -45,16 +47,10 @@ watch(
     () => staff_read_modal_ref.value.toggleModal()
 )
 
-/**đọc tên của nhân viên */
-function getStaffName(staff_id: string) {
-    return getPageStaff(
-        conversationStore.select_conversation?.fb_page_id
-    )?.[staff_id]?.name
-}
 /**format thời gian */
-function getStaffReadDate(staff_id: string) {
-    const TIME = conversationStore.select_conversation?.staff_read?.[staff_id] || 0
+// function getStaffReadDate(staff_id: string) {
+//     const TIME = conversationStore.select_conversation?.staff_read?.[staff_id] || 0
 
-    return format_date(new Date(TIME), 'hh:mm:ss, dd/MM/yyyy')
-}
+//     return format_date(new Date(TIME), 'HH:mm:ss, dd/MM/yyyy')
+// }
 </script>

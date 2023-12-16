@@ -19,10 +19,10 @@
                             {{ $t(`v1.view.main.dashboard.chat.filter.time.from`) }}
                         </div>
                         <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                            <div class="p-1 pl-2 rounded-lg border h-[32px]">
+                            <div class="p-2 rounded-lg border">
                                 {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.gte) }}
                             </div>
-                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[3px] right-[3px]" />
+                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
                         </div>
                         <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.gte"
                             v-model="conversationStore.option_filter_page_data.time_range.gte" :max="TOMORROW_TIME"
@@ -34,10 +34,10 @@
                             {{ $t(`v1.view.main.dashboard.chat.filter.time.to`) }}
                         </div>
                         <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                            <div class="p-1 pl-2 rounded-lg border h-[32px]">
+                            <div class="p-2 rounded-lg border">
                                 {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.lte) }}
                             </div>
-                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[3px] right-[3px]" />
+                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
                         </div>
                         <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.lte"
                             v-model="conversationStore.option_filter_page_data.time_range.lte"
@@ -82,10 +82,10 @@
                         {{ $t(`v1.view.main.dashboard.chat.filter.time.from`) }}
                     </div>
                     <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                        <div class="p-1 pl-2 rounded-lg border h-[32px]">
+                        <div class="p-2 rounded-lg border">
                             {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.gte) }}
                         </div>
-                        <img src="@/assets/icons/filter_date.svg" class="absolute top-[3px] right-[3px]" />
+                        <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
                     </div>
                     <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.gte"
                         v-model="conversationStore.option_filter_page_data.time_range.gte" :max="TOMORROW_TIME"
@@ -97,10 +97,10 @@
                         {{ $t(`v1.view.main.dashboard.chat.filter.time.to`) }}
                     </div>
                     <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                        <div class="p-1 pl-2 rounded-lg border h-[32px]">
+                        <div class="p-2 rounded-lg border">
                             {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.lte) }}
                         </div>
-                        <img src="@/assets/icons/filter_date.svg" class="absolute top-[3px] right-[3px]" />
+                        <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
                     </div>
                     <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.lte"
                         v-model="conversationStore.option_filter_page_data.time_range.lte"

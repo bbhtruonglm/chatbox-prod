@@ -96,7 +96,8 @@
 </template>
 <script setup lang="ts">
 import {
-    useChatbotUserStore, usePageStore, useCommonStore, useConversationStore
+    useChatbotUserStore, usePageStore, useCommonStore, useConversationStore,
+    useMessageStore,
 } from '@/stores'
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
@@ -124,6 +125,7 @@ const chatbotUserStore = useChatbotUserStore()
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
+const messageStore = useMessageStore()
 
 /**ref của popover */
 const label_popover_ref = ref<ComponentRef>()
@@ -137,6 +139,9 @@ function clickConversation() {
 
     // hiện tin nhắn ở giao diện mobile
     commonStore.is_show_message_mobile = true
+
+    // ẩn mũi tên scroll bottom
+    messageStore.is_show_to_bottom = false
 
     selectConversation($props.source)
 

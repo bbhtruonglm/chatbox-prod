@@ -281,7 +281,8 @@ const source: Language = {
                             has_reply: 'Trang đã trả lời khách hàng',
                             total_client: 'Tổng số khách hàng thoả mãn điều kiện lọc',
                             search_conversation: 'Tìm kiếm khách hàng',
-                            cancel_search: 'Huỷ tìm kiếm'
+                            cancel_search: 'Huỷ tìm kiếm',
+                            reload_ad: 'Cập nhật nội dung quảng cáo'
                         },
                         input: {
                             add_tag: 'Gắn thẻ',
@@ -302,7 +303,8 @@ const source: Language = {
                         },
                         center_content: {
                             staff_read_time: 'Thời gian đọc tin nhắn',
-                            staff_read: 'đã đọc tin nhắn lúc'
+                            staff_read: 'đã xem lúc',
+                            del_staff: 'Nhân viên đã xoá'
                         },
                         client: {
                             title: 'Thông tin khách hàng'

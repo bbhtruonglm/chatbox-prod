@@ -1,5 +1,5 @@
 <template>
-    <div v-if="get_post_success && !loading" class="w-full sm:h-[180px] h-[190px] my-3 flex justify-end">
+    <div v-if="get_post_success && !loading" class="w-full my-3 flex justify-end">
         <div class="w-[95%] bg-white rounded-lg p-3">
             <div class="flex text-xs justify-between items-center text-slate-600">
                 <p class="md:w-full w-[50%]">
@@ -24,16 +24,15 @@
             </div>
             <div class="flex items-center mt-2">
                 <object v-if="post_info?.attachments?.data?.[0].media?.image?.src"
-                    :data="post_info?.attachments?.data?.[0].media?.image?.src"
-                    :data-src="post_info?.attachments?.data?.[0].media?.image?.src"
-                    class="min-w-[60px] max-w-[60px] h-[60px] mr-3">
-                    <img src="https://botbanhang.vn/chat/img/logo-bot.e0e6089b.svg" alt="" class="w-[60px] h-[60px]">
+                    :data="post_info?.attachments?.data?.[0].media?.image?.src" type="image/png"
+                    class="w-[60px] h-[60px] mr-3 rounded">
+                    <img src="@/assets/icons/bbh-mini.svg" class="w-[60px] h-[60px]">
                 </object>
-                <div class="text-sm text-slate-700 font-normal h-[60px] overflow-scroll">
-                    <span>{{ post_info?.message }}</span>
+                <div class="text-sm text-slate-700 font-normal h-[60px] w-full overflow-hidden">
+                    {{ post_info?.message }}
                 </div>
             </div>
-            <div class="flex mt-2 bg-slate-100 py-1 px-2 rounded-md justify-between">
+            <div class="flex mt-2 bg-slate-100 p-3 rounded-md justify-between">
                 <p class="text-sm font-semibold truncate w-[150px] md:w-[100px] xl:w-[200px]">
                     {{ post_info?.attachments?.data?.[0].title }}
                 </p>

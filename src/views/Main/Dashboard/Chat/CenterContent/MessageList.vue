@@ -7,8 +7,9 @@
                     <Loading class="mx-auto" />
                 </div>
             </div>
-            <div v-for="message of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
+            <div v-for="(message, index) of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
                 <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
+                :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'page' }"
                     class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                     <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
@@ -21,7 +22,7 @@
                     <UnsupportMessage v-else />
                     <MessageDate class="text-right" :time="message.time || message.createdAt" />
                 </div>
-                <div v-else-if="message.message_type === 'page'" class="flex flex-col items-end">
+                <div v-else-if="message.message_type === 'page'" :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'client' }" class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                         <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                         <template v-if="message.message_text || message.message_attachments?.length">

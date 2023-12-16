@@ -35,6 +35,8 @@ const $props = withDefaults(defineProps<{
     is_fit?: boolean
     /**khoảng cách so với mục tiêu */
     distance?: number
+    /**đảo chiều */
+    reverse?: boolean
 }>(), {
     teleport_to: 'body',
     width: '200px',
@@ -42,6 +44,7 @@ const $props = withDefaults(defineProps<{
     position: 'BOTTOM',
     is_fit: true,
     distance: 5,
+    reverse: false
 })
 
 /**chiều rộng thực tế */
@@ -78,8 +81,12 @@ function teleportToTarget($event?: MouseEvent) {
     // lấy vị trí của block click
     const { x, y, width, height } = TARGET?.getBoundingClientRect()
 
+
     // hiển thị dropdown
     nextTick(() => {
+        // lấy vị trí của block popover
+        const { x: _x, y: _y, width: _width, height: _height } = popover_ref.value?.getBoundingClientRect()
+
         // bên phải
         if ($props.position === 'RIGHT') {
             // căn chỉnh vị trí
@@ -91,8 +98,10 @@ function teleportToTarget($event?: MouseEvent) {
         }
         // bên dưới
         if ($props.position === 'BOTTOM') {
+            let left = $props.reverse ? (x - _width + width) : x
+
             // căn chỉnh vị trí
-            popover_ref.value.style.left = `${x}px`
+            popover_ref.value.style.left = `${left}px`
             popover_ref.value.style.top = `${y + height}px`
 
             // căn lại kích thước nếu cần
@@ -146,7 +155,7 @@ function mouseleave() {
     setTimeout(() => {
         // check nếu con chuột đang ở popover thì thôi không tắt nữa
         if (is_hover.value) return
-        
+
         // tắt bỏ popover
         is_open.value = false
     }, 50)

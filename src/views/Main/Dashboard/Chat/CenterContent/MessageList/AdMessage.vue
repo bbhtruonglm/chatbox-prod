@@ -5,7 +5,7 @@
         </p>
         <p class=" text-blue-500 mr-2" >{{ $props.ad_id }}</p>
         <Loading v-if="loading" />
-        <img @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon">
+        <img v-tooltip="$t('v1.view.main.dashboard.chat.action.reload_ad')" @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon">
     </div>
     <FacebookPost v-if="!hide_fb_post" :ad_id="$props.ad_id" :hide-post="hideFbPost"/>
 </template>

@@ -10,12 +10,14 @@
                     <div v-tooltip.bottom="`v${version}`" class="font-medium text-2xl">
                         {{ $t('v1.common.chatbox') }}
                     </div>
-                    <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
-                        class="text-sm text-slate-700 ml-1">
-                        {{ total_conversation?.toLocaleString() }}
-                    </div>
-                    <div class="mb-[3px]">
-                        <img src="@/assets/icons/user-list.svg" class="w-[15px] h-[15px]" />
+                    <div class="flex items-end mb-[2px]">
+                        <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
+                            class="text-sm text-slate-700 ml-1">
+                            {{ total_conversation?.toLocaleString() }}
+                        </div>
+                        <div class="mb-[3px]">
+                            <img src="@/assets/icons/user-list.svg" class="w-[15px] h-[15px]" />
+                        </div>
                     </div>
                 </div>
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"

@@ -4,12 +4,14 @@ import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { reset_read_conversation } from '../api/chatbox/n4-service'
 import { toastError } from '../helper/alert'
+import { format as format_date } from 'date-fns'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
 import { nextTick } from 'vue'
 import type { AppInstalledInfo } from '../interface/app/widget'
 import { getItem } from '../helper/localStorage'
+import { useI18n } from 'vue-i18n'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -181,6 +183,22 @@ export const getPageStaff = (page_id?: string) => {
         .selected_page_list_info
         ?.[page_id as string]
         ?.staff_list
+}
+
+/**đọc tên của nhân viên */
+export function getStaffName(page_id?: string, staff_id?: string) {
+    const $t = useI18n().t
+
+    return getPageStaff(page_id)?.[staff_id as string]?.name || `[${$t('v1.view.main.dashboard.chat.center_content.del_staff')}]`
+}
+
+/**format thời gian đọc tin nhắn */
+export function getStaffReadDate(staff_id: string) {
+    const conversationStore = useConversationStore()
+    
+    const TIME = conversationStore.select_conversation?.staff_read?.[staff_id] || 0
+
+    return format_date(new Date(TIME), 'HH:mm:ss, dd/MM/yyyy')
 }
 
 /**lấy danh sách widget của trang */

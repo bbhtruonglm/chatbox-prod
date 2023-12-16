@@ -2,13 +2,13 @@
     <Menu ref="dashboard_menu_ref" :init_toggle_nav="commonStore.dashboard_toggle_nav"
         @toggle_nav_change="onToggleNavChange">
         <template v-slot:menu>
-            <div @click="toggleNav" class="cursor-pointer">
+            <div class="flex justify-center">
                 <div class="block md:hidden">
                     <img src="@/assets/icons/bbh-large.svg" />
                 </div>
                 <div class="hidden md:block">
-                    <img v-if="!commonStore.this_toggle_nav" src="@/assets/icons/bbh-large.svg">
-                    <img v-else src="@/assets/icons/bbh-mini.svg">
+                    <img v-if="!commonStore.this_toggle_nav" src="@/assets/icons/bbh-large.svg" class="h-[37px]" />
+                    <img v-else src="@/assets/icons/bbh-mini.svg" class="h-[37px]" />
                 </div>
             </div>
             <hr class="mt-2" />

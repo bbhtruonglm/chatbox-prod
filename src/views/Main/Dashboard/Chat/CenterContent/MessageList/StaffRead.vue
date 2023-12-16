@@ -2,7 +2,7 @@
     <!-- Hiển thị nhân viên đã đọc tin nhắn -->
     <div ref="staff_read_warper_ref" class="flex justify-end">
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
-            <StaffAvatar @click="toggleModal" v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
+            <StaffAvatar v-tooltip="`${getStaffName(conversationStore.select_conversation?.fb_page_id, staff_id as string)} ${$t('v1.view.main.dashboard.chat.center_content.staff_read')} ${getStaffReadDate(staff_id as string)}`" @click="toggleModal" v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
                 size="20" :class="`message-staff-read-${staff_id}`"
                 class="staff-read-item rounded-full ml-[-5px] hidden my-1 cursor-pointer" />
         </template>
@@ -12,6 +12,7 @@
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import { useConversationStore, useMessageStore } from '@/stores'
 import { ref } from 'vue'
+import { getStaffName, getStaffReadDate } from '@/service/function'
 
 import type { ComponentRef } from '@/service/interface/vue'
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white p-2 text-[10px]">
+    <div class="bg-white p-2 text-[13px]">
         <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center justify-between">
                 <div @click="changeDate('MONTH', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"

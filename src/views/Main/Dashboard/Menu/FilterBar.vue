@@ -61,7 +61,7 @@ import FilterTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterTag
 import FilterStaff from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterStaff.vue'
 import MenuBar from '@/views/Main/Dashboard/Menu/MenuBar.vue'
 
-import toggleSvg from '@/assets/icons/toggle.svg'
+import toggleSvg from '@/assets/icons/menu-chat.svg'
 import filterInteractSvg from '@/assets/icons/filter_interact.svg'
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
 import filterPhoneSvg from '@/assets/icons/filter_phone.svg'

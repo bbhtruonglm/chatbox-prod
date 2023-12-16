@@ -1,6 +1,8 @@
 <template>
     <div ref="input_chat_warper" class="w-full min-h-[49px] relative">
-        <div @click="scrollToBottomMessage()" v-tooltip="$t('v1.view.main.dashboard.chat.message.back')" v-if="messageStore.is_show_to_bottom" :class="is_show_label_list ? 'top-[-210px]' : 'top-[-85px]'" class="absolute left-[50%] translate-x-[-50%] border rounded-full flex items-center justify-center w-[35px] h-[35px] bg-white cursor-pointer">
+        <div @click="scrollToBottomMessage()" v-if="messageStore.is_show_to_bottom"
+            :class="is_show_label_list ? 'top-[-210px]' : 'top-[-85px]'"
+            class="absolute left-[50%] translate-x-[-50%] border rounded-full flex items-center justify-center w-[35px] h-[35px] bg-white cursor-pointer shadow-xl">
             <img src="@/assets/icons/arrow-down-orange.svg" />
         </div>
         <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
@@ -31,9 +33,20 @@
                 <Loading />
             </div>
             <div
-                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden scrollbar-vertical overflow-y-auto pt-2 pb-7 px-2 ">
-                <div class="flex flex-wrap justify-center">
-                    <div v-for="label_info of sortLabelList()" @click="toggleLabel(label_info._id)" :style="{
+                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden scrollbar-vertical overflow-y-auto pt-2 pb-7 px-2">
+
+                <div class="flex flex-wrap justify-start">
+                    <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
+                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+                        'border-color': label_info?.bg_color,
+                    }" class="text-sm w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+                        {{ label_info?.title }}
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-start">
+                    <div v-for="label_info of getUnactiveLabel()" @click="toggleLabel(label_info._id)" :style="{
                         color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
                         background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
                         'border-color': label_info?.bg_color,
@@ -94,7 +107,8 @@
             class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
-        <div class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
+        <div
+            class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
             <template v-for="widget of widget_list">
                 <div v-if="isMobile() || widget.position === 'BOTTOM'" @click="toggleWidget(widget)"
                     class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
@@ -343,19 +357,23 @@ function isActiveLabel(label_id?: string | number) {
 
     return getCurrentLabel()?.includes(label_id as string)
 }
-/**sắp xếp danh sách nhãn được chọn lên đầu */
-function sortLabelList() {
+/**chỉ lấy các nhãn được chọn */
+function getActiveLabel() {
     /**chuyển đổi obj thành array */
     let list_label = map(
         getPageLabel(conversationStore.select_conversation?.fb_page_id)
     )
 
-    // sort đã gắn nhãn lên đầu
-    return list_label?.sort(label_info => {
-        if (getCurrentLabel()?.includes(label_info._id)) return -1
+    return list_label?.filter(label_info => isActiveLabel(label_info._id))
+}
+/**chỉ lấy các nhãn không được chọn */
+function getUnactiveLabel() {
+    /**chuyển đổi obj thành array */
+    let list_label = map(
+        getPageLabel(conversationStore.select_conversation?.fb_page_id)
+    )
 
-        return 1
-    })
+    return list_label?.filter(label_info => !isActiveLabel(label_info._id))
 }
 /**đếm số nhãn của khách hàng hiện tại */
 function getCurrentLabelLength() {

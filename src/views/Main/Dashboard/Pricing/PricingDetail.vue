@@ -25,7 +25,7 @@
                     <div class="text-slate-500">{{
                         $t('v1.view.main.dashboard.pricing.detail.created_at') }}</div>
                     <div class="col-span-2">
-                        {{ format_date(new Date(pricing?.createdAt), 'hh:mm:ss dd/MM/yyyy') }}
+                        {{ format_date(new Date(pricing?.createdAt), 'HH:mm:ss dd/MM/yyyy') }}
                     </div>
                 </div>
                 <div class="grid grid-cols-3 mb-1">

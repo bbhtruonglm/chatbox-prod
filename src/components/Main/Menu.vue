@@ -1,7 +1,7 @@
 <template>
     <div class="h-full w-full flex relative">
         <div class="bg-white duration-500 h-screen w-[300px] absolute z-[20]" :class="genNavClass()">
-            <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-2">
+            <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-1">
                 <div @click="toggleNav" v-if="commonStore.this_toggle_nav"
                     class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
                 <button @click="toggleNav" class="absolute top-[70px] right-[-40px] md:hidden">

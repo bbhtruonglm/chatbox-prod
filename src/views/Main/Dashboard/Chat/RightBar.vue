@@ -1,21 +1,7 @@
 <template>
     <div class="md:w-[300px] xl:w-[400px] h-full hidden md:block">
-        <div class="h-[50px] flex items-center py-2 pl-2">
-            <div class="w-[calc(100%_-_50px)] h-full relative" :class="{ 'cursor-not-allowed': widget_selected !== 'all' }">
-                <input class="focus:outline-none w-full h-full border rounded-full pl-3 pr-7" type="text" :class="{
-                    'pointer-events-none': widget_selected !== 'all'
-                }" :placeholder="$t('v1.view.main.dashboard.chat.widget.search')" v-model="widget_search_name"
-                    v-on:keyup="startSearch()" v-on:keydown="loading = true" />
-                <img v-if="!loading" class="absolute top-[7px] right-[7px] cursor-pointer"
-                    src="@/assets/icons/search.svg" />
-                <Loading v-if="loading" class="absolute top-[5px] right-[7px] cursor-pointer" />
-            </div>
-            <div class="w-[50px] flex justify-center">
-                <img @click="openWidgetsSetting()" class="cursor-pointer" src="@/assets/icons/edit.svg" />
-            </div>
-        </div>
         <div class="h-[calc(100%_-_50px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
-            <div class="px-2 pb-1 border-b">
+            <div class="px-1 border-b h-[50px] flex py-2">
                 <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" @click="filterWidget()" :class="{
                     'bg-orange-500': widget_selected === 'all',
                     'text-white': widget_selected === 'all',
@@ -24,9 +10,9 @@
                 }">
                     {{ $t('v1.common.all') }}
                 </button>
-                <template v-for="widget in widget_list">
-                    <button v-if="widget.position === 'RIGHT'" class="text-xs py-1 px-2 rounded-full mr-1 mb-1"
-                        @click="filterWidget(widget)" :class="{
+                <template v-for="widget in getWidgetRight()?.slice(0, 3)">
+                    <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
+                        :class="{
                             'bg-orange-500': widget_selected === widget._id,
                             'text-white': widget_selected === widget._id,
                             'bg-slate-100': widget_selected !== widget._id,
@@ -35,6 +21,12 @@
                         {{ widget.snap_app.name }}
                     </button>
                 </template>
+                <button v-if="getWidgetRight()?.length > 3" @mouseover="widget_button_popover_ref?.mouseover"
+                    @mouseleave="widget_button_popover_ref?.mouseleave"
+                    class="text-xs py-1 px-2 rounded-full mr-1 mb-1 text-slate-600 bg-slate-100">
+                    +
+                    {{ getWidgetRight()?.length - 3 }}
+                </button>
             </div>
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!isMobile() && !widget.is_hidden">
@@ -56,24 +48,39 @@
             </template>
         </div>
     </div>
+    <template>
+        <Popover ref="widget_button_popover_ref" position="BOTTOM" :reverse="true" :is_fit="false" width="auto"
+            height="auto">
+            <div class="flex flex-wrap max-w-[295px] max-h-[200px] overflow-hidden scrollbar-vertical overflow-y-auto">
+                <template v-for="widget in getWidgetRight()?.slice(3)">
+                    <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
+                        :class="{
+                            'bg-orange-500': widget_selected === widget._id,
+                            'text-white': widget_selected === widget._id,
+                            'bg-slate-100': widget_selected !== widget._id,
+                            'text-slate-600': widget_selected !== widget._id
+                        }">
+                        {{ widget.snap_app.name }}
+                    </button>
+                </template>
+            </div>
+        </Popover>
+    </template>
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch, onMounted } from 'vue'
 import { useConversationStore } from '@/stores'
-import { debounce } from 'lodash';
-import { useRouter } from 'vue-router'
-
-import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import { getIframeUrl, getPageWidget } from '@/service/function';
+import { getIframeUrl, getPageWidget } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { saveLocal, getLocal } from '@/service/helper/store'
-import { getItem, setItem } from '@/service/helper/localStorage';
-import Loading from '@/components/Loading.vue';
-import { isMobile } from '@/service/function';
+import { isMobile } from '@/service/function'
+
+import Popover from '@/components/Popover.vue'
+
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
-
-const $router = useRouter()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
@@ -85,11 +92,17 @@ const widget_search_name = ref<string>(getLocal('widget_search_name', ''))
 const widget_selected = ref<string>('all')
 /** hiện loading */
 const loading = ref<boolean>(false)
+/** */
+const widget_button_popover_ref = ref<ComponentRef>()
 
 saveLocal(widget_search_name, 'widget_search_name')
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 
+/**lọc ra các widget bên phải */
+function getWidgetRight() {
+    return widget_list.value?.filter(widget => widget.position === 'RIGHT')
+}
 /**ẩn hiện widget */
 function toggleWidget(widget: AppInstalledInfo) {
     widget.is_show = !widget.is_show
@@ -154,8 +167,6 @@ function searchWidget() {
         return widget
     })
 }
-/** Bắt đầu tìm kiếm widget theo tên sau 500ms */
-const startSearch = debounce(function () { searchWidget() }, 500)
 /** Lọc widget theo tên */
 function filterWidget(widget_select?: AppInstalledInfo) {
     if (!widget_select) {
@@ -177,10 +188,6 @@ function filterWidget(widget_select?: AppInstalledInfo) {
 /** Hiển thị widget đã chọn sau 2s từ khi Mounted */
 function getWidgetSelected() {
     setTimeout(function () { searchWidget() }, 3000)
-}
-/** Mở widgets setting */
-function openWidgetsSetting() {
-    $router.push('/main/dashboard/widget/page-setting')
 }
 
 onMounted(() => {

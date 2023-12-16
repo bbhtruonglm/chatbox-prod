@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <NavItem :is_disable_tooltip="is_disable_tooltip" :class="{ 'opacity-40': is_disable }" :is_active="is_active"
-            icon_class="w-[20px]" :is_only_show_icon="commonStore.this_toggle_nav" :icon="icon" :title="title" />
+            icon_class="w-[20px] h-[20px]" :is_only_show_icon="commonStore.this_toggle_nav" :icon="icon" :title="title" />
         <div @click.stop="$emit('cancel_filter')" v-if="is_active" class="absolute top-[-3px] right-[-1px] cursor-pointer">
             <img class="w-[14px] h-[14px]" src="@/assets/icons/close-circle.svg" />
         </div>
