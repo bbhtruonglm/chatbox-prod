@@ -266,7 +266,7 @@ const source: Language = {
                         empty_conversation: 'Không tìm thấy hội thoại!',
                         empty_select_conversation: 'Chọn một khách hàng để bắt đầu!',
                         assign_staff: {
-                            title: 'Phân công nhân viên'
+                            title: 'Chỉ định cuộc trò chuyện'
                         },
                         action: {
                             open_facebook: 'Mở trang cá nhân',
@@ -296,7 +296,8 @@ const source: Language = {
                                 image_to_text: 'Ảnh sang chữ'
                             },
                             file: 'Tệp đính kèm',
-                            back: 'Quay trở lại'
+                            back: 'Quay trở lại',
+                            reply_time: 'Phản hồi tin nhắn'
                         },
                         widget: {
                             title: 'Widget',

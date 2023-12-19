@@ -27,7 +27,7 @@
                 {{ getWidgetRight()?.length - 3 }}
             </button>
         </div>
-        <div class="h-[calc(100%_-_100px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
+        <div class="h-[calc(100%_-_75px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!isMobile() && !widget.is_hidden">
                     <div @click="toggleWidget(widget)" v-if="widget.position === 'RIGHT'"
@@ -47,7 +47,7 @@
                 </div>
             </template>
         </div>
-        <div class="flex items-center h-[50px] justify-end">
+        <div class="flex items-center h-[25px] justify-end">
             <div class="mr-1">
                 <img src="@/assets/icons/bbh-mini.svg" class="w-[15px]" />
             </div>
@@ -55,7 +55,7 @@
                 {{ $t('v1.view.main.dashboard.chat.operate_by') }}
             </div>
             <div class="font-bold text-xs mr-3">
-                Bot Ban Hang
+                Bot Bán Hàng
             </div>
         </div>
     </div>

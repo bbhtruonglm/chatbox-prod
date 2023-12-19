@@ -8,8 +8,9 @@
                 </div>
             </div>
             <div v-for="(message, index) of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
+                <TimeSplit :before_message="list_message?.[index - 1]" :now_message="message" />
                 <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
-                :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'page' }"
+                    :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'page' }"
                     class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                     <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
@@ -20,9 +21,12 @@
                             :page_id="message.fb_page_id" type="CLIENT" />
                     </template>
                     <UnsupportMessage v-else />
-                    <MessageDate class="text-right" :time="message.time || message.createdAt" />
+                    <ClientMessageDate class="text-right" :now_message="message"
+                        :next_message="list_message?.[index + 1]" />
                 </div>
-                <div v-else-if="message.message_type === 'page'" :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'client' }" class="flex flex-col items-end">
+                <div v-else-if="message.message_type === 'page'"
+                    :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'client' }"
+                    class="flex flex-col items-end">
                     <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                         <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                         <template v-if="message.message_text || message.message_attachments?.length">
@@ -89,6 +93,8 @@ import { debounce, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/MessageDate.vue'
+import ClientMessageDate from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ClientMessageDate.vue'
+import TimeSplit from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/TimeSplit.vue'
 import ChatbotMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ChatbotMessage.vue'
 import AttachmentMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage.vue'
 import UnsupportMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/UnsupportMessage.vue'
@@ -200,11 +206,11 @@ function onScrollMessage($event: UIEvent) {
 function handleButtonToBottom($event: UIEvent) {
     /**div chưa danh sách tin nhắn */
     const LIST_MESSAGE = $event?.target as HTMLElement
-    
+
     let { scrollHeight, scrollTop, clientHeight } = LIST_MESSAGE
 
     /**giá trị khoảng cách scroll với bottom */
-    const SCROLL_BOTTOM = scrollHeight - scrollTop - clientHeight 
+    const SCROLL_BOTTOM = scrollHeight - scrollTop - clientHeight
 
     /**
      * xử lý như thế này để giảm tải việc thay đổi store liên tục, nếu không
@@ -213,7 +219,7 @@ function handleButtonToBottom($event: UIEvent) {
      */
     if (SCROLL_BOTTOM > 400 && !messageStore.is_show_to_bottom) {
         messageStore.is_show_to_bottom = true
-    } 
+    }
     if (SCROLL_BOTTOM <= 400 && messageStore.is_show_to_bottom) {
         messageStore.is_show_to_bottom = false
     }
