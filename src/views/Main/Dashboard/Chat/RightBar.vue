@@ -1,33 +1,33 @@
 <template>
     <div class="md:w-[300px] xl:w-[400px] h-full hidden md:block">
-        <div class="h-[calc(100%_-_50px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
-            <div class="px-1 border-b h-[50px] flex py-2">
-                <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" @click="filterWidget()" :class="{
-                    'bg-orange-500': widget_selected === 'all',
-                    'text-white': widget_selected === 'all',
-                    'bg-slate-100': widget_selected !== 'all',
-                    'text-slate-600': widget_selected !== 'all'
-                }">
-                    {{ $t('v1.common.all') }}
+        <div class="px-1 border-b h-[50px] flex py-2">
+            <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" @click="filterWidget()" :class="{
+                'bg-orange-500': widget_selected === 'all',
+                'text-white': widget_selected === 'all',
+                'bg-slate-100': widget_selected !== 'all',
+                'text-slate-600': widget_selected !== 'all'
+            }">
+                {{ $t('v1.common.all') }}
+            </button>
+            <template v-for="widget in getWidgetRight()?.slice(0, 3)">
+                <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
+                    :class="{
+                        'bg-orange-500': widget_selected === widget._id,
+                        'text-white': widget_selected === widget._id,
+                        'bg-slate-100': widget_selected !== widget._id,
+                        'text-slate-600': widget_selected !== widget._id
+                    }">
+                    {{ widget.snap_app.name }}
                 </button>
-                <template v-for="widget in getWidgetRight()?.slice(0, 3)">
-                    <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
-                        :class="{
-                            'bg-orange-500': widget_selected === widget._id,
-                            'text-white': widget_selected === widget._id,
-                            'bg-slate-100': widget_selected !== widget._id,
-                            'text-slate-600': widget_selected !== widget._id
-                        }">
-                        {{ widget.snap_app.name }}
-                    </button>
-                </template>
-                <button v-if="getWidgetRight()?.length > 3" @mouseover="widget_button_popover_ref?.mouseover"
-                    @mouseleave="widget_button_popover_ref?.mouseleave"
-                    class="text-xs py-1 px-2 rounded-full mr-1 mb-1 text-slate-600 bg-slate-100">
-                    +
-                    {{ getWidgetRight()?.length - 3 }}
-                </button>
-            </div>
+            </template>
+            <button v-if="getWidgetRight()?.length > 3" @mouseover="widget_button_popover_ref?.mouseover"
+                @mouseleave="widget_button_popover_ref?.mouseleave"
+                class="text-xs py-1 px-2 rounded-full mr-1 mb-1 text-slate-600 bg-slate-100">
+                +
+                {{ getWidgetRight()?.length - 3 }}
+            </button>
+        </div>
+        <div class="h-[calc(100%_-_100px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!isMobile() && !widget.is_hidden">
                     <div @click="toggleWidget(widget)" v-if="widget.position === 'RIGHT'"
@@ -46,6 +46,17 @@
                     </div>
                 </div>
             </template>
+        </div>
+        <div class="flex items-center h-[50px] justify-end">
+            <div class="mr-1">
+                <img src="@/assets/icons/bbh-mini.svg" class="w-[15px]" />
+            </div>
+            <div class="text-xs mr-1">
+                {{ $t('v1.view.main.dashboard.chat.operate_by') }}
+            </div>
+            <div class="font-bold text-xs mr-3">
+                Bot Ban Hang
+            </div>
         </div>
     </div>
     <template>

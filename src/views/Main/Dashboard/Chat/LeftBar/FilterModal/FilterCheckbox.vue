@@ -2,9 +2,9 @@
     <div @click="checkbox_ref?.click()"
         class="flex items-center mb-2 cursor-pointer hover:bg-orange-100 p-2 rounded-lg">
         <div>
-            <img class="w-[20px] h-[20px]" :src="icon">
+            <img class="w-[16px] h-[16px]" :src="icon">
         </div>
-        <div class="ml-1 w-[calc(100%_-_44px)]">
+        <div class="ml-1 w-[calc(100%_-_40px)]">
             {{ title }}
         </div>
         <input @click.stop :checked="checkInputChecker()" :value="value" @input="emitValue" ref="checkbox_ref" type="checkbox"

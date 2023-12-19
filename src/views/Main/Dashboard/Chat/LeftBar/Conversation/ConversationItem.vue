@@ -8,8 +8,9 @@
                 <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
                     :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                     :platform_type="source?.platform_type" size="37" class="rounded-full" />
-                <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px] hidden group-hover:block">
-                    <PageAvatar v-tooltip="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.name"
+                <!-- hidden group-hover:block -->
+                <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
+                    <PageAvatar v-tooltip="`${$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)}: ${getPageInfo(source?.fb_page_id)?.name}`"
                         :page_id="source?.fb_page_id"
                         :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                         :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
@@ -103,7 +104,7 @@ import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
 import {
-    isMobile, selectConversation, getLabelInfo, getLabelValid
+    isMobile, selectConversation, getLabelInfo, getLabelValid, getPageInfo
 } from '@/service/function'
 import { getFbUserInfo } from '@/service/helper/ext'
 import { ref } from 'vue'

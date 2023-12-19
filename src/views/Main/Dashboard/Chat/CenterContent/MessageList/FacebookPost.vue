@@ -36,12 +36,11 @@
                 <p class="text-sm font-semibold truncate w-[150px] md:w-[100px] xl:w-[200px]">
                     {{ post_info?.attachments?.data?.[0].title }}
                 </p>
-                <div class="flex">
+                <div>
                     <button @click="toggleModal"
-                        class="bg-blue-600 p-1 rounded-md text-xs text-white mr-1 font-medium whitespace-nowrap">
+                        class="bg-blue-600 p-1 rounded-md text-xs text-white font-medium whitespace-nowrap px-2">
                         {{ $t('v1.view.main.dashboard.chat.post.open_message') }}
                     </button>
-                    <img :src="NoteIcon" alt="">
                 </div>
             </div>
             <div class="flex justify-end mt-2">

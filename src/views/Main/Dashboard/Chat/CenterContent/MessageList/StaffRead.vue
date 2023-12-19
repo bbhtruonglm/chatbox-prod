@@ -4,7 +4,7 @@
         <template v-for="(staff_read_time, staff_id) of conversationStore.select_conversation?.staff_read">
             <StaffAvatar v-tooltip="`${getStaffName(conversationStore.select_conversation?.fb_page_id, staff_id as string)} ${$t('v1.view.main.dashboard.chat.center_content.staff_read')} ${getStaffReadDate(staff_id as string)}`" @click="toggleModal" v-if="isStaffLastReadThisMessage(staff_id as string, staff_read_time)" :id="(staff_id as string)"
                 size="20" :class="`message-staff-read-${staff_id}`"
-                class="staff-read-item rounded-full ml-[-5px] hidden my-1 cursor-pointer" />
+                class="staff-read-item rounded-full ml-[-5px] hidden my-1 cursor-pointer relative hover:z-10 hover:border-2 hover:border-red-500" />
         </template>
     </div>
 </template>

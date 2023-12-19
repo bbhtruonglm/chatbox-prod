@@ -54,7 +54,8 @@ const CREATE_TOOLTIP = (el: HTMLElement, binding: DirectiveBinding): void => {
     // thêm các class mặc đinh
     TOOLTIP_BLOCK.classList.add(
         'absolute', 'z-30', 'rounded-lg', 'px-2', 'py-1', 'bg-black/75',
-        'text-white', 'text-xs', 'max-w-[200px]', 'break-words', `v-tooltip-${TOOLTIP_ID}`
+        'text-white', 'text-xs', 'max-w-[200px]', 'break-words', 'v-tooltip',
+        `v-tooltip-${TOOLTIP_ID}`, `v-tooltip-position-${position}`
     )
 
     /**danh sách vòng lặp để check div target có còn tồn tại hay không */

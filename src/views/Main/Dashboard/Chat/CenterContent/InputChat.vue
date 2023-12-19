@@ -89,7 +89,7 @@
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                     @keyup="checkOpenQuickAnswer" @paste="onPasteImage"
                     class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
-                    contenteditable="true" />
+                    contenteditable="true" :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${conversationStore.select_conversation?.client_name}`" />
             </div>
             <div v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')" @click="sendMessage"
                 class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">

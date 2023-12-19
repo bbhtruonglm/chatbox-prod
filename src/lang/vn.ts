@@ -252,7 +252,9 @@ const source: Language = {
                             },
                             un_filter: 'Xoá lọc',
                         },
+                        operate_by: 'Vận hành bởi',
                         search: 'Tìm kiếm hội thoại',
+                        send_to: 'Gửi tin nhắn đến',
                         error: {
                             get_page_info: 'Không tìm thấy dữ liệu trang'
                         },

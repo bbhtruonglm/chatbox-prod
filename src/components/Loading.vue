@@ -1,5 +1,5 @@
 <template>
-    <img v-if="type === 'MINI'" width="25" height="25" class="animate-spin" :src="LoadingSvg">
+    <img v-if="type === 'MINI'" :width="size" :height="size" class="animate-spin" :src="LoadingSvg">
 
     <div v-else
         class="absolute top-0 left-0 w-full h-full bg-slate-200 bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -17,9 +17,12 @@ withDefaults(defineProps<{
      * FULL: phủ toàn trang
      */
     type?: 'MINI' | 'FULL'
+    /**kích thước */
+    size?: number
     text?: string
 }>(), {
-    type: 'MINI'
+    type: 'MINI',
+    size: 25
 })
 </script>
 

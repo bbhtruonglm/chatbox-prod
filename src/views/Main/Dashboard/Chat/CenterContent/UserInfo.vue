@@ -12,11 +12,16 @@
                 :platform_type="conversationStore.select_conversation?.platform_type" size="37"
                 class="rounded-full cursor-pointer" />
             <div class="ml-1">
-                <div @click="openClientInfo" class="text-sm font-medium cursor-pointer truncate w-[150px]">
-                    {{ conversationStore.select_conversation?.client_name }}
+                <div class="flex items-center">
+                    <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')" class="text-sm font-medium truncate max-w-[150px] cursor-copy">
+                        {{ conversationStore.select_conversation?.client_name }}
+                    </div>
+                    <div v-tooltip.left="$t('v1.view.main.dashboard.chat.client.title')" @click="openClientInfo" class="ml-1 cursor-pointer">
+                        <img src="@/assets/icons/info.svg" class="w-[15px] h-[15px]" />
+                    </div>
                 </div>
-                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.assign_staff.title')" @click="openAssignStaff" class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center"
-                    :class="{
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.assign_staff.title')" @click="openAssignStaff"
+                    class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center" :class="{
                         'text-slate-500': is_admin,
                         'text-slate-400': !is_admin,
                         'cursor-not-allowed': !is_admin
@@ -88,6 +93,7 @@ import ClientInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo/Clien
 
 import type { CbError } from '@/service/interface/function'
 import type { ComponentRef } from '@/service/interface/vue'
+import { copyToClipboard } from '@/service/helper/copyWithAlert'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 

@@ -67,12 +67,17 @@ const conversationStore = useConversationStore()
 const pageStore = usePageStore()
 const messageStore = useMessageStore()
 
+/**lưu lại danh sách câu trả lời, để không phải gọi lên sv liên tục mỗi lần click */
+const CACHE_ANSWER: {
+    [index: string]: QuickAnswerInfo[]
+} = {}
+
 /** ref của modal chính */
 const quick_anser_modal_ref = ref<ComponentRef>()
 /** Danh sách trả lời nhanh */
 const quick_answers = ref<QuickAnswerInfo[]>([])
 /** Danh sách trả lời nhanh */
-const snap_quick_answers = ref<QuickAnswerInfo[]>([])
+// const snap_quick_answers = ref<QuickAnswerInfo[]>([])
 /** Trạng thái loading */
 const loading = ref<boolean>(true)
 /** Id của answer đang được chọn */
@@ -106,12 +111,19 @@ function toggleModal(type?: string) {
 function getQuickAnswer() {
     const page_id: string = conversationStore.select_conversation?.fb_page_id as string
 
+    // nếu đã có dữ liệu rồi thì thôi không gọi api nữa
+    if (CACHE_ANSWER[page_id]) return quick_answers.value = CACHE_ANSWER[page_id]
+
     get_quick_answer({
-        fb_page_id: page_id
+        fb_page_id: page_id,
+        skip: 0,
+        limit: 200 // chỉ lấy 200 câu trả lời nhanh
     }, (e, r) => {
-        quick_answers.value = r
-        snap_quick_answers.value = r
         loading.value = false
+
+        CACHE_ANSWER[page_id] = r
+
+        quick_answers.value = r
 
         setDefaultQuickAnswer()
     })
@@ -238,17 +250,16 @@ function seachQuickAnswer(event: KeyboardEvent) {
     if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13) return
 
     if (!search_content.value) {
-        quick_answers.value = snap_quick_answers.value
+        quick_answers.value = CACHE_ANSWER?.[conversationStore.select_conversation?.fb_page_id as string] || []
         setDefaultQuickAnswer()
         return
     }
 
-    quick_answers.value = snap_quick_answers.value.filter(item => {
+    quick_answers.value = CACHE_ANSWER?.[conversationStore.select_conversation?.fb_page_id as string]?.filter(item => {
         let search = nonAccentVn(search_content.value)
-        let content = nonAccentVn(item.content)
         let title = nonAccentVn(item.title)
 
-        return content.includes(search) || title.includes(search)
+        return title.includes(search)
     })
     setDefaultQuickAnswer()
 }

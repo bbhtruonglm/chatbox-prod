@@ -1,10 +1,10 @@
 <template>
     <div @click="radio_ref?.click()"
         class="flex items-center mb-2 cursor-pointer hover:bg-orange-100 p-2 rounded-lg">
-        <div class="w-[20px] h-[20px]">
+        <div class="w-[16px] h-[16px]">
             <img :src="icon">
         </div>
-        <div class="ml-1 w-[calc(100%_-_44px)]">
+        <div class="ml-1 w-[calc(100%_-_40px)]">
             {{ title }}
         </div>
         <input :checked="isChecker()" @input="emitValue" :value="value" ref="radio_ref" type="radio"
