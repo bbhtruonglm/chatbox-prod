@@ -49,8 +49,6 @@ export const useCommonStore = defineStore('common_store', () => {
     const force_send_message_over_inbox = ref(false)
     /**có đang kết nối vào mạng hay không */
     const is_connected_internet = ref(true)
-    /**giá trị toggle nav hiện tại */
-    const this_toggle_nav = ref(false)
 
     return {
         is_loading_full_screen,
@@ -65,7 +63,6 @@ export const useCommonStore = defineStore('common_store', () => {
         is_active_extension,
         force_send_message_over_inbox,
         is_connected_internet,
-        this_toggle_nav,
 
         triggerRequirePricing,
     }

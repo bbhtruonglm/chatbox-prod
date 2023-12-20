@@ -5,7 +5,42 @@
             class="absolute left-[50%] translate-x-[-50%] border rounded-full flex items-center justify-center w-[35px] h-[35px] bg-white cursor-pointer shadow-xl">
             <img src="@/assets/icons/arrow-down-orange.svg" />
         </div>
-        <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
+
+        <div :class="is_expand_label ? 'h-[79px]' : 'h-[29px]'" class="flex">
+            <div v-if="is_loading_label"
+                class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
+                <Loading />
+            </div>
+            <div class="w-full border-t overflow-hidden scrollbar-vertical overflow-y-auto pt-1 px-2">
+
+                <div class="flex flex-wrap justify-center">
+                    <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
+                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+                        'border-color': label_info?.bg_color,
+                    }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+                        {{ label_info?.title }}
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center">
+                    <div v-for="label_info of getUnactiveLabel()" @click="toggleLabel(label_info._id)" :style="{
+                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+                        'border-color': label_info?.bg_color,
+                    }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+                        {{ label_info?.title }}
+                    </div>
+                </div>
+            </div>
+            <div v-tooltip="$t('v1.common.expand')" @click="is_expand_label = !is_expand_label"
+                class="cursor-pointer flex items-center justify-center w-[50px]">
+                <img src="@/assets/icons/expand.svg" />
+            </div>
+        </div>
+
+
+        <!-- <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
             @click="toggleLabelSelect()"
             class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
             <template v-if="!is_show_label_list">
@@ -55,7 +90,7 @@
                     </div>
                 </div>
             </div>
-        </template>
+        </template> -->
 
         <div v-if="size(messageStore.upload_file_list)"
             class="flex flex-wrap justify-center overflow-hidden scrollbar-vertical overflow-y-auto h-[80px] p-[5px]">
@@ -89,7 +124,8 @@
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                     @keyup="checkOpenQuickAnswer" @paste="onPasteImage"
                     class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
-                    contenteditable="true" :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${conversationStore.select_conversation?.client_name}`" />
+                    contenteditable="true"
+                    :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${conversationStore.select_conversation?.client_name}`" />
             </div>
             <div v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')" @click="sendMessage"
                 class="w-[48px] h-[48px] cursor-pointer flex justify-center items-center">
@@ -178,6 +214,8 @@ const facebook_error = ref<{
     code?: number
     message?: string
 }>()
+/**gắn cờ hiển thị nhiều nhãn */
+const is_expand_label = ref(false)
 
 watch(() => conversationStore.list_widget_token, () => getListWidget())
 

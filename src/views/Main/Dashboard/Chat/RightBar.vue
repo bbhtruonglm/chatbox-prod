@@ -1,7 +1,7 @@
 <template>
     <div class="md:w-[300px] xl:w-[400px] h-full hidden md:block">
         <div class="px-1 border-b h-[50px] flex py-2">
-            <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1" @click="filterWidget()" :class="{
+            <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 hover:brightness-90" @click="filterWidget()" :class="{
                 'bg-orange-500': widget_selected === 'all',
                 'text-white': widget_selected === 'all',
                 'bg-slate-100': widget_selected !== 'all',
@@ -10,8 +10,8 @@
                 {{ $t('v1.common.all') }}
             </button>
             <template v-for="widget in getWidgetRight()?.slice(0, 3)">
-                <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
-                    :class="{
+                <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px] hover:brightness-90"
+                    @click="filterWidget(widget)" :class="{
                         'bg-orange-500': widget_selected === widget._id,
                         'text-white': widget_selected === widget._id,
                         'bg-slate-100': widget_selected !== widget._id,
@@ -31,7 +31,7 @@
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!isMobile() && !widget.is_hidden">
                     <div @click="toggleWidget(widget)" v-if="widget.position === 'RIGHT'"
-                        class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer relative hover:bg-orange-100 py-3">
+                        class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer hover:bg-orange-100 py-3 hover:brightness-90 bg-white sticky top-0">
                         <img :src="widget.snap_app.icon" class="mr-1" width="20" height="20" />
                         {{ widget.snap_app.name }}
                         <img v-if="!widget.is_show" class="absolute top-5 right-2" src="@/assets/icons/arrow-down.svg"
@@ -64,8 +64,8 @@
             height="auto">
             <div class="flex flex-wrap max-w-[295px] max-h-[200px] overflow-hidden scrollbar-vertical overflow-y-auto">
                 <template v-for="widget in getWidgetRight()?.slice(3)">
-                    <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px]" @click="filterWidget(widget)"
-                        :class="{
+                    <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px] hover:brightness-90"
+                        @click="filterWidget(widget)" :class="{
                             'bg-orange-500': widget_selected === widget._id,
                             'text-white': widget_selected === widget._id,
                             'bg-slate-100': widget_selected !== widget._id,

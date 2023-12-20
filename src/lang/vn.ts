@@ -40,7 +40,8 @@ const source: Language = {
             update: 'Cập nhật',
             update_success: 'Đã cập nhật',
             create: 'Tạo',
-            incomming: 'Sắp ra mắt'
+            incomming: 'Sắp ra mắt',
+            expand: 'Mở rộng'
         },
         view: {
             network: {
@@ -281,7 +282,7 @@ const source: Language = {
                             open_album: 'Chọn tập tin từ album',
                             toggle_label: 'Hiển thị danh sách nhãn',
                             has_reply: 'Trang đã trả lời khách hàng',
-                            total_client: 'Tổng số khách hàng thoả mãn điều kiện lọc',
+                            total_client: 'Tổng số khách hàng thoả mãn điều kiện lọc (bấm để làm mới)',
                             search_conversation: 'Tìm kiếm khách hàng',
                             cancel_search: 'Huỷ tìm kiếm',
                             reload_ad: 'Cập nhật nội dung quảng cáo'
@@ -355,7 +356,8 @@ const source: Language = {
                             private_inbox: 'Inbox',
                             cancel: 'Hủy',
                             send_message: 'Gửi tin nhắn',
-                            send_message_success: 'Gửi tin thành công'
+                            send_message_success: 'Gửi tin thành công',
+                            from_ad: 'Bài viết từ quảng cáo'
                         },
                         album: {
                             title: 'Quản lý tập tin',

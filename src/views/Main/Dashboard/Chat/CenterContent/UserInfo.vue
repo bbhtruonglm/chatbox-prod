@@ -16,7 +16,7 @@
                     <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')" class="text-sm font-medium truncate max-w-[150px] cursor-copy">
                         {{ conversationStore.select_conversation?.client_name }}
                     </div>
-                    <div v-tooltip.left="$t('v1.view.main.dashboard.chat.client.title')" @click="openClientInfo" class="ml-1 cursor-pointer">
+                    <div v-tooltip.right="$t('v1.view.main.dashboard.chat.client.title')" @click="openClientInfo" class="ml-1 cursor-pointer">
                         <img src="@/assets/icons/info.svg" class="w-[15px] h-[15px]" />
                     </div>
                 </div>

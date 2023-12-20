@@ -5,13 +5,14 @@ import { checkPricingValid } from '@/service/helper/pricing'
 import { reset_read_conversation } from '../api/chatbox/n4-service'
 import { toastError } from '../helper/alert'
 import { format as format_date } from 'date-fns'
+import { useRoute } from 'vue-router'
+import { nextTick } from 'vue'
+import { getItem } from '../helper/localStorage'
+import { useI18n } from 'vue-i18n'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
-import { nextTick } from 'vue'
 import type { AppInstalledInfo } from '../interface/app/widget'
-import { getItem } from '../helper/localStorage'
-import { useI18n } from 'vue-i18n'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -141,6 +142,12 @@ export const selectConversation = (conversation: ConversationInfo) => {
 /**kiểm tra cỡ màn hình, từ đó suy luận ra có đang ở chế độ dt hay không */
 export const isMobile = () => {
     return window.innerWidth < 768
+}
+/**kiểm tra có đang trong trang chat hay không */
+export const isChat = () => {
+    const $route = useRoute()
+
+    return $route.path?.includes('/chat')
 }
 
 /**kiểm tra cỡ màn hình có phải là máy tính bảng hay không */

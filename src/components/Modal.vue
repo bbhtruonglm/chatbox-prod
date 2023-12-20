@@ -13,7 +13,7 @@
             >
                 <div class="px-4 py-2 rounded-lg bg-white">
                     <button @click="toggleModal" class=" absolute top-[8px] right-[6px]">
-                        <img src="@/assets/icons/close-red.svg">
+                        <img src="@/assets/icons/close-red.svg" class="hover:saturate-150" />
                     </button>
                     <div class="font-semibold">
                         <slot name="header"></slot>

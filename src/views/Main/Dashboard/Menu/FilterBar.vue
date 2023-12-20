@@ -1,5 +1,5 @@
 <template>
-    <NavItem @click="menu_ref?.toggleDropdown" :is_only_show_icon="commonStore.this_toggle_nav" :icon="toggleSvg"
+    <NavItem @click="menu_ref?.toggleDropdown" :is_only_show_icon="isChat()" :icon="toggleSvg"
         :title="$t('v1.view.main.dashboard.nav.menu')" />
 
     <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_interact?.filter_popover_ref?.mouseover"
@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
-import { isActiveMessageFilter, isFilterActive, resetConversationFilter } from '@/service/function'
+import { isActiveMessageFilter, isChat, isFilterActive, resetConversationFilter } from '@/service/function'
 
 import FilterBarItem from '@/views/Main/Dashboard/Menu/FilterBarItem.vue'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'

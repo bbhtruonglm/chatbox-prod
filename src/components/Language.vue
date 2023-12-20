@@ -7,7 +7,7 @@
                 <div class="ml-1">{{ lang.title }}</div>
             </div>
         </div>
-        <div @click="is_toggle_select_lang = !is_toggle_select_lang" class="flex cursor-pointer">
+        <div @click="is_toggle_select_lang = !is_toggle_select_lang" class="hover:bg-slate-100 p-1 rounded flex cursor-pointer">
             <img src="@/assets/icons/global.svg">
             <div class="ml-1 uppercase">{{ current_locale }}</div>
         </div>

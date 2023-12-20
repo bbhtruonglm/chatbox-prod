@@ -23,11 +23,11 @@
         </template>
         <template v-slot:footer>
             <div class="text-sm flex justify-end items-center cursor-pointer mb-2">
-                <p class="text-blue-500 mr-3" @click="toggleModal">
+                <p class="text-blue-500 hover:text-blue-600 mr-3" @click="toggleModal">
                     {{ $t('v1.view.main.dashboard.chat.post.cancel') }}
                 </p>
                 <button 
-                    class="bg-blue-500 text-white rounded-lg px-2 py-1 cursor-pointer"
+                    class="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-2 py-1 cursor-pointer"
                     @click="privateInbox"
                 >
                     <p v-if="!loading">

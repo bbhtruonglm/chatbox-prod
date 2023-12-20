@@ -90,7 +90,7 @@
                                     type="text"
                                     :placeholder="`Bình luận với vai trò ${pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page?.name}`"
                                     v-on:keyup.enter="sendPostComment(comment.new_comment as string, comment.comment_id, index)">
-                                <img v-if="!comment.sending_message" class=" absolute right-3 top-3 cursor-pointer"
+                                <img v-if="!comment.sending_message" class=" absolute right-3 top-3 cursor-pointer hover:saturate-150"
                                     :src="SendMessageIcon" alt=""
                                     @click="sendPostComment(comment.new_comment as string, comment.comment_id, index)">
                                 <Loading v-if="comment.sending_message" class=" absolute right-3 top-2" />
@@ -99,7 +99,7 @@
 
                     </div>
                 </div>
-                <p v-if="!done_load_comment" @click="getFbPostComments" class="text-sm font-bold cursor-pointer mt-3">
+                <p v-if="!done_load_comment" @click="getFbPostComments" class="text-sm font-bold cursor-pointer mt-3 hover:text-orange-500">
                     {{ $t('v1.view.main.dashboard.chat.post.get_more_comments') }}
                 </p>
             </div>

@@ -6,14 +6,14 @@
         </div>
         <div class="mt-10">
             <div>
-                <button @click="facebook_error_ref.toggleModal()" class="bg-blue-500 text-white font-semibold p-2 w-[300px] rounded-full">
+                <button @click="facebook_error_ref.toggleModal()" class="bg-blue-500 hover:brightness-125 text-white font-semibold p-2 w-[300px] rounded-full">
                     {{ $t('v1.view.main.dashboard.user.grant_fb_permission') }}
                 </button>
             </div>
         </div>
         <!-- class="mt-10" khi nào có nhiều btn thì sẽ thêm class này -->
         <div class="mt-5">
-            <button @click="signout" class="bg-red-500 text-white font-semibold p-2 w-[300px] rounded-full">
+            <button @click="signout" class="bg-red-500 hover:brightness-125 text-white font-semibold p-2 w-[300px] rounded-full">
                 {{ $t('v1.view.main.dashboard.user.logout') }}
             </button>
         </div>

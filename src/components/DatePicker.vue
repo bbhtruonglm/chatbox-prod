@@ -2,26 +2,26 @@
     <div class="bg-white p-2 text-[13px]">
         <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center justify-between">
-                <div @click="changeDate('MONTH', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"
+                <div @click="changeDate('MONTH', 'MINUS')" class="hover:bg-slate-100 rounded py-2 cursor-pointer w-[30px]"><img class="mx-auto"
                         src="@/assets/icons/arrow-left.svg" width="7" height="7" />
                 </div>
                 <div class="font-medium text-center">
                     {{ $t('v1.view.datepicker.month') }}
                     {{ current_month + 1 }}
                 </div>
-                <div @click="changeDate('MONTH', 'ADD')" class="cursor-pointer w-[30px]"><img class="mx-auto"
+                <div @click="changeDate('MONTH', 'ADD')" class="hover:bg-slate-100 rounded py-2 cursor-pointer w-[30px]"><img class="mx-auto"
                         src="@/assets/icons/arrow-right.svg" width="7" height="7" />
                 </div>
             </div>
             <div class="flex items-center justify-between">
-                <div @click="changeDate('YEAR', 'MINUS')" class="cursor-pointer w-[30px]"><img class="mx-auto"
+                <div @click="changeDate('YEAR', 'MINUS')" class="hover:bg-slate-100 rounded py-2 cursor-pointer w-[30px]"><img class="mx-auto"
                         src="@/assets/icons/arrow-left.svg" width="7" height="7" />
                 </div>
                 <div class="font-medium text-center">
                     {{ $t('v1.view.datepicker.year') }}
                     {{ current_year }}
                 </div>
-                <div @click="changeDate('YEAR', 'ADD')" class="cursor-pointer w-[30px]"><img class="mx-auto"
+                <div @click="changeDate('YEAR', 'ADD')" class="hover:bg-slate-100 rounded py-2 cursor-pointer w-[30px]"><img class="mx-auto"
                         src="@/assets/icons/arrow-right.svg" width="7" height="7" />
                 </div>
             </div>

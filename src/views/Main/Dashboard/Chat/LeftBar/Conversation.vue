@@ -69,7 +69,7 @@ watch(
 // khi có data page được chọn thì tính toán danh sách conversation
 watch(
     () => pageStore.selected_page_list_info,
-    () => loadConversationFirstTime()
+    () => loadConversationFirstTime(true)
 )
 
 onMounted(() => window.addEventListener(
@@ -143,14 +143,14 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     }
 }
 /**đọc danh sách hội thoại lần đầu tiên */
-function loadConversationFirstTime() {
+function loadConversationFirstTime(is_first_time?: boolean) {
     // reset data
     conversationStore.conversation_list = {}
 
     // reset phân trang
     after.value = undefined
 
-    getConversation(true)
+    getConversation(is_first_time)
 }
 /**đọc danh sách hội thoại */
 function getConversation(is_first_time?: boolean) {
@@ -276,4 +276,6 @@ function loadMoreConversation($event: UIEvent) {
 
     getConversation()
 }
+
+defineExpose({ loadConversationFirstTime })
 </script>

@@ -14,7 +14,7 @@ const $props = withDefaults(defineProps<{
     /**tin nhắn hiện tại */
     now_message: MessageInfo
     /**tin nhắn tiếp theo */
-    next_message: MessageInfo
+    next_message?: MessageInfo
 }>(), {})
 
 const $t = useI18n().t

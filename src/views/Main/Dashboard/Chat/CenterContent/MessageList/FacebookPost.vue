@@ -43,8 +43,11 @@
                     </button>
                 </div>
             </div>
-            <div class="flex justify-end mt-2">
-                <p class="text-slate-700 text-xs underline cursor-pointer"
+            <div class="mt-2 grid grid-cols-2">
+                <div>
+                    <img v-tooltip.bottom="$t('v1.view.main.dashboard.chat.post.from_ad')" v-if="ad_id" src="@/assets/icons/ad.svg" />
+                </div>
+                <p class="flex justify-end text-slate-700 text-xs underline cursor-pointer"
                     @click="openPost(post_info.permalink_url as string)">
                     {{ $t('v1.view.main.dashboard.chat.post.open_on_facebook') }}
                 </p>
@@ -80,9 +83,6 @@ import {
 // * Component
 import Loading from '@/components/Loading.vue';
 import FacebookCommentModal from '@/components/Main/Dashboard/FacebookCommentModal.vue';
-
-// * Icon
-import NoteIcon from "@/assets/icons/note.svg"
 
 // * Store
 import { useConversationStore } from '@/stores';

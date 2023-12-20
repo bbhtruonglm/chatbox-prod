@@ -2,10 +2,10 @@
     <div class="h-full w-full flex relative">
         <div class="bg-white duration-500 h-screen w-[300px] absolute z-[20]" :class="genNavClass()">
             <div class="w-full h-full relative py-14 px-4 md:py-8 md:px-2 xl:py-1">
-                <div @click="toggleNav" v-if="commonStore.this_toggle_nav"
+                <div @click="toggleNav" v-if="this_toggle_nav"
                     class="absolute top-0 right-[-413px] h-screen w-screen md:hidden" />
                 <button @click="toggleNav" class="absolute top-[70px] right-[-40px] md:hidden">
-                    <img v-if="commonStore.this_toggle_nav" src="@/assets/icons/close.svg">
+                    <img v-if="this_toggle_nav" src="@/assets/icons/close.svg">
                     <img v-else src="@/assets/icons/toggle.svg">
                 </button>
                 <slot name="menu" />
@@ -17,8 +17,10 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import { useCommonStore } from '@/stores'
+import { isMobile, isChat } from '@/service/function'
+import { useRoute } from 'vue-router'
 
 const $emit = defineEmits(['toggle_nav_change'])
 
@@ -27,7 +29,8 @@ const $props = withDefaults(defineProps<{
     init_toggle_nav?: boolean
 }>(), {})
 
-const commonStore = useCommonStore()
+/**giá trị toggle nav hiện tại */
+const this_toggle_nav = ref(false)
 
 // thay đổi giá trị ẩn hiện nếu bên ngoài thay đổi
 watch(() => $props.init_toggle_nav, val => initToggleNavValue(val))
@@ -37,15 +40,15 @@ onMounted(() => initToggleNavValue($props.init_toggle_nav))
 
 /**thay đổi giá trị của toggle */
 function initToggleNavValue(value: boolean) {
-    commonStore.this_toggle_nav = value
+    this_toggle_nav.value = value
 }
 /**thay đổi trạng thái của nav */
 function toggleNav() {
     // thay đổi giá trị của biến
-    commonStore.this_toggle_nav = !commonStore.this_toggle_nav
+    this_toggle_nav.value = !this_toggle_nav.value
 
     // xuất giá trị của biến ra bên ngoài
-    $emit('toggle_nav_change', commonStore.this_toggle_nav)
+    $emit('toggle_nav_change', this_toggle_nav.value)
 }
 /**
  * css lại nav khi ẩn / hiên
@@ -53,27 +56,44 @@ function toggleNav() {
  * tablet/pc: hiện nav cỡ lớn - hiện nav cỡ nhỏ
  */
 function genNavClass() {
-    /**
-     * trạng thái bình thường
-     * mobile: ẩn nav
-     * tablet/pc: hiển thị cỡ lớn
-     */
-    if (!commonStore.this_toggle_nav) return 'left-[-300px] md:static md:w-[220px]'
+    /**ở mobile thì nav là overlay và sẽ ẩn hẳn đi */
+    if (isMobile()) {
+        /**
+        * trạng thái bình thường
+        * mobile: ẩn nav
+        */
+        if (!this_toggle_nav.value) return 'left-[-300px]'
 
-    /**
-     * trạng thái kích hoạt
-     * mobile: hiển thị cỡ lớn
-     * tablet/pc: hiển thị cỡ nhỏ
-     */
-    return `top-0 left-0 md:static md:w-[60px]`
+        /**
+         * trạng thái kích hoạt
+         * mobile: hiển thị cỡ lớn
+         */
+        return `top-0 left-0`
+    }
+    /**ở pc thì trong chat hiện nhỏ, ngoài chat hiện lớn không đổi */
+    else {
+        /**
+        * trong chat
+        * tablet/pc: hiển thị cỡ lớn
+        */
+        if (!isChat()) return 'md:static md:w-[220px]'
+
+        /**
+         * ngoài chat
+         * tablet/pc: hiển thị cỡ nhỏ
+         */
+        return `md:static md:w-[60px]`
+    }
 }
 /**
  * css lại kích cỡ content khi ẩn / hiện, để không bị đè vào kích thước của nav
  * ở giao diện tablet/pc
  */
 function genContentClass() {
-    if (!commonStore.this_toggle_nav) return 'md:w-[calc(100%_-_220px)]'
+    /**chat thì hiện lớn */
+    if (!isChat()) return 'md:w-[calc(100%_-_220px)]'
 
+    /**ở ngoài thì hiện nhỏ */
     return `md:w-[calc(100%_-_60px)]`
 }
 

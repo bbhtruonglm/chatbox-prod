@@ -5,7 +5,7 @@
             <div :class="main_content_class"
                 class="absolute bottom-0 left-0 w-full pb-10 px-4 pt-2 bg-white rounded-t-[18px] duration-200 max-h-[calc(100vh_-_100px)] overflow-hidden">
                 <button @click="toggleModal()" class="absolute top-[8px] right-[6px]">
-                    <img src="@/assets/icons/close-red.svg">
+                    <img src="@/assets/icons/close-red.svg" class="hover:saturate-150" />
                 </button>
                 <div class="font-semibold">
                     <slot name="header"></slot>

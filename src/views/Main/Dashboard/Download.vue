@@ -149,12 +149,12 @@
             </div>
             <div class="flex justify-center mt-5">
                 <div class="mr-2">
-                    <button @click="openDownloadPage" class="text-white bg-green-500 rounded-lg px-2 py-1">
+                    <button @click="openDownloadPage" class="text-white bg-green-500 hover:brightness-105 rounded-lg px-2 py-1">
                         {{ $t('v1.view.main.dashboard.download.start_download') }}
                     </button>
                 </div>
                 <div>
-                    <button @click="createDownloadData" class="text-white bg-blue-500 rounded-lg px-2 py-1">
+                    <button @click="createDownloadData" class="text-white bg-blue-500 hover:brightness-125 rounded-lg px-2 py-1">
                         {{ $t('v1.view.main.dashboard.download.create_data') }}
                     </button>
                 </div>

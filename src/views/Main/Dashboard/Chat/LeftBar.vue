@@ -10,9 +10,10 @@
                     <div v-tooltip.bottom="`v${version}`" class="font-medium text-2xl">
                         {{ $t('v1.common.chatbox') }}
                     </div>
-                    <div class="flex items-end mb-[2px]">
-                        <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
-                            class="text-sm text-slate-700 ml-1">
+                    <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
+                        @click="reloadConversation"
+                        class="flex items-end mb-[2px] cursor-pointer">
+                        <div class="text-sm text-slate-700 ml-1">
                             {{ total_conversation?.toLocaleString() }}
                         </div>
                         <div class="mb-[3px]">
@@ -23,15 +24,15 @@
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
                     class="h-[32px] w-full px-2 focus:outline-none" v-if="is_show_search" type="text"
                     :placeholder="$t('v1.view.main.dashboard.chat.search')">
-                <div v-tooltip.bottom="is_show_search ? $t('v1.view.main.dashboard.chat.action.cancel_search') : $t('v1.view.main.dashboard.chat.action.search_conversation')" @click="toogleSearch"
-                    class="cursor-pointer">
+                <div v-tooltip.bottom="is_show_search ? $t('v1.view.main.dashboard.chat.action.cancel_search') : $t('v1.view.main.dashboard.chat.action.search_conversation')"
+                    @click="toogleSearch" class="cursor-pointer">
                     <img v-if="!is_show_search" src="@/assets/icons/search.svg" width="28" height="28">
                     <img v-else src="@/assets/icons/close-red.svg">
                 </div>
             </div>
         </div>
         <!-- <UserOnline /> -->
-        <Conversation />
+        <Conversation ref="conversation_ref" />
     </div>
     <template>
         <FilterModal ref="filter_modal_ref" />
@@ -69,6 +70,8 @@ const filter_modal_ref = ref<ComponentRef>()
 const is_show_search = ref(false)
 /**ref của input tìm kiếm hội thoại */
 const search_conversation_input = ref<ComponentRef>()
+/**ref của danh sách hội thoại */
+const conversation_ref = ref<ComponentRef>()
 /**đếm tổng số khách hàng thoả mãn điều kiện lọc */
 const total_conversation = ref<number>()
 
@@ -116,6 +119,10 @@ const onSearchConversation = debounce(($event: Event) => {
 
     conversationStore.option_filter_page_data.search = INPUT.value
 }, 300)
+/**load lại dữ liệu lọc hiện tại */
+function reloadConversation() {
+    conversation_ref.value?.loadConversationFirstTime(true)
+}
 /**ẩn hiện ô tìm kiếm hội thoại */
 function toogleSearch() {
     // toggle value

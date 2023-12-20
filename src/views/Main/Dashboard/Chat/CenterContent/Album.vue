@@ -10,20 +10,20 @@
                 </div>
                 <div class="flex border-b mb-2">
                     <div @click="selectCategory('NEW')"
-                        :class="selected_category === 'NEW' ? 'font-medium border-b-2 border-orange-500' : 'font-light'"
-                        class="mr-2 cursor-pointer">
+                        :class="selected_category === 'NEW' ? 'font-medium !border-orange-500' : 'font-light'"
+                        class="border-b-2 border-white mr-2 cursor-pointer hover:border-orange-500">
                         {{ $t('v1.view.main.dashboard.chat.album.category.new') }}
                     </div>
                     <div @click="selectCategory('FOLDER')"
-                        :class="selected_category === 'FOLDER' ? 'font-medium border-b-2 border-orange-500' : 'font-light'"
-                        class="cursor-pointer">
+                        :class="selected_category === 'FOLDER' ? 'font-medium !border-orange-500' : 'font-light'"
+                        class="border-b-2 border-white cursor-pointer hover:border-orange-500">
                         {{ $t('v1.view.main.dashboard.chat.album.category.folder') }}
                     </div>
                 </div>
                 <div class="grid grid-cols-2">
                     <div>
                         <button v-if="selected_category === 'NEW' || selected_folder_id" @click="uploadFileFromDevice"
-                            class="rounded-full bg-orange-500 text-white font-medium px-2 flex items-center py-1">
+                            class="rounded-full bg-orange-500 text-white font-medium px-2 flex items-center py-1 hover:brightness-90">
                             <img src="@/assets/icons/upload.svg" />
                             {{ $t('v1.common.upload') }}
                         </button>
@@ -35,7 +35,8 @@
                             <input :checked="isSelectAllFile()" type="checkbox"
                                 class="w-[15px] h-[15px] ml-1 accent-orange-600">
                         </div>
-                        <div v-else @click="openCreateFolder" class="cursor-pointer">
+                        <div v-else v-tooltip.bottom="$t('v1.view.main.dashboard.chat.album.create_folder')"
+                            @click="openCreateFolder" class="cursor-pointer">
                             <img src="@/assets/icons/new-folder.svg" />
                         </div>
                     </div>

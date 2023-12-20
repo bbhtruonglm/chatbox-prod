@@ -17,7 +17,7 @@
             <span v-show="!modelValue" class=" text-gray-400">{{ placeholder }}</span>
         </div>
         <div v-show="is_show_option" class="w-full h-full relative">
-            <input ref="select_input_ref" type="text" class="rounded border border-slate-300 w-full h-full pl-5 pr-7"
+            <input ref="select_input_ref" type="text" class="rounded border border-slate-300 w-full h-full pl-5 pr-7 focus:outline-none"
                 :placeholder="placeholder" v-model="search">
             <img width="15" height="15" src="@/assets/icons/search.svg" class="absolute top-[6px] left-1">
         </div>

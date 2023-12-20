@@ -1,22 +1,17 @@
 <template>
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
-        @click="goToChat" icon_class="w-[20px]" :is_only_show_icon="is_hide_title" :icon="chatSvg"
-        :title="$t('v1.view.main.dashboard.nav.chat')" />
+        @click="goToChat" icon_class="w-[20px]" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
     <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav(nav.path)"
-        :icon_class="nav.icon_class" :is_only_show_icon="is_hide_title" :icon="nav.icon" :title="nav.title" />
-    <NavItem :is_only_show_icon="is_hide_title" :icon="settingSvg" @click="openPageSetting"
-        :title="$t('v1.view.main.dashboard.nav.page_setting')" />
-    <NavItem :is_only_show_icon="is_hide_title" :icon="analyticSvg" @click="openAnalytic"
-        :title="$t('v1.view.main.dashboard.nav.analytic')" />
+        :icon_class="nav.icon_class" :icon="nav.icon" :title="nav.title" />
+    <NavItem :icon="settingSvg" @click="openPageSetting" :title="$t('v1.view.main.dashboard.nav.page_setting')" />
+    <NavItem :icon="analyticSvg" @click="openAnalytic" :title="$t('v1.view.main.dashboard.nav.analytic')" />
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
-        @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]"
-        :is_only_show_icon="is_hide_title" :icon="downloadSvg" :title="$t('v1.view.main.dashboard.nav.download')" />
-    <NavItem :is_only_show_icon="is_hide_title" :icon="infoSvg" @click="openGuildLink"
-        :title="$t('v1.view.main.dashboard.nav.info')" />
+        @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]" :icon="downloadSvg"
+        :title="$t('v1.view.main.dashboard.nav.download')" />
+    <NavItem :icon="infoSvg" @click="openGuildLink" :title="$t('v1.view.main.dashboard.nav.info')" />
     <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0" @click="selectNav('/main/dashboard/noti')"
-        :is_only_show_icon="is_hide_title" :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
-    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0" @click="selectNav('/main/dashboard/user')"
-        :is_only_show_icon="is_hide_title" />
+        :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
+    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0" @click="selectNav('/main/dashboard/user')" />
 </template>
 
 <script setup lang="ts">
@@ -80,9 +75,6 @@ const LIST_NAV = [
         title: $t('v1.view.main.dashboard.nav.widget')
     },
 ]
-
-/**ẩn title ở chế độ nhỏ */
-const is_hide_title = computed(() => commonStore.this_toggle_nav && !$props.alway_full)
 
 /**mở cài đặt trang */
 function openPageSetting() {
