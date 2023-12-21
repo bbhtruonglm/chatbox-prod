@@ -45,6 +45,8 @@ export interface FilterConversation {
 export interface QueryConversationInput extends FilterConversation {
     /**lọc theo danh sách page: "ID_1 ID_2 ID_3 ID_4" */
     page_id: string[]
+    /**tìm 1 khách hàng */
+    client_id?: string
     /**phân trang */
     skip?: number
     /**phân trang */

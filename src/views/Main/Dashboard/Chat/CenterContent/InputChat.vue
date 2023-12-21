@@ -146,7 +146,8 @@
         <div
             class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
             <template v-for="widget of widget_list">
-                <div v-if="isMobile() || widget.position === 'BOTTOM'" @click="toggleWidget(widget)"
+                <div v-tooltip="widget?.snap_app?.name" v-if="isMobile() || widget.position === 'BOTTOM'"
+                    @click="$event => toggleWidget($event, widget)"
                     class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
                     <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
                 </div>
@@ -343,11 +344,10 @@ function selectAttachmentFromDevice() {
     INPUT.click()
 }
 /**hiển thị widget bên dưới */
-function toggleWidget(widget: AppInstalledInfo) {
-    console.log('alo')
+function toggleWidget($event: MouseEvent, widget: AppInstalledInfo) {
     conversationStore.select_widget = widget
 
-    $emit('toggle_bottom_widget')
+    $emit('toggle_bottom_widget', $event)
 }
 /**hiển thị trả lời nhanh */
 function toggleQuickAnswer() {

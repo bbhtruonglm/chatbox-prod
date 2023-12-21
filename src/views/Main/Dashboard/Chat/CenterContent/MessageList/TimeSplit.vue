@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isShowTimeSplit()" class="my-5 text-center">
+    <div v-if="isShowTimeSplit()" class="my-2 text-center">
         <div class="text-[10px] text-slate-500">
             {{ formatDate() }}
         </div>

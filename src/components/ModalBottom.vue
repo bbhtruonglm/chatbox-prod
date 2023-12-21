@@ -1,6 +1,7 @@
 <template>
     <Teleport :to="teleport_to">
-        <div v-if="is_open" :style="{ width, left }" class="absolute top-0 h-screen z-10 bg-slate-500/50">
+        <div @keydown="onEsc" ref="modal_bottom_ref" v-if="is_open" :style="{ width, left }" :class="background"
+            class="absolute top-0 h-screen z-10">
             <div @click="toggleModal()" class="w-full h-full"></div>
             <div :class="main_content_class"
                 class="absolute bottom-0 left-0 w-full pb-10 px-4 pt-2 bg-white rounded-t-[18px] duration-200 max-h-[calc(100vh_-_100px)] overflow-hidden">
@@ -21,7 +22,6 @@
     </Teleport>
 </template>
 <script setup lang="ts">
-// xử dụng teleport để dịch chuyển modal lên body mỗi lần được hiển thị
 import { nextTick, ref } from 'vue'
 
 withDefaults(defineProps<{
@@ -31,10 +31,13 @@ withDefaults(defineProps<{
     width?: string
     /**component được cách bên trái bao nhiêu */
     left?: string
+    /**màu nền */
+    background?: string
 }>(), {
     teleport_to: 'body',
     width: '100%',
-    left: '0'
+    left: '0',
+    background: 'bg-slate-500/50'
 })
 
 const $emit = defineEmits(['close_modal', 'open_modal'])
@@ -44,6 +47,12 @@ const is_open = ref(false)
 /**xử dụng để tạo hiệu ứng lên xuống cho modal */
 const main_content_class = ref('translate-y-[100%]')
 
+/**xử lý sự kiện khi bấm esc */
+function onEsc($event: KeyboardEvent) {
+    if ($event.key !== 'Escape') return
+
+    toggleModal()
+}
 /**ẩn hiện modal */
 function toggleModal() {
     // mở modal

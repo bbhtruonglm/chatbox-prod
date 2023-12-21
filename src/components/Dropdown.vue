@@ -56,6 +56,7 @@ const dropdown_ref = ref<ComponentRef>()
 function teleportToTarget($event?: MouseEvent) {
     // tịnh tiến vị trí
     const TARGET = $event?.currentTarget as HTMLElement
+    console.log('heyeyddd', $event)
 
     if (!TARGET) return
 

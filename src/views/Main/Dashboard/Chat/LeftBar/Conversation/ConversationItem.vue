@@ -10,7 +10,7 @@
                     :platform_type="source?.platform_type" size="37" class="rounded-full" />
                 <!-- hidden group-hover:block -->
                 <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
-                    <PageAvatar v-tooltip="`${$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)}: ${getPageInfo(source?.fb_page_id)?.name}`"
+                    <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name"
                         :page_id="source?.fb_page_id"
                         :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                         :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
@@ -74,8 +74,12 @@
                 <div v-tooltip.bottom="source?.client_phone" v-if="source?.client_phone">
                     <img src="@/assets/icons/phone.svg" width="13" height="13">
                 </div>
-                <div v-tooltip.bottom="source?.client_bio?.fb_uid" v-if="source?.client_bio?.fb_uid" class="ml-1">
-                    <img src="@/assets/icons/facebook.svg" width="13" height="13">
+                <div v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`" v-if="source?.client_bio?.fb_uid" class="ml-1">
+                    <img src="@/assets/icons/id.svg" width="13" height="13">
+                </div>
+                <div v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)" class="ml-1">
+                    <img v-if="source?.platform_type === 'FB_MESS'" src="@/assets/icons/facebook.svg" width="13" height="13">
+                    <img v-if="source?.platform_type === 'WEBSITE'" src="@/assets/icons/website-2.svg" width="13" height="13">
                 </div>
             </div>
         </div>

@@ -27,6 +27,7 @@ import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
 import { isMobile, selectConversation } from '@/service/function'
+import { waterfall } from 'async'
 
 import Loading from '@/components/Loading.vue'
 import ConversationItem from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/ConversationItem.vue'
@@ -223,38 +224,92 @@ function getConversation(is_first_time?: boolean) {
 }
 /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
 function selectDefaultConversation() {
-    // nếu không có dữ liệu hội thoại thì bỏ qua
-    if (!size(conversationStore.conversation_list)) return
-
-    // lấy id hội thoại trên param
-    let { page_id, user_id } = $route.query
-
-    // tìm kiếm hội thoại thoả mãn param
-    let target_conversation = find(conversationStore.conversation_list, (conversation, key) => {
-        return `${page_id}_${user_id}` === key
-    })
-
-    // nếu không tìm thấy thì lấy hội thoại đầu tiên
-    if (!target_conversation) {
-        target_conversation = map(conversationStore.conversation_list)?.[0]
-
-        // đẩy id lên param
-        $router.replace({
-            query: {
-                page_id: target_conversation?.fb_page_id,
-                user_id: target_conversation?.fb_client_id,
-            }
-        })
-    }
-
-    selectConversation(target_conversation)
-
     // tự động focus vào input chat
     // đơi nửa giây cho div được render
     // chỉ cho chạy ở pc, nếu ở mobile sẽ gây lỗi vỡ giao diện
     if (!isMobile()) setTimeout(() => {
         document.getElementById('chat-text-input-message')?.focus()
     }, 500)
+
+    // nếu không có dữ liệu hội thoại thì bỏ qua
+    // if (!size(conversationStore.conversation_list)) return
+
+    // lấy id hội thoại trên param
+    let { page_id, user_id } = $route.query
+
+    // key của hội thoại
+    let data_key = `${page_id}_${user_id}`
+
+    // tìm kiếm hội thoại thoả mãn param
+    let target_conversation = find(conversationStore.conversation_list, (conversation, key) => {
+        return data_key === key
+    })
+
+    /**dữ liệu hội thoại tìm được */
+    let conversation: ConversationInfo | undefined
+    waterfall([
+        // * verify input
+        (cb: CbError) => {
+            // nếu không có id khách hàng thì thôi
+            if (!page_id || !user_id) return cb(true)
+
+            // nếu đã tìm thấy khách hàng rồi thì thôi
+            if (target_conversation) return cb(true)
+
+            cb()
+        },
+        // * tìm đến hội thoại
+        (cb: CbError) => read_conversation(
+            {
+                page_id: [page_id as string],
+                client_id: user_id as string,
+                limit: 1,
+            },
+            (e, r) => {
+                if (e) return cb(e)
+
+                conversation = r?.conversation?.[data_key]
+                cb()
+            }
+        ),
+        // * thêm hội thoại vào danh sách và pick chọn
+        (cb: CbError) => {
+            if (!conversation) return cb(true)
+
+            // chọn khách hàng đã tìm được
+            target_conversation = {
+                ...conversation,
+                data_key
+            }
+
+            // thêm khách hàng vào list khách hàng
+            let temp: ConversationList = {}
+            temp[data_key] = target_conversation
+
+            conversationStore.conversation_list = {
+                ...conversationStore.conversation_list,
+                ...temp
+            }
+
+            cb()
+        }
+    ], e => {
+        // nếu không tìm thấy thì lấy hội thoại đầu tiên
+        if (!target_conversation) {
+            target_conversation = map(conversationStore.conversation_list)?.[0]
+
+            // đẩy id lên param
+            $router.replace({
+                query: {
+                    page_id: target_conversation?.fb_page_id,
+                    user_id: target_conversation?.fb_client_id,
+                }
+            })
+        }
+
+        selectConversation(target_conversation)
+    })
+
 }
 /**load thêm hội thoại khi lăn chuột xuống cuối */
 function loadMoreConversation($event: UIEvent) {

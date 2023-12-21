@@ -66,10 +66,10 @@ function toggleChangeAssignStaff($event: MouseEvent) {
     change_staff_ref.value?.toggle($event)
 }
 /**ẩn hiện modal */
-function toggleBottomWidget() {
+function toggleBottomWidget($event: MouseEvent) {
     teleportCenterModelOnPcScreen()
 
-    bottom_widget_modal_ref.value?.toggleModal()
+    bottom_widget_modal_ref.value?.toggleModal($event)
 }
 /**ẩn hiện modal */
 function toggleQuickAnswer() {

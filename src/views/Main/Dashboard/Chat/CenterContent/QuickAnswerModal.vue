@@ -1,6 +1,6 @@
 <template>
     <ModalBottom @close_modal="removeEvent" @open_modal="inputFocus" ref="quick_anser_modal_ref"
-        :left="commonStore.center_modal_left" :width="commonStore.center_modal_width">
+        :left="commonStore.center_modal_left" :width="commonStore.center_modal_width" :background="isMobile() ? 'bg-slate-500/50' : 'bg-inherit'">
         <template v-slot:header>
             {{ $t('v1.view.main.dashboard.chat.quick_answer.title') }}
         </template>
@@ -134,7 +134,7 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
 
     let { content, list_images } = answer
 
-    const input_chat = document.getElementById('chat-text-input-message') as HTMLInputElement
+    const input_chat = document.getElementById('chat-text-input-message')
 
     if (!input_chat) return
 
@@ -146,6 +146,7 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
 
     document.removeEventListener('keyup', handleKeyUp)
 
+    // load ảnh từ trả lời nhanh
     if (list_images && size(list_images))
         messageStore.upload_file_list = list_images?.map(url => {
             return {
@@ -157,6 +158,7 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
             }
         })
 
+    // focus vào input
     if (!isMobile()) setTimeout(() => input_chat?.focus(), 500)
 }
 /** Xử lý event */
@@ -243,6 +245,14 @@ function replaceTemplateMessage(content: string): string {
 /** Loại bỏ event keyboard khi tắt modal */
 function removeEvent() {
     document.removeEventListener('keyup', handleKeyUp)
+
+    const input_chat = document.getElementById('chat-text-input-message')
+
+    // nếu mở modal bằng dấu / thì xoá đi khi tắt cho đỡ lỗi
+    if (input_chat?.innerText === '/') input_chat.innerText = ''
+
+    // focus lại vào input chat
+    if (!isMobile()) input_chat?.focus()
 }
 /** Tìm kiếm quick answer */
 function seachQuickAnswer(event: KeyboardEvent) {
@@ -269,7 +279,6 @@ function inputFocus() {
 
     setTimeout(function () { ref_search.value.focus() }, 500)
 }
-
 
 defineExpose({ toggleModal })
 </script>

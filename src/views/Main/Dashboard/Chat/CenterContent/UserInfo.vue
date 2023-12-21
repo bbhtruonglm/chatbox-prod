@@ -10,8 +10,8 @@
                 :page_id="conversationStore.select_conversation?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                 :platform_type="conversationStore.select_conversation?.platform_type" size="37"
-                class="rounded-full cursor-pointer" />
-            <div class="ml-1">
+                class="rounded-full cursor-pointer ml-1" />
+            <div class="ml-3">
                 <div class="flex items-center">
                     <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')" class="text-sm font-medium truncate max-w-[150px] cursor-copy">
                         {{ conversationStore.select_conversation?.client_name }}
