@@ -10,6 +10,8 @@ export interface StaffInfo {
     is_online?: boolean
     /**thời gian cuối cùng user ngoại tuyến */
     offline_time?: string
+    /**gắn thêm cờ đã chọn */
+    is_selected?: boolean
 }
 
 export interface AllStaffList {
