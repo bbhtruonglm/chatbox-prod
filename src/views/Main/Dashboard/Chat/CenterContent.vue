@@ -6,7 +6,7 @@
         <div v-show="conversationStore.select_conversation?.fb_client_id" class="h-full">
             <UserInfo @toggle_change_assign_staff="toggleChangeAssignStaff" />
             <MessageList />
-            <InputChat @toggle_quick_answer="toggleQuickAnswer" @toggle_bottom_widget="toggleBottomWidget" />
+            <InputChat @toggle_bottom_widget="toggleBottomWidget" />
         </div>
         <div v-if="!conversationStore.select_conversation?.fb_client_id"
             class="flex justify-center items-center flex-col h-full">
@@ -17,7 +17,6 @@
     <template>
         <ChangeStaff ref="change_staff_ref" />
         <BottomWidgetModal ref="bottom_widget_modal_ref" />
-        <QuickAnswerModal ref="quick_anser_modal_ref" />
         <AttachmentViewModal />
         <StaffReadModal />
     </template>
@@ -34,7 +33,6 @@ import InputChat from '@/views/Main/Dashboard/Chat/CenterContent/InputChat.vue'
 import ChangeStaff from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
 
 import BottomWidgetModal from '@/views/Main/Dashboard/Chat/CenterContent/BottomWidgetModal.vue'
-import QuickAnswerModal from '@/views/Main/Dashboard/Chat/CenterContent/QuickAnswerModal.vue'
 import AttachmentViewModal from '@/views/Main/Dashboard/Chat/CenterContent/AttachmentViewModal.vue'
 import StaffReadModal from '@/views/Main/Dashboard/Chat/CenterContent/StaffReadModal.vue'
 
@@ -47,8 +45,6 @@ const change_staff_ref = ref<ComponentRef>()
 
 /**ref của modal widget bottom */
 const bottom_widget_modal_ref = ref<ComponentRef>()
-/**ref của câu trả lời nhanh */
-const quick_anser_modal_ref = ref<ComponentRef>()
 
 onMounted(() => allowMobileSwipeClose())
 
@@ -70,11 +66,5 @@ function toggleBottomWidget($event: MouseEvent) {
     teleportCenterModelOnPcScreen()
 
     bottom_widget_modal_ref.value?.toggleModal($event)
-}
-/**ẩn hiện modal */
-function toggleQuickAnswer() {
-    teleportCenterModelOnPcScreen()
-
-    quick_anser_modal_ref.value?.toggleModal()
 }
 </script>

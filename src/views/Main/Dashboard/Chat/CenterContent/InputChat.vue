@@ -6,12 +6,14 @@
             <img src="@/assets/icons/arrow-down-orange.svg" />
         </div>
 
-        <div :class="is_expand_label ? 'h-[79px]' : 'h-[29px]'" class="flex">
+        <QuickAnswer ref="quick_answer_ref" />
+
+        <div :class="is_expand_label ? 'h-[79px]' : 'h-[29px]'" class="flex border-t">
             <div v-if="is_loading_label"
                 class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
                 <Loading />
             </div>
-            <div class="w-full border-t overflow-hidden scrollbar-vertical overflow-y-auto pt-1 px-2">
+            <div class="w-full overflow-hidden scrollbar-vertical overflow-y-auto pt-1 px-2">
 
                 <div class="flex flex-wrap justify-center">
                     <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
@@ -39,59 +41,6 @@
             </div>
         </div>
 
-
-        <!-- <div v-tooltip="is_show_label_list ? $t('v1.common.close') : $t('v1.view.main.dashboard.chat.action.toggle_label')"
-            @click="toggleLabelSelect()"
-            class="min-w-[100px] h-[25px] rounded-t-md cursor-pointer absolute top-[-24px] left-[50%] translate-x-[-50%] overflow-hidden z-10">
-            <template v-if="!is_show_label_list">
-                <div v-if="getCurrentLabel()?.length" class="flex items-center justify-center h-full w-full bg-slate-200">
-                    <div v-for="label_id of take(getCurrentLabel(), 5)"
-                        :style="{ background: getLabelInfo(conversationStore.select_conversation?.fb_page_id, label_id)?.bg_color }"
-                        class="w-[10px] h-[10px] rounded-full mx-1" />
-                    <div v-if="getCurrentLabelLength() > 5" class="text-xs mx-1 text-slate-600 font-bold">
-                        +
-                        {{ getCurrentLabelLength() - 5 }}
-                    </div>
-                </div>
-                <div v-else class="text-slate-600 bg-slate-200 text-xs font-bold py-1 text-center">
-                    {{ $t('v1.view.main.dashboard.chat.input.add_tag') }}
-                </div>
-            </template>
-            <div v-else class="bg-slate-600 text-white text-xs py-1 text-center">
-                {{ $t('v1.common.close') }}
-            </div>
-        </div>
-
-        <template v-if="is_show_label_list">
-            <div v-if="is_loading_label"
-                class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
-                <Loading />
-            </div>
-            <div
-                class="absolute w-full h-[150px] border-t top-[-150px] lef-0 bg-slate-50 overflow-hidden scrollbar-vertical overflow-y-auto pt-2 pb-7 px-2">
-
-                <div class="flex flex-wrap justify-start">
-                    <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
-                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
-                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
-                        'border-color': label_info?.bg_color,
-                    }" class="text-sm w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
-                        {{ label_info?.title }}
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap justify-start">
-                    <div v-for="label_info of getUnactiveLabel()" @click="toggleLabel(label_info._id)" :style="{
-                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
-                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
-                        'border-color': label_info?.bg_color,
-                    }" class="text-sm w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
-                        {{ label_info?.title }}
-                    </div>
-                </div>
-            </div>
-        </template> -->
-
         <div v-if="size(messageStore.upload_file_list)"
             class="flex flex-wrap justify-center overflow-hidden scrollbar-vertical overflow-y-auto h-[80px] p-[5px]">
             <div v-for="(file, index) of messageStore.upload_file_list"
@@ -116,13 +65,14 @@
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center mr-2">
                 <img src="@/assets/icons/clip.svg" width="17" height="17" />
             </div>
-            <div v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')" @click="toggleQuickAnswer"
+            <div v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')"
+                @click="quick_answer_ref?.toggleModal()"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center">
                 <img src="@/assets/icons/slash.svg" width="20" height="20" />
             </div>
             <div class="w-[calc(100%_-_95px)] h-full">
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
-                    @keyup="checkOpenQuickAnswer" @paste="onPasteImage"
+                    @keyup="quick_answer_ref?.handleChatValue" @paste="onPasteImage"
                     class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                     contenteditable="true"
                     :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${conversationStore.select_conversation?.client_name}`" />
@@ -160,7 +110,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { map, take, get, size, pullAt, uniqueId, remove, partition } from 'lodash'
+import { map, get, size, pullAt, uniqueId, remove, partition } from 'lodash'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
@@ -180,6 +130,7 @@ import Emoji from "@/components/Main/Dashboard/Emoji.vue";
 import Loading from '@/components/Loading.vue'
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 import Album from '@/views/Main/Dashboard/Chat/CenterContent/Album.vue'
+import QuickAnswer from '@/views/Main/Dashboard/Chat/CenterContent/QuickAnswer.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { TempSendMessage } from '@/service/interface/app/message'
@@ -208,6 +159,8 @@ const input_chat_ref = ref<ComponentRef>()
 const album_ref = ref<ComponentRef>()
 /**ref của component emoji */
 const emoji_ref = ref<ComponentRef>()
+/**ref của trả lời nhanh */
+const quick_answer_ref = ref<ComponentRef>()
 /**ref của component facebook error */
 const facebook_error_ref = ref<ComponentRef>()
 /** error fb trả về */
@@ -349,10 +302,6 @@ function toggleWidget($event: MouseEvent, widget: AppInstalledInfo) {
 
     $emit('toggle_bottom_widget', $event)
 }
-/**hiển thị trả lời nhanh */
-function toggleQuickAnswer() {
-    $emit('toggle_quick_answer')
-}
 /**đọc danh sách các widget của trang này */
 function getListWidget() {
     /**id trang */
@@ -413,20 +362,12 @@ function getUnactiveLabel() {
 
     return list_label?.filter(label_info => !isActiveLabel(label_info._id))
 }
-/**đếm số nhãn của khách hàng hiện tại */
-function getCurrentLabelLength() {
-    return getCurrentLabel()?.length || 0
-}
 /**lấy danh sách id nhãn của khách hàng hiện tại */
 function getCurrentLabel() {
     return getLabelValid(
         conversationStore.select_conversation?.fb_page_id,
         conversationStore.select_conversation?.label_id
     )
-}
-/**ẩn hiện danh sách nhãn */
-function toggleLabelSelect() {
-    is_show_label_list.value = !is_show_label_list.value
 }
 /**lắng nghe sự thay đổi độ cao của input, để thay đổi độ cao danh sách tin nhắn */
 function onChangeHeightInput() {
@@ -466,7 +407,11 @@ function submitInput($event: KeyboardEvent) {
     // nếu bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
 
-    sendMessage()
+    // nếu đang mở trả lời nhanh thì enter sẽ chọn câu trả lời
+    if (quick_answer_ref.value?.is_show) return
+    
+    // nếu không thì gửi tin nhắn bình thường
+    else sendMessage()
 }
 /**gửi tin nhắn */
 function sendMessage() {
@@ -736,12 +681,6 @@ function toggleEmoji() {
 /** Thêm emoji vào input chat */
 function addEmojiToInput(emoji: string) {
     input_chat_ref.value.innerText += emoji
-}
-/** Kiểm tra input xem đủ điều kiện mở modal trả lời nhanh hay không? */
-function checkOpenQuickAnswer() {
-    let input_value: string = input_chat_ref.value.innerText
-
-    if (input_value.length === 1 && input_value === '/') toggleQuickAnswer()
 }
 </script>
 
