@@ -8,10 +8,9 @@
                 <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
                     :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                     :platform_type="source?.platform_type" size="37" class="rounded-full" />
-                <!-- hidden group-hover:block -->
-                <div class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
-                    <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name"
-                        :page_id="source?.fb_page_id"
+                <div :class="{ 'hidden group-hover:block': getPageInfo(source?.fb_page_id)?.is_hide_page_avatar }"
+                    class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
+                    <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name" :page_id="source?.fb_page_id"
                         :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                         :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
                         size="20" class="rounded-full border-2 border-white" />
@@ -45,12 +44,7 @@
                 </div>
                 <div class="label-list w-[calc(100%_-_16px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
                     <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(0, 3)">
-                        <div v-tooltip.bottom="getLabelInfo(source?.fb_page_id, label_id)?.title"
-                            v-if="getLabelInfo(source?.fb_page_id, label_id)"
-                            :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
-                            class="text-white rounded-full text-[10px] px-1 mr-[2px] max-w-[58px] truncate">
-                            {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
-                        </div>
+                        <Label :page_id="source?.fb_page_id" :label_id="label_id" />
                     </template>
                     <div @mouseover="label_popover_ref?.mouseover" @mouseleave="label_popover_ref?.mouseleave"
                         v-if="Number(getLabelValid(source?.fb_page_id, source?.label_id)?.length) > 3"
@@ -77,9 +71,12 @@
                 <div v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`" v-if="source?.client_bio?.fb_uid" class="ml-1">
                     <img src="@/assets/icons/id.svg" width="13" height="13">
                 </div>
-                <div v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)" class="ml-1">
-                    <img v-if="source?.platform_type === 'FB_MESS'" src="@/assets/icons/facebook.svg" width="13" height="13">
-                    <img v-if="source?.platform_type === 'WEBSITE'" src="@/assets/icons/website-2.svg" width="13" height="13">
+                <div v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
+                    class="ml-1">
+                    <img v-if="source?.platform_type === 'FB_MESS'" src="@/assets/icons/facebook.svg" width="13"
+                        height="13">
+                    <img v-if="source?.platform_type === 'WEBSITE'" src="@/assets/icons/website-2.svg" width="13"
+                        height="13">
                 </div>
             </div>
         </div>
@@ -88,12 +85,7 @@
         <Popover ref="label_popover_ref" position="RIGHT" :is_fit="false" width="auto" height="auto">
             <div class="max-w-[300px] max-h-[200px] flex flex-wrap justify-center">
                 <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(3)">
-                    <div v-tooltip.bottom="getLabelInfo(source?.fb_page_id, label_id)?.title"
-                        v-if="getLabelInfo(source?.fb_page_id, label_id)"
-                        :style="{ background: getLabelInfo(source?.fb_page_id, label_id)?.bg_color }"
-                        class="text-white rounded-full text-[10px] px-1 mr-[2px] mb-[2px] max-w-[58px] truncate cursor-pointer">
-                        {{ getLabelInfo(source?.fb_page_id, label_id)?.title }}
-                    </div>
+                    <Label :page_id="source?.fb_page_id" :label_id="label_id" />
                 </template>
             </div>
         </Popover>
@@ -117,6 +109,7 @@ import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Popover from '@/components/Popover.vue'
+import Label from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/Label.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { ComponentRef } from '@/service/interface/vue'

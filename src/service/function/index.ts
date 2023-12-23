@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
 import type { AppInstalledInfo } from '../interface/app/widget'
+import type { Router } from 'vue-router'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -202,7 +203,7 @@ export function getStaffName(page_id?: string, staff_id?: string) {
 /**format thời gian đọc tin nhắn */
 export function getStaffReadDate(staff_id: string) {
     const conversationStore = useConversationStore()
-    
+
     const TIME = conversationStore.select_conversation?.staff_read?.[staff_id] || 0
 
     return format_date(new Date(TIME), 'HH:mm:ss, dd/MM/yyyy')
@@ -313,4 +314,14 @@ export function isFilterActive() {
     if (isEqual(filter, { is_spam_fb: 'NO' })) return false
 
     return true
+}
+
+/**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
+export function selectNav($router: Router, path: string) {
+    const commonStore = useCommonStore()
+
+    // check cỡ màn điện thoại
+    if (window.innerWidth < 768) commonStore.dashboard_toggle_nav = false
+
+    $router.push(path)
 }

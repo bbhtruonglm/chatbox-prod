@@ -86,7 +86,8 @@ const source: Language = {
                         info: 'Hướng dẫn sử dụng',
                         page_setting: 'Cài đặt trang',
                         analytic: 'Thống kê',
-                        download: 'Tải dữ liệu'
+                        download: 'Tải dữ liệu',
+                        setting_user: 'Thiết lập người dùng'
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',

@@ -1,13 +1,23 @@
 <template>
-    <div @click="onClickMessage" v-html="renderText(text)"
+    <div @click="onClickMessage" v-html="renderText(text)" :class="{ 'border-2 border-red-600': isAlert() }"
         class="text-sm break-words whitespace-pre-line bg-white rounded-r-2xl rounded-l-md p-2 relative z-1" />
 </template>
 <script setup lang="ts">
-import { copyToClipboard } from '@/service/helper/copyWithAlert';
+import { getPageInfo } from '@/service/function'
+import { copyToClipboard } from '@/service/helper/copyWithAlert'
+import { differenceInMinutes } from 'date-fns'
+
+import type { MessageInfo } from '@/service/interface/app/message'
 
 const $props = withDefaults(defineProps<{
     /**nội dung tin nhắn bí mật của page */
     text: string
+    /**dữ liệu của tin hiện tại */
+    current_message: MessageInfo
+    /**vị trí của tin nhắn hiện tại */
+    current_index: number
+    /**toàn bộ danh sách tin nhắn */
+    list_message: MessageInfo[]
 }>(), {})
 
 /**xử lý chuỗi tin nhắn trước khi hiển thị */
@@ -128,6 +138,38 @@ function onClickMessage($event: MouseEvent) {
 
     copyToClipboard(VALUE)
 }
+/**có cảnh báo rep chậm không */
+function isAlert() {
+    /**thời gian rep chậm bị cảnh báo */
+    let ALERT_TIME = getPageInfo($props.current_message?.fb_page_id)?.alert_slow_rep_time
+
+    // nếu không bật cảnh báo thì thôi
+    if (!ALERT_TIME || ALERT_TIME <= 0) return false
+
+    /**thời gian tin này được nhắn */
+    let current_date = $props.current_message?.time || $props.current_message?.createdAt
+
+    if (!current_date) return false
+
+    /**tin nhắn tiếp theo */
+    let next_message = $props.list_message?.[$props.current_index + 1]
+
+    // nếu tin tiếp theo không phải là của page thì thôi
+    if (!next_message || next_message?.message_type !== 'page') return false
+
+    /**thời gian tin tiếp theo được nhắn */
+    let next_date = next_message?.time || next_message?.createdAt
+
+    if (!next_date) return false
+
+    /**khoảng thời gian tính bằng phút giữa 2 tin */
+    let duration_minute = differenceInMinutes(new Date(next_date), new Date(current_date))
+
+    // nếu trong khoảng cho phép thì thôi
+    if (duration_minute < ALERT_TIME) return false
+
+    return true
+}
 </script>
 
 <style lang="scss">
@@ -142,6 +184,7 @@ function onClickMessage($event: MouseEvent) {
     text-align: center;
     background-color: #ff5f0b;
 }
+
 .link-detect {
     color: #007bff
 }

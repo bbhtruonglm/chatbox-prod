@@ -14,8 +14,10 @@
                     class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
                     <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
                     <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
-                        <ClientTextMessage v-if="message.message_text" :text="message.message_text" />
-                        <ClientTextMessage v-if="message.postback_title" :text="message.postback_title" />
+                        <ClientTextMessage v-if="message.message_text" :text="message.message_text"
+                            :current_message="message" :current_index="index" :list_message="list_message" />
+                        <ClientTextMessage v-if="message.postback_title" :text="message.postback_title"
+                            :current_message="message" :current_index="index" :list_message="list_message" />
                         <AttachmentMessage v-if="message.message_attachments?.length"
                             :message_attachments="message.message_attachments" :message_mid="message.message_mid"
                             :page_id="message.fb_page_id" type="CLIENT" />

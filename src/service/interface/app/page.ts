@@ -23,6 +23,12 @@ export interface PageInfo {
     is_block?: boolean
     /**token của page */
     fb_page_token?: string
+    /**cài đặt cảnh báo tin nhắn rep chậm */
+    alert_slow_rep_time?: number
+    /**cài đặt ẩn avatar trang */
+    is_hide_page_avatar?: boolean
+    /**cài đặt hiển thị nhãn */
+    display_label_type?: 'ICON' | 'ICON_TOOLTIP' | 'FULL'
 }
 
 export interface PageData {

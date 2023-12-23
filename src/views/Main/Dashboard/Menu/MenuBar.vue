@@ -1,27 +1,28 @@
 <template>
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
         @click="goToChat" icon_class="w-[20px]" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
-    <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav(nav.path)"
+    <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav($router, nav.path)"
         :icon_class="nav.icon_class" :icon="nav.icon" :title="nav.title" />
     <NavItem :icon="settingSvg" @click="openPageSetting" :title="$t('v1.view.main.dashboard.nav.page_setting')" />
     <NavItem :icon="analyticSvg" @click="openAnalytic" :title="$t('v1.view.main.dashboard.nav.analytic')" />
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
-        @click="preGoToChat(() => selectNav('/main/dashboard/download'))" icon_class="w-[20px]" :icon="downloadSvg"
+        @click="preGoToChat(() => selectNav($router, '/main/dashboard/download'))" icon_class="w-[20px]" :icon="downloadSvg"
         :title="$t('v1.view.main.dashboard.nav.download')" />
     <NavItem :icon="infoSvg" @click="openGuildLink" :title="$t('v1.view.main.dashboard.nav.info')" />
-    <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0" @click="selectNav('/main/dashboard/noti')"
-        :icon="bellSvg" :title="$t('v1.view.main.dashboard.nav.noti')" />
-    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0" @click="selectNav('/main/dashboard/user')" />
+    <NavItem :is_active="$route.path.indexOf('/main/dashboard/noti') === 0"
+        @click="selectNav($router, '/main/dashboard/noti')" :icon="bellSvg"
+        :title="$t('v1.view.main.dashboard.nav.noti')" />
+    <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
+        @click="selectNav($router, '/main/dashboard/user')" />
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useCommonStore, usePageStore } from '@/stores'
-import { computed } from 'vue'
+import { usePageStore } from '@/stores'
 import { keys, size } from 'lodash'
-import { openNewTab, preGoToChat } from '@/service/function'
+import { openNewTab, preGoToChat, selectNav } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
+import { useRouter } from 'vue-router'
 
 import UserItem from '@/components/Main/Dashboard/UserItem.vue'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
@@ -42,11 +43,10 @@ const $props = withDefaults(defineProps<{
     alway_full?: boolean
 }>(), {})
 
-const $router = useRouter()
 const { t: $t } = useI18n()
-const commonStore = useCommonStore()
 const pageStore = usePageStore()
-const locale = localStorage.getItem('locale') || ''
+const $router = useRouter()
+const locale = localStorage.getItem('locale') || 'vn'
 
 /**danh sách menu item */
 const LIST_NAV = [
@@ -84,16 +84,9 @@ function openPageSetting() {
 function openAnalytic() {
     openNewTab(`${$env.host.analytic_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
 }
-/**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
-function selectNav(path: string) {
-    // check cỡ màn điện thoại
-    if (window.innerWidth < 768) commonStore.dashboard_toggle_nav = false
-
-    $router.push(path)
-}
 /**đi đến trang chat */
 function goToChat() {
-    preGoToChat(() => selectNav('/main/dashboard/chat'))
+    preGoToChat(() => selectNav($router, '/main/dashboard/chat'))
 }
 /**mở link doc hướng dẫn sử dụng sản phẩm */
 function openGuildLink() {
