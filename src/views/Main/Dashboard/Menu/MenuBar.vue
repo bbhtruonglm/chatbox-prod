@@ -14,6 +14,7 @@
         :title="$t('v1.view.main.dashboard.nav.noti')" />
     <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
         @click="selectNav($router, '/main/dashboard/user')" />
+    <div>Version: {{ version }}</div>
 </template>
 
 <script setup lang="ts">
@@ -37,6 +38,8 @@ import widgetSvg from '@/assets/icons/widget.svg'
 import linkSvg from '@/assets/icons/link.svg'
 import bellSvg from '@/assets/icons/bell.svg'
 import infoSvg from '@/assets/icons/info.svg'
+
+import { version } from "package.json";
 
 const $props = withDefaults(defineProps<{
     /**gắn cờ luôn luôn hiện full, không ẩn */
