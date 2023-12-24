@@ -11,11 +11,7 @@ jobs:
     name: "Build code and release"
     steps:
       - name: Check out
-        uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 18
+        uses: actions/checkout@v2      
       - name: Install dependencies
         id: install_code
         run: npm i
