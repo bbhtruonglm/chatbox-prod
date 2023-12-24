@@ -35,14 +35,14 @@ jobs:
         run: |
           PACKAGE_VERSION=$(grep -o '"version": "[^"]*' package.json | awk -F'"' '{print $4}')
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-      - name: Deploy server
-        id: deploy_server
-        env:
-          SERVER_URL: http://deploy.merchant.vn/upload
-        run: |
-          curl -X POST $SERVER_URL \
-            -H "Authorization: ${{ secrets.SERVER_AUTH_TOKEN }}" \
-            -F "file=@deploy.zip"      
+      # - name: Deploy server
+      #   id: deploy_server
+      #   env:
+      #     SERVER_URL: http://deploy.merchant.vn/upload
+      #   run: |
+      #     curl -X POST $SERVER_URL \
+      #       -H "Authorization: ${{ secrets.SERVER_AUTH_TOKEN }}" \
+      #       -F "file=@deploy.zip"      
       - name: Notification Server
         id: notification  
         run: |
