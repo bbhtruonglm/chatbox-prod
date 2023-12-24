@@ -1,5 +1,5 @@
 <template>
-    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/chat') === 0"
+    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/chat') === 0"
         @click="goToChat" icon_class="w-[20px]" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
     <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav($router, nav.path)"
         :icon_class="nav.icon_class" :icon="nav.icon" :title="nav.title" />
@@ -86,7 +86,7 @@ function openAnalytic() {
 }
 /**đi đến trang chat */
 function goToChat() {
-    preGoToChat(() => selectNav($router, '/main/dashboard/chat'))
+    preGoToChat(() => selectNav($router, '/chat'))
 }
 /**mở link doc hướng dẫn sử dụng sản phẩm */
 function openGuildLink() {

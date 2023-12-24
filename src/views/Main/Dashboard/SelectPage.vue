@@ -397,7 +397,7 @@ function selectOnlyThisPage(page_id?: string) {
 }
 /**đi đến trang chat */
 function goToChat() {
-    preGoToChat(() => $router.push('/main/dashboard/chat'))
+    preGoToChat(() => $router.push('/chat'))
 }
 /**load lại info của chatbot user - phòng trường hợp user mới được kích hoạt gói */
 function reloadChatbotUserInfo() {

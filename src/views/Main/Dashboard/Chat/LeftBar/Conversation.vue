@@ -26,7 +26,7 @@ import { flow } from '@/service/helper/async'
 import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
-import { isMobile, selectConversation } from '@/service/function'
+import { isMobile, selectConversation, setParamChat } from '@/service/function'
 import { waterfall } from 'async'
 
 import Loading from '@/components/Loading.vue'
@@ -231,11 +231,9 @@ function selectDefaultConversation() {
         document.getElementById('chat-text-input-message')?.focus()
     }, 500)
 
-    // nếu không có dữ liệu hội thoại thì bỏ qua
-    // if (!size(conversationStore.conversation_list)) return
-
     // lấy id hội thoại trên param
-    let { page_id, user_id } = $route.query
+    let page_id = $route.query?.p || $route.query?.page_id
+    let user_id = $route.query?.u || $route.query?.user_id
 
     // key của hội thoại
     let data_key = `${page_id}_${user_id}`
@@ -299,12 +297,7 @@ function selectDefaultConversation() {
             target_conversation = map(conversationStore.conversation_list)?.[0]
 
             // đẩy id lên param
-            $router.replace({
-                query: {
-                    page_id: target_conversation?.fb_page_id,
-                    user_id: target_conversation?.fb_client_id,
-                }
-            })
+            setParamChat($router, target_conversation?.fb_page_id, target_conversation?.fb_client_id)
         }
 
         selectConversation(target_conversation)

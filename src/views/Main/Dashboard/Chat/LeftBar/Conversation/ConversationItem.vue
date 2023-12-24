@@ -100,7 +100,7 @@ import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
 import {
-    isMobile, selectConversation, getLabelInfo, getLabelValid, getPageInfo
+    isMobile, selectConversation, getLabelInfo, getLabelValid, getPageInfo, setParamChat
 } from '@/service/function'
 import { getFbUserInfo } from '@/service/helper/ext'
 import { ref } from 'vue'
@@ -144,12 +144,7 @@ function clickConversation() {
     selectConversation($props.source)
 
     // đẩy id lên param
-    $router.replace({
-        query: {
-            page_id: $props.source?.fb_page_id,
-            user_id: $props.source?.fb_client_id,
-        }
-    })
+    setParamChat($router, $props.source?.fb_page_id, $props.source?.fb_client_id)
 
     // tìm uid fb nếu chưa có và đang bật ext
     if (

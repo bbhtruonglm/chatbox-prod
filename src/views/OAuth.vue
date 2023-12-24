@@ -54,7 +54,7 @@ function testLogin() {
 function isAlreadyLogin() {
     if (!getItem('access_token')) return
 
-    $router.push('/main/dashboard/chat')
+    $router.push('/chat')
 }
 /**đăng nhập chatbox bằng token fb */
 function loginChatbox(access_token: string) {

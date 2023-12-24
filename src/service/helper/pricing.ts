@@ -63,8 +63,11 @@ export const checkPricingValid = (
 
     const DATA: {
         count_trial_page: number
+        /**đếm số trang nội bộ */
+        count_internal_page: number
     } = {
-        count_trial_page: 0
+        count_trial_page: 0,
+        count_internal_page: 0
     }
     waterfall([
         // * kiểm tra xem đã chọn page chưa
@@ -94,6 +97,9 @@ export const checkPricingValid = (
                     DATA.count_trial_page++
                 }
 
+                // đánh dấu số trang nội bộ
+                if (PAGE?.is_internal) DATA.count_internal_page++
+
                 // nếu page dược kích hoạt thì cho qua
                 if (isActivePage(PAGE)) return next()
 
@@ -108,6 +114,10 @@ export const checkPricingValid = (
 
             // nếu tất cả các page được chọn đang là page dùng thử, thì cho qua
             if (DATA.count_trial_page === LIST_SELECTED_PAGE_ID.length)
+                return cb()
+
+            // nếu các trang được chọn là nội bộ thì cho qua
+            if (DATA.count_internal_page === LIST_SELECTED_PAGE_ID.length)
                 return cb()
 
             // nếu user có gói thì cho qua

@@ -1,6 +1,8 @@
 <template>
     <RequirePricing />
-    <RouterView />
+    <slot>
+        <RouterView />
+    </slot>
 </template>
 
 <script setup lang="ts">

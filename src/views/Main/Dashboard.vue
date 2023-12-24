@@ -14,7 +14,7 @@
             <hr class="mt-2" />
             <div
                 class="pt-2 md:h-[calc(100%_-_85px)] xl:h-[calc(100%_-_110px)] overflow-hidden scrollbar-vertical overflow-y-auto">
-                <MenuBar v-if="isMobile() || !$route.path?.includes('/main/dashboard/chat')" />
+                <MenuBar v-if="isMobile() || !$route.path?.includes('/chat')" />
                 <FilterBar v-else />
             </div>
             <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
@@ -23,7 +23,9 @@
             </div>
         </template>
         <template v-slot:content>
-            <RouterView />
+            <slot>
+                <RouterView />
+            </slot>
         </template>
     </Menu>
 </template>
