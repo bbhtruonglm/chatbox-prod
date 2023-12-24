@@ -12,7 +12,9 @@
     >
       <div class="p-2">
         <div class="text-center text-white">
-          <div class="text-xl font-semibold">Đang cập nhật phiên bản mới...</div>
+          <div class="text-xl font-semibold">
+            Đang cập nhật phiên bản mới...
+          </div>
         </div>
       </div>
     </div>
