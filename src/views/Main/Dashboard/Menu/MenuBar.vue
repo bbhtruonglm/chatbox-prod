@@ -39,7 +39,7 @@ import linkSvg from '@/assets/icons/link.svg'
 import bellSvg from '@/assets/icons/bell.svg'
 import infoSvg from '@/assets/icons/info.svg'
 
-import { version } from "package.json";
+import { version } from "../../../../../package.json";
 
 const $props = withDefaults(defineProps<{
     /**gắn cờ luôn luôn hiện full, không ẩn */
