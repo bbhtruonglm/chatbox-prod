@@ -3,7 +3,7 @@
 echo "--------------------------------------------------"
 echo "--- Test Build Production ---"
 echo "--------------------------------------------------"
-npm run build
+pnpm run build
 
 echo "--------------------------------------------------"
 echo "--- [0] Checkout Dev & Commit code ---"
@@ -28,7 +28,7 @@ echo ""
 echo "--------------------------------------------------"
 echo "--- [2] Merge Dev -> Production ---"
 echo "--------------------------------------------------"
-git merge dev-2 -m "Merge dev into production"
+git merge dev -m "Merge dev into production"
 git add -A
 git commit -m "Release production"
 
@@ -46,11 +46,11 @@ echo ""
 echo "--------------------------------------------------"
 echo "--- [4] Checkout Dev & Merge Production ---"
 echo "--------------------------------------------------"
-git checkout dev-2
+git checkout dev
 git merge production -m "Merge Production into Dev"
 git add -A
 git commit -m "Release dev"
-git push origin dev-2
+git push origin dev
 
 echo ""
 echo ""
@@ -83,18 +83,18 @@ unset IFS
 echo "--------------------------------------------------"
 echo "--- [6] Remove old version: $old_version ---"
 echo "--------------------------------------------------"
-curl --location --request DELETE "https://api.capgo.app/bundle?app_id=vn.merchant.app&version=$old_version" \
+curl --location --request DELETE "https://api.capgo.app/bundle?app_id=chatbox.botbanhang.vn&version=$old_version" \
 --header 'authorization: 9116fd16-36f7-4159-8207-400e876c52a2'
 
 
-echo "--------------------------------------------------"
-echo "--- [7] Zip & Delpoy Merchant.vn (Do CapGo bị lỗi) ---"
-echo "--------------------------------------------------"
-rm deploy.zip
-zip -r deploy.zip ./dist/* 
-curl --location 'http://deploy.merchant.vn/upload' \
---header 'Authorization: kfwaejkrjewkoarji' \
---form 'file=@"./deploy.zip"'
+# echo "--------------------------------------------------"
+# echo "--- [7] Zip & Delpoy Merchant.vn (Do CapGo bị lỗi) ---"
+# echo "--------------------------------------------------"
+# rm deploy.zip
+# zip -r deploy.zip ./dist/* 
+# curl --location 'http://deploy.merchant.vn/upload' \
+# --header 'Authorization: kfwaejkrjewkoarji' \
+# --form 'file=@"./deploy.zip"'
 
 echo ""
 echo ""
