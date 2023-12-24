@@ -4,6 +4,8 @@ import OAuth from '@/views/OAuth.vue'
 
 import Main from '@/views/Main.vue'
 
+import ChatShort from '@/views/ChatShort.vue'
+
 import Dashboard from '@/views/Main/Dashboard.vue'
 import Chat from '@/views/Main/Dashboard/Chat.vue'
 import SelectPage from '@/views/Main/Dashboard/SelectPage.vue'
@@ -17,6 +19,7 @@ import User from '@/views/Main/Dashboard/User.vue'
 export const routes = [
   { path: '/', redirect: '/oauth' },
   { path: '/oauth', component: OAuth },
+  { path: '/chat', component: ChatShort },
   {
     path: '/main',
     redirect: '/main/dashboard',

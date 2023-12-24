@@ -15,7 +15,7 @@
             </div>
             <div class="w-full overflow-hidden scrollbar-vertical overflow-y-auto pt-1 px-2">
 
-                <div class="flex flex-wrap justify-center">
+                <div class="flex flex-wrap justify-start">
                     <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
                         color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
                         background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center">
+                <div class="flex flex-wrap justify-start">
                     <div v-for="label_info of getUnactiveLabel()" @click="toggleLabel(label_info._id)" :style="{
                         color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
                         background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
