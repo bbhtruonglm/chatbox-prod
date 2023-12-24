@@ -18,7 +18,8 @@
     "build-only-prod": "vite build --mode prod",
     "type-check": "vue-tsc --noEmit",
     "ionic:build": "npm run build",
-    "ionic:serve": "npm run dev"
+    "ionic:serve": "npm run dev",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     
