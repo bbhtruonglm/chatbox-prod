@@ -181,8 +181,6 @@ const create_folder_title = ref<string>()
 
 /**click chọn file để gửi */
 function selectFile(file: FileInfo) {
-    console.log('chọn file', file)
-
     file.is_select = !file.is_select
 }
 /**chọn thư mục */
