@@ -328,5 +328,6 @@ export function selectNav($router: Router, path: string) {
 
 /**cài đặt id trang và user cho chat */
 export function setParamChat($router: Router, page_id: string, client_id: string) {
-    $router.replace({ query: { p: page_id, u: client_id } })
+    // $router.replace({ query: { p: page_id, u: client_id } })
+    $router.replace({ query: { page_id: page_id, user_id: client_id } })
 }
