@@ -32,8 +32,6 @@ function renderText(text: string) {
     let email_regex = regex_email.exec(text);
     let url_regex = regex_url.exec(text);
 
-    console.log(email_regex)
-
     // Check phone regex contain url
     if (
         phone_regex &&
