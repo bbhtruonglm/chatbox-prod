@@ -45,7 +45,10 @@ const socket_connection = ref<WebSocket>()
 /**gắn cờ đóng kết nối hoàn toàn */
 const is_force_close_socket = ref(false)
 
-watch(() => conversationStore.select_conversation, () => getTokenOfWidget())
+watch(
+    () => conversationStore.select_conversation,
+    (new_val, old_val) => getTokenOfWidget(new_val, old_val)
+)
 
 onMounted(() => {
     getPageInfoToChat()
@@ -128,8 +131,11 @@ function initExtensionLogic() {
     })
 }
 /**khởi tạo token cho widget */
-function getTokenOfWidget() {
-    const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+function getTokenOfWidget(new_val?: ConversationInfo, old_val?: ConversationInfo) {
+    /**id trang hiện tại được chọn */
+    const PAGE_ID = new_val?.fb_page_id
+    /**id trang trước đó được chọn */
+    const OLD_PAGE_ID = old_val?.fb_page_id
 
     if (!PAGE_ID) return
 
@@ -158,7 +164,12 @@ function getTokenOfWidget() {
     }, (e, r: any) => {
         if (e) return
 
-        conversationStore.list_widget_token = r
+        // nhập dữ liệu token mới
+        conversationStore.list_widget_token = {
+            new_page_id: PAGE_ID,
+            old_page_id: OLD_PAGE_ID,
+            data: r
+        }
     })
 }
 /**đọc dữ liệu của các page được chọn lưu lại */

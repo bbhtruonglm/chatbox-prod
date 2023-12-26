@@ -53,6 +53,8 @@ export interface AppInfo {
     status?: 'APPROVED' | 'REJECT' | 'PRIVATE'
     /**mã bí mật để lấy dữ liệu */
     secret_key?: string
+    /**đánh dấu widget này dùng post mess khi update */
+    is_post_message?: boolean
 }
 
 /**dữ liệu của app được page cài đặt */
@@ -207,6 +209,8 @@ export interface InputCreateWidget {
     phone?: string
     website_offical?: string
     partner_icon?: string
+    /**đánh dấu widget này dùng post mess khi update */
+    is_post_message?: boolean
 }
 
 /**đầu vào api cập nhật ứng dụng */

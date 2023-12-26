@@ -64,6 +64,15 @@
                         :placeholder="$t('v1.view.main.dashboard.widget.create.form.guild')"
                         class="w-full focus:outline-none rounded-md border py-1 px-2" rows="7" />
                 </div>
+                <div>
+                    <Title :title="$t('v1.view.main.dashboard.widget.special')" />
+                    <div @click="upsert_widget_data.is_post_message = !upsert_widget_data.is_post_message" class="flex items-center cursor-pointer">
+                        <input v-model="upsert_widget_data.is_post_message" type="checkbox" class="accent-orange-600 w-[20px] h-[20px]">
+                        <div class="ml-2">
+                            {{ $t('v1.view.main.dashboard.widget.special_list.no_reload') }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </template>
         <template v-slot:footer>
@@ -135,6 +144,7 @@ const upsert_widget_data = ref<InputCreateWidget>({
     phone: ' ',
     website_offical: ' ',
     partner_icon: ' ',
+    is_post_message: false
 })
 /**ref của modal */
 const upsert_widget_ref = ref<ComponentRef>()
@@ -232,6 +242,7 @@ function setDefaultValueSetting() {
     upsert_widget_data.value.description = $props.widget?.description
     upsert_widget_data.value.document = $props.widget?.document
     upsert_widget_data.value.access_role = $props.widget?.access_role
+    upsert_widget_data.value.is_post_message = $props.widget?.is_post_message
 }
 /**mở modal của pricing detail */
 function toggleModal() {

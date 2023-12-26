@@ -14,7 +14,7 @@
         :title="$t('v1.view.main.dashboard.nav.noti')" />
     <UserItem :is_active="$route.path.indexOf('/main/dashboard/user') === 0"
         @click="selectNav($router, '/main/dashboard/user')" />
-    <div>Phiên bản: {{ version }}</div>
+    <div class="text-xs mt-2 text-slate-500">{{ $t('v1.common.version') }}: {{ version }}</div>
 </template>
 
 <script setup lang="ts">

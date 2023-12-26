@@ -218,6 +218,15 @@ export const getPageWidget = (page_id?: string) => {
         ?.[page_id as string]
         ?.widget_list
 }
+/**lấy dữ liệu nhân viên hiện tại có liên quan đến trang này */
+export const getPageCurrentStaff = (page_id?: string) => {
+    const pageStore = usePageStore()
+
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id as string]
+        ?.current_staff
+}
 
 /**lấy thông tin của trang */
 export const getPageInfo = (page_id?: string) => {
@@ -261,7 +270,7 @@ export const getIframeUrl = (widget: AppInstalledInfo) => {
     const conversationStore = useConversationStore()
 
     const URL_APP = widget.snap_app.url_app
-    const ACCESS_TOKEN = conversationStore.list_widget_token[widget._id]
+    const ACCESS_TOKEN = conversationStore.list_widget_token?.data?.[widget._id]
     const CHATBOX_TOKEN = getItem('access_token')
     const LOCALE = localStorage.getItem('locale') || 'vn'
     const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id)

@@ -29,7 +29,14 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
     /**danh sách token của widget */
     const list_widget_token = ref<{
-        [index: string]: string
+        /**id trang hiện tại */
+        new_page_id?: string
+        /**id trang trước đó */
+        old_page_id?: string
+        /**dữ liệu token */
+        data?: {
+            [index: string]: string
+        }
     }>({})
 
     return {

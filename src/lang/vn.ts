@@ -41,7 +41,9 @@ const source: Language = {
             update_success: 'Đã cập nhật',
             create: 'Tạo',
             incomming: 'Sắp ra mắt',
-            expand: 'Mở rộng'
+            expand: 'Mở rộng',
+            version: 'Phiên bản',
+            on_update_app: 'Đang cập nhật phiên bản mới...'
         },
         view: {
             network: {
@@ -437,7 +439,8 @@ const source: Language = {
                         staff_group: 'Nhóm nhân viên hiển thị',
                         special: 'Nâng cao',
                         special_list: {
-                            hide_pc: 'Ẩn trên PC'
+                            hide_pc: 'Ẩn trên PC',
+                            no_reload: 'Sử dụng post message'
                         },
                         widget_installed: 'Ứng dụng đã được cài đặt trên trang này rồi',
                         installed: {

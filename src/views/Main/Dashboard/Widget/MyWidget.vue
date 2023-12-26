@@ -91,7 +91,7 @@ function getMyWidget() {
     $emit('is_loading', true)
 
     get_market_widget({
-        user_created: '',
+        // user_created: '',
         skip: 0,
         limit: 200
     }, (e, r) => {

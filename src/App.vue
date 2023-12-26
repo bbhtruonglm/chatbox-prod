@@ -8,12 +8,12 @@
   >
     <div
       v-if="isNewVersion == true"
-      class="fixed top-0 left-0 w-full h-12 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+      class="fixed top-[50px] md:top-0 left-0 w-full h-12 bg-black bg-opacity-50 z-50 flex justify-center items-center"
     >
       <div class="p-2">
         <div class="text-center text-white">
           <div class="text-xl font-semibold">
-            Đang cập nhật phiên bản mới...
+            {{ $t('v1.common.on_update_app') }}
           </div>
         </div>
       </div>

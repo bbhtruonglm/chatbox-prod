@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { map, get, size, pullAt, uniqueId, remove, partition } from 'lodash'
+import { map, get, size, pullAt, uniqueId, remove, partition, intersection } from 'lodash'
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
@@ -118,7 +118,7 @@ import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
-    getPageWidget, getIframeUrl, isMobile
+    getPageWidget, getIframeUrl, isMobile, getPageCurrentStaff
 } from '@/service/function'
 import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
@@ -171,7 +171,7 @@ const facebook_error = ref<{
 /**gắn cờ hiển thị nhiều nhãn */
 const is_expand_label = ref(false)
 
-watch(() => conversationStore.list_widget_token, () => getListWidget())
+watch(() => conversationStore.list_widget_token?.data, () => getListWidget())
 
 onMounted(() => {
     window.addEventListener('message', onWidgetEvent)
@@ -307,7 +307,10 @@ function getListWidget() {
     /**id trang */
     const PAGE_ID = conversationStore.select_conversation?.fb_page_id
 
-    if (!PAGE_ID) return []
+    if (!PAGE_ID) return
+
+    /**các nhóm mà nhân viên này được phép truy cập dữ liệu */
+    const GROUP_STAFF = getPageCurrentStaff(PAGE_ID)?.group_staff
 
     // làm mới danh sách
     widget_list.value = []
@@ -315,7 +318,13 @@ function getListWidget() {
     // render lại danh sách
     nextTick(() => {
         widget_list.value = getPageWidget(PAGE_ID)
-            ?.filter(widget => widget.active_widget)
+            ?.filter(widget => {
+                /**kiểm tra user có quyền xem widget này không */
+                const IS_ACCESSIBLE = intersection(widget.access_group, GROUP_STAFF)?.length
+
+                // chỉ hiển thị widget được kích hoạt và có quyền xem
+                return widget.active_widget && IS_ACCESSIBLE
+            })
             ?.map(widget => {
                 // thêm token cho url
                 widget.url = getIframeUrl(widget)
@@ -409,7 +418,7 @@ function submitInput($event: KeyboardEvent) {
 
     // nếu đang mở trả lời nhanh thì enter sẽ chọn câu trả lời
     if (quick_answer_ref.value?.is_show) return
-    
+
     // nếu không thì gửi tin nhắn bình thường
     else sendMessage()
 }
