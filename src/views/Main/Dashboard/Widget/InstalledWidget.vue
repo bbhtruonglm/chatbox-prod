@@ -6,7 +6,7 @@
                 @update_select_page="$event => selected_page = $event" />
             <div />
         </div>
-
+       
         <template v-if="selected_page">
             <Title v-if="app_installed_list?.filter(app => app.active_widget)?.length"
                 :title="$t('v1.view.main.dashboard.widget.installed.active')" />
@@ -18,6 +18,13 @@
                         :is_control="true" />
                 </template>
             </div>
+            <button 
+                v-if="app_installed_list.length > 0" 
+                @click="openArrangeWidget()"
+                class="px-2 py-1.5 bg-orange-500 text-white rounded-lg text-sm mt-2"
+            >
+            {{ $t('v1.view.main.dashboard.widget.arrange') }}
+            </button>
             <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'SUCCESS')?.length" :title="$t('v1.view.main.dashboard.widget.installed.unactive')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
@@ -37,10 +44,15 @@
                 </template>
             </div>
         </template>
+
+        
     </div>
     <template>
         <SettingWidget ref="setting_widget_ref" :widget="selected_widget" :group_staff_list="group_staff_list"
             @update_widget="onUpdateWidget" />
+    </template>
+    <template>
+        <ArrangeWidget ref="arrange_widget_ref" :widgets="app_installed_list" />
     </template>
 </template>
 <script setup lang="ts">
@@ -60,6 +72,7 @@ import SelectPage from '@/views/Main/Dashboard/Widget/SelectPage.vue'
 import Title from '@/views/Main/Dashboard/Widget/Title.vue'
 import Item from '@/views/Main/Dashboard/Widget/Item.vue'
 import SettingWidget from '@/views/Main/Dashboard/Widget/SettingWidget.vue'
+import ArrangeWidget from './ArrangeWidget.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 import type { AppInstalledInfo, InputUpdateWidget } from '@/service/interface/app/widget'
@@ -80,6 +93,8 @@ const app_installed_list = ref<AppInstalledInfo[]>([])
 const selected_widget = ref<AppInstalledInfo>()
 /**ref của modal cài đặt widget */
 const setting_widget_ref = ref<ComponentRef>()
+/**ref của modal cài đặt widget */
+const arrange_widget_ref = ref<ComponentRef>()
 /**danh sách cac nhóm nhân viên của trang đang chọn */
 const group_staff_list = ref<GroupStaffInfo[]>([])
 
@@ -260,5 +275,9 @@ function openSettingWidget(widget: AppInstalledInfo) {
 
     // mở modal
     setting_widget_ref.value.toggleModal()
+}
+/**mở modal sắp xếp widget */
+function openArrangeWidget() {
+    arrange_widget_ref.value.toggleModal()
 }
 </script>

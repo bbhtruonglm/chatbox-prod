@@ -188,6 +188,8 @@ export interface InputUpdateWidget {
     access_role_select?: AccessRoleInfo,
     /**ẩn ở màn hình pc */
     hide_pc?: boolean
+    /** Vị trí hiển thị trên màn hình */
+    index_position?: number
 }
 
 /**đầu vào api tạo mới ứng dụng */

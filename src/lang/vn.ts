@@ -430,6 +430,7 @@ const source: Language = {
                             bottom: 'Phía dưới',
                             right: 'Bên phải',
                         },
+                        arrange: 'Thay đổi vị trí',
                         size: 'Kích cỡ',
                         size_list: {
                             small: 'Cỡ nhỏ',

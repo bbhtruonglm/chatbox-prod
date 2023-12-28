@@ -2,7 +2,7 @@
     <Teleport to="body">
         <div v-if="is_open" class="select-none xl:select-auto absolute top-0 left-0 w-screen h-screen bg-slate-500/50 z-20">
             <div @click="toggleModal" class="w-full h-full" />
-            <div 
+            <div
                 :class="{
                     'opacity-50': animation,
                     'md:w-[70%]': !$props.fit_content,
