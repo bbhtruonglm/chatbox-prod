@@ -68,6 +68,7 @@ function getWidgetsData() {
         return widget.active_widget === true
     })
 
+    // * Sắp xếp vị trí widget từ trên xuống dưới
     widgets_installed.value = widgets_installed.value.sort((a, b) => {
         return a.index_position - b.index_position
     })
@@ -85,6 +86,7 @@ function updateWidgetPostition() {
         widgets_installed.value,
         1,
         (widget: AppInstalledInfo, index, next) => {
+            
             // * Nếu vị trí widget không thay đổi thì bỏ qua không update
             if (snap_index.value[index as number] === widget._id) return next()
 
