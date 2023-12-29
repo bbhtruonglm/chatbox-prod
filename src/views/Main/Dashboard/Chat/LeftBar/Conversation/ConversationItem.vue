@@ -8,8 +8,11 @@
                 <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
                     :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                     :platform_type="source?.platform_type" size="37" class="rounded-full" />
-                <div :class="{ 'hidden group-hover:block': getPageInfo(source?.fb_page_id)?.is_hide_page_avatar }"
-                    class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
+                <div :class="{
+                    'hidden group-hover:block': chatbotUserStore.enable_personal_setting ? {
+                        ...getPageInfo(source?.fb_page_id), ...chatbotUserStore.personal_settings
+                    }['is_hide_page_avatar'] : getPageInfo(source?.fb_page_id)?.is_hide_page_avatar
+                }" class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
                     <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name" :page_id="source?.fb_page_id"
                         :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                         :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"

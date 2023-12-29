@@ -10,6 +10,7 @@
 </template>
 <script setup lang="ts">
 import { getLabelInfo, getPageInfo } from '@/service/function'
+import { useChatbotUserStore } from '@/stores';
 
 const $props = withDefaults(defineProps<{
     /**id trang */
@@ -18,8 +19,19 @@ const $props = withDefaults(defineProps<{
     label_id: string
 }>(), {})
 
+const chatbotUserStore = useChatbotUserStore()
+
 /**lấy cài đặt nhãn */
 function getLabelConfig() {
+
+    // * Trường hợp bật chế độ ghi đè thiết lập page
+    if (chatbotUserStore.enable_personal_setting) {
+        return chatbotUserStore.personal_settings.display_label_type as string ||
+            getPageInfo($props.page_id)?.display_label_type ||
+            'ICON_TOOLTIP'
+    }
+
+    // * Trường hợp không bật chế độ ghi đè thiết lập page
     return getPageInfo($props.page_id)?.display_label_type || 'ICON_TOOLTIP'
 }
 </script>

@@ -21,3 +21,7 @@ export interface ChatbotUserInfo {
         total?: number
     }
 }
+
+export interface PersonalSettings {
+    [index: string] : boolean | string
+}

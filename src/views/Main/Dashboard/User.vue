@@ -6,6 +6,13 @@
         </div>
         <div class="mt-10">
             <div>
+                <button @click="personal_settings_ref.toggleModal()" class="bg-green-500 hover:brightness-125 text-white font-semibold p-2 w-[300px] rounded-full">
+                    Thiết lập cá nhân
+                </button>
+            </div>
+        </div>
+        <div class="mt-5">
+            <div>
                 <button @click="facebook_error_ref.toggleModal()" class="bg-blue-500 hover:brightness-125 text-white font-semibold p-2 w-[300px] rounded-full">
                     {{ $t('v1.view.main.dashboard.user.grant_fb_permission') }}
                 </button>
@@ -19,6 +26,7 @@
         </div>
     </div>
     <FacebookError ref="facebook_error_ref" />
+    <PersonalSetting ref="personal_settings_ref" />
 </template>
 
 <script setup lang="ts">
@@ -26,6 +34,7 @@ import { ref } from 'vue'
 import { useChatbotUserStore } from '@/stores'
 import { signout } from '@/service/helper/oauth'
 
+import PersonalSetting from './Setting/PersonalSetting.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
@@ -35,4 +44,6 @@ const chatbotUserStore = useChatbotUserStore()
 
 /**ref của component facebook error */
 const facebook_error_ref = ref<ComponentRef>()
+/**ref của component facebook error */
+const personal_settings_ref = ref<ComponentRef>()
 </script>
