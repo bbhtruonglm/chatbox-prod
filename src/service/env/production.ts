@@ -18,7 +18,7 @@ const ENV: Env = {
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://botbanhang.vn/setting/#/page',
-        analytic_view: 'https://botbanhang.vn/analytic-v2/#/',
+        analytic_view: 'https://analytic-chatbox.botbanhang.vn/#/',
         download_client: 'https://chatbox-merge.botbanhang.vn/download'
     },
     facebook: {
