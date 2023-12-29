@@ -28,7 +28,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
 
     <FilterBarItem :is_disable="true" :icon="filterCommentSvg" :title="$t('v1.common.incomming')" />
-    <FilterBarItem v-if="isFilterActive()" @click="resetConversationFilter()" :icon="closeRedSvg"
+    <FilterBarItem v-if="isFilterActive()" @click="clearAllFilter()" :icon="closeRedSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
     <template>
         <Dropdown ref="menu_ref" :is_fit="false" width="220px" height="auto" position="RIGHT">
@@ -95,4 +95,17 @@ const filter_tag = ref<ComponentRef>()
 const filter_not_tag = ref<ComponentRef>()
 /** */
 const filter_staff = ref<ComponentRef>()
+
+/** Xóa toàn bộ lọc đã chọn */
+function clearAllFilter() {
+    filter_interact.value?.clearThisFilter()
+    filter_message.value?.clearThisFilter()
+    filter_phone.value?.clearThisFilter()
+    filter_date.value?.clearThisFilter()
+    filter_tag.value?.clearThisFilter()
+    filter_not_tag.value?.clearThisFilter()
+    filter_staff.value?.clearThisFilter()
+    resetConversationFilter()
+}
+
 </script>
