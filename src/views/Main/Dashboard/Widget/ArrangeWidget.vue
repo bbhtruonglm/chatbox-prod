@@ -54,7 +54,7 @@ const widgets_installed = ref<AppInstalledInfo[]>([])
 const snap_index = ref<{ [index: number]: string }>({})
 
 /** Theo dõi sự thay đổi của props */
-watch(() => $props.widgets, () => getWidgetsData())
+watch(() => $props.widgets, () => getWidgetsData(), { deep: true })
 
 /**mở modal của pricing detail */
 function toggleModal() {
@@ -68,15 +68,8 @@ function getWidgetsData() {
         return widget.active_widget === true
     })
 
-    // * Sắp xếp vị trí widget từ trên xuống dưới
-    widgets_installed.value = widgets_installed.value.sort((a, b) => {
-        return a.index_position - b.index_position
-    })
-
-    // * Snap lại index widget
-    widgets_installed.value.map((widget, index) => {
-        snap_index.value[index] = widget._id
-    })
+    // * Update lại ví trí widget trong mảng
+    sortWidgetByIndexPosition()
 }
 /** Update lại vị trí của các widget */
 function updateWidgetPostition() {
@@ -86,9 +79,9 @@ function updateWidgetPostition() {
         widgets_installed.value,
         1,
         (widget: AppInstalledInfo, index, next) => {
-            
-            // * Nếu vị trí widget không thay đổi thì bỏ qua không update
-            if (snap_index.value[index as number] === widget._id) return next()
+
+            // * Thay đổi lại index position của widet
+            widget.index_position = index as number
 
             // * update lại widget thay đổi vị trí
             update_widget({
@@ -101,16 +94,20 @@ function updateWidgetPostition() {
             })
         },
         e => {
-            
-            // * Snap lại index widget
-            widgets_installed.value.map((widget, index) => {
-                snap_index.value[index] = widget._id
-            })
-
             // * Tắt modal
             toggleModal()
+
+            // * Update lại ví trí widget trong mảng
+            sortWidgetByIndexPosition()
         }
     )
+}
+/** Update lại vị trí của các widget */
+function sortWidgetByIndexPosition() {
+    // * Sắp xếp vị trí widget từ trên xuống dưới
+    widgets_installed.value = widgets_installed.value.sort((a, b) => {
+        return a.index_position - b.index_position
+    })
 }
 
 defineExpose({ toggleModal })
