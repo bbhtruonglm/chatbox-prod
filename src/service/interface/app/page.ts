@@ -89,3 +89,11 @@ export interface GroupStaffInfo {
     type?: 'SYSTEM' | string
     description: string
 }
+
+export interface GetFbPostInfo {
+    fb_page_id: {
+        $in: string[]
+    }
+    sort?: string
+    search?: string
+}

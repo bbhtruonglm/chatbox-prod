@@ -27,7 +27,8 @@
         :is_active="!!conversationStore.option_filter_page_data.staff_id" :icon="filterStaffSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
 
-    <FilterBarItem :is_disable="true" :icon="filterCommentSvg" :title="$t('v1.common.incomming')" />
+    <FilterBarItem @click="filter_post?.toggle" :icon="filterCommentSvg"
+        :title="$t('v1.view.main.dashboard.chat.filter.post.title')" />
     <FilterBarItem v-if="isFilterActive()" @click="clearAllFilter()" :icon="closeRedSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
     <template>
@@ -41,6 +42,7 @@
         <FilterTag ref="filter_tag" />
         <FilterNotTag ref="filter_not_tag" />
         <FilterStaff ref="filter_staff" />
+        <FilterPost ref="filter_post" />
     </template>
 </template>
 <script setup lang="ts">
@@ -59,6 +61,7 @@ import FilterDate from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterDa
 import FilterNotTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterNotTag.vue'
 import FilterTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterTag.vue'
 import FilterStaff from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterStaff.vue'
+import FilterPost from '../Chat/LeftBar/FilterModal/FilterPost.vue'
 import MenuBar from '@/views/Main/Dashboard/Menu/MenuBar.vue'
 
 import toggleSvg from '@/assets/icons/menu-chat.svg'
@@ -81,20 +84,22 @@ const commonStore = useCommonStore()
 const filter_modal_refs = reactive<any>({})
 /**ref của dropdown */
 const menu_ref = ref<ComponentRef>()
-/** */
+/** Lọc theo tương tác */
 const filter_interact = ref<ComponentRef>()
-/** */
+/** Lọc theo trạng thái tin nhắn */
 const filter_message = ref<ComponentRef>()
-/** */
+/** Lọc số điện thoại */
 const filter_phone = ref<ComponentRef>()
-/** */
+/** Lọc theo thời gian */
 const filter_date = ref<ComponentRef>()
-/** */
+/** Lọc theo nhãn */
 const filter_tag = ref<ComponentRef>()
-/** */
+/** Lọc theo loại trừ nhãn */
 const filter_not_tag = ref<ComponentRef>()
-/** */
+/** Lọc theo nhân viên */
 const filter_staff = ref<ComponentRef>()
+/** Lọc theo bài post */
+const filter_post = ref<ComponentRef>()
 
 /** Xóa toàn bộ lọc đã chọn */
 function clearAllFilter() {

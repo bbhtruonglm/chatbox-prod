@@ -255,6 +255,14 @@ const source: Language = {
                                 title: 'Lọc bình luận'
                             },
                             un_filter: 'Xoá lọc',
+                            post: {
+                                title: 'Lọc bình luận',
+                                comment: 'Lọc bình luận Facebook',
+                                facebook_post: 'Lọc theo bài đăng',
+                                filter_by_comment: 'Lọc bình luận Facebook',
+                                filter_by_post: 'Lọc theo bài đăng',
+                                find_id_post: 'Tìm kiếm id bài đăng'
+                            }
                         },
                         operate_by: 'Vận hành bởi',
                         search: 'Tìm kiếm hội thoại',
