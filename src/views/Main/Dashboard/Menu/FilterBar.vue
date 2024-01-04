@@ -26,8 +26,8 @@
     <FilterBarItem @click="filter_staff?.toggle" @cancel_filter="filter_staff?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.staff_id" :icon="filterStaffSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
-
-    <FilterBarItem @click="filter_post?.toggle" :icon="filterCommentSvg"
+    <FilterBarItem @click="filter_post?.toggle" @cancel_filter="filter_post?.clearThisFilter()"
+        :is_active="!!conversationStore.option_filter_page_data.post_id" :icon="filterCommentSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.post.title')" />
     <FilterBarItem v-if="isFilterActive()" @click="clearAllFilter()" :icon="closeRedSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
