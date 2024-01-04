@@ -261,7 +261,18 @@ const source: Language = {
                                 facebook_post: 'Lọc theo bài đăng',
                                 filter_by_comment: 'Lọc bình luận Facebook',
                                 filter_by_post: 'Lọc theo bài đăng',
-                                find_id_post: 'Tìm kiếm id bài đăng'
+                                find_id_post: 'Tìm kiếm id bài đăng',
+                                filter: 'Lọc',
+                                cancel_filter: 'Hủy lọc',
+                                page_reply: 'Trang đã trả lời',
+                                replied: 'Đã trả chời',
+                                unreplied: 'Chưa trả lời',
+                                page_inbox: 'Trang đã inbox',
+                                have_phone: 'Bình luận có sdt',
+                                have_email: 'Bình luận có email',
+                                select_time: 'Chọn thời gian',
+                                yes: 'Có',
+                                no: 'Không'
                             }
                         },
                         operate_by: 'Vận hành bởi',

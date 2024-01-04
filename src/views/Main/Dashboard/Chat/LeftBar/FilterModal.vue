@@ -25,8 +25,9 @@
             <FilterModalItem @click="filter_staff?.toggleModal()"
                 :is_active="!!conversationStore.option_filter_page_data.staff_id" :icon="filterStaffSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
-            <FilterModalItem class="opacity-40" :icon="filterCommentSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.comment.title')" />
+            <FilterModalItem @click="filter_post?.toggleModal()"
+                :is_active="!!conversationStore.option_filter_page_data.post_id" :icon="filterCommentSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.post.title')" />
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -46,6 +47,7 @@
         <FilterNotTag ref="filter_not_tag" />
         <FilterTag ref="filter_tag" />
         <FilterStaff ref="filter_staff" />
+        <FilterPost ref="filter_post" />
     </template>
 </template>
 <script setup lang="ts">
@@ -64,6 +66,7 @@ import FilterDate from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterDa
 import FilterNotTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterNotTag.vue'
 import FilterTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterTag.vue'
 import FilterStaff from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterStaff.vue'
+import FilterPost from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterPost.vue'
 
 import filterInteractSvg from '@/assets/icons/filter_interact.svg'
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
@@ -88,6 +91,7 @@ const filter_date = ref<ComponentRef>()
 const filter_not_tag = ref<ComponentRef>()
 const filter_tag = ref<ComponentRef>()
 const filter_staff = ref<ComponentRef>()
+const filter_post = ref<ComponentRef>()
 
 onMounted(() => teleportModelFilterOnPcScreen())
 
