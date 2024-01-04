@@ -5,6 +5,7 @@
         :icon_class="nav.icon_class" :icon="nav.icon" :title="nav.title" />
     <NavItem :icon="settingSvg" @click="openPageSetting" :title="$t('v1.view.main.dashboard.nav.page_setting')" />
     <NavItem :icon="analyticSvg" @click="openAnalytic" :title="$t('v1.view.main.dashboard.nav.analytic')" />
+    <NavItem v-if="is_show_chatbot" :icon="botSvg" @click="openChatbot" :title="$t('v1.view.main.dashboard.nav.bot')" />
     <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/main/dashboard/download') === 0"
         @click="preGoToChat(() => selectNav($router, '/main/dashboard/download'))" icon_class="w-[20px]" :icon="downloadSvg"
         :title="$t('v1.view.main.dashboard.nav.download')" />
@@ -30,6 +31,7 @@ import NavItem from '@/components/Main/Dashboard/NavItem.vue'
 
 import settingSvg from '@/assets/icons/setting.svg'
 import analyticSvg from '@/assets/icons/analytic.svg'
+import botSvg from '@/assets/icons/bot.svg'
 import pageSvg from '@/assets/icons/page.svg'
 import chatSvg from '@/assets/icons/chat.svg'
 import downloadSvg from '@/assets/icons/download.svg'
@@ -78,6 +80,7 @@ const LIST_NAV = [
         title: $t('v1.view.main.dashboard.nav.widget')
     },
 ]
+const is_show_chatbot = !!$env.host.chatbot_view
 
 /**mở cài đặt trang */
 function openPageSetting() {
@@ -86,6 +89,12 @@ function openPageSetting() {
 /**mở thống kê */
 function openAnalytic() {
     openNewTab(`${$env.host.analytic_view}?token=${getItem('access_token')}&fb_page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
+}
+/**mở chatbot */
+function openChatbot() {
+    if (!$env.host.chatbot_view) return
+
+    openNewTab(`${$env.host.chatbot_view}?access_token=${getItem('access_token')}&page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
 }
 /**đi đến trang chat */
 function goToChat() {

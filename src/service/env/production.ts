@@ -19,6 +19,7 @@ const ENV: Env = {
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://botbanhang.vn/setting/#/page',
         analytic_view: 'https://analytic-chatbox.botbanhang.vn/#/',
+        chatbot_view: '',
         download_client: 'https://chatbox-merge.botbanhang.vn/download'
     },
     facebook: {

@@ -19,6 +19,7 @@ const ENV: Env = {
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://sellingpage.net/setting/#/page',
         analytic_view: 'https://sellingpage.net/analytic/#/',
+        chatbot_view: 'https://chatbot.sellingpage.net/#/',
         download_client: 'https://sellingpage.net/download/'
     },
     facebook: {

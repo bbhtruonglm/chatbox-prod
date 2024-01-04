@@ -17,6 +17,7 @@ export interface Env {
         widget: string
         page_setting_view: string
         analytic_view: string
+        chatbot_view: string
         download_client: string
     }
     /**cài đặt cho riêng facebook */
