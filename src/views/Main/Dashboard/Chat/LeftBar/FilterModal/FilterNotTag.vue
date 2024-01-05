@@ -6,9 +6,11 @@
         </template>
         <template v-slot:body>
             <div class="h-[calc(100vh_-_239px)]">
-                <div class="py-3">
-                    <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                        class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                <div class="py-3 grid grid-cols-2 gap-2">
+                    <SelectPage :select_page="filterLabelByPage" />
+                    <input ref="search_ref" type="text"
+                        :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                        class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
                         v-model="label_search_name">
                 </div>
                 <div class="h-[calc(100%_-_58px)] scrollbar-vertical overflow-hidden overflow-y-auto">
@@ -38,9 +40,10 @@
             <div class="border-b font-semibold pb-1">
                 {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
             </div>
-            <div class="py-3">
+            <div class="py-3 grid grid-cols-2 gap-2">
+                <SelectPage :select_page="filterLabelByPage" />
                 <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                    class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
             <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
@@ -58,10 +61,11 @@ import { nonAccentVn } from '@/service/helper/format'
 import { isMobile } from '@/service/function'
 import { watch } from 'vue'
 
-import ModalBottom from '@/components/ModalBottom.vue'
+import SelectPage from './Tag/SelectPage.vue'
 import Dropdown from '@/components/Dropdown.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
+import ModalBottom from '@/components/ModalBottom.vue'
 import TagItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
@@ -74,6 +78,8 @@ const commonStore = useCommonStore()
 const filter_modal_ref = ref<ComponentRef>()
 /** Danh sách label của page đang được chọn */
 const label_list = ref<LabelInfo[]>([])
+/** Snap dữ liệu danh sách label */
+const snap_label_list = ref<LabelInfo[]>([])
 /** Snap label của page đang được chọn */
 const snap_labels = ref<{ [index: string]: LabelInfo }>({})
 /** ID page hiện tại đang được chọn */
@@ -141,6 +147,8 @@ function getLabelList() {
 
     // lọc đã chọn lên đầu
     label_list.value = sortLabel(label_list.value)
+    // snap lại dữ liệu để lọc theo page
+    snap_label_list.value = label_list.value
 }
 /** Chọn nhãn */
 function selectLabel(index: number) {
@@ -182,6 +190,18 @@ function toggle($event: MouseEvent) {
     if (isMobile()) toggleModal()
     // nếu là pc thỉ mở dropdown
     else filter_dropdown_ref.value?.toggleDropdown($event)
+}
+/** Hiển thị nhãn theo page đã chọn */
+function filterLabelByPage(page_id: string) {
+    if (!page_id) {
+        label_list.value = snap_label_list.value
+        label_list.value = sortLabel(label_list.value)
+        return
+    }
+    label_list.value = snap_label_list.value.filter(label => {
+        return label.fb_page_id === page_id
+    })
+    label_list.value = sortLabel(label_list.value)
 }
 
 defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
