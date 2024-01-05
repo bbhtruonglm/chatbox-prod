@@ -10,7 +10,7 @@
                 <div v-for="post, index in fb_post" @click="selectPost(index)"
                     class="flex p-2 border-b justify-between items-center">
                     <div class="mr-2">
-                        <object :data="post.attachments.data[0].media.image.src" type="image/png"
+                        <object :data="post?.attachments?.data[0]?.media?.image?.src" type="image/png"
                             class="min-w-[35px] w-[35px] h-[35px] rounded-lg object-cover">
                             <img src="@/assets/imgs/chatbox.svg" class="w-[35px] h-[35px]" />
                         </object>
@@ -66,7 +66,7 @@
                     v-for="post, index in fb_post" @click="selectPost(index)">
                     <div class="flex justify-between items-center w-full">
                         <div class="mr-3">
-                            <object :data="post.attachments.data[0].media.image.src" type="image/png"
+                            <object :data="post?.attachments?.data[0]?.media?.image?.src" type="image/png"
                                 class="min-w-[64px] w-[64px] h-[64px] rounded-lg object-cover">
                                 <img src="@/assets/imgs/chatbox.svg" class="w-[64px] h-[64px]" />
                             </object>
