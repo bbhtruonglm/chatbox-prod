@@ -55,6 +55,7 @@
 <script setup lang="ts">
 // * Libraries
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n'
 
 // * Store
 import {
@@ -65,6 +66,7 @@ import {
 
 // * Service
 import { flow } from '@/service/helper/async'
+import { toast } from '@/service/helper/alert';
 import { signout } from '@/service/helper/oauth'
 import { sync_facebook_page } from '@/service/api/chatbox/n4-service'
 
@@ -85,9 +87,10 @@ const $props = withDefaults(defineProps<{
     }
 }>(), {})
 
+const $t = useI18n().t
+const pageStore = usePageStore()
 const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
-const pageStore = usePageStore()
 
 /** Ref của modal */
 const modal_ref = ref<ComponentRef>()
@@ -103,6 +106,7 @@ function syncFacebookPage(access_token: string) {
         (cb: CbError) => sync_facebook_page(access_token, (e, r) => {
             if (e) return cb(e)
             toggleModal()
+            toast('success',  $t('v1.view.main.dashboard.user.re_granted_successfully'))
             cb()
         })
     ], undefined, true)

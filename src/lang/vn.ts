@@ -362,7 +362,8 @@ const source: Language = {
                                 continue_with_facebook: 'Tiếp tục với Facebook',
                                 or: 'hoặc',
                                 login_with_another_account: 'Đăng nhập với tài khoản khác'
-                            }
+                            },
+                            
                         },
                         quick_answer: {
                             title: 'Trả lời nhanh',
@@ -394,7 +395,8 @@ const source: Language = {
                     },
                     user: {
                         grant_fb_permission: 'Cấp lại quyền Facebook thủ công',
-                        logout: 'Đăng xuất'
+                        logout: 'Đăng xuất',
+                        re_granted_successfully: "Cấp lại quyền facebook thành công"
                     },
                     download: {
                         page_list: 'Danh sách trang sẽ tải dữ liệu',
@@ -520,6 +522,17 @@ const source: Language = {
                             }
                         }
                     },
+                    setting: {
+                        personal_setting: {
+                            title: 'Thiết lập cá nhân',
+                            allow_overide: 'Cho phép ghi đè thiết lập trang',
+                            hide_page_avatar: 'Ẩn avatar page',
+                            label_display_mode: 'Chế độ hiển thị nhãn',
+                            just_show_text: 'Hiện văn bản',
+                            dot_with_color: 'Chỉ hiện chấm màu',
+                            dot_with_color_and_toottip: 'Hiện chấm màu có chú giải'
+                        }
+                    }
                 }
             }
         }
