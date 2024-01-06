@@ -265,7 +265,7 @@ const source: Language = {
                                 filter: 'Lọc',
                                 cancel_filter: 'Hủy lọc',
                                 page_reply: 'Trang đã trả lời',
-                                replied: 'Đã trả chời',
+                                replied: 'Đã trả lời',
                                 unreplied: 'Chưa trả lời',
                                 page_inbox: 'Trang đã inbox',
                                 have_phone: 'Bình luận có sdt',

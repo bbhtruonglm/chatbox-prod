@@ -39,7 +39,7 @@
             </div>
         </template>
     </ModalBottom>
-    <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="540px" height="640px" position="RIGHT" :back="350">
+    <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="570px" position="RIGHT" :back="350">
         <div class="text-sm  h-full w-full">
             <div class="border-b font-semibold pb-1 flex items-center justify-between">
                 <div>
@@ -61,7 +61,7 @@
                     class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchPost"
                     v-model="search_post_id">
             </div>
-            <div class="overflow-hidden overflow-y-scroll" :class="{ 'h-[300px]': !filter_post, 'h-[490px]': filter_post }">
+            <div class="overflow-hidden overflow-y-scroll" :class="{ 'h-[250px]': !filter_post, 'h-[420px]': filter_post }">
                 <div class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
                     v-for="post, index in fb_post" @click="selectPost(index)">
                     <div class="flex justify-between items-center w-full">
@@ -79,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="w-[300px] text-gray-700 post-truncate">
+                                <div class="w-[250px] text-gray-700 post-truncate">
                                     {{ post.message }}
                                 </div>
                                 <img v-if="post.is_selected" class="w-5 h-5 mt-[-14px]"
@@ -92,60 +92,76 @@
             <div class="w-full mt-5 mb-5" v-if="!filter_post">
                 <div class="grid grid-cols-3 mb-3 gap-3">
                     <div class="text-sm text-black">{{ $t('v1.view.main.dashboard.chat.filter.post.page_reply') }}</div>
-                    <div class="flex items-center">
-                        <input type="radio" value="YES" v-model="filter_keys.is_reply"
-                            class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.replied') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="YES" v-model="filter_keys.is_reply"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.replied') }}</span>
+                        </label>
                     </div>
-                    <div class="flex items-center">
-                        <input type="radio" value="NO" v-model="filter_keys.is_reply"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.unreplied') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="NO" v-model="filter_keys.is_reply"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.unreplied') }}</span>
+                        </label>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 mb-3 gap-3">
                     <div class="text-sm text-black">{{ $t('v1.view.main.dashboard.chat.filter.post.page_inbox') }}</div>
-                    <div class="flex items-center">
-                        <input type="radio" value="YES" v-model="filter_keys.is_private_reply"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.replied') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="YES" v-model="filter_keys.is_private_reply"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.replied') }}</span>
+                        </label>
                     </div>
-                    <div class="flex items-center">
-                        <input type="radio" value="NO" v-model="filter_keys.is_private_reply"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.unreplied') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="NO" v-model="filter_keys.is_private_reply"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.unreplied') }}</span>
+                        </label>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 mb-3 gap-3">
                     <div class="text-sm text-black">{{ $t('v1.view.main.dashboard.chat.filter.post.have_phone') }}</div>
-                    <div class="flex items-center">
-                        <input type="radio" value="YES" v-model="filter_keys.have_phone"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.yes') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="YES" v-model="filter_keys.have_phone"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.yes') }}</span>
+                        </label>
                     </div>
-                    <div class="flex items-center">
-                        <input type="radio" value="NO" v-model="filter_keys.have_phone"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.no') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="NO" v-model="filter_keys.have_phone"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.no') }}</span>
+                        </label>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 mb-3 gap-3">
                     <div class="text-sm text-black">{{ $t('v1.view.main.dashboard.chat.filter.post.have_email') }}</div>
-                    <div class="flex items-center">
-                        <input type="radio" value="YES" v-model="filter_keys.have_email"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.yes') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="YES" v-model="filter_keys.have_email"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.yes') }}</span>
+                        </label>
                     </div>
-                    <div class="flex items-center">
-                        <input type="radio" value="NO" v-model="filter_keys.have_email"
-                            class=" ml-5 w-4 h-4 bg-gray-100 border-gray-300 focus:ring-0 custom-radio">
-                        <label class="ms-2 text-sm">{{ $t('v1.view.main.dashboard.chat.filter.post.no') }}</label>
+                    <div>
+                        <label class="text-sm cursor-pointer flex items-center">
+                            <input type="radio" value="NO" v-model="filter_keys.have_email"
+                                class=" ml-5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 custom-radio mr-1.5">
+                            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.no') }}</span>
+                        </label>
                     </div>
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between cursor-pointer" @click="date_picket_ref?.toggle">
                     <div class="text-sm text-black">Chọn thời gian</div>
                     <div class=" cursor-pointer">
-                        <img @click="date_picket_ref?.toggle" :src="ArrowRightIcon" alt="" class="mr-3">
+                        <img :src="ArrowRightIcon" alt="" class="mr-3">
                     </div>
                 </div>
             </div>
@@ -353,6 +369,7 @@ defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clear
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    font-size: 12px;
 }
 
 .custom-radio:checked {
