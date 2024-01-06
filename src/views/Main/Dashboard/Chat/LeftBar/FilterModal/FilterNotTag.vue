@@ -6,8 +6,12 @@
         </template>
         <template v-slot:body>
             <div class="h-[calc(100vh_-_239px)]">
-                <div class="py-3 grid grid-cols-2 gap-2">
-                    <SelectPage :select_page="filterLabelByPage" />
+                <div class="py-3 grid gap-2" :class="{
+                    'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+                    'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+                }">
+                    <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
+                        :select_page="filterLabelByPage" />
                     <input ref="search_ref" type="text"
                         :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
                         class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
@@ -40,10 +44,14 @@
             <div class="border-b font-semibold pb-1">
                 {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
             </div>
-            <div class="py-3 grid grid-cols-2 gap-2">
-                <SelectPage :select_page="filterLabelByPage" />
+            <div class="py-3 grid gap-2" :class="{
+                'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+                'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+            }">
+                <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
+                    :select_page="filterLabelByPage" />
                 <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                    class="border px-3 py-1 rounded-lg focus:outline-none w-full" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
             <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
@@ -193,15 +201,21 @@ function toggle($event: MouseEvent) {
 }
 /** Hiển thị nhãn theo page đã chọn */
 function filterLabelByPage(page_id: string) {
+    // * Hiển thi toàn bộ các nhãn của các page
     if (!page_id) {
         label_list.value = snap_label_list.value
         label_list.value = sortLabel(label_list.value)
         return
     }
+
+    // * Hiển thị nhãn theo page_id đã chọn
     label_list.value = snap_label_list.value.filter(label => {
         return label.fb_page_id === page_id
     })
     label_list.value = sortLabel(label_list.value)
+
+    // * Xóa input tìm kiếm nhãn
+    label_search_name.value = ''
 }
 
 defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
