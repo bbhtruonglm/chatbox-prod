@@ -8,4 +8,6 @@ export interface LabelInfo {
     title: string
     /**dánh dấu thêm, nhãn có được chọn hay không */
     is_selected?: boolean
+    /** trạng thái hiển thị khi lọc theo page */
+    show_label?: boolean
 }

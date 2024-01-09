@@ -81,8 +81,8 @@
                 </div>
             </div>
             <div class="h-[calc(100%_-_136px)] scrollbar-vertical overflow-hidden overflow-y-auto">
-                <TagItem v-for="item, index of label_list" @click="selectLabel(index)" :label="item"
-                    :is_selected="item?.is_selected" />
+                <TagItem v-for="item, index of label_list" v-show="item.show_label" @click="selectLabel(index)"
+                    :label="item" :is_selected="item?.is_selected" />
             </div>
         </div>
     </Dropdown>
@@ -112,8 +112,6 @@ const commonStore = useCommonStore()
 const filter_modal_ref = ref<ComponentRef>()
 /** Danh sách label của page đang được chọn */
 const label_list = ref<LabelInfo[]>([])
-/** Snap dữ liệu danh sách label */
-const snap_label_list = ref<LabelInfo[]>([])
 /** Snap label của page đang được chọn */
 const snap_labels = ref<{ [index: string]: LabelInfo }>({})
 /** ID page hiện tại đang được chọn */
@@ -177,13 +175,14 @@ function getLabelList() {
             conversationStore.option_filter_page_data.label_id?.includes(label?._id)
         ) label.is_selected = true
 
+        // * Gắn cờ hiển thị
+        label.show_label = true
+
         return label
     })
 
     // lọc đã chọn lên đầu
     label_list.value = sortLabel(label_list.value)
-    // snap lại dữ liệu để lọc theo page
-    snap_label_list.value = label_list.value
 }
 /** Chọn nhãn */
 function selectLabel(index: number) {
@@ -228,17 +227,22 @@ function toggle($event: MouseEvent) {
 }
 /** Hiển thị nhãn theo page đã chọn */
 function filterLabelByPage(page_id: string) {
-    // * Hiển thi toàn bộ các nhãn của các page
-    if (!page_id) {
-        label_list.value = snap_label_list.value
-        label_list.value = sortLabel(label_list.value)
-        return
+    
+    if (!page_id) { // * Hiển thị toàn bộ label
+        label_list.value = label_list.value.map(label => {
+            label.show_label = true
+            return label
+        })
+    }
+    else { // * Gắn cờ hiển thị từng label theo page đã chọn
+        label_list.value = label_list.value.map(label => {
+            if (label.fb_page_id === page_id) label.show_label = true
+            else label.show_label = false
+            return label
+        })
     }
 
-    // * Hiển thị nhãn theo page_id đã chọn
-    label_list.value = snap_label_list.value.filter(label => {
-        return label.fb_page_id === page_id
-    })
+    // * Sort lại label
     label_list.value = sortLabel(label_list.value)
 
     // * Xóa input tìm kiếm nhãn
