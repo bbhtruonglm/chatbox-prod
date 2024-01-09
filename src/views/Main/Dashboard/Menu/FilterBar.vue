@@ -12,10 +12,10 @@
         :title="$t('v1.view.main.dashboard.chat.filter.message.title')" />
     <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_phone?.filter_popover_ref?.mouseover"
         @mouseleave="filter_phone?.filter_popover_ref?.mouseleave" @cancel_filter="filter_phone?.clearThisFilter()"
-        :is_active="!!conversationStore.option_filter_page_data.have_phone" :icon="filterPhoneSvg"
+        :is_active="isActiveFilter('phone')" :icon="filterPhoneSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
     <FilterBarItem @click="filter_date?.toggle" @cancel_filter="filter_date?.clearThisFilter()"
-        :is_active="!!conversationStore.option_filter_page_data.time_range" :icon="filterDateSvg"
+        :is_active="isActiveFilter('date')" :icon="filterDateSvg"
         :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
     <FilterBarItem @click="filter_tag?.toggle" @cancel_filter="filter_tag?.clearThisFilter()"
         :is_active="!!conversationStore.option_filter_page_data.label_id" :icon="filterTagSvg"
@@ -111,6 +111,24 @@ function clearAllFilter() {
     filter_not_tag.value?.clearThisFilter()
     filter_staff.value?.clearThisFilter()
     resetConversationFilter()
+}
+/** Check trạng thái kích hoạt bộ lọc */
+function isActiveFilter(type: string): boolean {
+    let status = false
+    switch (type) {
+        case 'date':
+            if (conversationStore.option_filter_page_data.time_range &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        case 'phone':
+            if (conversationStore.option_filter_page_data.have_phone &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        default:
+            break;
+    }
+    console.log("status", status)
+    return status
 }
 
 </script>

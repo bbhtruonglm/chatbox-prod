@@ -8,7 +8,7 @@
         <template v-slot:body>
             <div class="max-h-[50vh] overflow-hidden overflow-y-scroll">
                 <div v-for="post, index in fb_post" @click="selectPost(index)"
-                    class="flex p-2 border-b justify-between items-center">
+                    class="flex p-2 border-b justify-between items-center relative">
                     <div class="mr-2">
                         <object :data="post?.attachments?.data[0]?.media?.image?.src" type="image/png"
                             class="min-w-[35px] w-[35px] h-[35px] rounded-lg object-cover">
@@ -34,7 +34,7 @@
                 <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
                     :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
                 <FilterButton @click="filterPost()"
-                    type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
+                    :type="`${mergePostSelect().length > 0 ? 'border-orange-500 text-orange-500' : 'border-orange-200 text-orange-200'} hover:text-white hover:bg-orange-500`"
                     :title="$t('v1.view.main.dashboard.chat.filter.title')" />
             </div>
         </template>
@@ -169,7 +169,10 @@
                 <button @click="cancelFilter" class="text-white bg-gray-500 px-3 py-1 rounded-lg mr-3">
                     {{ $t('v1.view.main.dashboard.chat.filter.post.cancel_filter') }}
                 </button>
-                <button @click="filterPost" class="text-white bg-orange-500 px-5 py-1 rounded-lg">
+                <button @click="filterPost" class="text-white px-5 py-1 rounded-lg" :class="{
+                    'bg-orange-500': mergePostSelect().length,
+                    'bg-orange-300': mergePostSelect().length === 0
+                }">
                     {{ $t('v1.view.main.dashboard.chat.filter.post.filter') }}
                 </button>
             </div>
@@ -303,12 +306,13 @@ function cancelFilter() {
         is_reply: "",
         have_email: "",
         have_phone: "",
-        is_private_reply: ""
+        is_private_reply: "",
+        post_id: ""
     }
     conversationStore.option_filter_page_data = {
         ...conversationStore.option_filter_page_data,
         ...filter_keys.value,
-        ...{ post_id: '', time_range: {} }
+        ...{ post_id: '', time_range: undefined }
     }
     fb_post.value = fb_post.value.map(item => {
         item.is_selected = false
@@ -317,6 +321,7 @@ function cancelFilter() {
 }
 /** Lọc bài post */
 function filterPost() {
+    if (mergePostSelect().length == 0) return
 
     // Chỉ lọc theo bài post
     if (filter_post.value) {
@@ -349,7 +354,9 @@ function filterPost() {
             } : {}
         }
     }
-    toggleModal()
+
+    if (isMobile()) toggleModal()
+    else filter_dropdown_ref.value?.toggleDropdown()
 }
 /** Gom bài post đã chọn thành 1 string để filter */
 function mergePostSelect(): string {

@@ -1,7 +1,7 @@
 <template>
     <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="400px" height="430px" position="RIGHT" :back="350">
-        <DatePicker v-model="start_time" class="border rounded-xl mt-1" @update:model-value="updateTime('start_time')" />
-        <DatePicker v-model="end_time" class="border rounded-xl mt-1" @update:model-value="updateTime('end_time')"  />
+        <DatePicker :max_another_range="end_time" v-model="start_time" class="border rounded-xl mt-1" @update:model-value="updateTime('start_time')" />
+        <DatePicker :min_another_range="start_time" v-model="end_time" class="border rounded-xl mt-1" @update:model-value="updateTime('end_time')"  />
     </Dropdown>
 </template>
 

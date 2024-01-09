@@ -11,10 +11,10 @@
             <FilterModalItem @click="filter_message?.toggleModal()" :is_active="isActiveMessageFilter()"
                 :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.title')" />
             <FilterModalItem @click="filter_phone?.toggleModal()"
-                :is_active="!!conversationStore.option_filter_page_data.have_phone" :icon="filterPhoneSvg"
+                :is_active="isActiveFilter('phone')" :icon="filterPhoneSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
             <FilterModalItem @click="filter_date?.toggleModal()"
-                :is_active="!!conversationStore.option_filter_page_data.time_range" :icon="filterDateSvg"
+                :is_active="isActiveFilter('date')" :icon="filterDateSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
             <FilterModalItem @click="filter_tag?.toggleModal()"
                 :is_active="!!conversationStore.option_filter_page_data.label_id" :icon="filterTagSvg"
@@ -104,6 +104,23 @@ function clearAllFilter() {
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
-
+/** Check trạng thái kích hoạt bộ lọc */
+function isActiveFilter(type: string): boolean {
+    let status = false
+    switch (type) {
+        case 'date':
+            if (conversationStore.option_filter_page_data.time_range &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        case 'phone':
+            if (conversationStore.option_filter_page_data.have_phone &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        default:
+            break;
+    }
+    console.log("status", status)
+    return status
+}
 defineExpose({ toggleModal })
 </script>
