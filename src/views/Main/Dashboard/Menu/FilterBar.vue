@@ -48,7 +48,12 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
-import { isActiveMessageFilter, isChat, isFilterActive, resetConversationFilter } from '@/service/function'
+import { 
+    isActiveMessageFilter, 
+    isChat, isFilterActive,
+    resetConversationFilter, 
+    isActiveFilter 
+} from '@/service/function'
 
 import FilterBarItem from '@/views/Main/Dashboard/Menu/FilterBarItem.vue'
 import NavItem from '@/components/Main/Dashboard/NavItem.vue'
@@ -110,25 +115,8 @@ function clearAllFilter() {
     filter_tag.value?.clearThisFilter()
     filter_not_tag.value?.clearThisFilter()
     filter_staff.value?.clearThisFilter()
+    filter_post.value?.clearThisFilter()
     resetConversationFilter()
-}
-/** Check trạng thái kích hoạt bộ lọc */
-function isActiveFilter(type: string): boolean {
-    let status = false
-    switch (type) {
-        case 'date':
-            if (conversationStore.option_filter_page_data.time_range &&
-                !conversationStore.option_filter_page_data.post_id) status = true
-            break;
-        case 'phone':
-            if (conversationStore.option_filter_page_data.have_phone &&
-                !conversationStore.option_filter_page_data.post_id) status = true
-            break;
-        default:
-            break;
-    }
-    console.log("status", status)
-    return status
 }
 
 </script>

@@ -340,3 +340,23 @@ export function setParamChat($router: Router, page_id: string, client_id: string
     // $router.replace({ query: { p: page_id, u: client_id } })
     $router.replace({ query: { page_id: page_id, user_id: client_id } })
 }
+
+/** Check trạng thái kích hoạt bộ lọc */
+export function isActiveFilter(type: string): boolean {
+    const conversationStore = useConversationStore()
+
+    let status = false
+    switch (type) {
+        case 'date':
+            if (conversationStore.option_filter_page_data.time_range &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        case 'phone':
+            if (conversationStore.option_filter_page_data.have_phone &&
+                !conversationStore.option_filter_page_data.post_id) status = true
+            break;
+        default:
+            break;
+    }
+    return status
+}

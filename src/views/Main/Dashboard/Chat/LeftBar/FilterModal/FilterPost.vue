@@ -339,6 +339,10 @@ function filterPost() {
                 time_range: {}
             }
         }
+
+        if (isMobile()) toggleModal()
+        else filter_dropdown_ref.value?.toggleDropdown()
+    
         return
     }
 

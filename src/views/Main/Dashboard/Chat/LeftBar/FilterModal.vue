@@ -54,7 +54,7 @@
 import { onMounted, ref } from 'vue'
 import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { isActiveMessageFilter, resetConversationFilter } from '@/service/function'
-import { teleportModelFilterOnPcScreen } from '@/service/function'
+import { teleportModelFilterOnPcScreen, isActiveFilter } from '@/service/function'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterModalItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterModalItem.vue'
@@ -97,6 +97,14 @@ onMounted(() => teleportModelFilterOnPcScreen())
 
 /**loại bỏ toàn bộ lọc */
 function clearAllFilter() {
+    filter_interact.value?.clearThisFilter()
+    filter_message.value?.clearThisFilter()
+    filter_phone.value?.clearThisFilter()
+    filter_date.value?.clearThisFilter()
+    filter_tag.value?.clearThisFilter()
+    filter_not_tag.value?.clearThisFilter()
+    filter_staff.value?.clearThisFilter()
+    filter_post.value?.clearThisFilter()
     resetConversationFilter()
     toggleModal()
 }
@@ -104,23 +112,6 @@ function clearAllFilter() {
 function toggleModal() {
     filter_modal_ref.value?.toggleModal()
 }
-/** Check trạng thái kích hoạt bộ lọc */
-function isActiveFilter(type: string): boolean {
-    let status = false
-    switch (type) {
-        case 'date':
-            if (conversationStore.option_filter_page_data.time_range &&
-                !conversationStore.option_filter_page_data.post_id) status = true
-            break;
-        case 'phone':
-            if (conversationStore.option_filter_page_data.have_phone &&
-                !conversationStore.option_filter_page_data.post_id) status = true
-            break;
-        default:
-            break;
-    }
-    console.log("status", status)
-    return status
-}
+
 defineExpose({ toggleModal })
 </script>
