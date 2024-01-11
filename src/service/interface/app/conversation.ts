@@ -40,6 +40,10 @@ export interface FilterConversation {
     platform_type?: string
     /**lọc theo bài viết */
     post_id?: string
+    /** Lọc theo bài viết đã nhắn tin private */
+    is_private_reply?: string
+    /** Lọc theo bài viết đã phản hồi */
+    is_reply?: string 
 }
 
 export interface QueryConversationInput extends FilterConversation {

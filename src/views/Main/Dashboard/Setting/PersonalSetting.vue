@@ -2,14 +2,14 @@
     <Modal ref="personal_setting_ref" :fit_content="true">
         <template v-slot:header>
             <div class="flex items-center">
-                <div>Thiết lập cá nhân</div>
+                <div>{{ $t('v1.view.main.dashboard.setting.personal_setting.title') }}</div>
             </div>
         </template>
         <template v-slot:body>
             <div class="md:w-[500px] w-full py-3">
                 <div class="flex justify-between items-center">
                     <div class="flex">
-                        <div class="">Cho phép ghi đè thiết lập trang</div>
+                        <div class="">{{ $t('v1.view.main.dashboard.setting.personal_setting.allow_overide') }}</div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" v-model="enable_personal_setting" class="sr-only peer"
@@ -23,7 +23,7 @@
             <div class="md:w-[500px] w-full py-3" v-if="enable_personal_setting">
                 <div class="flex justify-between items-center">
                     <div class="flex">
-                        <div class="">Ẩn avatar trang</div>
+                        <div class="">{{ $t('v1.view.main.dashboard.setting.personal_setting.hide_page_avatar') }}</div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" v-model="personal_setting.is_hide_page_avatar" class="sr-only peer">
@@ -33,12 +33,12 @@
                     </label>
                 </div>
                 <div class="mt-4 md:flex md:items-center md:justify-between">
-                    <div class="mb-2">Chế độ hiển thị nhãn</div>
+                    <div class="mb-2">{{ $t('v1.view.main.dashboard.setting.personal_setting.label_display_mode') }}</div>
                     <select v-model="personal_setting.display_label_type"
                         class="border px-2 py-1.5 rounded-lg w-full md:w-fit">
-                        <option value="FULL">Hiện văn bản</option>
-                        <option value="ICON">Chỉ hiện chấm màu</option>
-                        <option value="ICON_TOOLTIP">Hiện chấm màu có chú giải</option>
+                        <option value="FULL">{{ $t('v1.view.main.dashboard.setting.personal_setting.dot_with_color') }}</option>
+                        <option value="ICON">{{ $t('v1.view.main.dashboard.setting.personal_setting.just_show_text') }}</option>
+                        <option value="ICON_TOOLTIP">{{ $t('v1.view.main.dashboard.setting.personal_setting.dot_with_color_and_toottip') }}</option>
                     </select>
                 </div>
             </div>

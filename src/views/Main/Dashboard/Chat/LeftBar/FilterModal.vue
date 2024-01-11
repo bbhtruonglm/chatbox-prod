@@ -11,10 +11,10 @@
             <FilterModalItem @click="filter_message?.toggleModal()" :is_active="isActiveMessageFilter()"
                 :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.title')" />
             <FilterModalItem @click="filter_phone?.toggleModal()"
-                :is_active="!!conversationStore.option_filter_page_data.have_phone" :icon="filterPhoneSvg"
+                :is_active="isActiveFilter('phone')" :icon="filterPhoneSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
             <FilterModalItem @click="filter_date?.toggleModal()"
-                :is_active="!!conversationStore.option_filter_page_data.time_range" :icon="filterDateSvg"
+                :is_active="isActiveFilter('date')" :icon="filterDateSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.time.title')" />
             <FilterModalItem @click="filter_tag?.toggleModal()"
                 :is_active="!!conversationStore.option_filter_page_data.label_id" :icon="filterTagSvg"
@@ -25,8 +25,9 @@
             <FilterModalItem @click="filter_staff?.toggleModal()"
                 :is_active="!!conversationStore.option_filter_page_data.staff_id" :icon="filterStaffSvg"
                 :title="$t('v1.view.main.dashboard.chat.filter.staff.title')" />
-            <FilterModalItem class="opacity-40" :icon="filterCommentSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.comment.title')" />
+            <FilterModalItem @click="filter_post?.toggleModal()"
+                :is_active="!!conversationStore.option_filter_page_data.post_id" :icon="filterCommentSvg"
+                :title="$t('v1.view.main.dashboard.chat.filter.post.title')" />
         </template>
         <template v-slot:footer>
             <div class="grid grid-cols-2 gap-4">
@@ -46,13 +47,14 @@
         <FilterNotTag ref="filter_not_tag" />
         <FilterTag ref="filter_tag" />
         <FilterStaff ref="filter_staff" />
+        <FilterPost ref="filter_post" />
     </template>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { isActiveMessageFilter, resetConversationFilter } from '@/service/function'
-import { teleportModelFilterOnPcScreen } from '@/service/function'
+import { teleportModelFilterOnPcScreen, isActiveFilter } from '@/service/function'
 
 import ModalBottom from '@/components/ModalBottom.vue'
 import FilterModalItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterModalItem.vue'
@@ -64,6 +66,7 @@ import FilterDate from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterDa
 import FilterNotTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterNotTag.vue'
 import FilterTag from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterTag.vue'
 import FilterStaff from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterStaff.vue'
+import FilterPost from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterPost.vue'
 
 import filterInteractSvg from '@/assets/icons/filter_interact.svg'
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
@@ -88,11 +91,20 @@ const filter_date = ref<ComponentRef>()
 const filter_not_tag = ref<ComponentRef>()
 const filter_tag = ref<ComponentRef>()
 const filter_staff = ref<ComponentRef>()
+const filter_post = ref<ComponentRef>()
 
 onMounted(() => teleportModelFilterOnPcScreen())
 
 /**loại bỏ toàn bộ lọc */
 function clearAllFilter() {
+    filter_interact.value?.clearThisFilter()
+    filter_message.value?.clearThisFilter()
+    filter_phone.value?.clearThisFilter()
+    filter_date.value?.clearThisFilter()
+    filter_tag.value?.clearThisFilter()
+    filter_not_tag.value?.clearThisFilter()
+    filter_staff.value?.clearThisFilter()
+    filter_post.value?.clearThisFilter()
     resetConversationFilter()
     toggleModal()
 }
