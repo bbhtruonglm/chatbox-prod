@@ -6,9 +6,15 @@
         </template>
         <template v-slot:body>
             <div class="h-[calc(100vh_-_239px)]">
-                <div class="py-3">
-                    <input type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                        class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                <div class="py-3 grid gap-2" :class="{
+                    'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+                    'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+                }">
+                    <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
+                        :select_page="filterLabelByPage" />
+                    <input ref="search_ref" type="text"
+                        :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                        class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
                         v-model="label_search_name">
                 </div>
                 <div class="h-[calc(100%_-_58px)] scrollbar-vertical overflow-hidden overflow-y-auto">
@@ -38,13 +44,18 @@
             <div class="border-b font-semibold pb-1">
                 {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
             </div>
-            <div class="py-3">
+            <div class="py-3 grid gap-2" :class="{
+                'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+                'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+            }">
+                <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
+                    :select_page="filterLabelByPage" />
                 <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                    class="border px-3 py-1 w-full rounded-lg focus:outline-none" v-on:keyup="searchLabel"
+                    class="border px-3 py-1 rounded-lg focus:outline-none w-full" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
             <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
-                <TagItem v-for="item, index of label_list" @click="selectLabel(index)" :label="item"
+                <TagItem v-for="item, index of label_list" v-show="item.show_label" @click="selectLabel(index)" :label="item"
                     :is_selected="item?.is_selected" />
             </div>
         </div>
@@ -58,10 +69,11 @@ import { nonAccentVn } from '@/service/helper/format'
 import { isMobile } from '@/service/function'
 import { watch } from 'vue'
 
-import ModalBottom from '@/components/ModalBottom.vue'
+import SelectPage from './Tag/SelectPage.vue'
 import Dropdown from '@/components/Dropdown.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
+import ModalBottom from '@/components/ModalBottom.vue'
 import TagItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
+import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
@@ -182,6 +194,29 @@ function toggle($event: MouseEvent) {
     if (isMobile()) toggleModal()
     // nếu là pc thỉ mở dropdown
     else filter_dropdown_ref.value?.toggleDropdown($event)
+}
+/** Hiển thị nhãn theo page đã chọn */
+function filterLabelByPage(page_id: string) {
+
+    if (!page_id) { // * Hiển thị toàn bộ label
+        label_list.value = label_list.value.map(label => {
+            label.show_label = true
+            return label
+        })
+    }
+    else { // * Gắn cờ hiển thị từng label theo page đã chọn
+        label_list.value = label_list.value.map(label => {
+            if (label.fb_page_id === page_id) label.show_label = true
+            else label.show_label = false
+            return label
+        })
+    }
+
+    // * Sort lại label
+    label_list.value = sortLabel(label_list.value)
+
+    // * Xóa input tìm kiếm nhãn
+    label_search_name.value = ''
 }
 
 defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })

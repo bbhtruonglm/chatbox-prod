@@ -1,7 +1,8 @@
 import { chatbox } from '@/service/api/chatbox/common'
 
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
-import type { GetPageGroupStaff, GroupStaffInfo, PageList, PageWebsiteCreate } from '@/service/interface/app/page'
+import type { GetPageGroupStaff, GroupStaffInfo, PageList, PageWebsiteCreate, GetFbPostInfo } from '@/service/interface/app/page'
+import type { FacebookPost } from '@/service/interface/app/post'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { Cb } from '@/service/interface/function'
 import type {
@@ -314,3 +315,13 @@ export const get_page_group_staff = (
     uri: `${$env.host.n4_service_v1}/v1/app/group-staff/read`,
     body
 }, (e, r) => proceed(e, r?.group_staff))
+
+/** Lấy danh sách bài post theo các pages đang chọn */
+
+export const get_post_list = (
+    body: GetFbPostInfo,
+    proceed: Cb<{ count: number, fb_post: FacebookPost[] }>
+) => chatbox({
+    uri: `${$env.host.n4_service_v1}/v1/app/fb-post/read`,
+    body
+}, (e, r) => proceed(e, r))

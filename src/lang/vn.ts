@@ -256,6 +256,25 @@ const source: Language = {
                                 title: 'Lọc bình luận'
                             },
                             un_filter: 'Xoá lọc',
+                            post: {
+                                title: 'Lọc bình luận',
+                                comment: 'Lọc bình luận Facebook',
+                                facebook_post: 'Lọc theo bài đăng',
+                                filter_by_comment: 'Lọc bình luận Facebook',
+                                filter_by_post: 'Lọc theo bài đăng',
+                                find_id_post: 'Tìm kiếm id bài đăng',
+                                filter: 'Lọc',
+                                cancel_filter: 'Hủy lọc',
+                                page_reply: 'Trang đã trả lời',
+                                replied: 'Đã trả lời',
+                                unreplied: 'Chưa trả lời',
+                                page_inbox: 'Trang đã inbox',
+                                have_phone: 'Bình luận có sdt',
+                                have_email: 'Bình luận có email',
+                                select_time: 'Chọn thời gian',
+                                yes: 'Có',
+                                no: 'Không'
+                            }
                         },
                         operate_by: 'Vận hành bởi',
                         search: 'Tìm kiếm hội thoại',
@@ -344,7 +363,8 @@ const source: Language = {
                                 continue_with_facebook: 'Tiếp tục với Facebook',
                                 or: 'hoặc',
                                 login_with_another_account: 'Đăng nhập với tài khoản khác'
-                            }
+                            },
+                            
                         },
                         quick_answer: {
                             title: 'Trả lời nhanh',
@@ -376,7 +396,8 @@ const source: Language = {
                     },
                     user: {
                         grant_fb_permission: 'Cấp lại quyền Facebook thủ công',
-                        logout: 'Đăng xuất'
+                        logout: 'Đăng xuất',
+                        re_granted_successfully: "Cấp lại quyền facebook thành công"
                     },
                     download: {
                         page_list: 'Danh sách trang sẽ tải dữ liệu',
@@ -502,6 +523,17 @@ const source: Language = {
                             }
                         }
                     },
+                    setting: {
+                        personal_setting: {
+                            title: 'Thiết lập cá nhân',
+                            allow_overide: 'Cho phép ghi đè thiết lập trang',
+                            hide_page_avatar: 'Ẩn avatar page',
+                            label_display_mode: 'Chế độ hiển thị nhãn',
+                            just_show_text: 'Hiện văn bản',
+                            dot_with_color: 'Chỉ hiện chấm màu',
+                            dot_with_color_and_toottip: 'Hiện chấm màu có chú giải'
+                        }
+                    }
                 }
             }
         }
