@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-end relative z-1">
-        <div class="w-[-webkit-fill-available] text-sm break-words whitespace-pre-line text-white bg-slate-500 rounded-l-2xl rounded-r-md p-2">
+        <div class="w-[-webkit-fill-available] text-sm break-words whitespace-pre-line text-black page-text-message-bg-custom rounded-l-2xl rounded-r-md py-2 px-3">
             {{ text }}
         </div>
     </div>
@@ -11,3 +11,8 @@ const $props = withDefaults(defineProps<{
     text: string
 }>(), {})
 </script>
+<style scoped lang="scss">
+.page-text-message-bg-custom {
+    background: #dde3e8
+}
+</style>
