@@ -17,7 +17,7 @@ const ENV: Env = {
         n6_static: 'https://chatbox-static-v3.botbanhang.vn',
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
-        page_setting_view: 'https://botbanhang.vn/setting/#/page',
+        page_setting_view: 'https://setting-chatbox.botbanhang.vn',
         analytic_view: 'https://analytic-chatbox.botbanhang.vn/#/',
         chatbot_view: '',
         download_client: 'https://chatbox-merge.botbanhang.vn/download'
