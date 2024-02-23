@@ -1,6 +1,6 @@
 <template>
-    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/chat') === 0"
-        @click="goToChat" icon_class="w-[20px]" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
+    <NavItem v-if="size(pageStore.selected_page_id_list)" :is_active="$route.path.indexOf('/chat') === 0" @click="goToChat"
+        icon_class="w-[20px]" :icon="chatSvg" :title="$t('v1.view.main.dashboard.nav.chat')" />
     <NavItem v-for="nav of LIST_NAV" :is_active="$route.path.indexOf(nav.path) === 0" @click="selectNav($router, nav.path)"
         :icon_class="nav.icon_class" :icon="nav.icon" :title="nav.title" />
     <NavItem :icon="settingSvg" @click="openPageSetting" :title="$t('v1.view.main.dashboard.nav.page_setting')" />
@@ -42,6 +42,7 @@ import bellSvg from '@/assets/icons/bell.svg'
 import infoSvg from '@/assets/icons/info.svg'
 
 import { version } from "../../../../../package.json";
+import { toastError } from '@/service/helper/alert'
 
 const $props = withDefaults(defineProps<{
     /**gắn cờ luôn luôn hiện full, không ẩn */
@@ -94,7 +95,13 @@ function openAnalytic() {
 function openChatbot() {
     if (!$env.host.chatbot_view) return
 
-    openNewTab(`${$env.host.chatbot_view}?access_token=${getItem('access_token')}&page_id=${keys(pageStore.selected_page_id_list).join()}&locale=${locale}`)
+    /**id page chatbot */
+    let page_id = keys(pageStore.selected_page_id_list)?.[0] || keys(pageStore.active_page_list)?.[0]
+
+    if (!page_id) return toastError($t('v1.view.main.dashboard.nav.bot_faild'))
+
+    // nếu đang chon nhiều page thì mở chatbot với page đầu tiên
+    openNewTab(`${$env.host.chatbot_view}?access_token=${getItem('access_token')}&page_id=${page_id}&locale=${locale}`)
 }
 /**đi đến trang chat */
 function goToChat() {

@@ -90,7 +90,8 @@ const source: Language = {
                         analytic: 'Thống kê',
                         download: 'Tải dữ liệu',
                         setting_user: 'Thiết lập người dùng',
-                        bot: 'Chatbot'
+                        bot: 'Chatbot',
+                        bot_faild: 'Bạn chưa kích hoạt trang',
                     },
                     select_page: {
                         select_all_page: 'Chọn tất cả các trang',
