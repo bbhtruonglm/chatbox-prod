@@ -151,6 +151,9 @@ function loadConversationFirstTime(is_first_time?: boolean) {
     // reset phân trang
     after.value = undefined
 
+    // reset trạng thái load
+    is_done.value = false
+
     getConversation(is_first_time)
 }
 /**đọc danh sách hội thoại */
