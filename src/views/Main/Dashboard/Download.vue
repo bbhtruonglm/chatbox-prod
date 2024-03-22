@@ -2,16 +2,22 @@
     <div class="w-full h-full pt-[70px] md:pt-8 xl:pt-5">
         <div class="pl-14 md:pl-4 xl:pl-0 font-semibold text-lg">
             {{ $t('v1.view.main.dashboard.download.page_list') }}
+            <span class="text-sm text-slate-500 font-normal">
+                ({{ $t('v1.view.main.dashboard.download.alert') }})
+            </span>
         </div>
         <div class="p-2">
             <div
                 class="h-[110px] scrollbar-vertical overflow-hidden overflow-y-auto flex items-center flex-wrap border rounded-lg p-2 justify-center">
-                <div v-for="page of map(pageStore.selected_page_list_info)" class="flex items-center mr-4 mb-1">
+                <div v-if="list_page?.length" v-for="page of list_page" class="flex items-center mr-4 mb-1">
                     <PageAvatar :page_id="page.page?.fb_page_id" :page_type="page?.page?.type"
                         :page_avatar="page?.page?.avatar" class="rounded-full" size="30" />
                     <div class="text-slate-500 font-semibold ml-1">
                         {{ page?.page?.name }}
                     </div>
+                </div>
+                <div v-else class="font-medium text-red-500">
+                    {{ $t('v1.view.main.dashboard.download.empty_page') }}
                 </div>
             </div>
             <div
@@ -20,7 +26,7 @@
                     {{ $t('v1.view.main.dashboard.download.total') }}
                 </div>
                 <div class="font-semibold text-green-500">
-                    {{ Number(total_conversation).toLocaleString() }}
+                    {{ Number(total_conversation || 0).toLocaleString() }}
                 </div>
 
                 <div class="text-right font-semibold text-slate-500">
@@ -55,9 +61,9 @@
                         {{ $t('v1.view.main.dashboard.chat.filter.message.spam') }}
                     </div>
                     <span v-if="!conversationStore.option_filter_page_data.unread_message &&
-                        !conversationStore.option_filter_page_data.not_response_client &&
-                        !conversationStore.option_filter_page_data.not_exist_label &&
-                        conversationStore.option_filter_page_data.is_spam_fb !== 'YES'">
+                !conversationStore.option_filter_page_data.not_response_client &&
+                !conversationStore.option_filter_page_data.not_exist_label &&
+                conversationStore.option_filter_page_data.is_spam_fb !== 'YES'">
                         {{ $t('v1.view.main.dashboard.download.no') }}
                     </span>
                 </div>
@@ -149,12 +155,14 @@
             </div>
             <div class="flex justify-center mt-5">
                 <div class="mr-2">
-                    <button @click="openDownloadPage" class="text-white bg-green-500 hover:brightness-105 rounded-lg px-2 py-1">
+                    <button @click="openDownloadPage"
+                        class="text-white bg-green-500 hover:brightness-105 rounded-lg px-2 py-1">
                         {{ $t('v1.view.main.dashboard.download.start_download') }}
                     </button>
                 </div>
-                <div>
-                    <button @click="createDownloadData" class="text-white bg-blue-500 hover:brightness-125 rounded-lg px-2 py-1">
+                <div v-if="getPageId()?.length">
+                    <button @click="createDownloadData"
+                        class="text-white bg-blue-500 hover:brightness-125 rounded-lg px-2 py-1">
                         {{ $t('v1.view.main.dashboard.download.create_data') }}
                     </button>
                 </div>
@@ -166,7 +174,7 @@
 <script setup lang="ts">
 import { usePageStore, useConversationStore, useChatbotUserStore } from '@/stores'
 import { onMounted, ref } from 'vue'
-import { map, keys } from 'lodash'
+import { map } from 'lodash'
 import { format } from 'date-fns'
 import { count_conversation, read_me_chatbot_user } from '@/service/api/chatbox/n4-service'
 import { create_download } from '@/service/api/chatbox/n8-merge'
@@ -178,22 +186,26 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
 import type { LabelInfo } from '@/service/interface/app/label'
 import type { StaffInfo } from '@/service/interface/app/staff'
-import { openNewTab } from '@/service/function'
+import { getSelectedPageInfo, isCurrentStaffIsPageAdmin, openNewTab } from '@/service/function'
 import type { Cb, CbError } from '@/service/interface/function'
 import { confirm, toast, toastError } from '@/service/helper/alert'
+import type { PageData } from '@/service/interface/app/page'
+import { flow } from '@/service/helper/async'
 
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const chatbotUserStore = useChatbotUserStore()
 const $t = useI18n().t
 
-onMounted(() => {
+onMounted(() => getPageInfo((e, r) => {
     getLabelList()
     getStaffs()
     countTotalConversationValid()
     checkStatus()
-})
+}))
 
+/**danh sách các trang thoả mãn việc download */
+const list_page = ref<PageData[]>([])
 /**đếm tổng số khách hàng thoả mãn điều kiện lọc */
 const total_conversation = ref<number>()
 /** Danh sách label của page đang được chọn */
@@ -201,6 +213,37 @@ const labels = ref<{ [index: string]: LabelInfo }>({})
 /** Danh sách nhân viên */
 const staffs = ref<{ [index: string]: StaffInfo }>({})
 
+/**đọc dữ liệu của các trang sẽ được tải dữ liệu */
+function getPageInfo(proceed: Cb) {
+    flow([
+        // * đọc thông tin trang
+        (cb: CbError) => getSelectedPageInfo($t, (e, r) => {
+            if (e) return cb(e)
+
+            cb()
+        }),
+        // * lọc ra các trang thoả mãn (user là admin trang)
+        (cb: CbError) => {
+            list_page.value = map(pageStore.selected_page_list_info)?.filter(page => {
+                // nếu không có id page thì không cho hiện
+                if (!page.page?.fb_page_id) return false
+
+                // chỉ cho hiện các page mà user là admin
+                return isCurrentStaffIsPageAdmin(page.page?.fb_page_id)
+            })
+
+            cb()
+        },
+    ], proceed, true)
+}
+/**lấy ra id các trang thoả mãn */
+function getPageId(): string[] {
+    return list_page
+        .value
+        ?.map(page => page.page?.fb_page_id)
+        // lọc bỏ các giá trị không tồn tại
+        ?.filter(n => n) as string[]
+}
 /**format lại hiển thị thời gian */
 function formatDateDiplay(value?: number) {
     if (!value) return ''
@@ -221,11 +264,12 @@ function getStaffs() {
 }
 /**tính tổng số khách hàng sẽ tải */
 function countTotalConversationValid() {
+    // nếu không có id trang thoả mãn thì thôi
+    if (!getPageId()?.length) return
+
     count_conversation(
         {
-            ...{
-                page_id: keys(pageStore.selected_page_id_list),
-            },
+            ...{ page_id: getPageId() },
             ...conversationStore.option_filter_page_data
         },
         (e, r) => total_conversation.value = r
@@ -284,7 +328,7 @@ function createDownloadData() {
         // * khởi tạo query
         (cb: CbError) => {
             query = {
-                fb_page_id: keys(pageStore.selected_page_id_list)?.join(' '),
+                fb_page_id: getPageId()?.join(' '),
                 fb_staff_id: conversationStore.option_filter_page_data.staff_id?.join(' '),
                 display_style: conversationStore.option_filter_page_data.display_style,
                 unread_message: conversationStore.option_filter_page_data.unread_message,

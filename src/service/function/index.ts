@@ -2,13 +2,13 @@ import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
-import { reset_read_conversation } from '../api/chatbox/n4-service'
+import { get_page_info_to_chat, reset_read_conversation } from '../api/chatbox/n4-service'
 import { toastError } from '../helper/alert'
 import { format as format_date } from 'date-fns'
 import { useRoute } from 'vue-router'
 import { nextTick } from 'vue'
 import { getItem } from '../helper/localStorage'
-import { useI18n } from 'vue-i18n'
+import { useI18n, type ComposerTranslation } from 'vue-i18n'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ConversationInfo } from '../interface/app/conversation'
@@ -359,4 +359,23 @@ export function isActiveFilter(type: string): boolean {
             break;
     }
     return status
+}
+
+/**
+ * đọc dữ liệu của các trang được chọn để chat 
+ * - i18n phải được truyền vào để đọc ngôn ngữ
+ */
+export function getSelectedPageInfo($t: ComposerTranslation, proceed: Cb) {
+    const pageStore = usePageStore()
+
+    get_page_info_to_chat(
+        keys(pageStore.selected_page_id_list),
+        (e, r) => {
+            if (e) return proceed(e)
+            if (!r) return proceed($t('v1.view.main.dashboard.chat.error.get_page_info'))
+
+            pageStore.selected_page_list_info = r
+            proceed()
+        }
+    )
 }

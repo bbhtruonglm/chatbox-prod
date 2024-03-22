@@ -18,7 +18,7 @@ import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
-import { getPageInfo, getPageWidget, isNotPc } from '@/service/function'
+import { getPageInfo, getPageWidget, getSelectedPageInfo, isNotPc } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
 import { handleFileLocal } from '@/service/helper/file'
 
@@ -187,17 +187,12 @@ function getPageInfoToChat() {
             cb()
         },
         // * đọc dữ liệu trang từ server
-        (cb: CbError) => get_page_info_to_chat(
-            keys(pageStore.selected_page_id_list),
-            (e, r) => {
-                if (e) return cb(e)
-                if (!r) return cb($t('v1.view.main.dashboard.chat.error.get_page_info'))
+        (cb: CbError) => getSelectedPageInfo($t, (e, r) => {
+            if (e) return cb(e)
 
-                pageStore.selected_page_list_info = r
-                intergrateChatV1()
-                cb()
-            }
-        ),
+            intergrateChatV1()
+            cb()
+        }),
         // * kiểm tra các page được chọn có thoả mãn điều kiện gói hay không
         (cb: CbError) => checkPricingValid((e, r) => {
             if (e) {

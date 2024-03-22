@@ -408,7 +408,9 @@ const source: Language = {
                         create_data: 'Khởi tạo dữ liệu tải xuống',
                         warning: 'Hành động này sẽ xóa file cũ, và sau khi file mới được tạo, bạn sẽ phải chờ 24h nếu muốn tạo file tiếp theo',
                         faild: 'Tạo dữ liệu tải về thất bại',
-                        success: 'Đang tạo dữ liệu tải về'
+                        success: 'Đang tạo dữ liệu tải về',
+                        alert: 'Chỉ hiển thị các trang mà bạn là quản trị viên',
+                        empty_page: 'Không có trang nào được chọn hoặc bạn không có đủ quyền truy cập dữ liệu',
                     },
                     widget: {
                         tab: {
@@ -526,6 +528,7 @@ const source: Language = {
                     },
                     setting: {
                         personal_setting: {
+                            id: 'ID',
                             title: 'Thiết lập cá nhân',
                             allow_overide: 'Cho phép ghi đè thiết lập trang',
                             hide_page_avatar: 'Ẩn avatar page',
