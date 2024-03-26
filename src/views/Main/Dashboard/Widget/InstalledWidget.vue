@@ -6,7 +6,7 @@
                 @update_select_page="$event => selected_page = $event" />
             <div />
         </div>
-       
+
         <template v-if="selected_page">
             <Title v-if="app_installed_list?.filter(app => app.active_widget)?.length"
                 :title="$t('v1.view.main.dashboard.widget.installed.active')" />
@@ -18,14 +18,12 @@
                         :is_control="true" />
                 </template>
             </div>
-            <button 
-                v-if="app_installed_list.length > 0" 
-                @click="openArrangeWidget()"
-                class="px-2 py-1.5 bg-orange-500 text-white rounded-lg text-sm mt-2"
-            >
-            {{ $t('v1.view.main.dashboard.widget.arrange') }}
+            <button v-if="app_installed_list.length > 0" @click="openArrangeWidget()"
+                class="px-2 py-1.5 bg-orange-500 text-white rounded-lg text-sm mt-2">
+                {{ $t('v1.view.main.dashboard.widget.arrange') }}
             </button>
-            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'SUCCESS')?.length" :title="$t('v1.view.main.dashboard.widget.installed.unactive')" />
+            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'SUCCESS')?.length"
+                :title="$t('v1.view.main.dashboard.widget.installed.unactive')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <template v-for="app of app_installed_list">
@@ -34,7 +32,8 @@
                         :widget="app.snap_app" :app="app" :is_control="true" />
                 </template>
             </div>
-            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'INIT')?.length" :title="$t('v1.view.main.dashboard.widget.installed.link')" />
+            <Title v-if="app_installed_list?.filter(app => !app.active_widget && app.status === 'INIT')?.length"
+                :title="$t('v1.view.main.dashboard.widget.installed.link')" />
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
                 class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <template v-for="app of app_installed_list">
@@ -45,7 +44,7 @@
             </div>
         </template>
 
-        
+
     </div>
     <template>
         <SettingWidget ref="setting_widget_ref" :widget="selected_widget" :group_staff_list="group_staff_list"
@@ -58,15 +57,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { get_installed_widget, uninstall_widget, update_widget } from '@/service/api/chatbox/n5-app'
-import { useCommonStore } from '@/stores'
+import { useCommonStore, usePageStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { toggle_loading } from '@/service/helper/async'
 import { confirm, toast, toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
-import { findIndex, remove } from 'lodash'
+import { findIndex, map, remove } from 'lodash'
 import { openPopup } from '@/service/function'
 import { get_page_group_staff } from '@/service/api/chatbox/n4-service'
 import { copy } from '@/service/helper/format'
+import { onMounted } from 'vue'
 
 import SelectPage from '@/views/Main/Dashboard/Widget/SelectPage.vue'
 import Title from '@/views/Main/Dashboard/Widget/Title.vue'
@@ -83,6 +83,7 @@ import type { ComponentRef } from '@/service/interface/vue'
 const $emit = defineEmits(['is_loading'])
 
 const commonStore = useCommonStore()
+const pageStore = usePageStore()
 const { t: $t } = useI18n()
 
 /**dữ liệu của trang được chọn */
@@ -98,11 +99,17 @@ const arrange_widget_ref = ref<ComponentRef>()
 /**danh sách cac nhóm nhân viên của trang đang chọn */
 const group_staff_list = ref<GroupStaffInfo[]>([])
 
+onMounted(() => getSelectPageData())
+
 watch(() => selected_page.value, () => {
     getInstalledWidget()
     getGroupStaff()
 })
 
+/**tự động nạp dữ liệu của trang đầu tiên được chọn nếu có */
+function getSelectPageData() {
+    selected_page.value = map(pageStore.selected_page_list_info)?.[0]
+}
 /**update giá trị của widget trong mảng */
 function onUpdateWidget($event: InputUpdateWidget) {
     // Tìm chỉ số của đối tượng

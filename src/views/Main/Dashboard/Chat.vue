@@ -18,7 +18,7 @@ import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
-import { getPageInfo, getPageWidget, getSelectedPageInfo, isNotPc } from '@/service/function'
+import { getPageInfo, getPageWidget, getSelectedPageInfo, isMobile, isNotPc } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
 import { handleFileLocal } from '@/service/helper/file'
 
@@ -71,8 +71,8 @@ function onDropFile($event: DragEvent) {
 }
 /**gắn cờ nếu ext được kích hoạt + xử lý các logic */
 function initExtensionLogic() {
-    // chỉ chạy ở trên máy tính web
-    if (isNotPc()) return
+    // không chạy trên đt
+    if (isMobile()) return
 
     /**số lần đã ping ext */
     let count_check = 0

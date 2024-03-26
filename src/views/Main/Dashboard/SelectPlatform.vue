@@ -11,9 +11,13 @@
                 <div class="text-slate-500 mr-1">
                     {{ $t('v1.view.main.dashboard.select_platform.empty_page') }}
                 </div>
-                <Facebook v-if="current_selected_tab === 'FB_MESS'" @access_token="syncFacebookPage"
-                    class="w-[130px] h-[40px]" border_radius="5px"
-                    :text="$t('v1.view.main.dashboard.select_platform.add_page')" />
+                <template v-if="current_selected_tab === 'FB_MESS'">
+                    <Facebook @access_token="syncFacebookPage" class="w-[130px] h-[40px]" border_radius="5px"
+                        :text="$t('v1.view.main.dashboard.select_platform.add_page')"
+                        :option="genFBSelectPageOption()" />
+                    <Facebook @access_token="syncFacebookPage" class="w-[130px] h-[40px] ml-2" border_radius="5px"
+                        :text="$t('v1.view.main.dashboard.select_platform.grant_permision')" />
+                </template>
                 <button @click="toggleCreateNewWebsiteModal" v-if="current_selected_tab === 'WEBSITE'"
                     class="w-[130px] h-[40px] text-white bg-cyan-500 rounded hover:bg-cyan-600 flex items-center justify-center">
                     <img src="@/assets/icons/website.svg" width="20" height="20">
@@ -168,6 +172,33 @@ watch(() => page_list.value, () => filterListPage())
 
 onMounted(() => getAllPageOfUser())
 
+/**sử dụng thiết lập này để hiển thị danh sách trang muốn cấp quyền */
+function genFBSelectPageOption() {
+    let login_option = {
+        scope: [
+            'public_profile',
+            'pages_show_list',
+            'pages_read_engagement',
+            'pages_messaging',
+            'email',
+            'pages_read_user_content',
+            'instagram_basic',
+            'instagram_manage_comments',
+            'instagram_manage_insights',
+            // 'business_management', // nếu thêm quyền này thì fb không hiển thị popup chọn trang
+            'ads_management',
+            'read_insights',
+            'pages_manage_metadata',
+            'pages_manage_ads',
+            'pages_manage_posts',
+            'pages_manage_engagement',
+            'page_events',
+        ].join(),
+        enable_profile_selector: true,
+        auth_type: 'rerequest'
+    }
+    return JSON.stringify(login_option)
+}
 /**đồng bộ dữ liệu page mới nhất từ fb */
 function syncFacebookPage(access_token: string) {
     flow([

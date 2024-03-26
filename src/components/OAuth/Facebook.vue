@@ -119,7 +119,7 @@ function genIframeSrc() {
     }
     const FB_OPTION = JSON.stringify(login_option)
 
-    iframe_src.value = `${cross_login_url}?app_id=${$props.app_id || APP_ID}&option=${$props.option || FB_OPTION}&text=${$props.text}&border_radius=${$props.border_radius || ''}`
+    iframe_src.value = `${cross_login_url}?app_id=${$props.app_id || APP_ID}&option=${$props.option || FB_OPTION}&text=${$props.text}&border_radius=${$props.border_radius || ''}&is_debug=true`
 }
 
 onMounted(() => {

@@ -17,14 +17,22 @@
             <img src="@/assets/icons/arrow-down.svg" class="w-[15px] h-[15px]" />
         </div>
         <div v-if="is_show_select_page"
-            class="absolute top-[45px] border rounded-lg py-2 mt-1 scrollbar-vertical overflow-hidden overflow-y-auto h-[150px] bg-white z-[10] w-full">
-            <div @click="selectPage(page)" v-for="page of pageStore.active_page_list"
-                class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">
-                <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="page?.page?.fb_page_id"
-                    :page_type="page?.page?.type" :page_avatar="page?.page?.avatar" />
-                <div class="ml-2">
-                    {{ page?.page?.name }}
-                </div>
+            class="absolute top-[45px] border rounded-lg py-2 mt-1 h-[300px] bg-white z-[10] w-full">
+            <div class="px-2">
+                <input v-model="search" type="text" class="focus:outline-none w-full h-[35px] border rounded-lg p-2"
+                    :placeholder="$t('v1.common.page_search_placeholder')">
+            </div>
+            <div class="scrollbar-vertical overflow-hidden overflow-y-auto h-[calc(100%_-_35px)] mt-2">
+                <template v-for="page of pageStore.active_page_list">
+                    <div @click="selectPage(page)" v-if="filterPage(page)"
+                        class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">
+                        <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="page?.page?.fb_page_id"
+                            :page_type="page?.page?.type" :page_avatar="page?.page?.avatar" />
+                        <div class="ml-2">
+                            {{ page?.page?.name }}
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -32,6 +40,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { usePageStore } from '@/stores'
+import { nonAccentVn } from '@/service/helper/format'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
@@ -48,7 +57,22 @@ const pageStore = usePageStore()
 
 /**có hiện chọn trang không */
 const is_show_select_page = ref(false)
+/**tìm kiếm trang */
+const search = ref('')
 
+/**lọc trang theo tìm kiếm */
+function filterPage(page: PageData) {
+    // nếu không có giá trị tìm kiếm thì luôn hiển thị
+    if (!search.value) return true
+
+    /**giá trị tìm kiếm đã được xử lý */
+    const SEARCH = nonAccentVn(search.value)
+
+    return (
+        page?.page?.fb_page_id?.includes(SEARCH) ||
+        nonAccentVn(page?.page?.name || '')?.includes(SEARCH)
+    )
+}
 /**chọn trang */
 function selectPage(page: PageData) {
     $emit('update_select_page', page)

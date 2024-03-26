@@ -114,7 +114,8 @@ const source: Language = {
                     },
                     select_platform: {
                         empty_page: 'Không tìm thấy trang của bạn?',
-                        add_page: 'Thêm trang',
+                        add_page: 'Chọn trang',
+                        grant_permision: 'Cấp quyền',
                         click_add_page: 'Bấm thêm trang để bắt đầu!',
                         active: 'Kích hoạt',
                         create_website: {
