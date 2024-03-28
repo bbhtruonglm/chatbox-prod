@@ -177,22 +177,26 @@ function genFBSelectPageOption() {
     let login_option = {
         scope: [
             'public_profile',
+            'manage_pages',
             'pages_show_list',
-            'pages_read_engagement',
             'pages_messaging',
             'email',
+            'read_page_mailboxes',
             'pages_read_user_content',
+            'pages_read_engagement',
+            'publish_pages',
+            'read_insights',
             'instagram_basic',
             'instagram_manage_comments',
             'instagram_manage_insights',
-            // 'business_management', // nếu thêm quyền này thì fb không hiển thị popup chọn trang
-            'ads_management',
-            'read_insights',
             'pages_manage_metadata',
-            'pages_manage_ads',
             'pages_manage_posts',
             'pages_manage_engagement',
-            'page_events',
+            'ads_management',
+
+            // 'page_events', // quyền này làm mất nút chọn page
+            // 'pages_manage_ads', // quyền này làm mất nút chọn page
+            // // 'business_management', // nếu thêm quyền này thì fb không hiển thị popup chọn trang
         ].join(),
         enable_profile_selector: true,
         auth_type: 'rerequest'
