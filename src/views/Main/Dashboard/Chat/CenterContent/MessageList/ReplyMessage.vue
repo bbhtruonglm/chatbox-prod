@@ -3,6 +3,7 @@
         <template v-if="message?.message_text">
             {{ message?.message_text }}
         </template>
+        <AttachmentMessage v-else-if="message?.message_attachments" :message_attachments="message?.message_attachments" :message_mid="message?.message_mid" :page_id="message?.fb_page_id" type="CLIENT" class="justify-center" />
         <template v-else>
             {{ $t('v1.view.main.dashboard.chat.message.file') }}
             📦
@@ -10,6 +11,8 @@
     </div>
 </template>
 <script setup lang="ts">
+import AttachmentMessage from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage.vue'
+
 import type { MessageInfo } from '@/service/interface/app/message'
 
 const $props = withDefaults(defineProps<{

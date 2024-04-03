@@ -196,7 +196,7 @@ function genFBSelectPageOption() {
 
             // 'page_events', // quyền này làm mất nút chọn page
             // 'pages_manage_ads', // quyền này làm mất nút chọn page
-            // // 'business_management', // nếu thêm quyền này thì fb không hiển thị popup chọn trang
+            // 'business_management', // nếu thêm quyền này thì fb không hiển thị popup chọn trang
         ].join(),
         enable_profile_selector: true,
         auth_type: 'rerequest'
