@@ -7,7 +7,7 @@
             </div>
             <div class="flex items-center ml-4 md:ml-0 w-full justify-between">
                 <div v-if="!is_show_search" class="flex items-end">
-                    <div v-tooltip.bottom="`v${version}`" class="font-medium text-2xl">
+                    <div v-tooltip.bottom="`v${version}`" class="ml-3 font-medium text-2xl">
                         {{ $t('v1.common.chatbox') }}
                     </div>
                     <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
