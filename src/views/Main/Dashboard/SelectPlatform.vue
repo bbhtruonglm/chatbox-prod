@@ -18,6 +18,9 @@
                     <Facebook @access_token="syncFacebookPage" class="w-[130px] h-[40px] ml-2" border_radius="5px"
                         :text="$t('v1.view.main.dashboard.select_platform.grant_permision')" />
                 </template>
+                <template v-if="current_selected_tab === 'FB_INSTAGRAM'">
+                    <Instagram @access_token="access_token => syncFacebookPage(access_token, 'FB_INSTAGRAM')" :text="$t('v1.view.main.dashboard.select_platform.grant_permision')" />
+                </template>
                 <button @click="toggleCreateNewWebsiteModal" v-if="current_selected_tab === 'WEBSITE'"
                     class="w-[130px] h-[40px] text-white bg-cyan-500 rounded hover:bg-cyan-600 flex items-center justify-center">
                     <img src="@/assets/icons/website.svg" width="20" height="20">
@@ -96,6 +99,10 @@ import {
 } from '@/service/api/chatbox/n4-service'
 import { debounce, keyBy, map, mapValues, sortBy } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
+import { useRoute } from 'vue-router'
+import { toast } from '@/service/helper/alert'
+import { eachOfLimit } from 'async'
+import { copy } from '@/service/helper/format'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -103,11 +110,9 @@ import PlatformTab from '@/components/Main/Dashboard/PlatformTab.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
 import Facebook from '@/components/OAuth/Facebook.vue'
+import Instagram from '@/components/OAuth/Instagram.vue'
 import Modal from '@/components/Modal.vue'
 import InputLabel from '@/components/Main/Dashboard/InputLabel.vue'
-import { toast } from '@/service/helper/alert'
-import { eachOfLimit } from 'async'
-import { copy } from '@/service/helper/format'
 
 import type { CbError } from '@/service/interface/function'
 import type {
@@ -126,6 +131,7 @@ interface ThisPageData extends PageData {
 
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
+const $route = useRoute()
 
 /**danh sách các tab gốc */
 const ROOT_TAB = {
@@ -140,7 +146,7 @@ const ROOT_TAB = {
 const list_tab_select = ref<TabPlatform>(copy(ROOT_TAB))
 
 /**nền tảng hiện tại đang được chọn */
-const current_selected_tab = ref('FB_MESS')
+const current_selected_tab = ref<string>($route.query?.current_selected_tab as string || 'FB_MESS')
 /**danh sách page sau khi được lọc */
 const filter_page_list = ref<ThisPageData[]>()
 /**tìm kiếm danh sách page theo tên hoặc id */
@@ -204,10 +210,10 @@ function genFBSelectPageOption() {
     return JSON.stringify(login_option)
 }
 /**đồng bộ dữ liệu page mới nhất từ fb */
-function syncFacebookPage(access_token: string) {
+function syncFacebookPage(access_token: string, from: string) {
     flow([
         // * call api đồng bộ page từ fb
-        (cb: CbError) => sync_facebook_page(access_token, (e, r) => {
+        (cb: CbError) => sync_facebook_page(access_token, from,(e, r) => {
             if (e) return cb(e)
 
             cb()

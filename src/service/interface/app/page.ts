@@ -2,7 +2,7 @@ import type { AllStaffList, StaffInfo } from '@/service/interface/app/staff'
 import type { LabelInfo } from './label'
 import type { AppInstalledInfo } from './widget'
 
-export type PageType = 'FB_MESS' | 'ZALO' | 'WEBSITE' | 'FB_WHATSAPP'
+export type PageType = 'FB_MESS' | 'ZALO' | 'WEBSITE' | 'FB_WHATSAPP' | 'FB_INSTAGRAM'
 
 export interface PageInfo {
     fb_page_id: string
@@ -29,6 +29,8 @@ export interface PageInfo {
     is_hide_page_avatar?: boolean
     /**cài đặt hiển thị nhãn */
     display_label_type?: 'ICON' | 'ICON_TOOLTIP' | 'FULL'
+    /**id của page gốc được kết nối */
+    page_id?: string
 }
 
 export interface PageData {

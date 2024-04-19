@@ -35,8 +35,9 @@
                     class="grid grid-cols-1 gap-4 max-h-[calc(100vh_-_394px)] md:max-h-[calc(100vh_-_274px)] overflow-hidden scrollbar-vertical overflow-y-auto">
                     <div v-for="page of sorted_inactive_page" class="flex items-center bg-slate-50 rounded-lg p-2">
                         <div>
-                            <PageAvatar class="rounded-full" :page_id="page?.fb_page_id" :page_type="page?.type"
-                                :page_avatar="page?.avatar" />
+                            <PageAvatar class="rounded-full"
+                                :page_info="page"
+                                :page_id="page?.fb_page_id" :page_type="page?.type" :page_avatar="page?.avatar" />
                         </div>
                         <div class="ml-2 w-[calc(100%_-_48px)]">
                             <div class="truncate">

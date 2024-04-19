@@ -67,10 +67,11 @@ export const update_page = (
 /**đồng bộ dữ liệu page mới nhất từ facebook */
 export const sync_facebook_page = (
     access_token: string,
+    from: string,
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n4_service_v2}/app/page/sync_facebook_page`,
-    body: { access_token },
+    body: { access_token, from },
 }, proceed)
 
 /**tạo mới page dạng website */

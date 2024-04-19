@@ -31,6 +31,18 @@ export interface Env {
             auth_type?: string
             enable_profile_selector?: boolean
         }
+        /**cài đặt cho facebook v2 */
+        v2: {
+            /**id của app facebook */
+            app_id: string
+            /**cài đặt cho instagram */
+            instagram: {
+                /**đường dẫn khi redirect */
+                redirect_uri: string
+                /**các quyền của instagram */
+                scoped: string[]
+            }
+        }
     }
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: string[]

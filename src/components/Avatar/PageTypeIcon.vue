@@ -1,6 +1,8 @@
 <template>
     <img loading="lazy" v-if="page_type === 'FB_MESS'" src="@/assets/icons/facebook.svg" :width="size" />
 
+    <img loading="lazy" v-if="page_type === 'FB_INSTAGRAM'" src="@/assets/icons/instagram-color.svg" :width="size" />
+
     <img loading="lazy" v-else-if="page_type === 'WEBSITE'" src="@/assets/icons/website.svg" :width="size" />
 
     <img loading="lazy" v-else-if="page_type === 'FB_WHATSAPP'" src="@/assets/icons/whatsapp.svg" :width="size" />

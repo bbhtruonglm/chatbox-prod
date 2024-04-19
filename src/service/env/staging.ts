@@ -47,9 +47,37 @@ const ENV: Env = {
             return_scopes: true,
             auth_type: 'rerequest',
             enable_profile_selector: true
+        },
+        v2: {
+            app_id: '1282108599314861',
+            instagram: {
+                redirect_uri: '',
+                scoped: [
+                    'public_profile',
+                    'email',
+                    'pages_manage_metadata',
+                    'pages_read_engagement',
+                    'pages_show_list',
+                    'pages_read_user_content',
+                    'pages_manage_posts',
+                    'pages_manage_engagement',
+                    'pages_messaging',
+                    'ads_read',
+                    'ads_management',
+                    'page_events',
+                    'instagram_basic',
+                    'instagram_manage_messages',
+                    'instagram_manage_comments',
+                    'pages_manage_ads',
+                    'catalog_management',
+                    'leads_retrieval',
+                    'business_management',
+                    'read_page_mailboxes',
+                ]
+            }
         }
     },
-    platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP'],
+    platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM'],
     img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
 }
 

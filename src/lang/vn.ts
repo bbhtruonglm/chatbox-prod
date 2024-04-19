@@ -17,6 +17,7 @@ const source: Language = {
             upcoming_feature: 'Tính năng sắp được ra mắt!',
             all: 'Tất cả',
             fb_mess: 'Facebook',
+            fb_instagram: 'Instagram',
             website: 'Website',
             fb_whatsapp: 'Whatsapp',
             status: 'Trạng thái',

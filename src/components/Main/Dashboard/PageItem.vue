@@ -4,7 +4,7 @@
             <div class="relative">
                 <img v-if="isActivePage(page_info)" src="@/assets/icons/crown.svg" width="15" height="15"
                     class="absolute top-[-10px] left-[50%] translate-x-[-50%]">
-                <PageAvatar :page_avatar="page_info?.avatar" :page_type="page_info?.type" :page_id="page_info?.fb_page_id"
+                <PageAvatar :page_info="page_info" :page_avatar="page_info?.avatar" :page_type="page_info?.type" :page_id="page_info?.fb_page_id"
                     class="rounded-full" />
             </div>
         </div>

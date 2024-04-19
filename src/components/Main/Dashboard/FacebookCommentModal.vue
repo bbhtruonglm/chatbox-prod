@@ -42,6 +42,7 @@
                             <div>
                                 <PageAvatar
                                     v-if="chil_comment.from?.id === conversationStore.select_conversation?.fb_page_id"
+                                    :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page"
                                     class="rounded-full" :page_id="conversationStore.select_conversation?.fb_page_id"
                                     page_type="FB_MESS" />
                                 <ClientAvatar v-else :client_name="chil_comment.from?.name"
@@ -55,7 +56,8 @@
                                 <div class="rounded-lg bg-slate-100 p-2 text-sm w-fit">
                                     <p class="font-bold">{{ chil_comment.from?.name }}</p>
                                     <p>{{ chil_comment.message }}</p>
-                                    <img v-if="chil_comment.photo" class="w-[60px] mt-3" :src="chil_comment.photo" alt="">
+                                    <img v-if="chil_comment.photo" class="w-[60px] mt-3" :src="chil_comment.photo"
+                                        alt="">
                                 </div>
                                 <div class="flex text-xs text-slate-400 mt-1.5">
                                     <p class="font-bold mr-3 cursor-pointer hover:text-orange-500"
@@ -67,7 +69,9 @@
                                         v-if="chil_comment.from?.id !== conversationStore.select_conversation?.fb_page_id">
                                         {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
                                     </p>
-                                    <p>{{ formatDistanceToNow(new Date(chil_comment.createdAt as string), { locale: vi }) }}
+                                    <p>{{ formatDistanceToNow(new Date(chil_comment.createdAt as string), {
+        locale: vi
+    }) }}
                                     </p>
                                 </div>
                             </div>
@@ -82,6 +86,7 @@
                             <!-- <img src="https://merchant-dev-static.s3.ap-southeast-1.amazonaws.com/files/business_642655457c339f9194288da9/1695532605955.jpeg" alt="" class="w-[40px] h-[40px] rounded-full"> -->
                             <div>
                                 <PageAvatar class="rounded-full"
+                                    :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page"
                                     :page_id="conversationStore.select_conversation?.fb_page_id" page_type="FB_MESS" />
                             </div>
                             <div class="ml-3 w-full flex relative">
@@ -90,7 +95,8 @@
                                     type="text"
                                     :placeholder="`Bình luận với vai trò ${pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page?.name}`"
                                     v-on:keyup.enter="sendPostComment(comment.new_comment as string, comment.comment_id, index)">
-                                <img v-if="!comment.sending_message" class=" absolute right-3 top-3 cursor-pointer hover:saturate-150"
+                                <img v-if="!comment.sending_message"
+                                    class=" absolute right-3 top-3 cursor-pointer hover:saturate-150"
                                     :src="SendMessageIcon" alt=""
                                     @click="sendPostComment(comment.new_comment as string, comment.comment_id, index)">
                                 <Loading v-if="comment.sending_message" class=" absolute right-3 top-2" />
@@ -99,7 +105,8 @@
 
                     </div>
                 </div>
-                <p v-if="!done_load_comment" @click="getFbPostComments" class="text-sm font-bold cursor-pointer mt-3 hover:text-orange-500">
+                <p v-if="!done_load_comment" @click="getFbPostComments"
+                    class="text-sm font-bold cursor-pointer mt-3 hover:text-orange-500">
                     {{ $t('v1.view.main.dashboard.chat.post.get_more_comments') }}
                 </p>
             </div>

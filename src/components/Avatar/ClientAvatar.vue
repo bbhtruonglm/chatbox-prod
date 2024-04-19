@@ -9,6 +9,9 @@
 
         <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'FB_MESS'"
             :src="loadImageUrl()" class="w-full h-full" />
+
+        <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'FB_INSTAGRAM'"
+            :src="loadImageUrl()" class="w-full h-full" />
     </div>
 </template>
 <script setup lang="ts">
@@ -60,9 +63,9 @@ function removeAnimatePulse() {
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-    // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.page_id}__${$props.client_id}.jpeg`
+    $props.platform_type
 
-    return `${$env.img_host}/${$props.client_id}?page_id=${$props.page_id}&staff_id=${$props.staff_id}&width=${$props.size}&height=${$props.size}`
+    return `${$env.img_host}/${$props.client_id}?page_id=${$props.page_id}&staff_id=${$props.staff_id}&width=${$props.size}&height=${$props.size}&type=${$props.platform_type}`
 }
 /**khi ảnh load thất bại thì thay thế ảnh mặc định vào */
 function onImageError($event: Event) {

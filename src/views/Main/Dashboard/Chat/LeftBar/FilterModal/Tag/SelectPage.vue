@@ -18,6 +18,7 @@
         >
             <PageAvatar
                 :page_id="(page_id as string)"
+                :page_info="page_info.page"
                 :page_type="pageStore.selected_page_list_info?.[page_id as string]?.page?.type"
                 :page_avatar="pageStore.selected_page_list_info?.[page_id as string]?.page?.avatar"
                 size="30" class="rounded-full border-2 border-white min-w-[30px] h-[30px]"

@@ -3,8 +3,11 @@
         <img @load="removeAnimatePulse" loading="lazy" v-if="page_type === 'FB_MESS'" :src="loadImageUrl()"
             class="w-full h-full" />
 
-        <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'WEBSITE'" :src="page_avatar || websiteSvg"
+        <img @load="removeAnimatePulse" loading="lazy" v-if="page_type === 'FB_INSTAGRAM'" :src="loadImageUrl(page_info?.page_id)"
             class="w-full h-full" />
+
+        <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'WEBSITE'"
+            :src="page_avatar || websiteSvg" class="w-full h-full" />
 
         <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'FB_WHATSAPP'"
             src="@/assets/icons/whatsapp.svg" class="w-full h-full" />
@@ -19,13 +22,14 @@ import { ref } from 'vue'
 
 import websiteSvg from '@/assets/icons/website.svg'
 
-import type { PageType } from '@/service/interface/app/page'
+import type { PageInfo, PageType } from '@/service/interface/app/page'
 
 const $props = withDefaults(defineProps<{
     page_id?: string
     page_type?: PageType
     page_avatar?: string
     size?: string
+    page_info?: PageInfo
 }>(), {
     size: '40'
 })
@@ -38,9 +42,7 @@ function removeAnimatePulse() {
     animate_pulse.value = ''
 }
 /**tạo url ảnh */
-function loadImageUrl() {
-    // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.page_id}.jpeg`
-
-    return `${$env.img_host}/${$props.page_id}?width=${$props.size}&height=${$props.size}`
+function loadImageUrl(page_id?: string) {
+    return `${$env.img_host}/${page_id || $props.page_id}?width=${$props.size}&height=${$props.size}`
 }
 </script>

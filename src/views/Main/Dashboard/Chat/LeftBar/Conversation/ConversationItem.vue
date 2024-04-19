@@ -1,8 +1,8 @@
 <template>
     <div @click="clickConversation" class="h-[84px] pb-[3px]">
         <div :class="{
-        'bg-amber-50 border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
-        'bg-slate-300 border-l-slate-300': source?.unread_message_amount
+        'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
+        'bg-slate-300 !border-l-slate-300': source?.unread_message_amount
     }" class="border-l-4 border-l-white border-b py-3 px-2 flex cursor-pointer hover:bg-slate-100 hover:border-l-slate-100 h-full w-full group">
 
             <div class="flex items-center">
@@ -17,6 +17,7 @@
     }" class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
                         <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name"
                             :page_id="source?.fb_page_id"
+                            :page_info="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page"
                             :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
                             :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
                             size="20" class="rounded-full border-2 border-white" />
