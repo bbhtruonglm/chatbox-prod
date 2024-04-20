@@ -51,7 +51,7 @@ const ENV: Env = {
         v2: {
             app_id: '1282108599314861',
             instagram: {
-                redirect_uri: '',
+                redirect_uri: 'https://chat.sellingpage.net/main/dashboard/select-platform?current_selected_tab=FB_INSTAGRAM',
                 scoped: [
                     'public_profile',
                     'email',
