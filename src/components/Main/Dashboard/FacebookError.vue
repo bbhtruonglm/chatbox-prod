@@ -103,7 +103,7 @@ function toggleModal() {
 function syncFacebookPage(access_token: string) {
     flow([
         // * call api đồng bộ page từ fb
-        (cb: CbError) => sync_facebook_page(access_token, (e, r) => {
+        (cb: CbError) => sync_facebook_page(access_token, undefined,(e, r) => {
             if (e) return cb(e)
             toggleModal()
             toast('success',  $t('v1.view.main.dashboard.user.re_granted_successfully'))
