@@ -15,7 +15,7 @@ export const router = createRouter({
     createWebHistory(import.meta.env.BASE_URL) :
     createWebHashHistory(),
   routes
-})
+}) 
 
 export const loadRouter = (APP: App, proceed: Cb) => {
   loadMiddleware(router)
