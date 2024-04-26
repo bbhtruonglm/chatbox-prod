@@ -1,5 +1,6 @@
 <template>
-    <button @click="oAuthByRedirectFb" class="bg-red-600 hover:brightness-90 text-white flex items-center py-2 px-5 rounded-md">
+    <button @click="oAuthByRedirectFb"
+        class="bg-red-600 hover:brightness-90 text-white flex items-center py-2 px-5 rounded-md">
         <img src="@/assets/icons/instagram.svg" class="w-4 h-4" />
         <div class="ml-2">
             {{ text }}
@@ -8,7 +9,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const $emit = defineEmits(['access_token'])
 
@@ -18,6 +19,7 @@ const $props = withDefaults(defineProps<{
 }>(), {})
 
 const $route = useRoute()
+const $router = useRouter()
 
 onMounted(() => afterOauth())
 
@@ -27,6 +29,9 @@ function oAuthByRedirectFb() {
 }
 /**xử lý sau khi OAuth xong */
 function afterOauth() {
+    // xóa query để không bị chạy 2 lần
+    $router.replace({ path: $route.path, query: {} })
+
     // nếu không có hash của FB thì không làm gì cả
     if (!$route.hash) return
 

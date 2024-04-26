@@ -44,6 +44,11 @@ export interface Env {
             }
         }
     }
+    /**cài đặt cho zalo oa */
+    zalo_oa: {
+        /**callback url sau khi oauth */
+        redirect_uri: string
+    },
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: string[]
     /**host của url link ảnh */

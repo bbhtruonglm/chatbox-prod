@@ -77,6 +77,9 @@ const ENV: Env = {
             }
         }
     },
+    zalo_oa: {
+        redirect_uri: '',
+    },
     platform: ['FB_MESS', 'WEBSITE'],
     img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar'
 }

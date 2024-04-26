@@ -7,7 +7,7 @@
 
     <img loading="lazy" v-else-if="page_type === 'FB_WHATSAPP'" src="@/assets/icons/whatsapp.svg" :width="size" />
 
-    <img loading="lazy" v-else-if="page_type === 'ZALO'" src="@/assets/icons/zalo.svg" :width="size" />
+    <img loading="lazy" v-else-if="page_type === 'ZALO_OA'" src="@/assets/icons/zalo.svg" :width="size" />
 
     <div v-else />
 </template>

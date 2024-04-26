@@ -20,6 +20,7 @@ const source: Language = {
             fb_instagram: 'Instagram',
             website: 'Website',
             fb_whatsapp: 'Whatsapp',
+            zalo_oa: 'Zalo OA',
             status: 'Trạng thái',
             staff: 'Nhân viên',
             month: 'Tháng',

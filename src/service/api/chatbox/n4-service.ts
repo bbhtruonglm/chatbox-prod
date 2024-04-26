@@ -74,6 +74,28 @@ export const sync_facebook_page = (
     body: { access_token, from },
 }, proceed)
 
+/**tạo ra link oauth của zalo oa */
+export const zalo_oa_get_url_oauth = (proceed: Cb) => chatbox({
+    uri: `${$env.host.n4_service_v2}/app/page/zalo_oa_get_url_oauth`,
+    body: { redirect_uri: $env.zalo_oa.redirect_uri, is_debug: true },
+}, proceed)
+/**đầu vào api đồng bộ page zalo */
+interface SyncZaloOAPageInput {
+    /**id page của OA */
+    oa_id: string
+    /**mã đổi lấy token */
+    code: string
+    /**mã xác minh ban đầu */
+    code_verifier: string
+    /**tên nhân viên hiện tại */
+    staff_name: string
+}
+/**đồng bộ dữ liệu page zalo oa về chatbox */
+export const sync_zalo_oa_page = (input: SyncZaloOAPageInput, proceed: Cb) => chatbox({
+    uri: `${$env.host.n4_service_v2}/app/page/sync_zalo_oa_page`,
+    body: { is_debug: true, ...input },
+}, proceed)
+
 /**tạo mới page dạng website */
 export const create_website_page = (
     body: PageWebsiteCreate,

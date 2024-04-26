@@ -2,7 +2,7 @@ import type { AllStaffList, StaffInfo } from '@/service/interface/app/staff'
 import type { LabelInfo } from './label'
 import type { AppInstalledInfo } from './widget'
 
-export type PageType = 'FB_MESS' | 'ZALO' | 'WEBSITE' | 'FB_WHATSAPP' | 'FB_INSTAGRAM'
+export type PageType = 'FB_MESS' | 'ZALO_OA' | 'WEBSITE' | 'FB_WHATSAPP' | 'FB_INSTAGRAM'
 
 export interface PageInfo {
     fb_page_id: string

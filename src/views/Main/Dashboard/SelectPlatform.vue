@@ -21,6 +21,9 @@
                 <template v-if="current_selected_tab === 'FB_INSTAGRAM'">
                     <Instagram @access_token="access_token => syncFacebookPage(access_token, 'FB_INSTAGRAM')" :text="$t('v1.view.main.dashboard.select_platform.grant_permision')" />
                 </template>
+                <template v-if="current_selected_tab === 'ZALO_OA'">
+                    <ZaloOA @access_token="getAllPageOfUser()" :text="$t('v1.view.main.dashboard.select_platform.grant_permision')" />
+                </template>
                 <button @click="toggleCreateNewWebsiteModal" v-if="current_selected_tab === 'WEBSITE'"
                     class="w-[130px] h-[40px] text-white bg-cyan-500 rounded hover:bg-cyan-600 flex items-center justify-center">
                     <img src="@/assets/icons/website.svg" width="20" height="20">
@@ -111,6 +114,7 @@ import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import FooterButton from '@/components/Main/Dashboard/FooterButton.vue'
 import Facebook from '@/components/OAuth/Facebook.vue'
 import Instagram from '@/components/OAuth/Instagram.vue'
+import ZaloOA from '@/components/OAuth/ZaloOA.vue'
 import Modal from '@/components/Modal.vue'
 import InputLabel from '@/components/Main/Dashboard/InputLabel.vue'
 

@@ -3,7 +3,7 @@
         <img @load="removeAnimatePulse" loading="lazy" v-if="page_type === 'FB_MESS'" :src="loadImageUrl()"
             class="w-full h-full" />
 
-        <img @load="removeAnimatePulse" loading="lazy" v-if="page_type === 'FB_INSTAGRAM'" :src="loadImageUrl(page_info?.page_id)"
+        <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'FB_INSTAGRAM'" :src="loadImageUrl(page_info?.page_id)"
             class="w-full h-full" />
 
         <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'WEBSITE'"
@@ -12,7 +12,7 @@
         <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'FB_WHATSAPP'"
             src="@/assets/icons/whatsapp.svg" class="w-full h-full" />
 
-        <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'ZALO'" src="@/assets/icons/zalo.svg"
+        <img @load="removeAnimatePulse" loading="lazy" v-else-if="page_type === 'ZALO_OA'" :src="page_avatar || zaloSvg"
             class="w-full h-full" />
     </div>
 </template>
@@ -21,6 +21,7 @@
 import { ref } from 'vue'
 
 import websiteSvg from '@/assets/icons/website.svg'
+import zaloSvg from '@/assets/icons/zalo.svg'
 
 import type { PageInfo, PageType } from '@/service/interface/app/page'
 

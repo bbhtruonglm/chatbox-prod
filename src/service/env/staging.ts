@@ -77,6 +77,9 @@ const ENV: Env = {
             }
         }
     },
+    zalo_oa: {
+        redirect_uri: 'https://chat.sellingpage.net/main/dashboard/select-platform?current_selected_tab=ZALO_OA',
+    },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM'],
     img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
 }
