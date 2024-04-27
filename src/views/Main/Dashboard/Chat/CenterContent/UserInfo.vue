@@ -10,6 +10,7 @@
                 :page_id="conversationStore.select_conversation?.fb_page_id"
                 :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                 :platform_type="conversationStore.select_conversation?.platform_type" size="37"
+                :client_avatar="conversationStore.select_conversation?.client_avatar"
                 class="rounded-full cursor-pointer ml-1" />
             <div class="ml-3">
                 <div class="flex items-center">

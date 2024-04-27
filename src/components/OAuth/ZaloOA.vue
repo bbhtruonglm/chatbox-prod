@@ -56,7 +56,7 @@ function afterOauth() {
     flow([
         // dùng thủ thuật để đợi 1s để lấy dữ liệu user
         (cb: CbError) => setTimeout(() => cb(), 1000),
-        // * lấy callback url
+        // * khởi tạo page lên hệ thống
         (cb: CbError) => sync_zalo_oa_page({
             oa_id: oa_id as string,
             code: code as string,

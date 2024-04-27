@@ -12,6 +12,9 @@
 
         <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'FB_INSTAGRAM'"
             :src="loadImageUrl()" class="w-full h-full" />
+
+        <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'ZALO_OA'"
+            :src="client_avatar" class="w-full h-full" />
     </div>
 </template>
 <script setup lang="ts">
@@ -29,6 +32,8 @@ const $props = withDefaults(defineProps<{
     loading?: 'lazy' | 'eager'
     /**tên khách hàng */
     client_name?: string
+    /**link ảnh */
+    client_avatar?: string
 }>(), {
     size: '40',
     loading: 'lazy'
@@ -63,7 +68,7 @@ function removeAnimatePulse() {
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-    $props.platform_type
+
 
     return `${$env.img_host}/${$props.client_id}?page_id=${$props.page_id}&staff_id=${$props.staff_id}&width=${$props.size}&height=${$props.size}&type=${$props.platform_type}`
 }

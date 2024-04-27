@@ -77,6 +77,8 @@ export interface ConversationInfo {
     fb_staff_id?: string
     /**tên khách hàng */
     client_name?: string
+    /**ảnh đại diện của khách hàng nếu có */
+    client_avatar?: string
     /**tin nhắn cuối cùng */
     last_message?: string
     /**tin nhắn cuối cùng của ai */

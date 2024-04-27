@@ -9,7 +9,9 @@
                 <div class="w-fit h-fit relative">
                     <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
                         :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                        :platform_type="source?.platform_type" size="37" class="rounded-full" />
+                        :platform_type="source?.platform_type"
+                        :client_avatar="source?.client_avatar" size="37"
+                        class="rounded-full" />
                     <div :class="{
         'hidden group-hover:block': chatbotUserStore.enable_personal_setting ? {
             ...getPageInfo(source?.fb_page_id), ...chatbotUserStore.personal_settings
@@ -84,6 +86,8 @@
                         <img v-if="source?.platform_type === 'FB_MESS'" src="@/assets/icons/facebook.svg" width="13"
                             height="13">
                         <img v-if="source?.platform_type === 'WEBSITE'" src="@/assets/icons/website-2.svg" width="13"
+                            height="13">
+                        <img v-if="source?.platform_type === 'ZALO_OA'" src="@/assets/icons/zalo.svg" width="13"
                             height="13">
                     </div>
                 </div>

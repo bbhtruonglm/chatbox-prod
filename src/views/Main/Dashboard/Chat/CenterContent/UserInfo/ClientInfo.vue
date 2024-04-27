@@ -10,6 +10,7 @@
                     :page_id="conversationStore.select_conversation?.fb_page_id"
                     :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
                     :platform_type="conversationStore.select_conversation?.platform_type" size="100"
+                    :client_avatar="conversationStore.select_conversation?.client_avatar"
                     class="rounded-full cursor-pointer" />
                 <div class="font-semibold text-slate-500 text-lg mt-2">
                     {{ conversationStore.select_conversation?.client_name }}
