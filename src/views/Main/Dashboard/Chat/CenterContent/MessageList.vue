@@ -20,6 +20,7 @@
                             :current_message="message" :current_index="index" :list_message="list_message" />
                         <AttachmentMessage v-if="message.message_attachments?.length"
                             :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                            :platform_type="message.platform_type"
                             :page_id="message.fb_page_id" type="CLIENT" />
                     </template>
                     <UnsupportMessage v-else />
@@ -37,6 +38,7 @@
                                 <AttachmentMessage
                                     v-if="!['template', 'fallback', 'receipt'].includes(message.message_attachments?.[0]?.type || '')"
                                     :message_attachments="message.message_attachments" :message_mid="message.message_mid"
+                                    :platform_type="message.platform_type"
                                     :page_id="message.fb_page_id" type="PAGE" />
                                 <ChatbotMessage v-else :message_chatbot="message.message_attachments?.[0]" />
                             </template>

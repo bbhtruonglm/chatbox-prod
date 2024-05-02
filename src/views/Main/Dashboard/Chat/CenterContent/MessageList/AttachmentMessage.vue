@@ -47,7 +47,7 @@ import VideoAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageLi
 import AudioAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/AudioAttachment.vue'
 import AnotherAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/AnotherAttachment.vue'
 
-import type { AttachmentInfo } from '@/service/interface/app/message'
+import type { AttachmentInfo, MessageInfo } from '@/service/interface/app/message'
 
 const $props = withDefaults(defineProps<{
     /**mảng các tập tin của tin nhắn này */
@@ -58,6 +58,8 @@ const $props = withDefaults(defineProps<{
     page_id: string
     /**được gửi từ đâu */
     type: 'CLIENT' | 'PAGE'
+    /**loại nền tảng của tin nhắn */
+    platform_type: MessageInfo['platform_type']
 }>(), {})
 
 const messageStore = useMessageStore()
@@ -101,6 +103,23 @@ function getAttachmentFromStore() {
 }
 /**đọc dữ liệu của file để hiển thị */
 function getAttachmentInfo() {
+    // hình ảnh của nền tảng khác FB không cần xử lý lấy link mới nhất
+    if ($props.platform_type !== 'FB_MESS') {
+        // thêm index vào để mapping với dữ liệu
+        let list_att = $props.message_attachments?.map((attr, index) => ({
+            ...attr,
+            index
+        }))
+
+        // luôn luôn hiển thị dọc
+        horizontal_attachment_list.value = list_att
+
+        // nạp thông tin att vào store
+        messageStore.attachment_list[$props.message_mid as string] = list_att
+
+        return
+    } 
+
     if (!size($props.message_attachments)) return
 
     // trên pc sẽ chia file thành 2 dạng hiển thị ngang và dọc

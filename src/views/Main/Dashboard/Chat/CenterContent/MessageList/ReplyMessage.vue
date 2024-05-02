@@ -3,7 +3,8 @@
         <template v-if="message?.message_text">
             {{ message?.message_text }}
         </template>
-        <AttachmentMessage v-else-if="message?.message_attachments" :message_attachments="message?.message_attachments" :message_mid="message?.message_mid" :page_id="message?.fb_page_id" type="CLIENT" class="justify-center" />
+        <AttachmentMessage v-else-if="message?.message_attachments" :message_attachments="message?.message_attachments" :message_mid="message?.message_mid" 
+        :platform_type="message?.platform_type" :page_id="message?.fb_page_id" type="CLIENT" class="justify-center" />
         <template v-else>
             {{ $t('v1.view.main.dashboard.chat.message.file') }}
             📦
