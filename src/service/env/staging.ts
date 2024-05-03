@@ -23,7 +23,8 @@ const ENV: Env = {
         download_client: 'https://sellingpage.net/download/'
     },
     facebook: {
-        app_id: '303503746720418',
+        app_id: '1282108599314861',
+        // app_id: '303503746720418',
         permissions: [
             'public_profile',
             'pages_show_list',
