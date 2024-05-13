@@ -14,24 +14,26 @@
                 class="rounded-full cursor-pointer ml-1" />
             <div class="ml-3">
                 <div class="flex items-center">
-                    <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')" class="text-sm font-medium truncate max-w-[150px] cursor-copy">
+                    <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')"
+                        class="text-sm font-medium truncate max-w-[150px] cursor-copy">
                         {{ conversationStore.select_conversation?.client_name }}
                     </div>
-                    <div v-tooltip.right="$t('v1.view.main.dashboard.chat.client.title')" @click="openClientInfo" class="ml-1 cursor-pointer">
+                    <div v-tooltip.right="$t('v1.view.main.dashboard.chat.client.title')" @click="openClientInfo"
+                        class="ml-1 cursor-pointer">
                         <img src="@/assets/icons/info.svg" class="w-[15px] h-[15px]" />
                     </div>
                 </div>
                 <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.assign_staff.title')" @click="openAssignStaff"
                     class="text-xs bg-slate-200  rounded px-2 py-[2px] flex items-center" :class="{
-                        'text-slate-500': is_admin,
-                        'text-slate-400': !is_admin,
-                        'cursor-not-allowed': !is_admin
-                    }">
+        'text-slate-500': is_admin,
+        'text-slate-400': !is_admin,
+        'cursor-not-allowed': !is_admin
+    }">
                     <span class="mr-1">
                         <template v-if="conversationStore.select_conversation?.fb_staff_id" class="mr-2">
                             {{
-                                pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id]?.staff_list?.[conversationStore.select_conversation?.fb_staff_id]?.name
-                            }}
+        pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id]?.staff_list?.[conversationStore.select_conversation?.fb_staff_id]?.name
+    }}
                         </template>
                         <template v-else>
                             {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
@@ -53,8 +55,18 @@
                     <img width="16" height="16" src="@/assets/icons/filter_interact.svg">
                 </button>
                 <div class="conversation-info-fb-uid hidden">
-                    {{ conversationStore.select_conversation?.client_bio?.fb_uid }}
+                    {{ uid }}
                 </div>
+            </template>
+            <template v-else-if="uid">
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_facebook')" @click="openFbProfile"
+                    class="border border-slate-300 rounded-full p-2 mr-2">
+                    <img width="16" height="16" src="@/assets/icons/facebook.svg">
+                </button>
+                <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_inbox')" @click="openPageInbox"
+                    class="border border-slate-300 rounded-full p-2 mr-2">
+                    <img width="16" height="16" src="@/assets/icons/filter_interact.svg">
+                </button>
             </template>
             <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.mark_unread')" @click="unreadConversation"
                 class="border border-slate-300 rounded-full p-2 mr-2">
@@ -65,8 +77,8 @@
             <button
                 v-tooltip.bottom="conversationStore.select_conversation.is_spam_fb ? $t('v1.view.main.dashboard.chat.action.alow_user') : $t('v1.view.main.dashboard.chat.action.block_user')"
                 @click="toggleSpam" :class="{
-                    'bg-red-500': conversationStore.select_conversation.is_spam_fb
-                }" class="border border-slate-300 rounded-full p-2 mr-2">
+        'bg-red-500': conversationStore.select_conversation.is_spam_fb
+    }" class="border border-slate-300 rounded-full p-2 mr-2">
                 <Loading v-if="is_loading_spam_conversation" class="w-[16px] h-[16px]" />
                 <img v-else-if="!conversationStore.select_conversation.is_spam_fb" width="16" height="16"
                     src="@/assets/icons/block-user-unactive.svg">
@@ -86,7 +98,7 @@ import { reset_read_conversation, toggle_spam_conversation } from '@/service/api
 import { ref, computed } from 'vue'
 import { flow } from '@/service/helper/async'
 import { keyBy, map } from 'lodash'
-import { isCurrentStaffIsPageAdmin } from '@/service/function'
+import { isCurrentStaffIsPageAdmin, openNewTab } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
@@ -116,15 +128,28 @@ const is_admin = computed(() => isCurrentStaffIsPageAdmin(
     conversationStore.select_conversation?.fb_page_id as string
 ))
 
+/**uid của khách */
+const uid = computed(() => conversationStore.select_conversation?.client_bio?.fb_uid)
+
 /**mở fb của khách */
 function openFbProfile() {
-    // click vào btn tạo ở file index.html
-    (document.getElementsByClassName('open-fb-profile')?.[0] as HTMLButtonElement)?.click()
+    // nếu có uid thì mở fb của khách
+    if (uid.value)
+        openNewTab(`https://fb.com/${uid.value}`)
+
+    // chạy qua ext -> click vào btn tạo ở file index.html
+    else
+        (document.getElementsByClassName('open-fb-profile')?.[0] as HTMLButtonElement)?.click()
 }
 /**mở inbox chat page */
 function openPageInbox() {
-    // click vào btn tạo ở file index.html
-    (document.getElementsByClassName('open-fb-inbox-page')?.[0] as HTMLButtonElement)?.click()
+    // nếu có uid thì mở fb của khách
+    if (uid.value)
+        openNewTab(`https://business.facebook.com/latest/inbox/all?selected_item_id=${uid.value}&asset_id=${conversationStore.select_conversation?.fb_page_id}&mailbox_id=&thread_type=FB_MESSAGE`)
+
+    // chạy qua ext -> click vào btn tạo ở file index.html
+    else
+        (document.getElementsByClassName('open-fb-inbox-page')?.[0] as HTMLButtonElement)?.click()
 }
 /**mở popup thông tin chi tiết của khách hàng */
 function openClientInfo() {

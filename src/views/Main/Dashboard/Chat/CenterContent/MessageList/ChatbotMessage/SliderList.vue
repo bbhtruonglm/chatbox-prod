@@ -32,11 +32,11 @@ import { ref } from 'vue'
 
 import ButtonList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/ChatbotMessage/ButtonList.vue'
 
-import type { ChatbotSlider } from '@/service/interface/app/message'
+import type { AttachmentPayload } from '@/service/interface/app/message'
 import type { ComponentRef } from '@/service/interface/vue';
 
 const $props = withDefaults(defineProps<{
-    data?: ChatbotSlider[]
+    data?: AttachmentPayload[]
 }>(), {})
 
 /**ref của slider */

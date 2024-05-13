@@ -107,7 +107,7 @@ export interface AttachmentInfo {
         /**kiểu của tin nhắn này */
         template_type?: 'button' | 'generic' | 'media'
         /**dữ liệu tin nhắn dạng carousel */
-        elements?: ChatbotSlider[]
+        elements?: AttachmentPayload[]
         /**dữ liệu của nút bấm */
         buttons?: ChatbotButton[]
         /**tiêu đề trang */
@@ -115,7 +115,7 @@ export interface AttachmentInfo {
     }
 }
 /**dữ liệu kiểu slider */
-export interface ChatbotSlider {
+export interface AttachmentPayload {
     /**tiêu đề */
     title?: string
     /**chú thích */
@@ -126,6 +126,11 @@ export interface ChatbotSlider {
     item_url?: string
     /**dữ liệu của nút bấm */
     buttons?: ChatbotButton[]
+
+    /**kiểu của file */
+    media_type?: 'image' | 'video'
+    /**đường link của file */
+    url?: string
 }
 /**dữ liệu file được cache */
 export interface AttachmentCacheList {
