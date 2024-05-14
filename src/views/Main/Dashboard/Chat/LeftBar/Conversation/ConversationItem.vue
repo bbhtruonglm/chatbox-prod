@@ -9,8 +9,7 @@
                 <div class="w-fit h-fit relative">
                     <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
                         :page_id="source?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                        :platform_type="source?.platform_type"
-                        :client_avatar="source?.client_avatar" size="37"
+                        :platform_type="source?.platform_type" :client_avatar="source?.client_avatar" size="37"
                         class="rounded-full" />
                     <div :class="{
         'hidden group-hover:block': chatbotUserStore.enable_personal_setting ? {
@@ -163,7 +162,12 @@ function clickConversation() {
     if (
         commonStore.is_active_extension &&
         !$props.source?.client_bio?.fb_uid
-    ) getFbUserInfo()
+    ) getFbUserInfo(
+        $props.source?.platform_type,
+        $props.source?.fb_page_id,
+        $props.source?.fb_client_id,
+        pageStore?.selected_page_list_info?.[$props.source?.fb_page_id]?.page?.fb_page_token
+    )
 }
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {

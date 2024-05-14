@@ -1,3 +1,5 @@
+import type { PageType } from "../interface/app/page"
+
 /**các sự kiện gửi ext */
 export type SendExtEvent =
     'GET_FB_USER_INFO' |
@@ -41,18 +43,50 @@ export const sendMessage = (
 export const ping = () => sendMessage('CHECK_EXTENSION_INSTALLED')
 
 /**gửi sự kiện thấy thông tin của user */
-export const getFbUserInfo = () => sendMessage('GET_FB_USER_INFO')
+export const getFbUserInfo = (
+    platform_type: PageType | undefined,
+    page_id: string,
+    client_id: string,
+    page_token?: string
+) => sendMessage(
+    'GET_FB_USER_INFO',
+    { platform_type, page_id, client_id, page_token }
+)
 
 /**gửi tin nhắn dạng văn bản */
-export const sendTextMesage = (text: string) => sendMessage(
+export const sendTextMesage = (
+    platform_type: PageType | undefined,
+    page_id: string,
+    client_id: string,
+    page_token: string | undefined,
+    text: string
+) => sendMessage(
     'SEND_TEXT_MESSAGE',
-    { message_data: { message: { text } } }
+    {
+        platform_type,
+        page_id,
+        client_id,
+        page_token,
+        message_data: { message: { text } }
+    }
 )
 
 /**gửi ảnh ngang */
-export const sendImageMessage = (list_file: ImageData[]) => sendMessage(
+export const sendImageMessage = (
+    platform_type: PageType | undefined,
+    page_id: string,
+    client_id: string,
+    page_token: string | undefined,
+    list_file: ImageData[]
+) => sendMessage(
     'SEND_FILE',
-    { list_file }
+    {
+        platform_type,
+        page_id,
+        client_id,
+        page_token,
+        list_file
+    }
 )
 
 /**lắng nghe thông điệp của ext */
