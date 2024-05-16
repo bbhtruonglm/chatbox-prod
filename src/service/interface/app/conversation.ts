@@ -97,6 +97,8 @@ export interface ConversationInfo {
     client_bio?: {
         /**uid fb quét được */
         fb_uid?: string
+        /**thông tin khách hàng */
+        fb_info?: Record<string, any>
     }
     /**snap dữ liệu của nhân viên được chỉ định nếu có */
     snap_staff?: {
@@ -168,6 +170,8 @@ export interface QueryUpdateÌnoConversation extends QueryOneConversation {
     client_email?: string
     /**id của user fb */
     fb_uid?: string
+    /**thông tin khách hàng */
+    fb_info?: Record<string, any>
 }
 
 export interface QueryPostMessage {

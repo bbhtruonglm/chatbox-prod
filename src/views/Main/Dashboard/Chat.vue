@@ -31,6 +31,7 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { copy } from '@/service/helper/format'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -103,29 +104,43 @@ function initExtensionLogic() {
                 commonStore.force_send_message_over_inbox = true
         }
 
-        // nếu nhận được thông tin cá nhân của hội thoại thì update uid
+        // nếu nhận được thông tin cá nhân của hội thoại thì update
         if (
             event === 'GET_FB_USER_INFO' &&
-            r?.page_id && r?.client_id && r?.id
+            r?.page_id &&
+            r?.client_id &&
+            (r?.id || r?.info)
         ) {
-            /**obj dữ liệu uid */
-            const client_bio = { fb_uid: r?.id }
+            /**key để update hội thoại */
+            const DATA_KEY = `${r?.page_id}_${r?.client_id}`
+
+            /**dữ liệu khách hàng hiện taij */
+            const CLIENT_BIO: ConversationInfo['client_bio'] =
+                conversationStore.conversation_list?.[DATA_KEY]?.client_bio ||
+                {}
+
+            // nạp UID
+            if (r?.id) CLIENT_BIO.fb_uid = r?.id
+
+            // nạp thông tin khách hàng
+            if (r?.info) CLIENT_BIO.fb_info = r?.info
 
             // ghi dữ liệu vào mảng
-            if (conversationStore.conversation_list[r?.client_id])
-                conversationStore.conversation_list[r?.client_id].client_bio = client_bio
+            if (conversationStore.conversation_list?.[DATA_KEY])
+                conversationStore.conversation_list[DATA_KEY].client_bio = CLIENT_BIO
 
             // ghi dữ liệu vào user hiện tại đang chọn
             if (
                 conversationStore.select_conversation &&
                 conversationStore.select_conversation?.fb_client_id === r?.client_id
-            ) conversationStore.select_conversation.client_bio = client_bio
+            ) conversationStore.select_conversation.client_bio = CLIENT_BIO
 
             // cập nhật data lên server
             update_info_conversation({
                 page_id: r?.page_id,
                 client_id: r?.client_id,
-                fb_uid: r?.id
+                fb_uid: r?.id,
+                fb_info: r?.info
             }, (e, r) => { })
         }
     })

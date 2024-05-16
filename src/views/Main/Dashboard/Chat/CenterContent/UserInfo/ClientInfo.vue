@@ -4,43 +4,58 @@
             {{ $t('v1.view.main.dashboard.chat.client.title') }}
         </template>
         <template v-slot:body>
-            <div class="flex flex-col items-center mt-5">
-                <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
-                    :client_id="conversationStore.select_conversation?.fb_client_id"
-                    :page_id="conversationStore.select_conversation?.fb_page_id"
-                    :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                    :platform_type="conversationStore.select_conversation?.platform_type" size="100"
-                    :client_avatar="conversationStore.select_conversation?.client_avatar"
-                    class="rounded-full cursor-pointer" />
-                <div class="font-semibold text-slate-500 text-lg mt-2">
-                    {{ conversationStore.select_conversation?.client_name }}
+            <div class="grid grid-cols-2 h-[calc(100vh_-_250px)]">
+                <div class="flex flex-col items-center mt-5">
+                    <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
+                        :client_id="conversationStore.select_conversation?.fb_client_id"
+                        :page_id="conversationStore.select_conversation?.fb_page_id"
+                        :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
+                        :platform_type="conversationStore.select_conversation?.platform_type" size="100"
+                        :client_avatar="conversationStore.select_conversation?.client_avatar"
+                        class="rounded-full cursor-pointer" />
+                    <div class="font-semibold text-slate-500 text-lg mt-2">
+                        {{ conversationStore.select_conversation?.client_name }}
+                    </div>
+                    <div class="grid grid-cols-3 text-sm mt-5 gap-3">
+                        <div class="text-slate-500 text-right">
+                            {{ $t('v1.common.client_id') }}
+                        </div>
+                        <div class="col-span-2 font-bold">
+                            {{ conversationStore.select_conversation?.fb_client_id }}
+                        </div>
+                        <div class="text-slate-500 text-right">
+                            {{ $t('v1.common.uid') }}
+                        </div>
+                        <div class="col-span-2 font-bold">
+                            {{ conversationStore.select_conversation?.client_bio?.fb_uid }}
+                        </div>
+                        <div class="text-slate-500 text-right">
+                            {{ $t('v1.common.phone') }}
+                        </div>
+                        <div ref="client_phone_ref"
+                            class="col-span-2 font-bold text-green-500 focus:outline-none rounded"
+                            :class="{ 'border-2 p-1': is_edit }" :contenteditable="is_edit">
+                            {{ conversationStore.select_conversation?.client_phone }}
+                        </div>
+                        <div class="text-slate-500 text-right">
+                            {{ $t('v1.common.email') }}
+                        </div>
+                        <div ref="client_email_ref"
+                            class="col-span-2 font-bold text-green-500 focus:outline-none rounded"
+                            :class="{ 'border-2 p-1': is_edit }" :contenteditable="is_edit">
+                            {{ conversationStore.select_conversation?.client_email }}
+                        </div>
+                    </div>
                 </div>
-                <div class="grid grid-cols-3 text-sm mt-5 gap-3">
-                    <div class="text-slate-500 text-right">
-                        {{ $t('v1.common.client_id') }}
-                    </div>
-                    <div class="col-span-2 font-bold">
-                        {{ conversationStore.select_conversation?.fb_client_id }}
-                    </div>
-                    <div class="text-slate-500 text-right">
-                        {{ $t('v1.common.uid') }}
-                    </div>
-                    <div class="col-span-2 font-bold">
-                        {{ conversationStore.select_conversation?.client_bio?.fb_uid }}
-                    </div>
-                    <div class="text-slate-500 text-right">
-                        {{ $t('v1.common.phone') }}
-                    </div>
-                    <div ref="client_phone_ref" class="col-span-2 font-bold text-green-500 focus:outline-none rounded"
-                        :class="{ 'border-2 p-1': is_edit }" :contenteditable="is_edit">
-                        {{ conversationStore.select_conversation?.client_phone }}
-                    </div>
-                    <div class="text-slate-500 text-right">
-                        {{ $t('v1.common.email') }}
-                    </div>
-                    <div ref="client_email_ref" class="col-span-2 font-bold text-green-500 focus:outline-none rounded"
-                        :class="{ 'border-2 p-1': is_edit }" :contenteditable="is_edit">
-                        {{ conversationStore.select_conversation?.client_email }}
+
+                <div class="text-sm overflow-hidden overflow-y-auto scrollbar-vertical">
+                    <div v-for="(value, key) of conversationStore.select_conversation?.client_bio?.fb_info" class="mb-1">
+                        <div class="font-semibold">
+                            {{ key }}
+                        </div>
+                        <div>
+                            {{ value }}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -161,7 +161,10 @@ function clickConversation() {
     // tìm uid fb nếu chưa có và đang bật ext
     if (
         commonStore.is_active_extension &&
-        !$props.source?.client_bio?.fb_uid
+        (
+            !$props.source?.client_bio?.fb_uid ||
+            !$props.source?.client_bio?.fb_info
+        )
     ) getFbUserInfo(
         $props.source?.platform_type,
         $props.source?.fb_page_id,
