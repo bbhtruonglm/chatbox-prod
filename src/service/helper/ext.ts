@@ -77,6 +77,7 @@ export const sendImageMessage = (
     page_id: string,
     client_id: string,
     page_token: string | undefined,
+    client_uid: string | undefined,
     list_file: ImageData[]
 ) => sendMessage(
     'SEND_FILE',
@@ -85,6 +86,7 @@ export const sendImageMessage = (
         page_id,
         client_id,
         page_token,
+        client_uid,
         list_file
     }
 )
