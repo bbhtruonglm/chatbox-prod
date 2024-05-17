@@ -16,7 +16,7 @@ import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, map, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
-import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
+import { ping as ext_ping, listen as ext_listen, getFbUserInfo } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import { getPageInfo, getPageWidget, getSelectedPageInfo, isMobile, isNotPc } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
@@ -79,18 +79,21 @@ function initExtensionLogic() {
     let count_check = 0
 
     /**ping qua ext để check tồn tại */
-    const LOOP_ID = setInterval(() => {
-        count_check++
+    // chờ 500ms để chắc chắn content script đã load
+    setTimeout(() => ext_ping(), 500)
 
-        // dừng nếu quá số lần hoặc đã phát hiện
-        if (
-            commonStore.is_active_extension ||
-            count_check >= 10
-        ) return clearInterval(LOOP_ID)
+    // const LOOP_ID = setInterval(() => {
+    //     count_check++
 
-        // gọi ext
-        ext_ping()
-    }, 500)
+    //     // dừng nếu quá số lần hoặc đã phát hiện
+    //     if (
+    //         commonStore.is_active_extension ||
+    //         count_check >= 10
+    //     ) return clearInterval(LOOP_ID)
+
+    //     // gọi ext
+    //     ext_ping()
+    // }, 500)
 
     // lắng nghe ext gửi thông điệp
     ext_listen((event, e, r) => {
@@ -102,6 +105,22 @@ function initExtensionLogic() {
             // gắn cờ force all tin nhắn qua ext
             if (r?.force_send_message_over_inbox)
                 commonStore.force_send_message_over_inbox = true
+
+            // nếu hội thoại đang được chọn chưa có uid thì check
+            if (
+                conversationStore.select_conversation?.fb_page_id &&
+                (
+                    !conversationStore.select_conversation?.client_bio?.fb_uid ||
+                    !conversationStore.select_conversation?.client_bio?.fb_info
+                )
+            ) getFbUserInfo(
+                conversationStore.select_conversation?.platform_type,
+                conversationStore.select_conversation?.fb_page_id,
+                conversationStore.select_conversation?.fb_client_id,
+                pageStore?.selected_page_list_info?.[
+                    conversationStore.select_conversation?.fb_page_id
+                ]?.page?.fb_page_token
+            )
         }
 
         // nếu nhận được thông tin cá nhân của hội thoại thì update
