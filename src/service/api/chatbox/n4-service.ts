@@ -24,6 +24,7 @@ export const login_facebook = (
     access_token: string,
     proceed: (e: any, r: {
         access_token: string
+        fb_staff_id: string
     }) => void
 ) => chatbox({
     uri: `${$env.host.n4_service_v2}/public/oauth/facebook/login`,
