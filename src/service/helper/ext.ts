@@ -59,6 +59,7 @@ export const sendTextMesage = (
     page_id: string,
     client_id: string,
     page_token: string | undefined,
+    client_uid: string | undefined,
     text: string
 ) => sendMessage(
     'SEND_TEXT_MESSAGE',
@@ -67,6 +68,7 @@ export const sendTextMesage = (
         page_id,
         client_id,
         page_token,
+        client_uid,
         message_data: { message: { text } }
     }
 )

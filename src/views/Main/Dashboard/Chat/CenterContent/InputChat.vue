@@ -629,6 +629,7 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
         page_id,
         client_id,
         pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+        conversationStore.select_conversation?.client_bio?.fb_uid,
         text
     )
     // gửi chính thống
@@ -658,6 +659,7 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
                         page_id,
                         client_id,
                         pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+                        conversationStore.select_conversation?.client_bio?.fb_uid,
                         text
                     )
 
