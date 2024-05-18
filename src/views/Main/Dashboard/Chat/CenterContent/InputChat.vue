@@ -17,20 +17,20 @@
 
                 <div class="flex flex-wrap justify-start">
                     <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
-                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
-                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
-                        'border-color': label_info?.bg_color,
-                    }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+            color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+            background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+            'border-color': label_info?.bg_color,
+        }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
                         {{ label_info?.title }}
                     </div>
                 </div>
 
                 <div class="flex flex-wrap justify-start">
                     <div v-for="label_info of getUnactiveLabel()" @click="toggleLabel(label_info._id)" :style="{
-                        color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
-                        background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
-                        'border-color': label_info?.bg_color,
-                    }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
+            color: isActiveLabel(label_info?._id) ? 'white' : label_info?.bg_color,
+            background: isActiveLabel(label_info?._id) ? label_info?.bg_color : 'white',
+            'border-color': label_info?.bg_color,
+        }" class="text-xs w-fit px-2 py-[2px] rounded-full mr-1 mb-1 cursor-pointer border">
                         {{ label_info?.title }}
                     </div>
                 </div>
@@ -85,7 +85,8 @@
     </div>
     <div class="w-full flex items-center h-[49px] relative">
         <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_emoji')"
-            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative mr-2" @click="toggleEmoji">
+            class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative mr-2"
+            @click="toggleEmoji">
             <img src="@/assets/icons/smile.svg" width="20" height="20" />
             <Emoji ref="emoji_ref" :selectEmoji="addEmojiToInput"></Emoji>
         </div>
@@ -114,7 +115,7 @@ import { map, get, size, pullAt, uniqueId, remove, partition, intersection } fro
 import {
     send_message, toggle_label_conversation
 } from '@/service/api/chatbox/n4-service'
-import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
+import { useConversationStore, useMessageStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import {
     getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
@@ -144,6 +145,7 @@ const { t: $t } = useI18n()
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
+const pageStore = usePageStore()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
@@ -492,13 +494,20 @@ function sendFile(page_id: string, client_id: string) {
                 })
 
                 // gửi qua ext
-                sendImageMessage(IMAGE_LIST.map(image => {
-                    return {
-                        url: image.url as string,
-                        fb_image_id: image.fb_image_id,
-                        type: 'image'
-                    }
-                }))
+                sendImageMessage(
+                    conversationStore.select_conversation?.platform_type,
+                    page_id,
+                    client_id,
+                    pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+                    conversationStore.select_conversation?.client_bio?.fb_uid,
+                    IMAGE_LIST.map(image => {
+                        return {
+                            url: image.url as string,
+                            fb_image_id: image.fb_image_id,
+                            type: 'image'
+                        }
+                    })
+                )
 
                 cb()
             }
@@ -615,7 +624,14 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
     scrollToBottomMessage()
 
     // gửi force qua ext
-    if (commonStore.force_send_message_over_inbox) sendTextMesage(text)
+    if (commonStore.force_send_message_over_inbox) sendTextMesage(
+        conversationStore.select_conversation?.platform_type,
+        page_id,
+        client_id,
+        pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+        conversationStore.select_conversation?.client_bio?.fb_uid,
+        text
+    )
     // gửi chính thống
     else {
         /**nội dung tin nhắn vừa được gửi */
@@ -638,7 +654,14 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
             if (e || !r?.message_id) {
                 // nếu bật ext thì gửi lại 1 lần nữa
                 if (commonStore.is_active_extension) {
-                    sendTextMesage(text)
+                    sendTextMesage(
+                        conversationStore.select_conversation?.platform_type,
+                        page_id,
+                        client_id,
+                        pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+                        conversationStore.select_conversation?.client_bio?.fb_uid,
+                        text
+                    )
 
                     // xoá tin nhắn tạm
                     remove(

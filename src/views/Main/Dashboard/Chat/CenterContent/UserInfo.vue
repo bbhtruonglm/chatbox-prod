@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="flex items-center justify-end">
-            <template
+            <!-- <template
                 v-if="commonStore.is_active_extension && conversationStore.select_conversation?.platform_type === 'FB_MESS'">
                 <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_facebook')" @click="openFbProfile"
                     class="border border-slate-300 rounded-full p-2 mr-2">
@@ -57,8 +57,9 @@
                 <div class="conversation-info-fb-uid hidden">
                     {{ uid }}
                 </div>
-            </template>
-            <template v-else-if="uid">
+            </template> -->
+            <!-- <template v-else-if="uid"> -->
+            <template v-if="uid">
                 <button v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.open_facebook')" @click="openFbProfile"
                     class="border border-slate-300 rounded-full p-2 mr-2">
                     <img width="16" height="16" src="@/assets/icons/facebook.svg">

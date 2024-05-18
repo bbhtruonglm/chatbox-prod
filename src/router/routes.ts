@@ -1,5 +1,7 @@
 import PageNotFound from '@/views/404.vue'
 
+import DeleteAccount from '@/views/DeleteAccount.vue'
+
 import OAuth from '@/views/OAuth.vue'
 
 import Main from '@/views/Main.vue'
@@ -42,6 +44,7 @@ export const routes = [
       },
     ]
   },
+  { path: '/delete-account', component: DeleteAccount },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },
 ]

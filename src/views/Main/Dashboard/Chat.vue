@@ -16,7 +16,7 @@ import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, map, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
-import { ping as ext_ping, listen as ext_listen } from '@/service/helper/ext'
+import { ping as ext_ping, listen as ext_listen, getFbUserInfo } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import { getPageInfo, getPageWidget, getSelectedPageInfo, isMobile, isNotPc } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
@@ -31,6 +31,7 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { copy } from '@/service/helper/format'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -78,18 +79,21 @@ function initExtensionLogic() {
     let count_check = 0
 
     /**ping qua ext để check tồn tại */
-    const LOOP_ID = setInterval(() => {
-        count_check++
+    // chờ 500ms để chắc chắn content script đã load
+    setTimeout(() => ext_ping(), 500)
 
-        // dừng nếu quá số lần hoặc đã phát hiện
-        if (
-            commonStore.is_active_extension ||
-            count_check >= 10
-        ) return clearInterval(LOOP_ID)
+    // const LOOP_ID = setInterval(() => {
+    //     count_check++
 
-        // gọi ext
-        ext_ping()
-    }, 500)
+    //     // dừng nếu quá số lần hoặc đã phát hiện
+    //     if (
+    //         commonStore.is_active_extension ||
+    //         count_check >= 10
+    //     ) return clearInterval(LOOP_ID)
+
+    //     // gọi ext
+    //     ext_ping()
+    // }, 500)
 
     // lắng nghe ext gửi thông điệp
     ext_listen((event, e, r) => {
@@ -101,31 +105,61 @@ function initExtensionLogic() {
             // gắn cờ force all tin nhắn qua ext
             if (r?.force_send_message_over_inbox)
                 commonStore.force_send_message_over_inbox = true
+
+            // nếu hội thoại đang được chọn chưa có uid thì check
+            if (
+                conversationStore.select_conversation?.fb_page_id &&
+                (
+                    !conversationStore.select_conversation?.client_bio?.fb_uid ||
+                    !conversationStore.select_conversation?.client_bio?.fb_info
+                )
+            ) getFbUserInfo(
+                conversationStore.select_conversation?.platform_type,
+                conversationStore.select_conversation?.fb_page_id,
+                conversationStore.select_conversation?.fb_client_id,
+                pageStore?.selected_page_list_info?.[
+                    conversationStore.select_conversation?.fb_page_id
+                ]?.page?.fb_page_token
+            )
         }
 
-        // nếu nhận được thông tin cá nhân của hội thoại thì update uid
+        // nếu nhận được thông tin cá nhân của hội thoại thì update
         if (
             event === 'GET_FB_USER_INFO' &&
-            r?.page_id && r?.client_id && r?.id
+            r?.page_id &&
+            r?.client_id &&
+            (r?.id || r?.info)
         ) {
-            /**obj dữ liệu uid */
-            const client_bio = { fb_uid: r?.id }
+            /**key để update hội thoại */
+            const DATA_KEY = `${r?.page_id}_${r?.client_id}`
+
+            /**dữ liệu khách hàng hiện taij */
+            const CLIENT_BIO: ConversationInfo['client_bio'] =
+                conversationStore.conversation_list?.[DATA_KEY]?.client_bio ||
+                {}
+
+            // nạp UID
+            if (r?.id) CLIENT_BIO.fb_uid = r?.id
+
+            // nạp thông tin khách hàng
+            if (r?.info) CLIENT_BIO.fb_info = r?.info
 
             // ghi dữ liệu vào mảng
-            if (conversationStore.conversation_list[r?.client_id])
-                conversationStore.conversation_list[r?.client_id].client_bio = client_bio
+            if (conversationStore.conversation_list?.[DATA_KEY])
+                conversationStore.conversation_list[DATA_KEY].client_bio = CLIENT_BIO
 
             // ghi dữ liệu vào user hiện tại đang chọn
             if (
                 conversationStore.select_conversation &&
                 conversationStore.select_conversation?.fb_client_id === r?.client_id
-            ) conversationStore.select_conversation.client_bio = client_bio
+            ) conversationStore.select_conversation.client_bio = CLIENT_BIO
 
             // cập nhật data lên server
             update_info_conversation({
                 page_id: r?.page_id,
                 client_id: r?.client_id,
-                fb_uid: r?.id
+                fb_uid: r?.id,
+                fb_info: r?.info
             }, (e, r) => { })
         }
     })
