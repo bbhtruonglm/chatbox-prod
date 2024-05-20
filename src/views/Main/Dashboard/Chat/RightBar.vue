@@ -40,7 +40,7 @@
                             height="12" />
                     </div>
                     <div v-if="widget.is_show"
-                        :class="widget.app_installed_size === 'FULL' ? 'h-[calc(100vh_-_200px)]' : 'h-[300px]'"
+                        :class="widget.app_installed_size === 'FULL' ? 'h-[calc(100vh_-_119px)]' : 'h-[300px]'"
                         class="w-full border-b">
                         <iframe :id="`widget-${widget._id}`" class="w-full h-full" :src="widget.url" frameborder="0" />
                     </div>
