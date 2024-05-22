@@ -10,7 +10,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
 import { useRouter } from 'vue-router'
-import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore, useMessageStore } from '@/stores'
+import { useChatbotUserStore, usePageStore, useConversationStore, useCommonStore, useMessageStore, useExtensionStore } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { get_page_info_to_chat } from '@/service/api/chatbox/n4-service'
 import { difference, intersection, keys, map, size } from 'lodash'
@@ -31,7 +31,6 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
-import { copy } from '@/service/helper/format'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -39,6 +38,7 @@ const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const messageStore = useMessageStore()
+const extensionStore = useExtensionStore()
 const { t: $t } = useI18n()
 
 /**kết nối socket đến server */
@@ -75,32 +75,28 @@ function initExtensionLogic() {
     // không chạy trên đt
     if (isMobile()) return
 
-    /**số lần đã ping ext */
-    let count_check = 0
+    // đánh dấu đang tìm ext
+    commonStore.extension_status = 'FINDING'
 
     /**ping qua ext để check tồn tại */
     // chờ 500ms để chắc chắn content script đã load
     setTimeout(() => ext_ping(), 500)
 
-    // const LOOP_ID = setInterval(() => {
-    //     count_check++
+    // sau 3s mà không tìm thấy ext thì đánh dấu không tìm thấy
+    setTimeout(() => {
+        // nếu ext đã được tìm thấy rồi thì không cần check nữa
+        if (commonStore.extension_status !== 'FINDING') return
 
-    //     // dừng nếu quá số lần hoặc đã phát hiện
-    //     if (
-    //         commonStore.is_active_extension ||
-    //         count_check >= 10
-    //     ) return clearInterval(LOOP_ID)
-
-    //     // gọi ext
-    //     ext_ping()
-    // }, 500)
+        // đánh dấu không tìm thấy ext
+        commonStore.extension_status = 'NOT_FOUND'
+    }, 10000)
 
     // lắng nghe ext gửi thông điệp
     ext_listen((event, e, r) => {
         // đánh dấu đã phát hiện ext
         if (event === 'EXTENSION_INSTALLED') {
             // gắn cờ phát hiện ext
-            commonStore.is_active_extension = true
+            commonStore.extension_status = 'FOUND'
 
             // gắn cờ force all tin nhắn qua ext
             if (r?.force_send_message_over_inbox)
@@ -127,13 +123,27 @@ function initExtensionLogic() {
         if (
             event === 'GET_FB_USER_INFO' &&
             r?.page_id &&
-            r?.client_id &&
-            (r?.id || r?.info)
+            r?.client_id
         ) {
             /**key để update hội thoại */
             const DATA_KEY = `${r?.page_id}_${r?.client_id}`
 
-            /**dữ liệu khách hàng hiện taij */
+            // nếu tìm thấy uid thì tắt cờ đang quét uid
+            if (r?.id) extensionStore.is_find_uid[DATA_KEY] = false
+            // nếu tìm thấy thông tin thì tắt cờ đang quét thông tin khách hàng
+            if (r?.info) extensionStore.is_find_client_info[DATA_KEY] = false
+
+            // nếu không tìm thấy cả 2 dữ liệu thì tắt cờ và dừng
+            if (!r?.id && !r?.info) {
+                // tắt cờ đang quét uid
+                extensionStore.is_find_uid[DATA_KEY] = false
+                // tắt cờ đang quét thông tin khách hàng
+                extensionStore.is_find_client_info[DATA_KEY] = false
+
+                return
+            }
+
+            /**dữ liệu khách hàng hiện tại */
             const CLIENT_BIO: ConversationInfo['client_bio'] =
                 conversationStore.conversation_list?.[DATA_KEY]?.client_bio ||
                 {}

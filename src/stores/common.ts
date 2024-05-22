@@ -44,7 +44,7 @@ export const useCommonStore = defineStore('common_store', () => {
     /**độ rộng của assign modal */
     const center_modal_width = ref<string>()
     /**đánh dấu ext được phát hiện */
-    const is_active_extension = ref(false)
+    const extension_status = ref<'NOT_FOUND' | 'FINDING' | 'FOUND'>('NOT_FOUND')
     /**đánh dấu chuyển toàn bộ tin nhắn qua ext */
     const force_send_message_over_inbox = ref(false)
     /**có đang kết nối vào mạng hay không */
@@ -60,7 +60,7 @@ export const useCommonStore = defineStore('common_store', () => {
         is_show_message_mobile,
         center_modal_left,
         center_modal_width,
-        is_active_extension,
+        extension_status,
         force_send_message_over_inbox,
         is_connected_internet,
 

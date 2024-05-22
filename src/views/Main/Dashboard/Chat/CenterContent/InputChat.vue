@@ -486,7 +486,7 @@ function sendFile(page_id: string, client_id: string) {
         // * gửi các hình ảnh đã được upload
         (cb: CbError) => {
             // gửi ngang qua ext
-            if (commonStore.is_active_extension) {
+            if (commonStore.extension_status === 'FOUND') {
                 // gắn cờ done
                 IMAGE_LIST.forEach(image => {
                     image.is_loading = false
@@ -653,7 +653,7 @@ function sendText(page_id: string, client_id: string, text: string, input: HTMLD
         }, (e, r) => {
             if (e || !r?.message_id) {
                 // nếu bật ext thì gửi lại 1 lần nữa
-                if (commonStore.is_active_extension) {
+                if (commonStore.extension_status === 'FOUND') {
                     sendTextMesage(
                         conversationStore.select_conversation?.platform_type,
                         page_id,

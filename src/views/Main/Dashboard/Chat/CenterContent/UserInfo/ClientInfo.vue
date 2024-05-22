@@ -5,7 +5,10 @@
         </template>
         <template v-slot:body>
             <div class="grid grid-cols-2 h-[calc(100vh_-_250px)]">
-                <div class="flex flex-col items-center mt-5">
+                <div class="flex flex-col items-center">
+                    <h2 class="mb-5 font-semibold">
+                        {{ $t('v1.view.main.dashboard.chat.client.basic') }}
+                    </h2>
                     <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
                         :client_id="conversationStore.select_conversation?.fb_client_id"
                         :page_id="conversationStore.select_conversation?.fb_page_id"
@@ -48,13 +51,26 @@
                     </div>
                 </div>
 
-                <div class="text-sm overflow-hidden overflow-y-auto scrollbar-vertical">
-                    <div v-for="(value, key) of conversationStore.select_conversation?.client_bio?.fb_info" class="mb-1">
-                        <div class="font-semibold">
-                            {{ key }}
+                <div class="h-[inherit]">
+                    <div class="mb-5 flex justify-center items-center">
+                        <h2 class="font-semibold">{{ $t('v1.view.main.dashboard.chat.client.info') }}</h2>
+                        <div class="ml-1">
+                            <Loading v-if="isFindClientInfo()"
+                                v-tooltip.bottom="$t('v1.view.main.dashboard.chat.client.reloading_info')" :size="15" />
+                            <img v-else @click="reloadClientInfo" class="cursor-pointer"
+                                v-tooltip.bottom="$t('v1.view.main.dashboard.chat.client.reload_info')"
+                                src="@/assets/icons/reload.svg" width="15" height="15" />
                         </div>
-                        <div>
-                            {{ value }}
+                    </div>
+                    <div class="overflow-hidden overflow-y-auto scrollbar-vertical h-[calc(100%_-_42px)]">
+                        <div v-for="(value, key) of conversationStore.select_conversation?.client_bio?.fb_info"
+                            class="mb-1 text-sm">
+                            <div class="font-semibold">
+                                {{ key }}
+                            </div>
+                            <div>
+                                {{ value }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,18 +95,22 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore, useChatbotUserStore } from '@/stores'
+import { useConversationStore, useChatbotUserStore, useExtensionStore, usePageStore } from '@/stores'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
+import { flow } from '@/service/helper/async'
 
 import Modal from '@/components/Modal.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
+import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import { flow } from '@/service/helper/async'
 import type { CbError } from '@/service/interface/function'
+import { getFbUserInfo } from '@/service/helper/ext'
 
 const conversationStore = useConversationStore()
 const chatbotUserStore = useChatbotUserStore()
+const extensionStore = useExtensionStore()
+const pageStore = usePageStore()
 
 /**ref của modal */
 const client_info_modal_ref = ref<ComponentRef>()
@@ -101,6 +121,39 @@ const client_email_ref = ref<ComponentRef>()
 /**gắn cờ chỉnh sửa */
 const is_edit = ref(false)
 
+/**kiểm tra xem có đang tìm kiếm thông tin khách hàng hay không */
+function isFindClientInfo() {
+    // nếu chưa chọn cuộc trò chuyện nào thì không hiển thị
+    if (!conversationStore.select_conversation?.data_key) return false
+
+    // trả về trạng thái có đang tìm kiếm thông tin khách hàng hay không
+    return extensionStore.is_find_client_info?.[conversationStore.select_conversation?.data_key]
+}
+/**làm mới thông tin khách hàng */
+function reloadClientInfo() {
+    // nếu thiếu key thì không làm gì cả
+    if (
+        !conversationStore.select_conversation?.fb_page_id ||
+        !conversationStore.select_conversation?.data_key
+    ) return
+
+    // gắn cờ đang tìm kiếm thông tin khách hàng
+    extensionStore.is_find_client_info[conversationStore.select_conversation?.data_key] = true
+
+    // quá 10s thì thôi không loading nữa
+    setTimeout(() => {
+        // tắt cờ đang quét thông tin khách hàng
+        extensionStore.is_find_client_info[conversationStore.select_conversation?.data_key!] = false
+    }, 10000)
+
+    // gọi ext để lấy uid và thông tin khách hàng
+    getFbUserInfo(
+        conversationStore.select_conversation?.platform_type,
+        conversationStore.select_conversation?.fb_page_id,
+        conversationStore.select_conversation?.fb_client_id,
+        pageStore?.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id]?.page?.fb_page_token
+    )
+}
 /**huỷ thay đổi */
 function cancelEdit() {
     // reset dữ liệu về như cũ

@@ -283,6 +283,11 @@ const source: Language = {
                         operate_by: 'Vận hành bởi',
                         search: 'Tìm kiếm hội thoại',
                         send_to: 'Gửi tin nhắn đến',
+                        extension: {
+                            findding: 'Đang kết nối với Extension',
+                            connected: 'Đã kết nối thành công đến Extension',
+                            findding_uid: 'Đang tìm kiếm UID',
+                        },
                         error: {
                             get_page_info: 'Không tìm thấy dữ liệu trang'
                         },
@@ -338,7 +343,11 @@ const source: Language = {
                             del_staff: 'Nhân viên đã xoá'
                         },
                         client: {
-                            title: 'Thông tin khách hàng'
+                            title: 'Thông tin khách hàng',
+                            basic: 'Thông tin cơ bản',
+                            info: 'Thông tin cá nhân',
+                            reload_info: 'Làm mới thông tin khách hàng',
+                            reloading_info: 'Đang làm mới thông tin khách hàng',
                         },
                         emoji: {
                             search: 'Tìm kiếm',

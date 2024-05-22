@@ -76,9 +76,10 @@
                     <div v-tooltip.bottom="source?.client_phone" v-if="source?.client_phone">
                         <img src="@/assets/icons/phone.svg" width="13" height="13">
                     </div>
-                    <div v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`" v-if="source?.client_bio?.fb_uid"
-                        class="ml-1">
-                        <img src="@/assets/icons/id.svg" width="13" height="13">
+                    <div v-if="isFindUid() || source?.client_bio?.fb_uid" class="ml-1">
+                        <Loading v-tooltip.bottom="$t('v1.view.main.dashboard.chat.extension.findding_uid')" v-if="isFindUid()" :size="13" />
+                        <img v-else v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`" src="@/assets/icons/id.svg"
+                            width="13" height="13">
                     </div>
                     <div v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
                         class="ml-1">
@@ -106,7 +107,7 @@
 <script setup lang="ts">
 import {
     useChatbotUserStore, usePageStore, useCommonStore, useConversationStore,
-    useMessageStore,
+    useMessageStore, useExtensionStore
 } from '@/stores'
 import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns'
 import viLocale from 'date-fns/locale/vi'
@@ -122,6 +123,7 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Popover from '@/components/Popover.vue'
 import Label from '@/views/Main/Dashboard/Chat/LeftBar/Conversation/Label.vue'
+import Loading from '@/components/Loading.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { ComponentRef } from '@/service/interface/vue'
@@ -136,6 +138,7 @@ const pageStore = usePageStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
+const extensionStore = useExtensionStore()
 
 /**ref của popover */
 const label_popover_ref = ref<ComponentRef>()
@@ -145,7 +148,12 @@ function clickConversation() {
     // nếu mess đang được show thì không cho click nữa
     if (isMobile() && commonStore.is_show_message_mobile) return
 
-    if (!$props.source?.fb_page_id || !$props.source?.fb_client_id) return
+    // nếu không có key thì không cho click
+    if (
+        !$props.source?.fb_page_id ||
+        !$props.source?.fb_client_id ||
+        !$props.source?.data_key
+    ) return
 
     // hiện tin nhắn ở giao diện mobile
     commonStore.is_show_message_mobile = true
@@ -160,17 +168,43 @@ function clickConversation() {
 
     // tìm uid fb nếu chưa có và đang bật ext
     if (
-        commonStore.is_active_extension &&
+        commonStore.extension_status === 'FOUND' &&
         (
             !$props.source?.client_bio?.fb_uid ||
             !$props.source?.client_bio?.fb_info
         )
-    ) getFbUserInfo(
-        $props.source?.platform_type,
-        $props.source?.fb_page_id,
-        $props.source?.fb_client_id,
-        pageStore?.selected_page_list_info?.[$props.source?.fb_page_id]?.page?.fb_page_token
-    )
+    ) {
+        // nếu chưa có uid thì gắn cờ đang quét uid
+        if (!$props.source?.client_bio?.fb_uid)
+            extensionStore.is_find_uid[$props.source?.data_key] = true
+        // nếu chưa có thông tin khách hàng thì gắn cờ đang quét thông tin khách hàng
+        if (!$props.source?.client_bio?.fb_info)
+            extensionStore.is_find_client_info[$props.source?.data_key] = true
+
+        // quá 10s thì thôi không loading nữa
+        setTimeout(() => {
+            // tắt cờ đang quét uid
+            extensionStore.is_find_uid[$props.source?.data_key!] = false
+            // tắt cờ đang quét thông tin khách hàng
+            extensionStore.is_find_client_info[$props.source?.data_key!] = false
+        }, 10000)
+
+        // gọi ext để lấy uid và thông tin khách hàng
+        getFbUserInfo(
+            $props.source?.platform_type,
+            $props.source?.fb_page_id,
+            $props.source?.fb_client_id,
+            pageStore?.selected_page_list_info?.[$props.source?.fb_page_id]?.page?.fb_page_token
+        )
+    }
+}
+/**kiểm tra xem có đang tìm uid không */
+function isFindUid() {
+    // nếu không có key thì dừng
+    if (!$props.source?.data_key) return false
+
+    // trả về trạng thái tìm uid
+    return extensionStore.is_find_uid[$props.source?.data_key]
 }
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {

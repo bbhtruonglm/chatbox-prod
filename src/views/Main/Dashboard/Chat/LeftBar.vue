@@ -11,14 +11,20 @@
                         {{ $t('v1.common.chatbox') }}
                     </div>
                     <div v-tooltip.bottom="$t('v1.view.main.dashboard.chat.action.total_client')"
-                        @click="reloadConversation"
-                        class="flex items-end mb-[2px] cursor-pointer">
+                        @click="reloadConversation" class="flex items-end mb-[2px] cursor-pointer">
                         <div class="text-sm text-slate-700 ml-1">
                             {{ total_conversation?.toLocaleString() }}
                         </div>
                         <div class="mb-[3px]">
                             <img src="@/assets/icons/user-list.svg" class="w-[15px] h-[15px]" />
                         </div>
+                    </div>
+                    <div class="pb-1 cursor-pointer">
+                        <Loading v-if="commonStore.extension_status === 'FINDING'"
+                            v-tooltip.bottom="$t('v1.view.main.dashboard.chat.extension.findding')" :size="15" />
+                        <img v-if="commonStore.extension_status === 'FOUND'"
+                            v-tooltip.bottom="$t('v1.view.main.dashboard.chat.extension.connected')"
+                            src="@/assets/icons/extension.svg" width="15" height="15" />
                     </div>
                 </div>
                 <input v-model="search_conversation" @keyup="onSearchConversation" ref="search_conversation_input"
@@ -42,22 +48,25 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { debounce, keys } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { isFilterActive, isMobile, teleportModelFilterOnPcScreen } from '@/service/function'
 import { count_conversation } from '@/service/api/chatbox/n4-service'
 
+
 // import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/LeftBar/Conversation.vue'
 import FilterModal from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal.vue'
 import StaffInfoModal from '@/views/Main/Dashboard/Chat/LeftBar/StaffInfoModal.vue'
+import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import { watch } from 'vue'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
+const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 
 /**phiên bản trong package.json */
