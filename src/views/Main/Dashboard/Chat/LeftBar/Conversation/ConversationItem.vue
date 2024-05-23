@@ -2,9 +2,8 @@
     <div @click="clickConversation" class="h-[84px] pb-[3px]">
         <div :class="{
         'bg-amber-50 !border-l-orange-500': source?.data_key === conversationStore.select_conversation?.data_key,
-        'bg-slate-300 !border-l-slate-300': source?.unread_message_amount
+        'bg-slate-300 !border-l-slate-300': isNewMessage()
     }" class="border-l-4 border-l-white border-b py-3 px-2 flex cursor-pointer hover:bg-slate-100 hover:border-l-slate-100 h-full w-full group">
-
             <div class="flex items-center">
                 <div class="w-fit h-fit relative">
                     <ClientAvatar :client_name="source?.client_name" :client_id="source?.fb_client_id"
@@ -65,7 +64,7 @@
             </div>
             <div class="w-[49px] flex flex-col items-end justify-between">
                 <div class="h-[16px]">
-                    <span v-if="source?.unread_message_amount" class="text-xs text-white bg-red-500 px-1 rounded-full">
+                    <span v-if="isNewMessage()" class="text-xs text-white bg-red-500 px-1 rounded-full">
                         {{ source?.unread_message_amount }}
                     </span>
                 </div>
@@ -77,7 +76,8 @@
                         <img src="@/assets/icons/phone.svg" width="13" height="13">
                     </div>
                     <div v-if="isFindUid() || source?.client_bio?.fb_uid" class="ml-1">
-                        <Loading v-tooltip.bottom="$t('v1.view.main.dashboard.chat.extension.findding_uid')" v-if="isFindUid()" :size="13" />
+                        <Loading v-tooltip.bottom="$t('v1.view.main.dashboard.chat.extension.findding_uid')"
+                            v-if="isFindUid()" :size="13" />
                         <img v-else v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`" src="@/assets/icons/id.svg"
                             width="13" height="13">
                     </div>
@@ -143,6 +143,16 @@ const extensionStore = useExtensionStore()
 /**ref của popover */
 const label_popover_ref = ref<ComponentRef>()
 
+/**có đánh dấu hội thoại này là chưa đọc không */
+function isNewMessage(): boolean {
+    // nếu đang chọn hội thoại này thì không hiện
+    if (
+        conversationStore.select_conversation?.data_key === $props.source?.data_key
+    ) return false
+
+    // tính toán dựa trên số tin nhắn chưa đọc
+    return !!$props.source?.unread_message_amount
+}
 /**click chuột vào 1 khách hàng */
 function clickConversation() {
     // nếu mess đang được show thì không cho click nữa
@@ -165,6 +175,18 @@ function clickConversation() {
 
     // đẩy id lên param
     setParamChat($router, $props.source?.fb_page_id, $props.source?.fb_client_id)
+
+    // lấy uid và thông tin khách hàng
+    triggerExtension()
+}
+/**gọi ext để lấy uid và thông tin khách hàng */
+function triggerExtension() {
+    // nếu không có key thì không cho click
+    if (
+        !$props.source?.fb_page_id ||
+        !$props.source?.fb_client_id ||
+        !$props.source?.data_key
+    ) return
 
     // tìm uid fb nếu chưa có và đang bật ext
     if (

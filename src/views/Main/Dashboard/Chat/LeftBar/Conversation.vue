@@ -21,7 +21,7 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { find, keys, map, mapValues, size } from 'lodash'
-import { read_conversation } from '@/service/api/chatbox/n4-service'
+import { read_conversation, reset_read_conversation } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
 import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
@@ -71,6 +71,32 @@ watch(
 watch(
     () => pageStore.selected_page_list_info,
     () => loadConversationFirstTime(true)
+)
+// khi thay đổi hội thoại, nếu hội thoại trước đó còn tin nhắn chưa đọc thì reset
+watch(
+    () => conversationStore.select_conversation,
+    (new_val, old_val) => {
+        // nếu cùng một hội thoại thì thôi
+        if (new_val?.data_key === old_val?.data_key) return
+
+        // nếu không có hội thoại trước đó thì thôi
+        if (!old_val?.data_key) return
+
+        // nếu tin nhắn của hội thoại trước đó đã đọc thì thôi
+        if (!conversationStore.conversation_list[old_val.data_key]?.unread_message_amount) return
+
+        // reset tin nhắn chưa đọc trên biến
+        if (conversationStore.conversation_list[old_val.data_key])
+            conversationStore.conversation_list[old_val.data_key].unread_message_amount = 0
+
+        // gọi api xoá trên backend
+        reset_read_conversation({
+            page_id: old_val?.fb_page_id,
+            client_id: old_val?.fb_client_id,
+        }, (e, r) => {
+            if (e) return toastError(e)
+        })
+    }
 )
 
 onMounted(() => window.addEventListener(
