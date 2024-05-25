@@ -147,7 +147,8 @@ const label_popover_ref = ref<ComponentRef>()
 function isNewMessage(): boolean {
     // nếu đang chọn hội thoại này thì không hiện
     if (
-        conversationStore.select_conversation?.data_key === $props.source?.data_key
+        conversationStore.select_conversation?.data_key === $props.source?.data_key &&
+        !conversationStore.select_conversation?.is_force_unread
     ) return false
 
     // tính toán dựa trên số tin nhắn chưa đọc

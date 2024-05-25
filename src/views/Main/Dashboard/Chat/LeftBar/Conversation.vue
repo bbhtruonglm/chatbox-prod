@@ -82,6 +82,9 @@ watch(
         // nếu không có hội thoại trước đó thì thôi
         if (!old_val?.data_key) return
 
+        // nếu người dùng cố tình đánh dấu tin nhắn chưa đọc thì thôi
+        if (old_val?.is_force_unread) return
+
         // nếu tin nhắn của hội thoại trước đó đã đọc thì thôi
         if (!conversationStore.conversation_list[old_val.data_key]?.unread_message_amount) return
 

@@ -165,6 +165,16 @@ function unreadConversation() {
 
             cb()
         },
+        // * gắn cờ hội thoại chưa đọc, để không bị conflig vào code hiện thị
+        (cb: CbError) => {
+            // nếu không có hội thoại nào đang chọn thì thoát
+            if (!conversationStore.select_conversation) return cb()
+
+            // gắn cờ hội thoại chưa đọc
+            conversationStore.select_conversation.is_force_unread = true
+
+            cb()
+        },
         // * gọi api
         (cb: CbError) => reset_read_conversation({
             page_id: conversationStore.select_conversation?.fb_page_id as string,

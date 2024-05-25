@@ -202,6 +202,7 @@ function getTokenOfWidget(new_val?: ConversationInfo, old_val?: ConversationInfo
         payload: {
             fb_client_id: conversationStore.select_conversation?.fb_client_id,
             page_name: getPageInfo(conversationStore.select_conversation?.fb_page_id)?.name,
+            label_data: map(pageStore.selected_page_list_info?.[PAGE_ID]?.label_list)?.filter(label => conversationStore.select_conversation?.label_id?.includes(label?._id)),
             current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
             current_staff_name: chatbotUserStore.chatbot_user?.full_name
         }

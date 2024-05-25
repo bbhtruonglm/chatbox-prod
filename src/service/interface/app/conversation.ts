@@ -113,6 +113,8 @@ export interface ConversationInfo {
     }
     /**đánh dấu khách hàng này là spam */
     is_spam_fb?: boolean
+    /**gắn thêm cờ, đánh dấu hội thoại này là chưa đọc */
+    is_force_unread?: boolean
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
