@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.36](https://github.com/bbhminhnl/chatbox-frontend-hybrid/compare/1.0.35...1.0.36) (2024-05-25)
+
 ### [1.0.35](https://github.com/bbhminhnl/chatbox-frontend-hybrid/compare/1.0.34...1.0.35) (2024-05-23)
 
 ### [1.0.34](https://github.com/bbhminhnl/chatbox-frontend-hybrid/compare/1.0.33...1.0.34) (2024-05-22)
