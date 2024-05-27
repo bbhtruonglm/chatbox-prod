@@ -7,9 +7,9 @@
         <template v-slot:body>
             <div class="h-[calc(100vh_-_239px)]">
                 <div class="py-3 grid gap-2" :class="{
-                    'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
-                    'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
-                }">
+        'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+        'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+    }">
                     <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
                         :select_page="filterLabelByPage" />
                     <input ref="search_ref" type="text"
@@ -45,18 +45,19 @@
                 {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
             </div>
             <div class="py-3 grid gap-2" :class="{
-                'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
-                'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
-            }">
+        'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
+        'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
+    }">
                 <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
                     :select_page="filterLabelByPage" />
-                <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
+                <input ref="search_ref" type="text"
+                    :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
                     class="border px-3 py-1 rounded-lg focus:outline-none w-full" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
             <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
-                <TagItem v-for="item, index of label_list" v-show="item.show_label" @click="selectLabel(index)" :label="item"
-                    :is_selected="item?.is_selected" />
+                <TagItem :is_disable="isDisableLabel(index)" v-for="item, index of label_list" v-show="item.show_label" @click="selectLabel(index)"
+                    :label="item" :is_selected="item?.is_selected" />
             </div>
         </div>
     </Dropdown>
@@ -65,7 +66,7 @@
 import { ref, onMounted } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { map, isString, debounce, sortBy, mapValues, size } from 'lodash'
-import { nonAccentVn } from '@/service/helper/format'
+import { copy, nonAccentVn } from '@/service/helper/format'
 import { isMobile } from '@/service/function'
 import { watch } from 'vue'
 
@@ -130,15 +131,18 @@ function toggleModal() {
 function getLabelList() {
     // lưu lại danh sách nhãn gốc dưới dạng obj
     map(pageStore.selected_page_list_info, (item) => {
-        snap_labels.value = {
-            ...snap_labels.value,
-            ...mapValues(item.label_list, label => {
+        /**tạo ra obj mới để tránh lỗi trùng lặp lựa chọn */
+        const ORIGIN_PAGE_LIST_LABEL: Record<string, LabelInfo> = copy(
+            mapValues(item.label_list, label => {
                 // gắn toàn bộ nhãn cờ chưa chọn để tránh lỗi khi sort
                 label.is_selected = false
 
                 return label
             })
-        }
+        )
+
+        // gộp vào snap label
+        snap_labels.value = { ...snap_labels.value, ...ORIGIN_PAGE_LIST_LABEL }
     })
 
     // đánh dấu các label đã được chọn
@@ -148,22 +152,49 @@ function getLabelList() {
             conversationStore.option_filter_page_data.not_label_id?.includes(label?._id)
         ) label.is_selected = true
 
+        // * Gắn cờ hiển thị
+        label.show_label = true
+
         return label
     })
 
     // lọc đã chọn lên đầu
     label_list.value = sortLabel(label_list.value)
 }
+/**chặn các nhãn đã được bên đối diện lựa chọn */
+function isDisableLabel(index: number) {
+    /**nhãn được chọn */
+    const SELECTED_LABEL = label_list.value?.[index]
+    /**dữ liệu filter */
+    const FILTER = conversationStore.option_filter_page_data
+
+    // nếu bên lọc nhãn đã chọn thì bỏ qua
+    return FILTER.label_id?.includes(SELECTED_LABEL._id)
+}
 /** Chọn nhãn */
 function selectLabel(index: number) {
+    /**nhãn được chọn */
+    const SELECTED_LABEL = label_list.value?.[index]
+    /**dữ liệu filter */
+    const FILTER = conversationStore.option_filter_page_data
+
+    // nếu không có nhãn được chọn thì dừng
+    if (!SELECTED_LABEL) return
+
+    // nếu bên lọc nhãn đã chọn thì bỏ qua
+    if (isDisableLabel(index)) return
+
     // toggle nhãn
-    label_list.value[index].is_selected = !label_list.value[index].is_selected
+    SELECTED_LABEL.is_selected = !SELECTED_LABEL.is_selected
 
     /**danh sách id nhãn đã chọn */
-    let list_id = label_list.value?.filter(label => label.is_selected)?.map(label => label._id)
+    let list_id = label_list
+        .value
+        ?.filter(label => label.is_selected)
+        ?.map(label => label._id)
 
     // lưu lại id nhãn đã chọn vào store
-    conversationStore.option_filter_page_data.not_label_id = size(list_id) ? list_id : undefined
+    FILTER.not_label_id = size(list_id) ? list_id : undefined
 
     // sort đã chọn lên đầu
     label_list.value = sortLabel(label_list.value)

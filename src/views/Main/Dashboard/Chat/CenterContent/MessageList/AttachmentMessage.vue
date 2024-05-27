@@ -60,6 +60,8 @@ const $props = withDefaults(defineProps<{
     type: 'CLIENT' | 'PAGE'
     /**loại nền tảng của tin nhắn */
     platform_type: MessageInfo['platform_type']
+    /**có phải là tin nhắn trả lời không */
+    is_reply?: boolean
 }>(), {})
 
 const messageStore = useMessageStore()
@@ -118,25 +120,35 @@ function getAttachmentInfo() {
         messageStore.attachment_list[$props.message_mid as string] = list_att
 
         return
-    } 
+    }
 
+    // xử lý hình ảnh cho riêng FB
+
+    // không có file thì không cần xử lý
     if (!size($props.message_attachments)) return
 
     // trên pc sẽ chia file thành 2 dạng hiển thị ngang và dọc
     if (!isMobile()) {
+        // xóa dữ liệu cũ nếu có
         vertical_attachment_list.value = []
         horizontal_attachment_list.value = []
 
+        // duyệt qua từng file
         $props.message_attachments.forEach((attachment, index) => {
             // thêm index vào để mapping với dữ liệu lấy từ sv về
             attachment.index = index
 
-            // dạng dọc
+            // dạng dọc thì hiển thị tất cả
             if (SHOW_TYPE.includes(attachment.type))
-                vertical_attachment_list.value.push(attachment)
+                return vertical_attachment_list.value.push(attachment)
+
             // dạng ngang
-            else
-                horizontal_attachment_list.value.push(attachment)
+
+            // nếu là tin nhắn trả lời thì chỉ hiển thị 1 file đầu tiên
+            if ($props.is_reply && index > 0) return
+
+            // nếu không phải tin nhắn trả lời thì hiển thị tất cả
+            horizontal_attachment_list.value.push(attachment)
         })
     }
 

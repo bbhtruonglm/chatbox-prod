@@ -4,6 +4,7 @@
             {{ message?.message_text }}
         </template>
         <AttachmentMessage v-else-if="message?.message_attachments" :message_attachments="message?.message_attachments" :message_mid="message?.message_mid" 
+        :is_reply="true"
         :platform_type="message?.platform_type" :page_id="message?.fb_page_id" type="CLIENT" class="justify-center" />
         <template v-else>
             {{ $t('v1.view.main.dashboard.chat.message.file') }}
