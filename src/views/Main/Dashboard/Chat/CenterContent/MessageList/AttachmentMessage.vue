@@ -4,7 +4,7 @@
     }" class="flex flex-wrap mt-[1px] relative z-1">
         <template v-if="isMobile()" v-for="(attachment, index) of message_attachments">
             <div v-if="attachment.type !== 'fallback'" @click="viewAttachment(getFile(index))"
-                class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
+                class="rounded-lg bg-slate-200 border min-w-[84px] h-[168px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
                 <ImageAttachment v-if="getTypeFromIndex(index) === 'image'" :url="getFileUrl(index)" />
                 <VideoAttachment v-else-if="getTypeFromIndex(index) === 'video'" :url="getFileUrl(index)" />
                 <AudioAttachment v-else-if="getTypeFromIndex(index) === 'audio'" :url="getFileUrl(index)" />
@@ -14,7 +14,7 @@
         <template v-else>
             <template v-for="(attachment) of horizontal_attachment_list">
                 <div v-if="attachment.type !== 'fallback'" @click="viewAttachment(getFile(attachment.index))"
-                    class="rounded-lg bg-slate-200 w-[84px] h-[84px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
+                    class="rounded-lg bg-slate-200 border min-w-[84px] h-[168px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
                     <ImageAttachment v-if="getTypeFromIndex(attachment.index) === 'image'"
                         :url="getFileUrl(attachment.index)" />
                     <AnotherAttachment v-else :url="getFileUrl(attachment.index)" />
