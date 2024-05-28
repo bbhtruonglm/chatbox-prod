@@ -14,7 +14,8 @@
         <template v-else>
             <template v-for="(attachment) of horizontal_attachment_list">
                 <div v-if="attachment.type !== 'fallback'" @click="viewAttachment(getFile(attachment.index))"
-                    class="rounded-lg bg-slate-200 border min-w-[84px] h-[168px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
+                    :class="is_reply ? 'w-[84px] h-[84px]' : 'min-w-[84px] h-[168px]'"
+                    class="rounded-lg bg-slate-200 border mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50">
                     <ImageAttachment v-if="getTypeFromIndex(attachment.index) === 'image'"
                         :url="getFileUrl(attachment.index)" />
                     <AnotherAttachment v-else :url="getFileUrl(attachment.index)" />
@@ -145,7 +146,7 @@ function getAttachmentInfo() {
             // dạng ngang
 
             // nếu là tin nhắn trả lời thì chỉ hiển thị 1 file đầu tiên
-            if ($props.is_reply && index > 0) return
+            // if ($props.is_reply && index > 0) return
 
             // nếu không phải tin nhắn trả lời thì hiển thị tất cả
             horizontal_attachment_list.value.push(attachment)
