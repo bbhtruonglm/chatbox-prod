@@ -9,14 +9,16 @@ const ENV: Env = {
         prefix: 'chatbox_'
     },
     host: {
-        n3_socket: 'wss://socket.sellingpage.net',
+        n3_socket: 'wss://dev-api.botbanhang.vn/socket',
+        n4_service_v2: 'https://dev-api.botbanhang.vn/v1/n4_service',
+        n5_app_v2: 'https://dev-api.botbanhang.vn/v1/n5_app',
+        n6_static: 'https://dev-api.botbanhang.vn/v1/n6_static',
+
         n4_service_v1: 'https://service.sellingpage.net',
-        n4_service_v2: 'https://dev.sellingpage.net/v1/n4_service',
         n5_app_v1: 'https://app.sellingpage.net',
-        n5_app_v2: 'https://dev.sellingpage.net/v1/n5_app',
-        n6_static: 'https://dev.sellingpage.net/v1/n6_static',
         n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',
+        
         page_setting_view: 'https://sellingpage.net/setting/#/page',
         analytic_view: 'https://sellingpage.net/analytic/#/',
         chatbot_view: 'https://chatbot.sellingpage.net/#/',

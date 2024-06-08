@@ -45,7 +45,7 @@
           // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
             horizontal_attachment_list?.length === 1 ? 'h-[168px]' : 'h-[84px]'
           "
-          class="rounded-lg bg-slate-200 border mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
+          class="rounded-lg bg-slate-200 shadow mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
         >
           <ImageAttachment
             v-if="getTypeFromIndex(attachment.index) === 'image'"
