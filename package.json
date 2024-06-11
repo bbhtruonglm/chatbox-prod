@@ -23,7 +23,6 @@
     "autoprefixer": "^10.4.13",
     "date-fns": "2.30.0",
     "emoji-mart-vue-fast": "^15.0.0",
-    "hammerjs": "^2.0.8",
     "lodash": "^4.17.21",
     "pinia": "^2.0.28",
     "postcss": "^8.4.19",
@@ -41,7 +40,6 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.16",
-    "@types/hammerjs": "^2.0.41",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.16.18",
     "@vitejs/plugin-basic-ssl": "^1.0.1",

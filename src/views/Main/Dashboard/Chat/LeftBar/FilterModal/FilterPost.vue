@@ -1,44 +1,4 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
-        :width="commonStore.conversation_filter_modal_width">
-        <template v-slot:header>
-            <!-- <span v-if="!filter_post">{{ $t('v1.view.main.dashboard.chat.filter.post.filter_by_comment') }}</span> -->
-            <span>{{ $t('v1.view.main.dashboard.chat.filter.post.filter_by_post') }}</span>
-        </template>
-        <template v-slot:body>
-            <div class="max-h-[50vh] overflow-hidden overflow-y-scroll">
-                <div v-for="post, index in fb_post" @click="selectPost(index)"
-                    class="flex p-2 border-b justify-between items-center relative">
-                    <div class="mr-2">
-                        <object :data="post?.attachments?.data[0]?.media?.image?.src" type="image/png"
-                            class="min-w-[35px] w-[35px] h-[35px] rounded-lg object-cover">
-                            <img src="@/assets/imgs/chatbox.svg" class="w-[35px] h-[35px]" />
-                        </object>
-                    </div>
-                    <div class="w-[90%]">
-                        <div class="flex justify-between mb-1">
-                            <div class="text-xs text-orange-600">{{ post.content.id }}</div>
-                            <div class="text-xs text-gray-500">
-                                {{ format(new Date(post.content.updated_time), 'HH:mm dd/MM/yyyy') }}
-                            </div>
-                        </div>
-                        <div class="text-xs w-[80%] truncate">{{ post.message }}</div>
-                    </div>
-                    <img v-show="post.is_selected" class="w-5 h-5 absolute right-4 mt-3.5"
-                        src="@/assets/icons/check-circle.svg">
-                </div>
-            </div>
-        </template>
-        <template v-slot:footer>
-            <div class="grid grid-cols-2 gap-4">
-                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
-                <FilterButton @click="filterPost()"
-                    :type="`${mergePostSelect().length > 0 ? 'border-orange-500 text-orange-500' : 'border-orange-200 text-orange-200'} hover:text-white hover:bg-orange-500`"
-                    :title="$t('v1.view.main.dashboard.chat.filter.title')" />
-            </div>
-        </template>
-    </ModalBottom>
     <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="570px" position="RIGHT" :back="350">
         <div class="text-sm  h-full w-full">
             <div class="border-b font-semibold pb-1 flex items-center justify-between">
@@ -182,17 +142,14 @@
         :time_range="{ start_time: Date.now(), end_time: Date.now() }" />
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { isMobile } from '@/service/function'
-import { map, debounce, keys } from 'lodash'
+import { ref, onMounted } from 'vue'
+import { map, debounce } from 'lodash'
 import { get_post_list } from '@/service/api/chatbox/n4-service'
-import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 import { format } from 'date-fns'
 
 import Dropdown from '@/components/Dropdown.vue'
-import ModalBottom from '@/components/ModalBottom.vue'
 import FilterDateOfPost from '@/components/Main/Dashboard/FilterDateOfPost.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
 
@@ -202,11 +159,8 @@ import type { FacebookPost } from '@/service/interface/app/post'
 
 
 const pageStore = usePageStore()
-const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 
-/** ref của modal */
-const filter_modal_ref = ref<ComponentRef>()
 /**ref của dropdown */
 const filter_dropdown_ref = ref<ComponentRef>()
 /** ref của date picker */
@@ -240,16 +194,9 @@ onMounted(() => {
     getPostList()
 })
 
-/** Ẩn hiện modal */
-function toggleModal() {
-    filter_modal_ref.value?.toggleModal()
-}
-/** Hiển thị */
-function toggle($event: MouseEvent) {
-    // nếu mobile thì mở bottom modal
-    if (isMobile()) toggleModal()
-    // nếu là pc thỉ mở dropdown
-    else filter_dropdown_ref.value?.toggleDropdown($event)
+/** Hiển thị dropdown */
+function toggle($event?: MouseEvent) {
+    filter_dropdown_ref.value?.toggleDropdown($event)
 }
 /** Xoá lọc */
 function clearThisFilter() {
@@ -340,10 +287,7 @@ function filterPost() {
             }
         }
 
-        if (isMobile()) toggleModal()
-        else filter_dropdown_ref.value?.toggleDropdown()
-    
-        return
+        return toggle()
     }
 
     // * Lọc theo toàn bộ lựa chọn đang có
@@ -359,8 +303,7 @@ function filterPost() {
         }
     }
 
-    if (isMobile()) toggleModal()
-    else filter_dropdown_ref.value?.toggleDropdown()
+    toggle()
 }
 /** Gom bài post đã chọn thành 1 string để filter */
 function mergePostSelect(): string {
@@ -371,7 +314,7 @@ function mergePostSelect(): string {
     return post_selected.join(' ')
 }
 
-defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
+defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
 </script>
 
 <style>

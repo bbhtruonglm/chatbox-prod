@@ -18,7 +18,7 @@ import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import { ping as ext_ping, listen as ext_listen, getFbUserInfo } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
-import { getPageInfo, getPageWidget, getSelectedPageInfo, isMobile, isNotPc } from '@/service/function'
+import { getPageInfo, getPageWidget, getSelectedPageInfo } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
 import { handleFileLocal } from '@/service/helper/file'
 
@@ -72,9 +72,6 @@ function onDropFile($event: DragEvent) {
 }
 /**gắn cờ nếu ext được kích hoạt + xử lý các logic */
 function initExtensionLogic() {
-    // không chạy trên đt
-    if (isMobile()) return
-
     // đánh dấu đang tìm ext
     commonStore.extension_status = 'FINDING'
 

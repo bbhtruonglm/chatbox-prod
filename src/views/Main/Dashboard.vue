@@ -14,7 +14,7 @@
             <hr class="mt-2" />
             <div
                 class="pt-2 md:h-[calc(100%_-_85px)] xl:h-[calc(100%_-_110px)] overflow-hidden scrollbar-vertical overflow-y-auto">
-                <MenuBar v-if="isMobile() || !$route.path?.includes('/chat')" />
+                <MenuBar v-if="!$route.path?.includes('/chat')" />
                 <FilterBar v-else />
             </div>
             <div class="absolute bottom-[40px] md:bottom-[17px] w-[calc(100%_-_32px)] md:w-[calc(100%_-_16px)]">
@@ -33,8 +33,8 @@
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
 import { ref } from 'vue'
-import { isChat, isMobile } from '@/service/function'
-import { teleportModelFilterOnPcScreen, teleportCenterModelOnPcScreen, selectNav } from '@/service/function'
+import { isChat } from '@/service/function'
+import { selectNav } from '@/service/function'
 
 import FilterBar from '@/views/Main/Dashboard/Menu/FilterBar.vue'
 import MenuBar from '@/views/Main/Dashboard/Menu/MenuBar.vue'
@@ -52,8 +52,5 @@ const dashboard_menu_ref = ref<ComponentRef>()
 /**thay đổi trạng thái của nav */
 function onToggleNavChange(value: boolean) {
     commonStore.dashboard_toggle_nav = value
-
-    teleportModelFilterOnPcScreen()
-    teleportCenterModelOnPcScreen()
 }
 </script>

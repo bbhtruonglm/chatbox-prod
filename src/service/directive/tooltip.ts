@@ -10,7 +10,6 @@
  * tooltip-disabled
  */
 
-import { isMobile } from '@/service/function'
 import { random } from 'lodash'
 import { nextTick } from 'vue'
 
@@ -21,9 +20,6 @@ type Position = 'top' | 'right' | 'bottom' | 'left'
 
 /**tạo tooltip cho các div target */
 const CREATE_TOOLTIP = (el: HTMLElement, binding: DirectiveBinding): void => {
-    // không chạy tooltip với mobile
-    if (isMobile()) return
-
     // nếu không có nội dung thì thôi
     if (!binding.value) return
 

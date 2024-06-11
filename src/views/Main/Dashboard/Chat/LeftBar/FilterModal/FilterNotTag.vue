@@ -1,38 +1,4 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
-        :width="commonStore.conversation_filter_modal_width">
-        <template v-slot:header>
-            {{ $t('v1.view.main.dashboard.chat.filter.exclude_label.title') }}
-        </template>
-        <template v-slot:body>
-            <div class="h-[calc(100vh_-_239px)]">
-                <div class="py-3 grid gap-2" :class="{
-        'grid-cols-1': Object.keys(pageStore.selected_page_list_info).length === 1,
-        'grid-cols-2': Object.keys(pageStore.selected_page_list_info).length > 1
-    }">
-                    <SelectPage v-if="Object.keys(pageStore.selected_page_list_info).length > 1"
-                        :select_page="filterLabelByPage" />
-                    <input ref="search_ref" type="text"
-                        :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-                        class="border px-3 py-1 rounded-lg focus:outline-none" v-on:keyup="searchLabel"
-                        v-model="label_search_name">
-                </div>
-                <div class="h-[calc(100%_-_58px)] scrollbar-vertical overflow-hidden overflow-y-auto">
-                    <TagItem v-for="item, index of label_list" @click="selectLabel(index)" :label="item"
-                        :is_selected="item?.is_selected" />
-                </div>
-            </div>
-        </template>
-        <template v-slot:footer>
-            <div class="grid grid-cols-2 gap-4">
-                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
-                <FilterButton @click="toggleModal"
-                    type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.title')" />
-            </div>
-        </template>
-    </ModalBottom>
     <Dropdown ref="filter_dropdown_ref" @open_dropdown="onOpenDropdown" :is_fit="false" width="450px" height="500px"
         position="RIGHT" :back="200">
         <div class="text-sm h-full w-full">
@@ -64,27 +30,21 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 import { map, isString, debounce, sortBy, mapValues, size } from 'lodash'
 import { copy, nonAccentVn } from '@/service/helper/format'
-import { isMobile } from '@/service/function'
 import { watch } from 'vue'
 
 import SelectPage from './Tag/SelectPage.vue'
 import Dropdown from '@/components/Dropdown.vue'
-import ModalBottom from '@/components/ModalBottom.vue'
 import TagItem from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { LabelInfo } from '@/service/interface/app/label'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
-const commonStore = useCommonStore()
 
-/**ref của modal */
-const filter_modal_ref = ref<ComponentRef>()
 /** Danh sách label của page đang được chọn */
 const label_list = ref<LabelInfo[]>([])
 /** Snap label của page đang được chọn */
@@ -119,13 +79,6 @@ function clearThisFilter() {
 
         return label
     })
-
-    // tắt modal
-    immediatelyHide()
-}
-/** Ẩn hiện modal */
-function toggleModal() {
-    filter_modal_ref.value?.toggleModal()
 }
 /** Lấy danh sách nhãn */
 function getLabelList() {
@@ -215,16 +168,9 @@ const searchLabel = debounce(($event: Event) => {
 
     label_list.value = sortLabel(temp)
 }, 300)
-/**tắt ngay lập tức */
-function immediatelyHide() {
-    filter_modal_ref.value?.immediatelyHide()
-}
-/**hiện thị */
+/**hiện thị dropdown */
 function toggle($event: MouseEvent) {
-    // nếu mobile thì mở bottom modal
-    if (isMobile()) toggleModal()
-    // nếu là pc thỉ mở dropdown
-    else filter_dropdown_ref.value?.toggleDropdown($event)
+    filter_dropdown_ref.value?.toggleDropdown($event)
 }
 /** Hiển thị nhãn theo page đã chọn */
 function filterLabelByPage(page_id: string) {
@@ -250,5 +196,5 @@ function filterLabelByPage(page_id: string) {
     label_search_name.value = ''
 }
 
-defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
+defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
 </script>

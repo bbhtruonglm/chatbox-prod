@@ -1,10 +1,6 @@
 <template>
     <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-2">
         <div class="pl-14 pr-4 md:pl-0 flex items-center mb-2">
-            <div v-if="isMobile()" @click="openConversationFilter()" class="cursor-pointer">
-                <img v-if="isFilterActive()" src="@/assets/icons/filter-active.svg" width="23" height="23">
-                <img v-else src="@/assets/icons/filter.svg" width="23" height="23">
-            </div>
             <div class="flex items-center ml-4 md:ml-0 w-full justify-between">
                 <div v-if="!is_show_search" class="flex items-end">
                     <div v-tooltip.bottom="`v${version}`" class="ml-3 font-medium text-2xl">
@@ -37,13 +33,8 @@
                 </div>
             </div>
         </div>
-        <!-- <UserOnline /> -->
         <Conversation ref="conversation_ref" />
     </div>
-    <template>
-        <FilterModal ref="filter_modal_ref" />
-        <StaffInfoModal />
-    </template>
 </template>
 
 <script setup lang="ts">
@@ -51,14 +42,9 @@ import { nextTick, onMounted, ref } from 'vue'
 import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
 import { debounce, keys } from 'lodash'
 import { useI18n } from 'vue-i18n'
-import { isFilterActive, isMobile, teleportModelFilterOnPcScreen } from '@/service/function'
 import { count_conversation } from '@/service/api/chatbox/n4-service'
 
-
-// import UserOnline from '@/views/Main/Dashboard/Chat/LeftBar/UserOnline.vue'
 import Conversation from '@/views/Main/Dashboard/Chat/LeftBar/Conversation.vue'
-import FilterModal from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal.vue'
-import StaffInfoModal from '@/views/Main/Dashboard/Chat/LeftBar/StaffInfoModal.vue'
 import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
@@ -73,8 +59,6 @@ const { t: $t } = useI18n()
 const version = npm_package_version
 /**giá trị của ô tìm kiếm hội thoại */
 const search_conversation = ref<string>()
-/**ref của modal filter */
-const filter_modal_ref = ref<ComponentRef>()
 /**có hiển thị tìm kiếm hay không */
 const is_show_search = ref(false)
 /**ref của input tìm kiếm hội thoại */
@@ -114,12 +98,6 @@ function countTotalConversationValid() {
         },
         (e, r) => total_conversation.value = r
     )
-}
-/**toggle modal */
-function openConversationFilter() {
-    teleportModelFilterOnPcScreen()
-
-    filter_modal_ref.value?.toggleModal()
 }
 /**delay tìm kiếm hội thoại */
 const onSearchConversation = debounce(($event: Event) => {
