@@ -92,7 +92,7 @@ import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import { isNotPc, scrollToBottomMessage } from '@/service/function'
+import { scrollToBottomMessage } from '@/service/function'
 import { debounce, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
@@ -238,26 +238,11 @@ function loadMoreMessage($event: UIEvent) {
     /**giá trị scroll top hiện tại */
     const SCROLL_TOP = LIST_MESSAGE?.scrollTop
 
-    /**
-     * nếu là dt, thì khi scroll lên trên cùng, sẽ dùng thủ thuật này, để hạn
-     * chế không cho phép giá trị scroll thành số âm, gây ra bug bị trắng màn hình
-     */
-    if (isNotPc() && SCROLL_TOP <= 0 && !is_done.value) {
-        // tắt scroll
-        LIST_MESSAGE.style.overflowY = 'hidden'
-
-        // bật scroll lại ngay sau đó
-        setTimeout(() => LIST_MESSAGE.style.overflowY = 'auto')
-    }
-
     // nếu đang chạy hoặc đã hết dữ liệu thì thôi
     if (is_loading.value || is_done.value) return
 
-    // nếu là dt thì phải chạm đỉnh mới load tiếp dữ liệu
-    if (isNotPc() && SCROLL_TOP === 0) getListMessage()
-
-    // các thiết bị còn lại thì cho phép infinitve loading scroll
-    if (!isNotPc() && SCROLL_TOP < 300) getListMessage()
+    // infinitve loading scroll
+    if (SCROLL_TOP < 300) getListMessage()
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
@@ -305,18 +290,8 @@ function getListMessage(is_scroll?: boolean) {
         ),
         // * làm cho scroll to top mượt hơn
         (cb: CbError) => {
-            // nếu là điện thoại thì scroll đến phần tử cuối cùng trước đó
-            if (
-                isNotPc() &&
-                old_first_message_id
-            ) nextTick(
-                () => document
-                    .getElementById(old_first_message_id)
-                    ?.scrollIntoView()
-            )
-
-            // nếu là các thiết bị khác thì chạy infinitve loading scroll
-            if (!isNotPc()) nextTick(() => {
+            // chạy infinitve loading scroll
+            nextTick(() => {
                 // lấy div chưa danh sách tin nhắn
                 const LIST_MESSAGE = document.getElementById('list-message')
 
@@ -341,11 +316,11 @@ function getListMessage(is_scroll?: boolean) {
         // load lần đầu thì tự động cuộn xuống
         if (is_scroll) {
             /**
-             * nếu không phải mobile, thì chạy logic infinitve loading scroll 
+             * chạy logic infinitve loading scroll 
              * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
              * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
              */
-            if (!isNotPc() && list_message.value.length >= LIMIT) getListMessage()
+            if (list_message.value.length >= LIMIT) getListMessage()
 
             scrollToBottomMessage()
 

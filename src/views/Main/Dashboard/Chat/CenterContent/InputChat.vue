@@ -97,7 +97,7 @@
         <div
             class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
             <template v-for="widget of widget_list">
-                <div v-tooltip="widget?.snap_app?.name" v-if="isMobile() || widget.position === 'BOTTOM'"
+                <div v-tooltip="widget?.snap_app?.name" v-if="widget.position === 'BOTTOM'"
                     @click="$event => toggleWidget($event, widget)"
                     class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center text-slate-600 font-extrabold mr-2">
                     <img :src="widget.snap_app.mini_icon || widget.snap_app.icon" width="20" height="20" />
@@ -118,8 +118,8 @@ import {
 import { useConversationStore, useMessageStore, useCommonStore, usePageStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import {
-    getLabelValid, scrollToBottomMessage, getLabelInfo, getPageLabel,
-    getPageWidget, getIframeUrl, isMobile, getPageCurrentStaff
+    getLabelValid, scrollToBottomMessage, getPageLabel,
+    getPageWidget, getIframeUrl, getPageCurrentStaff
 } from '@/service/function'
 import { eachOfLimit, waterfall } from 'async'
 import { upload_temp_file } from '@/service/api/chatbox/n6-static'
@@ -256,13 +256,6 @@ function onPasteImage() {
 /**xoá file định gửi */
 function deleteUploadFile(index: number) {
     pullAt(messageStore.upload_file_list, index)
-
-    keepMobileKeyboard()
-}
-/**giữ bàn phím ảo trên mobile không mất */
-function keepMobileKeyboard() {
-    if (isMobile() && input_chat_ref.value?.innerText)
-        input_chat_ref.value.focus()
 }
 /**chọn file từ thiết bị để gửi đi */
 function selectAttachmentFromDevice() {
@@ -279,9 +272,6 @@ function selectAttachmentFromDevice() {
 
     // hàm xử lý sau khi upload thành công
     INPUT.onchange = () => {
-        // trên mobile, nếu đang chat dở thì mở lại bàn phím ảo
-        keepMobileKeyboard()
-
         // làm sạch danh sách file
         messageStore.upload_file_list = []
 
@@ -412,9 +402,6 @@ function submitInput($event: KeyboardEvent) {
     // nếu bấm shift + enter thì chỉ xuống dòng
     if ($event.shiftKey) return
 
-    // nếu ở mobile thì nhấn enter chỉ xuống dòng, không xử lý sự kiện
-    if (isMobile()) return
-
     // nếu bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
 
@@ -438,9 +425,6 @@ function sendMessage() {
 
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
-
-    // nếu ở trên mobile, click gửi tin sẽ focus lại vào input, để bàn phím không bị mất
-    keepMobileKeyboard()
 
     // gửi text
     if (TEXT) sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)

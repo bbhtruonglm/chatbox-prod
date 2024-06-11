@@ -63,62 +63,6 @@ export const resetConversationFilter = () => {
     conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
 }
 
-/**nếu là giao diện pc hoặc tablet thì không hiển thị filter full màn hình nữa */
-export const teleportModelFilterOnPcScreen = () => {
-    const commonStore = useCommonStore()
-
-    // mobile thì hiển thị full
-    if (window.innerWidth < 768) {
-        commonStore.conversation_filter_modal_left = `0`
-        commonStore.conversation_filter_modal_width = `100%`
-    }
-    // tablet, pc thì hiển thị nhỏ
-    // đợi 1 khoảng thời gian để div gốc di chuyển đến vị trí mong muốn
-    else setTimeout(() => {
-        let left = document
-            .getElementById('chat-conversation')
-            ?.getBoundingClientRect()
-            ?.left
-
-        let width = document
-            .getElementById('chat-conversation')
-            ?.offsetWidth
-
-        if (!left || !width) return
-
-        commonStore.conversation_filter_modal_left = `${left}px`
-        commonStore.conversation_filter_modal_width = `${width}px`
-    }, 600)
-}
-
-/**nếu là giao diện pc hoặc tablet thì không hiển thị assign staff full màn hình nữa */
-export const teleportCenterModelOnPcScreen = () => {
-    const commonStore = useCommonStore()
-
-    // mobile thì hiển thị full
-    if (window.innerWidth < 768) {
-        commonStore.center_modal_left = `0`
-        commonStore.center_modal_width = `100%`
-    }
-    // tablet, pc thì hiển thị nhỏ
-    // đợi 1 khoảng thời gian để div gốc di chuyển đến vị trí mong muốn
-    else setTimeout(() => {
-        let left = document
-            .getElementById('center-content')
-            ?.getBoundingClientRect()
-            ?.left
-
-        let width = document
-            .getElementById('center-content')
-            ?.offsetWidth
-
-        if (!left || !width) return
-
-        commonStore.center_modal_left = `${left}px`
-        commonStore.center_modal_width = `${width}px`
-    }, 600)
-}
-
 /**chọn một hội thoại */
 export const selectConversation = (conversation: ConversationInfo) => {
     if (!conversation) return
@@ -137,28 +81,14 @@ export const selectConversation = (conversation: ConversationInfo) => {
     })
 
     // tự động focus vào input chat
-    if (!isMobile()) document.getElementById('chat-text-input-message')?.focus()
+    document.getElementById('chat-text-input-message')?.focus()
 }
 
-/**kiểm tra cỡ màn hình, từ đó suy luận ra có đang ở chế độ dt hay không */
-export const isMobile = () => {
-    return window.innerWidth < 768
-}
 /**kiểm tra có đang trong trang chat hay không */
 export const isChat = () => {
     const $route = useRoute()
 
     return $route.path?.includes('/chat')
-}
-
-/**kiểm tra cỡ màn hình có phải là máy tính bảng hay không */
-export const isTablet = () => {
-    return window.innerWidth >= 768 && window.innerWidth < 1280
-}
-
-/**kiểm tra cỡ màn hình không phải là pc */
-export const isNotPc = () => {
-    return isMobile() || isTablet()
 }
 
 /**cuộn xuống cuối trang */

@@ -5,74 +5,45 @@
     }"
     class="flex flex-wrap mt-[1px] relative z-1"
   >
-    <template
-      v-if="isMobile()"
-      v-for="(attachment, index) of message_attachments"
-    >
+    <template v-for="attachment of horizontal_attachment_list">
       <div
         v-if="attachment.type !== 'fallback'"
-        @click="viewAttachment(getFile(index))"
-        class="rounded-lg bg-slate-200 border min-w-[84px] h-[168px] mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
+        @click="viewAttachment(getFile(attachment.index))"
+        :class="
+        // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
+        // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
+        // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
+        // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
+        // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
+          horizontal_attachment_list?.length === 1 ? 'h-[168px]' : 'h-[84px]'
+        "
+        class="rounded-lg bg-slate-200 shadow mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
       >
         <ImageAttachment
-          v-if="getTypeFromIndex(index) === 'image'"
-          :url="getFileUrl(index)"
-        />
-        <VideoAttachment
-          v-else-if="getTypeFromIndex(index) === 'video'"
-          :url="getFileUrl(index)"
-        />
-        <AudioAttachment
-          v-else-if="getTypeFromIndex(index) === 'audio'"
-          :url="getFileUrl(index)"
+          v-if="getTypeFromIndex(attachment.index) === 'image'"
+          :url="getFileUrl(attachment.index)"
         />
         <AnotherAttachment
           v-else
-          :url="getFileUrl(index)"
+          :url="getFileUrl(attachment.index)"
         />
       </div>
     </template>
-    <template v-else>
-      <template v-for="attachment of horizontal_attachment_list">
+    <template v-for="attachment of vertical_attachment_list">
+      <div class="mt-[1px] w-full h-full flex justify-end">
         <div
-          v-if="attachment.type !== 'fallback'"
-          @click="viewAttachment(getFile(attachment.index))"
-          :class="
-          // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
-          // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
-          // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
-          // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
-          // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
-            horizontal_attachment_list?.length === 1 ? 'h-[168px]' : 'h-[84px]'
-          "
-          class="rounded-lg bg-slate-200 shadow mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
+          class="rounded-lg overflow-hidden w-[200px] h-[120px]"
+          v-if="getTypeFromIndex(attachment.index) === 'video'"
         >
-          <ImageAttachment
-            v-if="getTypeFromIndex(attachment.index) === 'image'"
-            :url="getFileUrl(attachment.index)"
-          />
-          <AnotherAttachment
-            v-else
-            :url="getFileUrl(attachment.index)"
-          />
+          <VideoAttachment :url="getFileUrl(attachment.index)" />
         </div>
-      </template>
-      <template v-for="attachment of vertical_attachment_list">
-        <div class="mt-[1px] w-full h-full flex justify-end">
-          <div
-            class="rounded-lg overflow-hidden w-[200px] h-[120px]"
-            v-if="getTypeFromIndex(attachment.index) === 'video'"
-          >
-            <VideoAttachment :url="getFileUrl(attachment.index)" />
-          </div>
-          <div
-            class="w-[300px] h-[50px]"
-            v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
-          >
-            <AudioAttachment :url="getFileUrl(attachment.index)" />
-          </div>
+        <div
+          class="w-[300px] h-[50px]"
+          v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
+        >
+          <AudioAttachment :url="getFileUrl(attachment.index)" />
         </div>
-      </template>
+      </div>
     </template>
   </div>
 </template>
@@ -82,7 +53,6 @@ import { useMessageStore } from '@/stores'
 import { size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
 import { ref } from 'vue'
-import { isMobile } from '@/service/function'
 
 import ImageAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/ImageAttachment.vue'
 import VideoAttachment from '@/views/Main/Dashboard/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
@@ -178,30 +148,29 @@ function getAttachmentInfo() {
   // không có file thì không cần xử lý
   if (!size($props.message_attachments)) return
 
-  // trên pc sẽ chia file thành 2 dạng hiển thị ngang và dọc
-  if (!isMobile()) {
-    // xóa dữ liệu cũ nếu có
-    vertical_attachment_list.value = []
-    horizontal_attachment_list.value = []
+  // chia file thành 2 dạng hiển thị ngang và dọc
 
-    // duyệt qua từng file
-    $props.message_attachments.forEach((attachment, index) => {
-      // thêm index vào để mapping với dữ liệu lấy từ sv về
-      attachment.index = index
+  // xóa dữ liệu cũ nếu có
+  vertical_attachment_list.value = []
+  horizontal_attachment_list.value = []
 
-      // dạng dọc thì hiển thị tất cả
-      if (SHOW_TYPE.includes(attachment.type))
-        return vertical_attachment_list.value.push(attachment)
+  // duyệt qua từng file
+  $props.message_attachments.forEach((attachment, index) => {
+    // thêm index vào để mapping với dữ liệu lấy từ sv về
+    attachment.index = index
 
-      // dạng ngang
+    // dạng dọc thì hiển thị tất cả
+    if (SHOW_TYPE.includes(attachment.type))
+      return vertical_attachment_list.value.push(attachment)
 
-      // nếu là tin nhắn trả lời thì chỉ hiển thị 1 file đầu tiên
-      // if ($props.is_reply && index > 0) return
+    // dạng ngang
 
-      // nếu không phải tin nhắn trả lời thì hiển thị tất cả
-      horizontal_attachment_list.value.push(attachment)
-    })
-  }
+    // nếu là tin nhắn trả lời thì chỉ hiển thị 1 file đầu tiên
+    // if ($props.is_reply && index > 0) return
+
+    // nếu không phải tin nhắn trả lời thì hiển thị tất cả
+    horizontal_attachment_list.value.push(attachment)
+  })
 
   if (size(getAttachmentFromStore())) return
 

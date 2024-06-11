@@ -113,7 +113,7 @@ import { format as format_date, isToday, isThisWeek, isThisYear } from 'date-fns
 import viLocale from 'date-fns/locale/vi'
 import { useRouter } from 'vue-router'
 import {
-    isMobile, selectConversation, getLabelInfo, getLabelValid, getPageInfo, setParamChat
+    selectConversation, getLabelValid, getPageInfo, setParamChat
 } from '@/service/function'
 import { getFbUserInfo } from '@/service/helper/ext'
 import { ref } from 'vue'
@@ -156,18 +156,12 @@ function isNewMessage(): boolean {
 }
 /**click chuột vào 1 khách hàng */
 function clickConversation() {
-    // nếu mess đang được show thì không cho click nữa
-    if (isMobile() && commonStore.is_show_message_mobile) return
-
     // nếu không có key thì không cho click
     if (
         !$props.source?.fb_page_id ||
         !$props.source?.fb_client_id ||
         !$props.source?.data_key
     ) return
-
-    // hiện tin nhắn ở giao diện mobile
-    commonStore.is_show_message_mobile = true
 
     // ẩn mũi tên scroll bottom
     messageStore.is_show_to_bottom = false

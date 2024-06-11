@@ -1,7 +1,5 @@
 <template>
-    <div id="center-content" :class="{
-        'translate-x-[100vw]': !commonStore.is_show_message_mobile
-    }"
+    <div id="center-content"
         class="md:translate-x-0 duration-200 pt-[58px] pb-[30px] md:pt-0 md:pb-0 top-0 absolute md:static md:w-[calc(100%_-_650px)] xl:w-[calc(100%_-_750px)] h-full w-full bg-white">
         <div v-show="conversationStore.select_conversation?.fb_client_id" class="h-full">
             <UserInfo @toggle_change_assign_staff="toggleChangeAssignStaff" />
@@ -22,10 +20,8 @@
     </template>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useCommonStore, useConversationStore } from '@/stores'
-import { teleportCenterModelOnPcScreen } from '@/service/function'
-import { swipe_left } from '@/service/helper/touchGesture'
+import { ref } from 'vue'
+import { useConversationStore } from '@/stores'
 
 import UserInfo from '@/views/Main/Dashboard/Chat/CenterContent/UserInfo.vue'
 import MessageList from '@/views/Main/Dashboard/Chat/CenterContent/MessageList.vue'
@@ -38,7 +34,6 @@ import StaffReadModal from '@/views/Main/Dashboard/Chat/CenterContent/StaffReadM
 
 import type { ComponentRef } from '@/service/interface/vue'
 
-const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 
 const change_staff_ref = ref<ComponentRef>()
@@ -46,25 +41,12 @@ const change_staff_ref = ref<ComponentRef>()
 /**ref của modal widget bottom */
 const bottom_widget_modal_ref = ref<ComponentRef>()
 
-onMounted(() => allowMobileSwipeClose())
-
-/**cho phép mobile dùng hành động vuốt để đóng message */
-function allowMobileSwipeClose() {
-    swipe_left(
-        'center-content',
-        (e, r) => commonStore.is_show_message_mobile = false
-    )
-}
 /**ẩn hiện modal */
 function toggleChangeAssignStaff($event: MouseEvent) {
-    teleportCenterModelOnPcScreen()
-
     change_staff_ref.value?.toggle($event)
 }
 /**ẩn hiện modal */
 function toggleBottomWidget($event: MouseEvent) {
-    teleportCenterModelOnPcScreen()
-
     bottom_widget_modal_ref.value?.toggleModal($event)
 }
 </script>

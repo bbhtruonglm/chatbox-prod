@@ -2,12 +2,12 @@
     <div v-if="is_show" class="absolute top-[-35vh] h-[35vh] w-full bg-white border-t z-10">
         <Loading v-if="loading" type="FULL" />
         <template v-else>
-            <div v-if="!isMobile()" class="flex justify-between bg-green-50 text-green-600 px-1 py-1 text-sm h-[30px]">
+            <div class="flex justify-between bg-green-50 text-green-600 px-1 py-1 text-sm h-[30px]">
                 <p>Enter hoặc click để chọn</p>
                 <p>Dùng ↑ hoặc ↓ để chọn</p>
             </div>
-            <div :class="isMobile() ? 'h-full' : 'h-[calc(100%_-_30px)]'"
-                class="overflow-hidden scrollbar-vertical overflow-y-auto">
+            <div
+                class="overflow-hidden scrollbar-vertical overflow-y-auto h-[calc(100%_-_30px)]">
                 <div v-for="(answer, index) in quick_answers" :id="answer.id" class="py-2 px-1.5 cursor-pointer hover:bg-slate-100"
                     @click="selectQuickAnswer(answer)" :class="{
                         'text-orange-500': answer.id === answer_selected,
@@ -32,7 +32,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useConversationStore, usePageStore, useMessageStore } from '@/stores'
-import { isMobile } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { get_quick_answer } from '@/service/api/chatbox/widget'
 import { size } from 'lodash'
@@ -130,12 +129,10 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
 }
 /**focus vào input chat */
 function focusChat() {
-    if (!isMobile()) document.getElementById('chat-text-input-message')?.focus()
+    document.getElementById('chat-text-input-message')?.focus()
 }
 /** Gán câu trả lời nhanh mặc định */
 function setDefaultQuickAnswer() {
-    if (isMobile()) return
-
     if (!quick_answers.value?.length) return
 
     answer_selected.value = quick_answers.value?.[0]?.id

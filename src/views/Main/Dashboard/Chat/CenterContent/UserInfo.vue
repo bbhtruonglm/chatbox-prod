@@ -2,9 +2,6 @@
     <div v-if="conversationStore.select_conversation"
         class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-hidden  scrollbar-vertical overflow-y-auto">
         <div class="flex items-center col-span-2 xl:col-span-1">
-            <button @click="backToConversation" class="block md:hidden mr-4">
-                <img class="rounded-full" width="13" height="13" src="@/assets/icons/arrow-left.svg">
-            </button>
             <ClientAvatar @click="openClientInfo" :client_name="conversationStore.select_conversation?.client_name"
                 :client_id="conversationStore.select_conversation?.fb_client_id"
                 :page_id="conversationStore.select_conversation?.fb_page_id"
@@ -140,10 +137,6 @@ function openPageInbox() {
 /**mở popup thông tin chi tiết của khách hàng */
 function openClientInfo() {
     client_info_modal_ref.value.toggleModal()
-}
-/**xử lý sự kiện thoát ra ngoài màn hình danh sách khách hàng của mobile */
-function backToConversation() {
-    commonStore.is_show_message_mobile = false
 }
 /**mở modal thay đổi assign nhân viên */
 function openAssignStaff($event: MouseEvent) {
