@@ -83,10 +83,7 @@ import closeRedSvg from '@/assets/icons/close-red.svg'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
-const commonStore = useCommonStore()
 
-/**ref của các modal filter */
-const filter_modal_refs = reactive<any>({})
 /**ref của dropdown */
 const menu_ref = ref<ComponentRef>()
 /** Lọc theo tương tác */
@@ -118,5 +115,4 @@ function clearAllFilter() {
     filter_post.value?.clearThisFilter()
     resetConversationFilter()
 }
-
 </script>

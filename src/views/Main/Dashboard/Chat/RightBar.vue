@@ -29,7 +29,7 @@
         </div>
         <div class="h-[calc(100%_-_75px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
             <template v-for="widget of widget_list" class="border-b">
-                <div v-if="!isMobile() && !widget.is_hidden">
+                <div v-if="!widget.is_hidden">
                     <div @click="toggleWidget(widget)"
                         class="text-xs font-bold text-slate-600 pl-2 flex items-center cursor-pointer hover:bg-orange-100 py-3 hover:brightness-90 bg-white sticky top-0">
                         <img :src="widget.snap_app.icon" class="mr-1" width="20" height="20" />
@@ -79,10 +79,9 @@
     </template>
 </template>
 <script setup lang="ts">
-import { nextTick, ref, watch, reactive } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useConversationStore } from '@/stores'
 import { getIframeUrl, getPageWidget, getPageCurrentStaff } from '@/service/function'
-import { isMobile } from '@/service/function'
 import { intersection } from 'lodash'
 
 import Popover from '@/components/Popover.vue'

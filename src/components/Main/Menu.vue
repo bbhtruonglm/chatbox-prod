@@ -18,9 +18,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import { useCommonStore } from '@/stores'
-import { isMobile, isChat } from '@/service/function'
-import { useRoute } from 'vue-router'
+import { isChat } from '@/service/function'
 
 const $emit = defineEmits(['toggle_nav_change'])
 
@@ -52,38 +50,18 @@ function toggleNav() {
 }
 /**
  * css lại nav khi ẩn / hiên
- * mobile: ẩn nav - hiện nav cỡ lớn
  * tablet/pc: hiện nav cỡ lớn - hiện nav cỡ nhỏ
  */
 function genNavClass() {
-    /**ở mobile thì nav là overlay và sẽ ẩn hẳn đi */
-    if (isMobile()) {
-        /**
-        * trạng thái bình thường
-        * mobile: ẩn nav
-        */
-        if (!this_toggle_nav.value) return 'left-[-300px]'
+    /**
+    * trong chat hiển thị cỡ lớn
+    */
+    if (!isChat()) return 'md:static md:w-[220px]'
 
-        /**
-         * trạng thái kích hoạt
-         * mobile: hiển thị cỡ lớn
-         */
-        return `top-0 left-0`
-    }
-    /**ở pc thì trong chat hiện nhỏ, ngoài chat hiện lớn không đổi */
-    else {
-        /**
-        * trong chat
-        * tablet/pc: hiển thị cỡ lớn
-        */
-        if (!isChat()) return 'md:static md:w-[220px]'
-
-        /**
-         * ngoài chat
-         * tablet/pc: hiển thị cỡ nhỏ
-         */
-        return `md:static md:w-[60px]`
-    }
+    /**
+     * ngoài chat hiển thị cỡ nhỏ
+     */
+    return `md:static md:w-[60px]`
 }
 /**
  * css lại kích cỡ content khi ẩn / hiện, để không bị đè vào kích thước của nav

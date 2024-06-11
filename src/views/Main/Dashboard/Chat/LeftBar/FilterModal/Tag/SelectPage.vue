@@ -1,6 +1,8 @@
 <template>
     <div class="border w-full px-3 py-2 rounded-lg flex items-center justify-between cursor-pointer" @click="toggle">
-        <p v-if="!page_selected?.page?.name">Tất cả các page</p>
+        <p v-if="!page_selected?.page?.name">
+            {{ $t('v1.view.main.dashboard.chat.filter.label.all_page') }}
+        </p>
         <p v-if="page_selected?.page?.name" class="w-[90%] truncate">{{ page_selected.page.name }}</p>
         <img :src="DownIcon" class="w-3" alt="">
     </div>
@@ -9,7 +11,9 @@
             @click="selectPage()"
             class="cursor-pointer flex items-center mb-1 hover:bg-orange-100 rounded-lg p-1"
         >
-            <p class="text-[14px] ml-1 w-[90%] truncate">Chọn tất cả</p>
+            <p class="text-[14px] ml-1 w-[90%] truncate">
+                {{ $t('v1.view.main.dashboard.chat.filter.label.all_page') }}
+            </p>
         </div>
         <div 
             v-for="page_info, page_id in pages" 
@@ -29,9 +33,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { usePageStore } from '@/stores'
-import { isMobile } from '@/service/function'
 
 // * Components
 import Dropdown from '@/components/Dropdown.vue'
@@ -60,12 +63,10 @@ const filter_dropdown_ref = ref<ComponentRef>()
 
 /** Ẩn hiện dropdown */
 function toggle($event: MouseEvent) {
-    // nếu là pc thỉ mở dropdown
     filter_dropdown_ref.value?.toggleDropdown($event)
 }
 /** Chọn page */
 function selectPage(page?: PageData, page_id?: string) {
-
     // Trường hợp chọn tất cả page
     if(!page) {
         page_selected.value = undefined

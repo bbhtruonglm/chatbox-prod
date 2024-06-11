@@ -1,16 +1,4 @@
 <template>
-    <ModalBottom ref="change_staff_modal_ref" :left="commonStore.center_modal_left" :width="commonStore.center_modal_width"
-        @open_modal="getStaffsByPageId()">
-        <template v-slot:header>
-            {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
-        </template>
-        <template v-slot:body>
-            <div class="h-[calc(100vh_-_300px)]">
-                <SearchStaff @search_staff="searchStaff" />
-                <StaffItem @select_staff="assignConversationtoStaff" :staffs="staffs" :select_staff_id="fb_staff_id" />
-            </div>
-        </template>
-    </ModalBottom>
     <Dropdown ref="change_staff_dropdown_ref" @open_dropdown="onOpenDropdown()" :is_fit="false" width="350px"
         height="360px">
         <SearchStaff ref="search_ref" @search_staff="searchStaff" />
@@ -20,15 +8,13 @@
 
 <script setup lang="ts">
 import { map } from 'lodash'
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useCommonStore, usePageStore, useConversationStore } from '@/stores'
-import { isMobile, teleportCenterModelOnPcScreen } from '@/service/function'
+import { usePageStore, useConversationStore } from '@/stores'
 import { set_assign_staff_conversation } from '@/service/api/chatbox/n4-service'
 import { nonAccentVn } from '@/service/helper/format'
 import { flow } from '@/service/helper/async'
 
-import ModalBottom from '@/components/ModalBottom.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import SearchStaff from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaff/SearchStaff.vue'
 import StaffItem from '@/views/Main/Dashboard/Chat/CenterContent/ChangeStaff/StaffItem.vue'
@@ -38,16 +24,11 @@ import type { StaffInfo } from '@/service/interface/app/staff'
 import type { CbError } from '@/service/interface/function'
 
 const $route = useRoute()
-
-/** Sử dụng store */
-const commonStore = useCommonStore()
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 
 /**ref của dropdown */
 const change_staff_dropdown_ref = ref<ComponentRef>()
-/** ref của modal */
-const change_staff_modal_ref = ref<ComponentRef>()
 /** Danh sách nhân viên */
 const staffs = ref<{ [index: string]: StaffInfo }>({})
 /** Danh sách nhân viên */
@@ -59,20 +40,9 @@ const search_staff_name = ref<string>('')
 /** ref của modal */
 const search_ref = ref<ComponentRef>()
 
-/** Khi chọn converstion khác thì ẩn modal assign nhân viên đi */
-watch(
-    () => conversationStore.select_conversation,
-    () => change_staff_modal_ref.value?.immediatelyHide()
-)
-
-onMounted(() => teleportCenterModelOnPcScreen())
-
 /**hiện thị */
 function toggle($event: MouseEvent) {
-    // nếu mobile thì mở bottom modal
-    if (isMobile()) change_staff_modal_ref.value?.toggleModal()
-    // nếu là pc thỉ mở dropdown
-    else change_staff_dropdown_ref.value?.toggleDropdown($event)
+    change_staff_dropdown_ref.value?.toggleDropdown($event)
 }
 /**tự động focus vào search trên pc */
 function onOpenDropdown() {
@@ -127,12 +97,9 @@ function assignConversationtoStaff(staff: StaffInfo) {
 
             cb()
         }),
-        // * ẩn sau khi chạy xong
+        // * ẩn dropdown sau khi chạy xong
         (cb: CbError) => {
-            // ẩn modal
-            if (isMobile()) change_staff_modal_ref.value?.immediatelyHide()
-            // ẩn dropdown
-            else change_staff_dropdown_ref.value?.immediatelyHide()
+            change_staff_dropdown_ref.value?.immediatelyHide()
 
             cb()
         },

@@ -1,64 +1,4 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
-        :width="commonStore.conversation_filter_modal_width">
-        <template v-slot:header>
-            {{ $t('v1.view.main.dashboard.chat.filter.time.title') }}
-        </template>
-        <template v-slot:body>
-            <div class="h-[calc(100vh_-_239px)]">
-                <div class="grid grid-cols-2 gap-2">
-                    <div @click="selectExactlyTimeRange(name)" v-for="name of EXACTLY_TIME_RANGE" :class="{
-                        'bg-orange-100': isActiveExactlyTime(name)
-                    }" class="border-b cursor-pointer hover:bg-orange-100 rounded-lg p-2">
-                        {{ $t(`v1.view.main.dashboard.chat.filter.time.${name}`) }}
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-4">
-                    <div>
-                        <div class="text-slate-500">
-                            {{ $t(`v1.view.main.dashboard.chat.filter.time.from`) }}
-                        </div>
-                        <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                            <div class="p-2 rounded-lg border">
-                                {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.gte) }}
-                            </div>
-                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
-                        </div>
-                        <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.gte"
-                            v-model="conversationStore.option_filter_page_data.time_range.gte" :max="TOMORROW_TIME"
-                            :max_another_range="conversationStore.option_filter_page_data.time_range.lte"
-                            class="border rounded-xl mt-1" />
-                    </div>
-                    <div>
-                        <div class="text-slate-500">
-                            {{ $t(`v1.view.main.dashboard.chat.filter.time.to`) }}
-                        </div>
-                        <div @click="selectExactlyTimeRange('custom')" class="relative cursor-pointer">
-                            <div class="p-2 rounded-lg border">
-                                {{ formatDateDiplay(conversationStore.option_filter_page_data?.time_range?.lte) }}
-                            </div>
-                            <img src="@/assets/icons/filter_date.svg" class="absolute top-[7px] right-[7px] w-[20px] h-[20px]" />
-                        </div>
-                        <DatePicker v-if="conversationStore.option_filter_page_data?.time_range?.lte"
-                            v-model="conversationStore.option_filter_page_data.time_range.lte"
-                            :min_another_range="conversationStore.option_filter_page_data.time_range.gte"
-                            :max="TOMORROW_TIME" class="border rounded-xl mt-1" />
-                    </div>
-
-                </div>
-            </div>
-        </template>
-        <template v-slot:footer>
-            <div class="grid grid-cols-2 gap-2">
-                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
-                <FilterButton @click="toggleModal"
-                    type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.title')" />
-            </div>
-        </template>
-    </ModalBottom>
-
     <Dropdown ref="filter_dropdown_ref" :is_fit="false" width="450px" height="auto" position="RIGHT" :back="100">
         <div class="text-sm">
             <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
@@ -113,22 +53,18 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore, useCommonStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 import {
     format, startOfDay, endOfDay, startOfYesterday, endOfYesterday, subDays,
     addDays, getTime
 } from 'date-fns'
 
-import ModalBottom from '@/components/ModalBottom.vue'
 import Dropdown from '@/components/Dropdown.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 import DatePicker from '@/components/DatePicker.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import { isMobile } from '@/service/function'
 
 const conversationStore = useConversationStore()
-const commonStore = useCommonStore()
 
 /**danh sách các khoảng thời gian được chọn sẵn */
 const EXACTLY_TIME_RANGE = [
@@ -142,8 +78,6 @@ const EXACTLY_TIME_RANGE = [
 /**thời điểm bắt đầu của ngày mai */
 const TOMORROW_TIME = getTime(startOfDay(addDays(new Date(), 1)))
 
-/**ref của modal */
-const filter_modal_ref = ref<ComponentRef>()
 /**ref của dropdown */
 const filter_dropdown_ref = ref<ComponentRef>()
 
@@ -239,24 +173,11 @@ function selectExactlyTimeRange(name: string) {
 /**xoá lọc này */
 function clearThisFilter() {
     delete conversationStore.option_filter_page_data.time_range
-
-    immediatelyHide()
 }
-/**ẩn hiện modal */
-function toggleModal() {
-    filter_modal_ref.value?.toggleModal()
-}
-/**hiện thị */
+/**hiện thị dropdown */
 function toggle($event: MouseEvent) {
-    // nếu mobile thì mở bottom modal
-    if (isMobile()) toggleModal()
-    // nếu là pc thỉ mở dropdown
-    else filter_dropdown_ref.value?.toggleDropdown($event)
-}
-/**tắt ngay lập tức */
-function immediatelyHide() {
-    filter_modal_ref.value?.immediatelyHide()
+    filter_dropdown_ref.value?.toggleDropdown($event)
 }
 
-defineExpose({ toggle, toggleModal, filter_modal_ref, filter_dropdown_ref, clearThisFilter })
+defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
 </script>

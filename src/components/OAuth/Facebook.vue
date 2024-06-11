@@ -3,31 +3,15 @@
         <div v-if="is_loading" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] z-10">
             <Loading />
         </div>
-        <template v-if="isMobile()">
-            <button @click="loginIos"
-                class="flex items-center justify-center hover:brightness-90 text-white bg-blue-500 w-full h-full"
-                :style="{ borderRadius: border_radius }">
-                <img src="https://botbanhang.vn/logo/fb-1.svg">
-                {{ text }}
-            </button>
-        </template>
-        <template v-else>
-            <iframe @load="removeLoading" loading="lazy" class="relative z-[2] w-full h-full" v-if="iframe_src"
-                :src="iframe_src" frameborder="0" />
-        </template>
+        <iframe @load="removeLoading" loading="lazy" class="relative z-[2] w-full h-full" v-if="iframe_src"
+            :src="iframe_src" frameborder="0" />
     </div>
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { cross_login_url } from '@/service/constant/botbanhang'
-import { isMobile } from '@/service/function'
-import { FacebookLogin } from '@capacitor-community/facebook-login'
 
 import Loading from '../Loading.vue'
-
-import type { CbError } from '@/service/interface/function'
-import { waterfall } from 'async'
-import { toastError } from '@/service/helper/alert'
 
 const $emit = defineEmits(['access_token'])
 
@@ -47,32 +31,8 @@ const $props = withDefaults(defineProps<{
 /**url của iframe */
 const iframe_src = ref('')
 /**có hiển thị loading hay không */
-const is_loading = ref(!isMobile())
+const is_loading = ref(true)
 
-/**đăng nhập bằng sdk của fb trên ios */
-function loginIos() {
-    waterfall([
-        // * kích hoạt loading
-        (cb: CbError) => {
-            is_loading.value = true
-
-            cb()
-        },
-        // * đăng nhập bằng sdk
-        (cb: CbError) => FacebookLogin
-            .login({ permissions: $env.facebook.permissions })
-            .then(r => {
-                $emit('access_token', r?.accessToken?.token)
-
-                cb()
-            })
-            .catch(e => cb(e))
-    ], e => {
-        is_loading.value = false
-
-        if (e) return toastError(e)
-    })
-}
 /**tắt loading khi iframe load thành công */
 function removeLoading() {
     is_loading.value = false

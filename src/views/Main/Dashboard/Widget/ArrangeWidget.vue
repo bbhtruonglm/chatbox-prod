@@ -50,8 +50,6 @@ const $t = useI18n().t
 const installed_widgets_ref = ref<ComponentRef>()
 /** Danh sách widget đã cài đặt */
 const widgets_installed = ref<AppInstalledInfo[]>([])
-/** Snap lại index của widgets */
-const snap_index = ref<{ [index: number]: string }>({})
 
 /** Theo dõi sự thay đổi của props */
 watch(() => $props.widgets, () => getWidgetsData(), { deep: true })

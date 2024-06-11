@@ -1,30 +1,4 @@
 <template>
-    <ModalBottom ref="filter_modal_ref" :left="commonStore.conversation_filter_modal_left"
-        :width="commonStore.conversation_filter_modal_width">
-        <template v-slot:header>
-            {{ $t('v1.view.main.dashboard.chat.filter.message.title') }}
-        </template>
-        <template v-slot:body>
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.unread_message"
-                :icon="filterMessageSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.unread')"
-                class="border-b" />
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_response_client"
-                :icon="notReplySvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_reply')" class="border-b" />
-            <FilterCheckbox value="true" v-model="conversationStore.option_filter_page_data.not_exist_label"
-                :icon="notTagSvg" :title="$t('v1.view.main.dashboard.chat.filter.message.not_tag')" class="border-b" />
-            <FilterCheckbox value="YES" v-model="is_spam_fb" :icon="SpamSvg"
-                :title="$t('v1.view.main.dashboard.chat.filter.message.spam')" class="border-b" />
-        </template>
-        <template v-slot:footer>
-            <div class="grid grid-cols-2 gap-4">
-                <FilterButton @click="clearThisFilter" type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.un_filter')" />
-                <FilterButton @click="toggleModal"
-                    type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
-                    :title="$t('v1.view.main.dashboard.chat.filter.title')" />
-            </div>
-        </template>
-    </ModalBottom>
     <Popover ref="filter_popover_ref" position="RIGHT" :is_fit="false" width="300px" height="auto">
         <div class="text-sm">
             <button v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
@@ -48,12 +22,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useConversationStore, useCommonStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 
-import ModalBottom from '@/components/ModalBottom.vue'
 import Popover from '@/components/Popover.vue'
 import FilterCheckbox from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterCheckbox.vue'
-import FilterButton from '@/views/Main/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
 
 import filterMessageSvg from '@/assets/icons/filter_message.svg'
 import notReplySvg from '@/assets/icons/not_reply.svg'
@@ -64,10 +36,7 @@ import type { ComponentRef } from '@/service/interface/vue'
 import { isActiveMessageFilter } from '@/service/function'
 
 const conversationStore = useConversationStore()
-const commonStore = useCommonStore()
 
-/**ref của modal */
-const filter_modal_ref = ref<ComponentRef>()
 /**ref của popover */
 const filter_popover_ref = ref<ComponentRef>()
 
@@ -92,17 +61,7 @@ function clearThisFilter() {
     delete conversationStore.option_filter_page_data.not_response_client
     delete conversationStore.option_filter_page_data.not_exist_label
     conversationStore.option_filter_page_data.is_spam_fb = 'NO'
-
-    immediatelyHide()
-}
-/**ẩn hiện modal */
-function toggleModal() {
-    filter_modal_ref.value?.toggleModal()
-}
-/**tắt ngay lập tức */
-function immediatelyHide() {
-    filter_modal_ref.value?.immediatelyHide()
 }
 
-defineExpose({ toggleModal, filter_modal_ref, filter_popover_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter })
 </script>

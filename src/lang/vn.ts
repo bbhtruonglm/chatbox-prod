@@ -247,7 +247,8 @@ const source: Language = {
                                 filteration_condition: 'Điều kiện lọc:',
                                 and: 'Và',
                                 or: 'Hoặc',
-                                find_tag: 'Tìm kiếm nhãn'
+                                find_tag: 'Tìm kiếm nhãn',
+                                all_page: 'Tất cả các trang'
                             },
                             exclude_label: {
                                 title: 'Loại trừ nhãn'

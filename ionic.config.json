@@ -1,7 +1,0 @@
-{
-  "name": "bbh-chatbox-hybrid-chat",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "custom"
-}

@@ -32,17 +32,6 @@ export const useCommonStore = defineStore('common_store', () => {
         trigger_require_pricing.value = !trigger_require_pricing.value
     }
 
-    /**khoảng cách bộ lọc từ bên trái */
-    const conversation_filter_modal_left = ref<string>()
-    /**độ rộng của bộ lọc */
-    const conversation_filter_modal_width = ref<string>()
-
-    /**cờ để hiển thị danh sách tin nhắn ở mobile */
-    const is_show_message_mobile = ref(false)
-    /**khoảng cách assign modal từ bên trái */
-    const center_modal_left = ref<string>()
-    /**độ rộng của assign modal */
-    const center_modal_width = ref<string>()
     /**đánh dấu ext được phát hiện */
     const extension_status = ref<'NOT_FOUND' | 'FINDING' | 'FOUND'>('NOT_FOUND')
     /**đánh dấu chuyển toàn bộ tin nhắn qua ext */
@@ -55,11 +44,6 @@ export const useCommonStore = defineStore('common_store', () => {
         dashboard_toggle_nav,
         chat_toggle_nav,
         trigger_require_pricing,
-        conversation_filter_modal_left,
-        conversation_filter_modal_width,
-        is_show_message_mobile,
-        center_modal_left,
-        center_modal_width,
         extension_status,
         force_send_message_over_inbox,
         is_connected_internet,
