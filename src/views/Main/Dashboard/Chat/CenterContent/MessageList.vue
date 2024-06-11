@@ -201,10 +201,10 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
     scrollToBottomMessage()
 }
 /**lắng nghe sự kiện khi scroll danh sách tin nhắn */
-function onScrollMessage($event: UIEvent) {
-    handleButtonToBottom($event)
+function onScrollMessage($event: Event) {
+    handleButtonToBottom($event as UIEvent)
 
-    loadMoreMessage($event)
+    loadMoreMessage($event as UIEvent)
 }
 /**ẩn hiện nút về bottom */
 function handleButtonToBottom($event: UIEvent) {
