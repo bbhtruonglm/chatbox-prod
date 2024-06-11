@@ -6,10 +6,6 @@ import {
 } from '@/service/core'
 
 import type { CbError } from '@/service/interface/function'
-// import { CapacitorUpdater } from '@capgo/capacitor-updater';
-
-// CapacitorUpdater.notifyAppReady();
-
 
 import '@/assets/css/tailwind.css'
 
