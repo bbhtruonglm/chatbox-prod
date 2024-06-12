@@ -4,45 +4,34 @@ import DeleteAccount from '@/views/DeleteAccount.vue'
 
 import OAuth from '@/views/OAuth.vue'
 
-import Main from '@/views/Main.vue'
-
 import ChatShort from '@/views/ChatShort.vue'
 
-import Dashboard from '@/views/Main/Dashboard.vue'
-import Chat from '@/views/Main/Dashboard/Chat.vue'
-import SelectPage from '@/views/Main/Dashboard/SelectPage.vue'
-import SelectPlatform from '@/views/Main/Dashboard/SelectPlatform.vue'
-import Pricing from '@/views/Main/Dashboard/Pricing.vue'
-import Widget from '@/views/Main/Dashboard/Widget.vue'
-import Noti from '@/views/Main/Dashboard/Noti.vue'
-import Download from '@/views/Main/Dashboard/Download.vue'
-import User from '@/views/Main/Dashboard/User.vue'
+import Dashboard from '@/views/Dashboard.vue'
+import SelectPage from '@/views/Dashboard/SelectPage.vue'
+import SelectPlatform from '@/views/Dashboard/SelectPlatform.vue'
+import Pricing from '@/views/Dashboard/Pricing.vue'
+import Widget from '@/views/Dashboard/Widget.vue'
+import Noti from '@/views/Dashboard/Noti.vue'
+import Download from '@/views/Dashboard/Download.vue'
+import User from '@/views/Dashboard/User.vue'
 
 export const routes = [
   { path: '/', redirect: '/oauth' },
   { path: '/oauth', component: OAuth },
   { path: '/chat', component: ChatShort },
   {
-    path: '/main',
-    redirect: '/main/dashboard',
-    component: Main,
+    path: '/dashboard',
+    redirect: '/dashboard/select-page',
+    component: Dashboard,
     children: [
-      {
-        path: 'dashboard',
-        redirect: '/main/dashboard/select-page',
-        component: Dashboard,
-        children: [
-          { path: 'chat', component: Chat },
-          { path: 'select-page', component: SelectPage },
-          { path: 'select-platform', component: SelectPlatform },
-          { path: 'pricing', component: Pricing },
-          { path: 'widget', component: Widget },
-          { path: 'noti', component: Noti },
-          { path: 'download', component: Download },
-          { path: 'user', component: User },
-        ]
-      },
-    ]
+      { path: 'select-page', component: SelectPage },
+      { path: 'select-platform', component: SelectPlatform },
+      { path: 'pricing', component: Pricing },
+      { path: 'widget', component: Widget },
+      { path: 'noti', component: Noti },
+      { path: 'download', component: Download },
+      { path: 'user', component: User },
+    ],
   },
   { path: '/delete-account', component: DeleteAccount },
   { path: '/404', component: PageNotFound },

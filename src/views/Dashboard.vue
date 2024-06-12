@@ -1,15 +1,19 @@
 <template>
   <div class="h-full w-full flex relative">
     <Menu />
-    <Chat />
+    <RouterView />
   </div>
+  <RequirePricing />
 </template>
+
 <script setup lang="ts">
 import { initRequireData } from '@/views/composable'
 
-import Chat from '@/views/Dashboard/Chat.vue'
 import Menu from '@/views/Dashboard/Menu.vue'
+import RequirePricing from '@/components/Main/RequirePricing.vue'
 
 // composable
-initRequireData()
+const { getMeChatbotUser } = initRequireData()
+
+defineExpose({ getMeChatbotUser })
 </script>
