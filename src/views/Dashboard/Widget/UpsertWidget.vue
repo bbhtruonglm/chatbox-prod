@@ -99,7 +99,7 @@ import { useChatbotUserStore } from '@/stores'
 import { toast } from '@/service/helper/alert'
 
 import Modal from '@/components/Modal.vue'
-import FilterButton from '@/views/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterButton.vue'
 import Title from '@/views/Dashboard/Widget/Title.vue'
 import Role from '@/views/Dashboard/Widget/Role.vue'
 

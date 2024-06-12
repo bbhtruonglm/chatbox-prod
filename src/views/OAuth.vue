@@ -1,10 +1,10 @@
 <template>
-    <div class="relative md:flex md:flex-row-reverse md:h-full">
+    <div class="relative flex flex-row-reverse h-full">
         <div @click="testLogin" class="absolute w-[10px] h-[10px] top-0 right-0 cursor-pointer" />
         <div
             class="w-full h-[250px] md:h-full md:w-2/4 bg-no-repeat bg-center bg-cover bg-[url(@/assets/imgs/login-background.svg)]" />
         <div
-            class="mt-[-30px] md:mt-0 md:h-full md:w-2/4 px-8 py-10 md:py-24 rounded-t-[40px] bg-white relative h-[calc(100vh_-_244px)]">
+            class="mt-0 h-full w-2/4 px-8 py-24 bg-white relative">
             <img class="absolute top-[-150px] w-[60px] h-[60px] md:w-[80px] md:h-[80px] md:static md:mx-auto left-8"
                 src="@/assets/imgs/chatbox.svg" />
             <div class="text-2xl font-semibold md:text-center md:mt-5">

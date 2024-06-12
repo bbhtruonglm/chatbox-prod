@@ -4,7 +4,7 @@ const source: Language = {
     name: 'Tiếng Việt',
     v1: {
         common: {
-            title: 'Chatbox Bot Bán Hàng',
+            title: 'Bot Bán Hàng',
             loading: 'Đang tải dữ liệu ...',
             cancel: 'Huỷ',
             ok: 'Xác nhận',
@@ -84,7 +84,7 @@ const source: Language = {
                         noti: 'Thông báo',
                         toggle: 'Thu nhỏ',
                         select_page: 'Chọn trang',
-                        select_platform: 'Kết nối nền tảng',
+                        select_platform: 'Kết nối trang',
                         upgrade: 'Quản lý nâng cấp',
                         widget: 'Chợ ứng dụng',
                         info: 'Hướng dẫn sử dụng',
@@ -95,7 +95,23 @@ const source: Language = {
                         bot: 'Chatbot',
                         bot_faild: 'Bạn chưa kích hoạt trang',
                     },
+                    header: {
+                        business: 'Doanh nghiệp',
+                        personal: 'Cá nhân',
+                        menu: {
+                            setting_business: 'Cài đặt doanh nghiệp',
+                            staff_manager: 'Quản lý nhân viên',
+                            pricing_manager: 'Quản lý gói nâng cấp',
+                            user_info: 'Thông tin',
+                            alert: 'Thông báo',
+                            setting: 'Thiết lập',
+                            logout: 'Đăng xuất'
+                        }
+                    },
                     select_page: {
+                        group_page: {
+                            title: 'Chế độ gộp trang'
+                        },
                         select_all_page: 'Chọn tất cả các trang',
                         munti_chat_page: 'Chat nhiều trang',
                         chat_now: 'Chat ngay',

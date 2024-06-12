@@ -1,8 +1,7 @@
 <template>
     <div 
         :id="`staff-read-item-${id}`"
-        :class="animate_pulse" 
-        :style="`width:${size}px;height:${size}px;`" 
+        :class="animate_pulse"
         class="overflow-hidden bg-slate-200"
     >
         <img 
@@ -17,11 +16,10 @@ import { ref } from 'vue'
 
 const $props = withDefaults(defineProps<{
     id?: string
-    size?: string
-}>(), {
-    size: '40'
-})
+}>(), {})
 
+/**kích thước thực tế */
+const SIZE = 64
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
 
@@ -33,12 +31,12 @@ function removeAnimatePulse() {
 function onImageError($event: Event) {
     const image = $event.target as HTMLImageElement
 
-    image.src = `${$env.img_host}/1111111111?width=${$props.size}&height=${$props.size}`
+    image.src = `${$env.img_host}/1111111111?width=${SIZE}&height=${SIZE}`
 }
 /**tạo url ảnh */
 function loadImageUrl() {
     // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.id}.jpeg`
     
-    return `${$env.img_host}/${$props.id}?width=${$props.size}&height=${$props.size}`
+    return `${$env.img_host}/${$props.id}?width=${SIZE}&height=${SIZE}`
 }
 </script>

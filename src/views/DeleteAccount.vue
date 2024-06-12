@@ -15,7 +15,7 @@
                     <div class="mb-1 font-bold">
                         {{ staff_name }}
                     </div>
-                    <StaffAvatar :id="staff_id" size="100" class="mb-4"/>
+                    <StaffAvatar :id="staff_id" class="mb-4 w-24 h-24"/>
                     <button @click="deleteAccount" class="bg-red-600 text-white px-4 py-2 rounded-full w-full">
                         Delete Account
                     </button>

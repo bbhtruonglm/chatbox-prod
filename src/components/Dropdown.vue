@@ -5,7 +5,7 @@
             <div ref="dropdown_ref" :style="{
                 width: _width,
                 height: _height,
-            }" class="absolute border rounded-md p-2 bg-white">
+            }" class="absolute shadow-lg rounded-md p-2 bg-white">
                 <slot />
             </div>
         </div>

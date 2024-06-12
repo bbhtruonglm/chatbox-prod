@@ -4,7 +4,7 @@ import DeleteAccount from '@/views/DeleteAccount.vue'
 
 import OAuth from '@/views/OAuth.vue'
 
-import ChatShort from '@/views/ChatShort.vue'
+import ChatShort from '@/views/ChatWarper.vue'
 
 import Dashboard from '@/views/Dashboard.vue'
 import SelectPage from '@/views/Dashboard/SelectPage.vue'

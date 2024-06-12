@@ -136,7 +136,7 @@
                 <div class="font-semibold flex flex-wrap">
                     <template v-for="staff_id of conversationStore.option_filter_page_data.staff_id">
                         <div v-if="staffs?.[staff_id]" class="flex items-center mr-2">
-                            <StaffAvatar :id="staff_id" size="20" class="rounded-full" />
+                            <StaffAvatar :id="staff_id" class="rounded-full w-5 h-5" />
                             <div class="ml-1">
                                 {{ staffs?.[staff_id]?.name }}
                             </div>
