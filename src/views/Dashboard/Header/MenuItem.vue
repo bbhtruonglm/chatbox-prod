@@ -5,7 +5,7 @@
     <div
       class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0"
     >
-      <icon />
+      <component :is="icon"></component>
     </div>
     <div class="flex-grow text-left">
       {{ title }}
