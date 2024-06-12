@@ -130,6 +130,6 @@ function goPricing() {
     toggleRequirePricingModal()
 
     // đi đến trang cài đặt gói
-    $router.push('/main/dashboard/pricing')
+    $router.push('/dashboard/pricing')
 }
 </script>

@@ -54,7 +54,7 @@ const ENV: Env = {
         v2: {
             app_id: '1282108599314861',
             instagram: {
-                redirect_uri: 'https://localhost:8000/main/dashboard/select-platform?current_selected_tab=FB_INSTAGRAM',
+                redirect_uri: 'https://localhost:8000/dashboard/select-platform?current_selected_tab=FB_INSTAGRAM',
                 scoped: [
                     'public_profile',
                     'email',
@@ -81,7 +81,7 @@ const ENV: Env = {
         }
     },
     zalo_oa: {
-        redirect_uri: 'https://localhost:8000/main/dashboard/select-platform?current_selected_tab=ZALO_OA',
+        redirect_uri: 'https://localhost:8000/dashboard/select-platform?current_selected_tab=ZALO_OA',
     },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM', 'ZALO_OA'],
     img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar'

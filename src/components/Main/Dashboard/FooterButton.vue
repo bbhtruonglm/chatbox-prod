@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[90px] md:h-[64px] bg-white rounded-t-[35px] md:rounded-none pt-4 md:pt-[10px] xl:pt-4 px-[40px]">
+    <div class="h-[90px] md:h-[64px] rounded-t-[35px] md:rounded-none pt-4 md:pt-[10px] xl:pt-4 px-[40px]">
         <div>
             <button @click="onClick()" :disabled="disabled"
                 :class="!disabled ? 'bg-orange-600 hover:bg-orange-500' : 'bg-slate-600 hover:bg-slate-500'"
