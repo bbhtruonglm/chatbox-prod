@@ -122,7 +122,7 @@ import { check_page_install_widget, install_widget } from '@/service/api/chatbox
 import { openPopup } from '@/service/function'
 
 import Modal from '@/components/Modal.vue'
-import FilterButton from '@/views/Dashboard/Chat/LeftBar/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterButton.vue'
 import SelectPage from '@/views/Dashboard/Widget/SelectPage.vue'
 import Title from '@/views/Dashboard/Widget/Title.vue'
 import Role from '@/views/Dashboard/Widget/Role.vue'

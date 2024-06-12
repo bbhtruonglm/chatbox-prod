@@ -257,12 +257,13 @@ export function isFilterActive() {
 
 /**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
 export function selectNav($router: Router, path: string) {
-    const commonStore = useCommonStore()
-
-    // check cỡ màn điện thoại
-    if (window.innerWidth < 768) commonStore.dashboard_toggle_nav = false
-
     $router.push(path)
+}
+
+/**lấy dữ liệu ngôn ngữ hiện tại */
+export function getLocale() {
+    // đọc ngôn ngữ hiện tại được lưu từ local storage
+    return localStorage.getItem('locale') || 'vn'
 }
 
 /**cài đặt id trang và user cho chat */
