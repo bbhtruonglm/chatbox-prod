@@ -44,8 +44,7 @@
                                 <PageAvatar
                                     v-if="chil_comment.from?.id === conversationStore.select_conversation?.fb_page_id"
                                     :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page"
-                                    class="rounded-full" :page_id="conversationStore.select_conversation?.fb_page_id"
-                                    page_type="FB_MESS" />
+                                    class="rounded-full w-10 h-10" />
                                 <ClientAvatar v-else :client_name="chil_comment.from?.name"
                                     :client_id="chil_comment.from?.id"
                                     :page_id="conversationStore.select_conversation?.fb_page_id"
@@ -87,9 +86,8 @@
                         <div class="flex mt-3 w-full">
                             <!-- <img src="https://merchant-dev-static.s3.ap-southeast-1.amazonaws.com/files/business_642655457c339f9194288da9/1695532605955.jpeg" alt="" class="w-[40px] h-[40px] rounded-full"> -->
                             <div>
-                                <PageAvatar class="rounded-full"
-                                    :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page"
-                                    :page_id="conversationStore.select_conversation?.fb_page_id" page_type="FB_MESS" />
+                                <PageAvatar class="rounded-full w-10 h-10"
+                                    :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page" />
                             </div>
                             <div class="ml-3 w-full flex relative">
                                 <input v-model="comment.new_comment" :id="`input_${comment.comment_id}`"

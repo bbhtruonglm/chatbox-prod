@@ -1,8 +1,8 @@
 <template>
     <div class="bg-slate-100 rounded p-1 flex items-center cursor-pointer">
         <div>
-            <PageAvatar v-if="page_data" :page_id="page_data?.page?.fb_page_id" :page_type="page_data?.page?.type"
-                :page_info="page_data?.page" :page_avatar="page_data?.page?.avatar" size="40" class="rounded-full" />
+            <PageAvatar v-if="page_data" 
+                :page_info="page_data?.page" class="rounded-full w-10 h-10" />
             <StaffAvatar class="rounded-full w-10 h-10" v-if="staff_data" :id="staff_data?.fb_staff_id" />
         </div>
         <div class="ml-1 w-[calc(100%_-_60px)] pr-1">

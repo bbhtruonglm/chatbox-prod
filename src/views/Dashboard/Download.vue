@@ -10,8 +10,8 @@
             <div
                 class="h-[110px] scrollbar-vertical overflow-hidden overflow-y-auto flex items-center flex-wrap border rounded-lg p-2 justify-center">
                 <div v-if="list_page?.length" v-for="page of list_page" class="flex items-center mr-4 mb-1">
-                    <PageAvatar :page_id="page.page?.fb_page_id" :page_type="page?.page?.type" :page_info="page.page"
-                        :page_avatar="page?.page?.avatar" class="rounded-full" size="30" />
+                    <PageAvatar :page_info="page.page"
+                    class="rounded-full w-8 h-8" />
                     <div class="text-slate-500 font-semibold ml-1">
                         {{ page?.page?.name }}
                     </div>

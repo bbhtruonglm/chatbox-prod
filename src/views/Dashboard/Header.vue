@@ -12,7 +12,10 @@
       </h2>
     </div>
     <div class="flex gap-7 items-center">
-      <button class="btn-custom">
+      <button
+        @click="$router.push(`/dashboard/select-platform`)"
+        class="btn-custom"
+      >
         <PlusCircleIcon />
         {{ $t('v1.view.main.dashboard.nav.select_platform') }}
       </button>
