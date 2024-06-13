@@ -64,7 +64,7 @@
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { nonAccentVn } from '@/service/helper/format'
 
-import ArrowDownIcon from '@/components/icons/ArrowDown.vue'
+import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 
