@@ -21,11 +21,8 @@
             class="cursor-pointer flex items-center mb-1 hover:bg-orange-100 rounded-lg p-1"
         >
             <PageAvatar
-                :page_id="(page_id as string)"
                 :page_info="page_info.page"
-                :page_type="pageStore.selected_page_list_info?.[page_id as string]?.page?.type"
-                :page_avatar="pageStore.selected_page_list_info?.[page_id as string]?.page?.avatar"
-                size="30" class="rounded-full border-2 border-white min-w-[30px] h-[30px]"
+                class="rounded-full border-2 border-white w-8 h-8"
             />
             <p class="text-[14px] ml-1 w-[90%] truncate">{{ page_info.page?.name }}</p>
         </div>

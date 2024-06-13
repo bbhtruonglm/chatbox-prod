@@ -1,21 +1,20 @@
 <template>
-  <Header />
-  <div class="h-full w-full flex relative">
-    <Menu />
-    <RouterView />
+  <div class="flex flex-col h-full">
+    <Header class="flex-shrink-0" />
+    <div class="overflow-hidden pt-3 h-full">
+      <RouterView />
+    </div>
   </div>
-  <RequirePricing />
 </template>
 
 <script setup lang="ts">
 import { initRequireData } from '@/views/composable'
 
 import Header from '@/views/Dashboard/Header.vue'
-import Menu from '@/views/Dashboard/Menu.vue'
-import RequirePricing from '@/components/Main/RequirePricing.vue'
 
 // composable
 const { getMeChatbotUser } = initRequireData()
 
+// TODO loại bỏ cái này
 defineExpose({ getMeChatbotUser })
 </script>

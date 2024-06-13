@@ -16,11 +16,8 @@
         }['is_hide_page_avatar'] : getPageInfo(source?.fb_page_id)?.is_hide_page_avatar
     }" class="w-fit h-fit absolute bottom-[-4px] right-[-4px] ">
                         <PageAvatar v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name"
-                            :page_id="source?.fb_page_id"
                             :page_info="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page"
-                            :page_type="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.type"
-                            :page_avatar="pageStore.selected_page_list_info?.[source?.fb_page_id as string]?.page?.avatar"
-                            size="20" class="rounded-full border-2 border-white" />
+                            class="rounded-full border-2 border-white w-5 h-5" />
                     </div>
                 </div>
             </div>

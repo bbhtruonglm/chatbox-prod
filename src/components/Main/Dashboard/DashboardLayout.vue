@@ -1,0 +1,12 @@
+<template>
+  <div class="h-full w-full flex relative gap-3">
+    <div
+      class="h-full flex-shrink-0 w-56 bg-white rounded-md p-2 gap-1 flex flex-col overflow-hidden overflow-y-auto scrollbar-vertical"
+    >
+      <slot name="menu" />
+    </div>
+    <div class="w-full h-full">
+      <slot name="content" />
+    </div>
+  </div>
+</template>

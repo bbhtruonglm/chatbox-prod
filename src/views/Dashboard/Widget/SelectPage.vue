@@ -4,9 +4,9 @@
             class="rounded-full h-[40px] border flex items-center cursor-pointer bg-white md:bg-slate-100">
             <div class="w-[calc(100%_-_25px)] flex items-center">
                 <template v-if="selected_page">
-                    <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="selected_page?.page?.fb_page_id"
+                    <PageAvatar class="rounded-full ml-[6px] w-8 h-8"
                         :page_info="selected_page.page" :page_type="selected_page?.page?.type"
-                        :page_avatar="selected_page?.page?.avatar" />
+                        />
                     <div class="w-[calc(100%_-_36px)] px-2 truncate">
                         {{ selected_page?.page?.name }}
                     </div>
@@ -27,8 +27,8 @@
                 <template v-for="page of pageStore.active_page_list">
                     <div @click="selectPage(page)" v-if="filterPage(page)"
                         class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">
-                        <PageAvatar class="rounded-full ml-[6px]" size="30" :page_id="page?.page?.fb_page_id"
-                            :page_info="page.page" :page_type="page?.page?.type" :page_avatar="page?.page?.avatar" />
+                        <PageAvatar class="rounded-full ml-[6px] w-8 h-8"
+                            :page_info="page.page" />
                         <div class="ml-2">
                             {{ page?.page?.name }}
                         </div>

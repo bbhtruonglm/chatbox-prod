@@ -12,8 +12,9 @@ const source: Language = {
             success: 'Thành công',
             page: 'Trang',
             config: 'Thiết lập',
+            recent: 'Gần đây',
             setting: 'Cài đặt',
-            page_search_placeholder: 'Tìm kiếm trang hoặc ID trang',
+            page_search_placeholder: 'Tìm kiếm...',
             upcoming_feature: 'Tính năng sắp được ra mắt!',
             all: 'Tất cả',
             fb_mess: 'Facebook',
@@ -45,7 +46,8 @@ const source: Language = {
             incomming: 'Sắp ra mắt',
             expand: 'Mở rộng',
             version: 'Phiên bản',
-            on_update_app: 'Đang cập nhật phiên bản mới...'
+            on_update_app: 'Đang cập nhật phiên bản mới...',
+            expired : 'Quá hạn',
         },
         view: {
             network: {
@@ -109,6 +111,9 @@ const source: Language = {
                         }
                     },
                     select_page: {
+                        select_org: 'Chọn tổ chức',
+                        setting_org: 'Cài đặt doanh nghiệp',
+                        cancel_page: 'Huỷ kích hoạt trang',
                         group_page: {
                             title: 'Chế độ gộp trang'
                         },

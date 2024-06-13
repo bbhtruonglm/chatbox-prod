@@ -1,23 +1,26 @@
 <template>
-    <div class="relative">
-        <img width="23" height="23" class="absolute top-[6px] left-[10px]" src="@/assets/icons/search.svg">
-        <input :value="modelValue" @input="emitValue" :placeholder="placeholder"
-            class="w-full border-2 rounded-full py-1 pl-10 pr-2 " type="text">
-    </div>
+  <div class="relative">
+    <img
+      class="absolute top-2 left-3 w-5 h-5"
+      src="@/assets/icons/search.svg"
+    />
+    <input
+      v-model="model"
+      :placeholder="placeholder"
+      class="w-full rounded-full py-2 pl-10 pr-3 text-sm focus:outline-orange-500"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-const $emit = defineEmits(['update:modelValue'])
+/** Khai báo v-model */
+const model = defineModel<string>()
 
-withDefaults(defineProps<{
-    /**v-model được truyền vào */
-    modelValue?: string | number
+withDefaults(
+  defineProps<{
     /**placeholder của input */
     placeholder?: string
-}>(), {})
-
-/**emit ra v-model */
-function emitValue($event: any) {
-    $emit('update:modelValue', $event?.target?.value)
-}
+  }>(),
+  {}
+)
 </script>
