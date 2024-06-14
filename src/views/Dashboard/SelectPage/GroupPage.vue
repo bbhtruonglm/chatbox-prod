@@ -8,8 +8,20 @@
       class="flex-shrink-0 w-5 h-5"
     />
     <div class="flex flex-col gap-3 w-full">
-      <div class="text-sm font-medium">
-        {{ title }}
+      <div class="flex justify-between">
+        <div class="text-sm font-medium">
+          {{ title }}
+        </div>
+        <label
+          v-if="selectPageStore.is_group_page_mode"
+          class="flex items-center gap-1 px-6 cursor-pointer"
+        >
+          <div class="font-medium text-sm">
+            {{ $t('v1.view.main.dashboard.select_page.select_all_page') }}
+          </div>
+          <!-- v-model="" isSelectAllGroup() -->
+          <Checkbox  />
+        </label>
       </div>
       <div
         v-if="filter === 'RECENT'"
@@ -19,97 +31,29 @@
       </div>
       <div class="grid gap-6 grid-cols-4">
         <template v-for="page of active_page_list">
-          <div
-            @click="selectOnlyThisPage(page?.page?.fb_page_id)"
-            v-if="page?.page?.type === filter"
-            class="p-2 flex items-center gap-2 hover:bg-slate-100 rounded-lg cursor-pointer group"
-          >
-            <input
-              v-if="is_active_checkbox"
-              type="checkbox"
-              class="custom-checkbox flex-shrink-0"
-            />
-            <PageAvatar
-              :page_info="page?.page"
-              class="w-8 h-8 flex-shrink-0"
-            />
-            <div class="w-full min-w-0">
-              <div class="flex items-center gap-2">
-                <div class="flex-grow min-w-0 flex gap-1 items-center">
-                  <StarIcon
-                    v-if="page.page?.is_priority"
-                    class="w-3 h-3 flex-shrink-0"
-                  />
-                  <div class="truncate flex-grow min-w-0">
-                    {{ page?.page?.name }}
-                  </div>
-                </div>
-                <div class="flex-shrink-0">
-                  <div class="items-center gap-2.5 hidden group-hover:flex">
-                    <div
-                      @click.stop="
-                        togglePagePriority(
-                          page.page?.fb_page_id,
-                          !page.page?.is_priority
-                        )
-                      "
-                    >
-                      <StarIcon v-if="page.page?.is_priority" />
-                      <StarOutlineIcon v-else />
-                    </div>
-                    <MinusOutlineIcon
-                      @click.stop="inactivePage(page.page?.fb_page_id)"
-                      v-tooltip="
-                        $t('v1.view.main.dashboard.select_page.cancel_page')
-                      "
-                    />
-                  </div>
-                  <span
-                    v-if="!isActivePage(page?.page)"
-                    class="text-xs text-red-500 group-hover:hidden"
-                  >
-                    {{ $t('v1.common.expired') }}
-                  </span>
-                </div>
-              </div>
-              <div class="flex items-center gap-1">
-                <PageTypeIcon
-                  :page_type="page?.page?.type"
-                  class="flex-shrink-0"
-                />
-                <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
-                  {{ page?.page?.fb_page_id }}
-                </div>
-              </div>
-            </div>
-          </div>
+          <PageItem
+            v-if="page?.page"
+            :page_info="page?.page"
+            :filter="filter"
+          />
         </template>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { usePageStore, useSelectPageStore, useCommonStore } from '@/stores'
-import { isActivePage } from '@/service/helper/pricing'
-import { preGoToChat } from '@/service/function'
-import { useRouter } from 'vue-router'
-import { ref, watch, type Component } from 'vue'
-import { map, set } from 'lodash'
+import { usePageStore, useSelectPageStore } from '@/stores'
+import { ref, watch, provide } from 'vue'
+import { map } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
-import { update_page } from '@/service/api/chatbox/n4-service'
-import { confirm } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
-import { flow } from '@/service/helper/async'
+import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
-
-import StarIcon from '@/components/Icons/Star.vue'
-import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
-import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
+import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
+import Checkbox from '@/components/Checkbox.vue'
 
 import type { PageData, PageType } from '@/service/interface/app/page'
-import type { CbError } from '@/service/interface/function'
+import type { Component } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -119,17 +63,13 @@ const $props = withDefaults(
     icon: Component
     /**lọc hiển thị nền tảng */
     filter: string
-    /**có hiển thị checkbox không */
-    is_active_checkbox?: boolean
   }>(),
   {}
 )
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
-const $router = useRouter()
 const selectPageStore = useSelectPageStore()
-const commonStore = useCommonStore()
 
 /**danh sách page sau khi được lọc */
 const active_page_list = ref<PageData[]>()
@@ -150,84 +90,6 @@ watch(
   () => sortListPage()
 )
 
-/**huỷ kích hoạt page này | ẩn page */
-function inactivePage(page_id?: string) {
-  flow(
-    [
-      // * hỏi trước khi thực hiện hành động
-      (cb: CbError) =>
-        confirm(
-          'question',
-          $t('v1.view.main.dashboard.select_page.inactive_page.title'),
-          '',
-          (e, r) => {
-            if (e) return
-
-            cb()
-          }
-        ),
-      // * kích hoạt loading
-      (cb: CbError) => {
-        commonStore.is_loading_full_screen = true
-
-        cb()
-      },
-      // * call api update page
-      (cb: CbError) =>
-        update_page({ page_id, is_active: false }, (e, r) => {
-          if (e) return cb(e)
-
-          cb()
-        }),
-      // * xoá page bị ẩn khỏi danh sách page và danh sách page đang chọn (nếu có)
-      (cb: CbError) => {
-        if (!page_id) return cb()
-
-        delete pageStore.active_page_list[page_id]
-
-        delete pageStore.selected_page_id_list[page_id]
-
-        sortListPage()
-
-        cb()
-      },
-    ],
-    e => {
-      // tắt loading
-      commonStore.is_loading_full_screen = false
-    }
-  )
-}
-/**đánh dấu sao page ưu tiên lên đầu */
-function togglePagePriority(page_id?: string, is_priority?: boolean) {
-  flow(
-    [
-      // * call api update page
-      (cb: CbError) =>
-        update_page({ page_id, is_priority }, (e, r) => {
-          if (e) return cb(e)
-
-          cb()
-        }),
-      // * sort lại danh sách page
-      (cb: CbError) => {
-        if (!page_id) return cb()
-
-        cb()
-
-        set(
-          pageStore.active_page_list,
-          [page_id, 'page', 'is_priority'],
-          is_priority
-        )
-
-        sortListPage()
-      },
-    ],
-    undefined,
-    true
-  )
-}
 /**sắp xếp page gắn sao lên đầu */
 function sortListPage() {
   // object -> array
@@ -319,40 +181,11 @@ function filterPlatform(): boolean {
     selectPageStore.current_menu === $props.filter
   )
 }
-/**chỉ chọn 1 page này để chat */
-function selectOnlyThisPage(page_id?: string) {
-  if (!page_id) return
-
-  let temp: {
-    [index: string]: boolean
-  } = {}
-
-  temp[page_id] = true
-
-  pageStore.selected_page_id_list = temp
-
-  preGoToChat(() => $router.push('/chat'))
+/**tính toán có phải toàn bộ page trong group này được chọn không */
+function isSelectAllGroup() {
+  return true
 }
+
+// xuất hàm cho các component con sử dụng
+provide(KEY_SORT_LIST_PAGE_FUNCT, sortListPage)
 </script>
-<style scoped lang="scss">
-.custom-checkbox {
-  @apply appearance-none w-4 h-4 shadow-sm bg-white border-[1.5px] border-black rounded relative cursor-pointer;
-
-  &:checked {
-    @apply bg-black;
-
-    &::after {
-      content: '';
-      @apply absolute border-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r-2 border-b-2 w-1 h-2;
-    }
-  }
-
-  &:disabled {
-    @apply cursor-not-allowed border-gray-200 bg-gray-100;
-
-    &::after {
-      @apply border-gray-200;
-    }
-  }
-}
-</style>

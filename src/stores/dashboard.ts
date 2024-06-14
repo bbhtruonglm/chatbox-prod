@@ -17,17 +17,29 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   /**gắn cờ loading cho danh sách page */
   const is_loading = ref(false)
 
-  /** -------------- MUTATION -------------- */
+  /**có đang ở chế độ gộp trang không */
+  const is_group_page_mode = ref(getLocal('is_group_page_mode', false))
+  // lưu lại data vào local để khi f5 không bị reset
+  saveLocal(is_group_page_mode, 'is_group_page_mode')
+
+  /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
   function selectMenu(key: string) {
     current_menu.value = key
+  }
+
+  /**bật tắt chế độ chat nhóm trang */
+  function toggleGroupPageMode() {
+    is_group_page_mode.value = !is_group_page_mode.value
   }
 
   return {
     current_menu,
     search,
     is_loading,
+    is_group_page_mode,
 
     selectMenu,
+    toggleGroupPageMode,
   }
 })

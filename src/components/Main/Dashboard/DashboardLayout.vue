@@ -5,8 +5,20 @@
     >
       <slot name="menu" />
     </div>
-    <div class="w-full h-full">
+    <div
+      :class="class_content"
+      class="w-full h-full"
+    >
       <slot name="content" />
     </div>
   </div>
 </template>
+<script setup lang="ts">
+const $props = withDefaults(
+  defineProps<{
+    /**class của nội dung */
+    class_content?: string
+  }>(),
+  {}
+)
+</script>

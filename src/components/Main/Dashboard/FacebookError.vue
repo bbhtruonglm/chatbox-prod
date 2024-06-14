@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="modal_ref" :fit_content="true">
+    <Modal ref="modal_ref">
         <template v-slot:body>
             <div class="flex flex-col md:flex-row h-[70vh] overflow-y-auto md:h-full">
                 <div class="flex flex-col items-center p-5">

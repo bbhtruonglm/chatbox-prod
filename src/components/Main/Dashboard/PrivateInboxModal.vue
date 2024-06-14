@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="modal_ref" :fit_content="true">
+    <Modal ref="modal_ref" >
         <template v-slot:header>
             Nhắn tin inbox {{ `<${$props.target_name}>` }}
         </template>
