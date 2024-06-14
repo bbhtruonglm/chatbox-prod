@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="installed_widgets_ref" :fit_content="true">
+    <Modal ref="installed_widgets_ref">
         <template v-slot:header>
             <div class="flex items-center">
                 <div>{{ $t('v1.view.main.dashboard.widget.arrange') }}</div>

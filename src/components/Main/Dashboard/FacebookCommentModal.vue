@@ -1,5 +1,5 @@
 <template>
-    <Modal @close_modal="onCloseModal" ref="modal_ref" :fit_content="true">
+    <Modal @close_modal="onCloseModal" ref="modal_ref">
         <template v-slot:header>
             {{ $props.post_title || 'Bình luận trong bài viết' }}
         </template>

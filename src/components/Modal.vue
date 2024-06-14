@@ -1,74 +1,76 @@
 <template>
-    <Teleport to="body">
-        <div v-if="is_open" class="select-none xl:select-auto absolute top-0 left-0 w-screen h-screen bg-slate-500/50 z-20">
-            <div @click="toggleModal" class="w-full h-full" />
-            <div
-                :class="{
-                    'opacity-50': animation,
-                    'md:w-[70%]': !$props.fit_content,
-                    'md:w-fit': $props.fit_content
-                }"
-                class="duration-500 w-[calc(100%_-_20px)] max-h-[calc(100vh_-_150px)] absolute top-[50%] left-[50%] 
-                translate-x-[-50%] translate-y-[-50%]"
-            >
-                <div class="px-4 py-2 rounded-lg bg-white">
-                    <button @click="toggleModal" class=" absolute top-[8px] right-[6px]">
-                        <img src="@/assets/icons/close-red.svg" class="hover:saturate-150" />
-                    </button>
-                    <div class="font-semibold">
-                        <slot name="header"></slot>
-                    </div>
-                    <div class="mt-2 mb-4">
-                        <slot name="body"></slot>
-                    </div>
-                    <div>
-                        <slot name="footer"></slot>
-                    </div>
-                </div>
-            </div>
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition ease-in-out duration-500"
+      leave-active-class="transition ease-in-out duration-500"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        @click="toggleModal"
+        v-if="is_open"
+        class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20 shadow-lg"
+      >
+        <div
+          @click.stop
+          :class="class_modal"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 max-w-[95%] max-h-[95%]"
+        >
+          <CloseIcon
+            @click="toggleModal"
+            class="absolute top-5 right-5 w-3 h-3 cursor-pointer"
+          />
+          <div
+            :class="class_header"
+            class="text-lg font-semibold"
+          >
+            <slot name="header"></slot>
+          </div>
+          <div :class="class_body">
+            <slot name="body"></slot>
+          </div>
+          <div
+            :class="class_footer"
+            class="mt-6"
+          >
+            <slot name="footer"></slot>
+          </div>
         </div>
-    </Teleport>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 <script setup lang="ts">
-// xử dụng teleport để dịch chuyển modal lên body mỗi lần được hiển thị
 import { ref } from 'vue'
+
+import CloseIcon from '@/components/Icons/Close.vue'
 
 const $emit = defineEmits(['close_modal'])
 
-const $props = withDefaults(defineProps<{
-    fit_content?: boolean
-}>(), {})
+const $props = withDefaults(
+  defineProps<{
+    /**class cho modal */
+    class_modal?: string
+    /**class cho header */
+    class_header?: string
+    /**class cho body */
+    class_body?: string
+    /**class cho footer */
+    class_footer?: string
+  }>(),
+  {}
+)
 
 /**ẩn hiện modal */
 const is_open = ref(false)
-/**tạo hiệu ứng */
-const animation = ref(true)
 
 /**ẩn hiện modal */
 function toggleModal() {
-    // mở modal
-    if (!is_open.value) {
-        // tạo hiệu ứng hiện thị
-        setTimeout(() => animation.value = false, 50)
+  // toggle modal
+  is_open.value = !is_open.value
 
-        // mở modal
-        is_open.value = true
-    }
-    // tắt modal
-    else {
-        // tạo hiệu ứng hiện thị
-        animation.value = true
-
-        // delay một khoảng thời gian cho hiệu ứng hoạt động
-        setTimeout(() => { 
-            // tăt modal
-            is_open.value = false 
-
-            // bắn sự kiện ra ngoài
-            $emit('close_modal')
-        }, 300)
-
-    }
+  // bắn sự kiện ra ngoài khi modal đã tắt
+  if (!is_open.value) $emit('close_modal')
 }
 
 // public chức năng ẩn hiện modal để có thể được gọi từ bên ngoài component

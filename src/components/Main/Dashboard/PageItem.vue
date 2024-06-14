@@ -11,7 +11,7 @@
         <div class="w-[calc(100%_-_150px)]">
             <div class="text-base truncate">{{ page_info?.name }}</div>
             <div class="flex items-center">
-                <PageTypeIcon :page_type="page_info?.type" />
+                <PageTypeIcon :page_type="page_info?.type" class="w-3.5 h-3.5" />
                 <div class="text-sm text-slate-500 ml-1 truncate">
                     {{ page_info?.fb_page_id }}
                 </div>

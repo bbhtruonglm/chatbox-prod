@@ -8,13 +8,15 @@
 </template>
 
 <script setup lang="ts">
+import { provide } from 'vue'
 import { initRequireData } from '@/views/composable'
+import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
 
 import Header from '@/views/Dashboard/Header.vue'
 
 // composable
 const { getMeChatbotUser } = initRequireData()
 
-// TODO loại bỏ cái này
-defineExpose({ getMeChatbotUser })
+// cung cấp hàm này cho component con dùng
+provide(KEY_GET_CHATBOT_USER_FUNCT, getMeChatbotUser)
 </script>
