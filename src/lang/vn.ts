@@ -131,8 +131,8 @@ const source: Language = {
                 'Để kích hoạt lại, bạn có thể kích hoạt ở mục <b>"Kết nối trang"</b>.',
             },
             empty_page: {
-              title: 'Không có trang nào được chọn',
-              description: 'Hãy chọn kết nối nền tảng để chọn kênh chat!',
+              title: 'Bạn chưa có trang',
+              description: 'Thêm mới trang để bắt đầu Chat',
             },
             expire: {
               title: 'Có lỗi xảy ra',
@@ -145,7 +145,12 @@ const source: Language = {
           },
           select_platform: {
             empty_page: 'Không tìm thấy trang của bạn?',
-            add_page: 'Chọn trang',
+            add_page: 'Thêm trang',
+            waiting: 'Chờ kích hoạt',
+            list_invite: 'Danh sách lời mời',
+            empty_invite: 'Không có lời mời',
+            empty_invite_guild:
+              'Bạn không có lời mời nào, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
             grant_permision: 'Cấp quyền',
             click_add_page: 'Bấm thêm trang để bắt đầu!',
             active: 'Kích hoạt',

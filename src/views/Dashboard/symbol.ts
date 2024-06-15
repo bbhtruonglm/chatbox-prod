@@ -1,4 +1,7 @@
 import type { InjectionKey } from 'vue'
 
-/**sử dụng để inject hàm của dashboard cho component con gọi được */
+/**đọc lại dữ liệu user hiện tại */
 export const KEY_GET_CHATBOT_USER_FUNCT = Symbol() as InjectionKey<Function>
+
+/**toggle modal kết nối trang */
+export const KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT = Symbol() as InjectionKey<Function>
