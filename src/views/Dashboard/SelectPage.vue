@@ -13,27 +13,6 @@
       <div
         class="relative overflow-hidden scrollbar-vertical overflow-y-auto flex flex-col gap-3 pb-16"
       >
-        <!-- <div
-            class="flex justify-end py-2 top-[-39px] right-[8px] pr-[8px] md:absolute"
-          >
-            <div
-              @click="toggleSelectAllPage()"
-              class="flex items-center cursor-pointer"
-            >
-              <div class="text-sm font-semibold">
-                {{ $t('v1.view.main.dashboard.select_page.select_all_page') }}
-              </div>
-              <input
-                :checked="
-                  size(pageStore.selected_page_id_list) ===
-                  size(pageStore.active_page_list)
-                "
-                type="checkbox"
-                class="w-[15px] h-[15px] ml-1 accent-orange-600"
-              />
-            </div>
-          </div> -->
-
         <div
           v-if="selectPageStore.is_loading"
           class="absolute left-1/2 -translate-x-1/2"
@@ -71,18 +50,9 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  useCommonStore,
-  usePageStore,
-  useStaffStore,
-  useSelectPageStore,
-} from '@/stores'
+import { usePageStore, useStaffStore, useSelectPageStore } from '@/stores'
 import { flow } from '@/service/helper/async'
-import {
-  get_current_active_page,
-  update_page,
-} from '@/service/api/chatbox/n4-service'
-import { mapValues, size } from 'lodash'
+import { get_current_active_page } from '@/service/api/chatbox/n4-service'
 import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { useRouter } from 'vue-router'
@@ -116,7 +86,6 @@ const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
 computed(() => selectPageStore.current_menu)
 
 onMounted(() => {
-  //
   /**
    * load lại info của chatbot user
    * phòng trường hợp user mới được kích hoạt gói
@@ -153,21 +122,6 @@ function loadListPage() {
       selectPageStore.is_loading = false
     }
   )
-}
-/**chọn | huỷ toàn bộ các page */
-function toggleSelectAllPage() {
-  // nếu tất cả các page được chọn -> huỷ chọn tất cả các page
-  if (
-    size(pageStore.selected_page_id_list) === size(pageStore.active_page_list)
-  )
-    pageStore.selected_page_id_list = {}
-  // nếu có một vài page đang được chọn -> chọn tất cả các page
-  // nếu không có page nào được chọn -> chọn tất cả các page
-  else
-    pageStore.selected_page_id_list = mapValues(
-      pageStore.active_page_list,
-      () => true
-    )
 }
 /**chuyển đến trang chat */
 function goToChat() {
