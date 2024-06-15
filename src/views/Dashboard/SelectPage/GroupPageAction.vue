@@ -13,7 +13,7 @@
         @click="backSinglePageMode"
         class="btn-custom bg-slate-100 text-slate-900"
       >
-        <CloseBoldIcon class="w-3 h-3" />
+        <CloseBoldIcon class="w-3.5 h-3.5" />
         {{ $t('v1.view.main.dashboard.select_page.chat_one_page') }}
       </button>
       <button
@@ -23,7 +23,7 @@
         }"
         class="btn-custom text-white bg-orange-600"
       >
-        <SquaresPlusIcon class="text-white w-3 h-3" />
+        <SquaresPlusIcon class="w-3.5 h-3.5" />
         {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
       </button>
     </div>

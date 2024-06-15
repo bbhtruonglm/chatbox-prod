@@ -8,6 +8,7 @@
         :class="{
           'rotate-180': is_show_option,
         }"
+        class="w-3 h-3 text-slate-500"
       />
     </div>
     <button

@@ -17,14 +17,14 @@
           @click="$router.push(`/dashboard/select-platform`)"
           class="btn-custom"
         >
-          <PlusCircleIcon />
+          <PlusCircleIcon class="w-3 h-3" />
           {{ $t('v1.view.main.dashboard.nav.select_platform') }}
         </button>
         <button
           @click="selectPageStore.toggleGroupPageMode()"
           class="btn-custom"
         >
-          <SquaresPlusIcon />
+          <SquaresPlusIcon class="w-3 h-3" />
           {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
         </button>
       </template>
@@ -57,7 +57,7 @@ function isShowSelectPageButton() {
 <style scoped lang="scss">
 .dashboard-header {
   .btn-custom {
-    @apply py-1 px-2 text-xs font-medium bg-slate-200 rounded flex items-center gap-1 hover:brightness-90 h-7;
+    @apply py-1.5 px-2 text-xs font-medium bg-slate-200 rounded flex items-center gap-1 hover:brightness-90 h-7;
   }
 }
 </style>
