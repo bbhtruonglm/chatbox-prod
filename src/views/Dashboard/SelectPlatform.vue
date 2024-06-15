@@ -35,7 +35,7 @@
                     </template>
                     <template v-slot:body>
                         <div
-                            class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[calc(100vh_-_254px)] overflow-hidden scrollbar-vertical overflow-y-auto">
+                            class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[calc(100vh_-_254px)] overflow-y-auto">
                             <InputLabel v-model="create_new_website_data.description"
                                 :title="$t('v1.view.main.dashboard.select_platform.create_website.description')"
                                 :placeholder="$t('v1.view.main.dashboard.select_platform.create_website.enter_description')" />
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
-                class="max-h-[calc(100%_-_36px)] overflow-hidden scrollbar-vertical overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+                class="max-h-[calc(100%_-_36px)] overflow-y-auto grid grid-cols-1 pb-5 md:max-h-full md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                 <PageItem v-for="page of filter_page_list" :page_info="page.page" @click="toggleSelectThisPage(page)">
                     <div class="flex justify-end">
                         <input :disabled="page.page?.is_active" :checked="page.page?.is_active || page.is_select"

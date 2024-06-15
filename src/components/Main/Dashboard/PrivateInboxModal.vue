@@ -7,9 +7,7 @@
             <div class="sm:w-[350px]">
                 <div ref="input_inbox_ref" id="input-private-inbox"
                     class="
-                        h-[100px] 
-                        overflow-hidden 
-                        scrollbar-vertical
+                        h-[100px]
                         overflow-y-auto 
                         relative pl-2 
                         w-full px-3 py-1 

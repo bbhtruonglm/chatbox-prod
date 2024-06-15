@@ -10,9 +10,7 @@
         />
         <SelectOrg />
       </div>
-      <div
-        class="relative overflow-hidden scrollbar-vertical overflow-y-auto flex flex-col gap-3 pb-16"
-      >
+      <div class="relative overflow-y-auto flex flex-col gap-3 pb-16">
         <div
           v-if="selectPageStore.is_loading"
           class="absolute left-1/2 -translate-x-1/2"

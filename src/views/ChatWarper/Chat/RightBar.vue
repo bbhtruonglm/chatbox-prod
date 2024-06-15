@@ -27,7 +27,7 @@
                 {{ getWidgetRight()?.length - 3 }}
             </button>
         </div>
-        <div class="h-[calc(100%_-_75px)] overflow-hidden scrollbar-vertical overflow-y-auto pb-10">
+        <div class="h-[calc(100%_-_75px)] overflow-y-auto pb-10">
             <template v-for="widget of widget_list" class="border-b">
                 <div v-if="!widget.is_hidden">
                     <div @click="toggleWidget(widget)"
@@ -62,7 +62,7 @@
     <template>
         <Popover ref="widget_button_popover_ref" position="BOTTOM" :reverse="true" :is_fit="false" width="auto"
             height="auto">
-            <div class="flex flex-wrap max-w-[295px] max-h-[200px] overflow-hidden scrollbar-vertical overflow-y-auto">
+            <div class="flex flex-wrap max-w-[295px] max-h-[200px] overflow-y-auto">
                 <template v-for="widget in getWidgetRight()?.slice(3)">
                     <button class="text-xs py-1 px-2 rounded-full mr-1 mb-1 truncate w-[92px] hover:brightness-90"
                         @click="filterWidget(widget)" :class="{
