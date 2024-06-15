@@ -1,9 +1,5 @@
 <template>
-  <img
-    loading="lazy"
-    v-if="page_type === 'FB_MESS'"
-    src="@/assets/icons/facebook.svg"
-  />
+  <FacebookIcon v-if="page_type === 'FB_MESS'" />
 
   <img
     loading="lazy"
@@ -19,17 +15,15 @@
     src="@/assets/icons/whatsapp.svg"
   />
 
-  <img
-    loading="lazy"
-    v-else-if="page_type === 'ZALO_OA'"
-    src="@/assets/icons/zalo.svg"
-  />
+  <ZaloIcon v-else-if="page_type === 'ZALO_OA'" />
 
   <div v-else />
 </template>
 
 <script setup lang="ts">
 import WebIcon from '@/components/Icons/Web.vue'
+import FacebookIcon from '@/components/Icons/Facebook.vue'
+import ZaloIcon from '@/components/Icons/Zalo.vue'
 
 import type { PageType } from '@/service/interface/app/page'
 

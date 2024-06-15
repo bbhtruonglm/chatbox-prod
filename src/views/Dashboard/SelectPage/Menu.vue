@@ -1,10 +1,11 @@
 <template>
   <MenuItem
     @click="dashboardStore.selectMenu(key)"
-    v-for="{ key, title, icon } of list_platform"
+    v-for="{ key, title, icon, class_icon } of list_platform"
     :icon="icon ?? SquareIcon"
     :title="title"
     :is_selected="isSelectedMenu(key)"
+    :class_icon="class_icon"
   />
 </template>
 <script setup lang="ts">
@@ -32,6 +33,8 @@ interface PlatformItem {
   title: string
   /** Icon vue */
   icon?: Component
+  /** Icon class custom */
+  class_icon?: string
 }
 
 /** Danh sách các nền tảng */
@@ -70,6 +73,7 @@ function getPlatform(): PlatformItem[] {
       key: platform_key,
       title: $t(`v1.common.${platform_key.toLowerCase()}`),
       icon: ICON_MAP[platform_key],
+      class_icon: 'w-4 h-4'
     })
   )
 

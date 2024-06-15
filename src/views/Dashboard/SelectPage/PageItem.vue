@@ -18,7 +18,7 @@
         <div class="flex-grow min-w-0 flex gap-1 items-center">
           <StarIcon
             v-if="page_info?.is_priority"
-            class="w-3 h-3 flex-shrink-0 group-hover:hidden"
+            class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 group-hover:hidden"
           />
           <div class="truncate flex-grow min-w-0">
             {{ page_info?.name }}
@@ -27,16 +27,16 @@
         <div class="flex-shrink-0">
           <div class="items-center gap-2.5 hidden group-hover:flex">
             <div @click.stop="togglePagePriority()">
-              <StarIcon v-if="page_info?.is_priority" />
-              <StarOutlineIcon v-else />
+              <StarIcon class="w-4 h-4 text-yellow-500" v-if="page_info?.is_priority" />
+              <StarOutlineIcon class="w-4 h-4 text-slate-500" v-else />
             </div>
             <div
               @click.stop="confirm_modal_ref?.toggleModal()"
               v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
               class="group/minus"
             >
-              <MinusOutlineIcon class="group-hover/minus:hidden" />
-              <MinusIcon class="hidden group-hover/minus:block" />
+              <MinusOutlineIcon class="w-4 h-4 text-slate-500 group-hover/minus:hidden" />
+              <MinusIcon class="w-4 h-4 text-slate-900 hidden group-hover/minus:block" />
             </div>
           </div>
           <span
