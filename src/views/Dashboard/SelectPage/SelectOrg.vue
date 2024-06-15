@@ -17,7 +17,7 @@
       v-tooltip.left="$t('v1.view.main.dashboard.select_page.setting_org')"
       class="w-9 h-9 bg-white rounded-lg flex items-center justify-center"
     >
-      <CogIcon class="text-slate-500" />
+      <CogIcon class="w-6 h-6 text-slate-500" />
     </button>
   </div>
 </template>
