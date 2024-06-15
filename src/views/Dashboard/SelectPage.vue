@@ -10,7 +10,14 @@
         />
         <SelectOrg />
       </div>
-      <div class="relative overflow-y-auto flex flex-col gap-3 pb-16">
+      <EmptyPage v-if="!pageStore.countActivePage()" />
+      <div
+        v-else
+        :class="{
+          'pb-16': selectPageStore.is_group_page_mode,
+        }"
+        class="overflow-y-auto flex flex-col gap-3"
+      >
         <div
           v-if="selectPageStore.is_loading"
           class="absolute left-1/2 -translate-x-1/2"
@@ -38,8 +45,8 @@
           :icon="ZaloIcon"
           :title="$t('v1.common.zalo_oa')"
         />
+        <GroupPageAction />
       </div>
-      <GroupPageAction />
     </template>
   </DashboardLayout>
   <RequirePricing />
@@ -64,6 +71,7 @@ import Menu from '@/views/Dashboard/SelectPage/Menu.vue'
 import SelectOrg from '@/views/Dashboard/SelectPage/SelectOrg.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'

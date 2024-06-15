@@ -30,6 +30,10 @@ export const usePageStore = defineStore('page_store', () => {
   const selected_page_list_info = ref<PageList>({})
 
   /**--------------- GETTER ------------ */
+  /**đếm số trang đang kích hoạt */
+  function countActivePage() {
+    return size(active_page_list.value)
+  }
   /**đếm số lượng page được chọn */
   function countSelectedPage() {
     // lọc ra các page được chọn
@@ -63,5 +67,6 @@ export const usePageStore = defineStore('page_store', () => {
     countSelectedPage,
     isSelectedPage,
     setPageSelected,
+    countActivePage,
   }
 })

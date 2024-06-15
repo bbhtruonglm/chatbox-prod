@@ -58,7 +58,7 @@
       </div>
     </div>
   </div>
-  <Modal
+  <Alert
     ref="confirm_modal_ref"
     class_body="text-zinc-500"
     class_footer="flex justify-between items-center"
@@ -94,7 +94,7 @@
         {{ $t('v1.common.ok') }}
       </button>
     </template>
-  </Modal>
+  </Alert>
 </template>
 <script setup lang="ts">
 import { usePageStore, useCommonStore, useSelectPageStore } from '@/stores'
@@ -107,7 +107,7 @@ import { computed, inject, ref } from 'vue'
 import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import Modal from '@/components/Modal.vue'
+import Alert from '@/components/Alert.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import Checkbox from '@/components/Checkbox.vue'
@@ -141,7 +141,7 @@ const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
 
 /**modal xác nhận huỷ trang */
-const confirm_modal_ref = ref<InstanceType<typeof Modal>>()
+const confirm_modal_ref = ref<InstanceType<typeof Alert>>()
 
 /**id trang */
 const page_id = computed(() => $props.page_info?.fb_page_id)

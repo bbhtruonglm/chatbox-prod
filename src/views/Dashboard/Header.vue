@@ -14,7 +14,7 @@
     <div class="flex gap-7 items-center">
       <template v-if="isShowSelectPageButton()">
         <button
-          @click="$router.push(`/dashboard/select-platform`)"
+          @click="toggleModalConnectPage?.()"
           class="btn-custom"
         >
           <PlusCircleIcon class="w-3 h-3" />
@@ -35,6 +35,8 @@
 <script setup lang="ts">
 import { useSelectPageStore } from '@/stores'
 import { useRoute } from 'vue-router'
+import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
+import { inject } from 'vue'
 
 import User from '@/views/Dashboard/Header/User.vue'
 
@@ -43,6 +45,9 @@ import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()
+
+/**hàm toggle modal kết nối nền tảng */
+const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 /**có hiển thị các nút của trang chọn page không */
 function isShowSelectPageButton() {
