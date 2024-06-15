@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full overflow-hidden scrollbar-vertical overflow-y-auto pb-5">
+    <div class="h-full overflow-y-auto pb-5">
         <div class="grid grid-cols-1 md:grid-cols-4">
             <div />
             <SelectPage class="col-span-2" :selected_page="selected_page"

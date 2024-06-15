@@ -23,7 +23,7 @@
                 <input v-model="search" type="text" class="focus:outline-none w-full h-[35px] border rounded-lg p-2"
                     :placeholder="$t('v1.common.page_search_placeholder')">
             </div>
-            <div class="scrollbar-vertical overflow-hidden overflow-y-auto h-[calc(100%_-_35px)] mt-2">
+            <div class="overflow-y-auto h-[calc(100%_-_35px)] mt-2">
                 <template v-for="page of pageStore.active_page_list">
                     <div @click="selectPage(page)" v-if="filterPage(page)"
                         class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">

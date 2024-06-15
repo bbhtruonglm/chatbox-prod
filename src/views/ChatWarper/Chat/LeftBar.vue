@@ -1,6 +1,6 @@
 <template>
-    <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-2">
-        <div class="pl-14 pr-4 md:pl-0 flex items-center mb-2">
+    <div id="chat-conversation" class="bg-white md:w-[350px] xl:pt-2 flex flex-col">
+        <div class="pl-14 pr-4 md:pl-0 flex items-center mb-2 flex-shrink-0">
             <div class="flex items-center ml-4 md:ml-0 w-full justify-between">
                 <div v-if="!is_show_search" class="flex items-end">
                     <div v-tooltip.bottom="`v${version}`" class="ml-3 font-medium text-2xl">

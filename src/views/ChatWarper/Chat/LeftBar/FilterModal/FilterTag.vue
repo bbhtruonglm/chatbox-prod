@@ -34,7 +34,7 @@
                         class="accent-orange-600 w-[20px] h-[20px] mr-3">
                 </div>
             </div>
-            <div class="h-[calc(100%_-_136px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+            <div class="h-[calc(100%_-_136px)] overflow-y-auto">
                 <TagItem :is_disable="isDisableLabel(index)" v-for="item, index of label_list" v-show="item.show_label"
                     @click="selectLabel(index)" :label="item" :is_selected="item?.is_selected" />
             </div>

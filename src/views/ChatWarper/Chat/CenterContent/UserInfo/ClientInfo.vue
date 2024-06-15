@@ -62,7 +62,7 @@
                                 src="@/assets/icons/reload.svg" width="15" height="15" />
                         </div>
                     </div>
-                    <div class="overflow-hidden overflow-y-auto scrollbar-vertical h-[calc(100%_-_42px)]">
+                    <div class="h-[calc(100%_-_42px)]">
                         <div v-for="(value, key) of conversationStore.select_conversation?.client_bio?.fb_info"
                             class="mb-1 text-sm">
                             <div class="font-semibold">

@@ -21,7 +21,7 @@
                     class="border px-3 py-1 rounded-lg focus:outline-none w-full" v-on:keyup="searchLabel"
                     v-model="label_search_name">
             </div>
-            <div class="h-[calc(100%_-_88px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+            <div class="h-[calc(100%_-_88px)] overflow-y-auto">
                 <TagItem :is_disable="isDisableLabel(index)" v-for="item, index of label_list" v-show="item.show_label" @click="selectLabel(index)"
                     :label="item" :is_selected="item?.is_selected" />
             </div>

@@ -10,7 +10,7 @@
         </template>
         <template v-slot:body>
             <div
-                class="h-[calc(100vh_-_217px)] scrollbar-vertical overflow-hidden overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-x-5">
+                class="h-[calc(100vh_-_217px)] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-x-5">
                 <div>
                     <Title :title="$t('v1.view.main.dashboard.widget.create.form.name')" />
                     <input v-model="upsert_widget_data.name"

@@ -11,7 +11,7 @@
             </div>
         </template>
         <template v-slot:body>
-            <div class="h-[calc(100vh_-_217px)] scrollbar-vertical overflow-hidden overflow-y-auto">
+            <div class="h-[calc(100vh_-_217px)] overflow-y-auto">
                 <div class="text-sm text-slate-500 whitespace-break-spaces">
                     {{ widget?.description }}
                 </div>

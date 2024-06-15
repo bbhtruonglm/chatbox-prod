@@ -53,7 +53,7 @@
       ref="select_option_ref"
       v-show="is_show_option"
       @click="selectOption"
-      class="p-2 rounded-lg shadow-lg bg-white mt-1 h-auto max-h-52 overflow-hidden scrollbar-vertical overflow-y-auto absolute z-40 w-[-webkit-fill-available] flex flex-col gap-1"
+      class="p-2 rounded-lg shadow-lg bg-white mt-1 h-auto max-h-52 overflow-y-auto absolute z-40 w-[-webkit-fill-available] flex flex-col gap-1"
     >
       <slot />
       <span class="text-gray-400 text-sm">{{ placeholder }}</span>

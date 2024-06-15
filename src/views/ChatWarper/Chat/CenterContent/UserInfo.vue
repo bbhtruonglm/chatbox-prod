@@ -1,6 +1,6 @@
 <template>
     <div v-if="conversationStore.select_conversation"
-        class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-hidden  scrollbar-vertical overflow-y-auto">
+        class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-y-auto">
         <div class="flex items-center col-span-2 xl:col-span-1">
             <ClientAvatar @click="openClientInfo" :client_name="conversationStore.select_conversation?.client_name"
                 :client_id="conversationStore.select_conversation?.fb_client_id"

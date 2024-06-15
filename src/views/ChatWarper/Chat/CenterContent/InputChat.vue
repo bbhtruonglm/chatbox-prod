@@ -13,7 +13,7 @@
                 class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
                 <Loading />
             </div>
-            <div class="w-full overflow-hidden scrollbar-vertical overflow-y-auto pt-1 px-2">
+            <div class="w-full overflow-y-auto pt-1 px-2">
 
                 <div class="flex flex-wrap justify-start">
                     <div v-for="label_info of getActiveLabel()" @click="toggleLabel(label_info._id)" :style="{
@@ -42,7 +42,7 @@
         </div>
 
         <div v-if="size(messageStore.upload_file_list)"
-            class="flex flex-wrap justify-center overflow-hidden scrollbar-vertical overflow-y-auto h-[80px] p-[5px]">
+            class="flex flex-wrap justify-center overflow-y-auto h-[80px] p-[5px]">
             <div v-for="(file, index) of messageStore.upload_file_list"
                 class="mr-[5px] mb-[5px] overflow-hidden rounded-lg cursor-pointer relative">
                 <img v-if="!file.is_done && !file.is_loading" @click="deleteUploadFile(index)"
@@ -73,7 +73,7 @@
             <div class="w-[calc(100%_-_95px)] h-full">
                 <div ref="input_chat_ref" id="chat-text-input-message" @keydown.enter="submitInput"
                     @keyup="quick_answer_ref?.handleChatValue" @paste="onPasteImage"
-                    class="min-h-[24px] max-h-[150px] overflow-hidden scrollbar-vertical overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
+                    class="min-h-[24px] max-h-[150px] overflow-y-auto relative pl-2 w-full h-full focus:outline-none"
                     contenteditable="true"
                     :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${conversationStore.select_conversation?.client_name}`" />
             </div>
@@ -95,7 +95,7 @@
             <img src="@/assets/icons/picture.svg" width="20" height="20" />
         </div>
         <div
-            class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-hidden scrollbar-horizontal overflow-x-auto flex ml-4">
+            class="w-[calc(100%_-_76px)] absolute left-[60px] overflow-x-auto flex ml-4">
             <template v-for="widget of widget_list">
                 <div v-tooltip="widget?.snap_app?.name" v-if="widget.position === 'BOTTOM'"
                     @click="$event => toggleWidget($event, widget)"

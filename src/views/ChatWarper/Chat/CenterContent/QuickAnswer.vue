@@ -7,7 +7,7 @@
                 <p>Dùng ↑ hoặc ↓ để chọn</p>
             </div>
             <div
-                class="overflow-hidden scrollbar-vertical overflow-y-auto h-[calc(100%_-_30px)]">
+                class="overflow-y-auto h-[calc(100%_-_30px)]">
                 <div v-for="(answer, index) in quick_answers" :id="answer.id" class="py-2 px-1.5 cursor-pointer hover:bg-slate-100"
                     @click="selectQuickAnswer(answer)" :class="{
                         'text-orange-500': answer.id === answer_selected,

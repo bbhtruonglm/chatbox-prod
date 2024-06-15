@@ -25,7 +25,7 @@
       </div>
       <hr class="mt-2" />
       <div
-        class="pt-2 md:h-[calc(100%_-_85px)] xl:h-[calc(100%_-_110px)] overflow-hidden scrollbar-vertical overflow-y-auto"
+        class="pt-2 md:h-[calc(100%_-_85px)] xl:h-[calc(100%_-_110px)] overflow-y-auto"
       >
         <MenuBar v-if="!$route.path?.includes('/chat')" />
         <FilterBar v-else />

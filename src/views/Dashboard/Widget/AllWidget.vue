@@ -1,6 +1,6 @@
 <template>
     <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
-        class="h-full overflow-hidden scrollbar-vertical overflow-y-auto grid grid-cols-1 pb-5 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+        class="h-full overflow-y-auto grid grid-cols-1 pb-5 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
         <Item v-for="widget of widget_list" @click="openInstallWidget(widget)" :widget="widget" />
     </div>
     <template>

@@ -46,7 +46,7 @@
                         v-if="source?.last_message_type === 'page'" class="w-[16px] h-[16px] mr-1">
                         <img src="@/assets/icons/reply.svg" class="w-full h-full">
                     </div>
-                    <div class="label-list w-[calc(100%_-_16px)] overflow-hidden scrollbar-horizontal overflow-x-auto">
+                    <div class="label-list w-[calc(100%_-_16px)] overflow-x-auto">
                         <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(0, 3)">
                             <Label :page_id="source?.fb_page_id" :label_id="label_id" />
                         </template>

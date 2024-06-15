@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full overflow-hidden scrollbar-vertical overflow-y-auto pb-5">
+    <div class="h-full overflow-y-auto pb-5">
         <div class="flex justify-center">
             <button @click="upsert_widget_ref?.toggleModal()"
                 class="bg-white md:bg-slate-100 flex items-center rounded-full py-1 pr-2 border">

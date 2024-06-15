@@ -8,7 +8,7 @@
         </div>
         <div class="p-2">
             <div
-                class="h-[110px] scrollbar-vertical overflow-hidden overflow-y-auto flex items-center flex-wrap border rounded-lg p-2 justify-center">
+                class="h-[110px] overflow-y-auto flex items-center flex-wrap border rounded-lg p-2 justify-center">
                 <div v-if="list_page?.length" v-for="page of list_page" class="flex items-center mr-4 mb-1">
                     <PageAvatar :page_info="page.page"
                     class="rounded-full w-8 h-8" />
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div
-                class="h-[250px] scrollbar-vertical overflow-hidden overflow-y-auto border rounded-lg p-2 mt-2 grid grid-cols-2 gap-2">
+                class="h-[250px] overflow-y-auto border rounded-lg p-2 mt-2 grid grid-cols-2 gap-2">
                 <div class="text-right font-semibold text-slate-500">
                     {{ $t('v1.view.main.dashboard.download.total') }}
                 </div>
