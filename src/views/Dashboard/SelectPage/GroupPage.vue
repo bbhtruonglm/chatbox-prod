@@ -19,8 +19,7 @@
           <div class="font-medium text-sm">
             {{ $t('v1.view.main.dashboard.select_page.select_all_page') }}
           </div>
-          <!-- v-model="" isSelectAllGroup() -->
-          <Checkbox  />
+          <Checkbox v-model="is_select_all_page" />
         </label>
       </div>
       <div
@@ -43,7 +42,7 @@
 </template>
 <script setup lang="ts">
 import { usePageStore, useSelectPageStore } from '@/stores'
-import { ref, watch, provide } from 'vue'
+import { ref, watch, provide, computed } from 'vue'
 import { map } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { useI18n } from 'vue-i18n'
@@ -52,7 +51,7 @@ import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
 
-import type { PageData, PageType } from '@/service/interface/app/page'
+import type { PageData, PageInfo } from '@/service/interface/app/page'
 import type { Component } from 'vue'
 
 const $props = withDefaults(
@@ -74,6 +73,40 @@ const selectPageStore = useSelectPageStore()
 /**danh sách page sau khi được lọc */
 const active_page_list = ref<PageData[]>()
 
+/**tính toán xem toàn bộ page của group này có được chọn không */
+const is_select_all_page = computed({
+  /**tính toán xem toàn bộ page của group này có được chọn không */
+  get() {
+    /**số page được chọn */
+    let count_selected_page = 0
+    /**số page của nhóm này */
+    let total_page_of_group = 0
+
+    // lặp qua toàn bộ các trang của nhóm
+    loopPageOfGroup(page => {
+      // tăng số lượng page của nhóm
+      total_page_of_group++
+
+      // nếu page này được chọn thì tăng số lượng page được chọn
+      if (pageStore.isSelectedPage(page?.fb_page_id)) count_selected_page++
+    })
+
+    // nếu không có page nào trong nhóm thì coi là không chọn
+    if (!total_page_of_group) return false
+
+    // tính toán xem có phải toàn bộ page trong group này được chọn không
+    return count_selected_page === total_page_of_group
+  },
+  /**chọn | huỷ chọn toàn bộ page của group này */
+  set(newValue) {
+    // lặp qua toàn bộ các trang của nhóm
+    loopPageOfGroup(page => {
+      // chọn hoặc huỷ chọn page
+      pageStore.setPageSelected(page?.fb_page_id, newValue)
+    })
+  },
+})
+
 // lọc danh sách page khi được tìm kiếm
 watch(
   () => selectPageStore.search,
@@ -90,6 +123,16 @@ watch(
   () => sortListPage()
 )
 
+/**lặp qua từng trang của nhóm */
+function loopPageOfGroup(proceed: (page?: PageInfo) => void) {
+  active_page_list.value?.forEach(page => {
+    // chỉ xử lý các trang trong nhóm
+    if (page?.page?.type !== $props.filter) return
+
+    // cb các page thuộc về nhóm
+    proceed(page?.page)
+  })
+}
 /**sắp xếp page gắn sao lên đầu */
 function sortListPage() {
   // object -> array
@@ -180,10 +223,6 @@ function filterPlatform(): boolean {
     // nếu không phải chọn đúng mới được hiển thị
     selectPageStore.current_menu === $props.filter
   )
-}
-/**tính toán có phải toàn bộ page trong group này được chọn không */
-function isSelectAllGroup() {
-  return true
 }
 
 // xuất hàm cho các component con sử dụng
