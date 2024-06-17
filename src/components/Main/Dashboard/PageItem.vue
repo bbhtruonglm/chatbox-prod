@@ -54,5 +54,5 @@ const $props = withDefaults(
 )
 
 /**giá trị của checkbox */
-const checkbox_model = defineModel('checkbox')
+const checkbox_model = defineModel<boolean>('checkbox')
 </script>
