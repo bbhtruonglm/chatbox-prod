@@ -2,12 +2,14 @@
   <div
     @click="selectPage"
     v-if="page_info?.type === filter"
-    class="p-2 flex items-center gap-2 hover:bg-slate-100 rounded-lg cursor-pointer group"
+    :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
+    class="p-2 flex items-center gap-2 hover:bg-slate-100 rounded-lg group"
   >
     <Checkbox
       v-if="selectPageStore.is_group_page_mode"
       v-model="pageStore.selected_page_id_list[page_id]"
       class="flex-shrink-0"
+      :disabled="!isActivePage(page_info)"
     />
     <PageAvatar
       :page_info="page_info"
@@ -25,18 +27,28 @@
           </div>
         </div>
         <div class="flex-shrink-0">
-          <div class="items-center gap-2.5 hidden group-hover:flex">
+          <div class="cursor-pointer items-center gap-2.5 hidden group-hover:flex">
             <div @click.stop="togglePagePriority()">
-              <StarIcon class="w-4 h-4 text-yellow-500" v-if="page_info?.is_priority" />
-              <StarOutlineIcon class="w-4 h-4 text-slate-500" v-else />
+              <StarIcon
+                class="w-4 h-4 text-yellow-500"
+                v-if="page_info?.is_priority"
+              />
+              <StarOutlineIcon
+                class="w-4 h-4 text-slate-500"
+                v-else
+              />
             </div>
             <div
               @click.stop="confirm_modal_ref?.toggleModal()"
               v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
               class="group/minus"
             >
-              <MinusOutlineIcon class="w-4 h-4 text-slate-500 group-hover/minus:hidden" />
-              <MinusIcon class="w-4 h-4 text-slate-900 hidden group-hover/minus:block" />
+              <MinusOutlineIcon
+                class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
+              />
+              <MinusIcon
+                class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
+              />
             </div>
           </div>
           <span
@@ -150,6 +162,9 @@ const is_priority = computed(() => $props.page_info?.is_priority)
 
 /**chỉ chọn 1 page này để chat */
 function selectPage() {
+  // nếu trang đã hết hạn thì thôi
+  if (!isActivePage($props.page_info)) return
+
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó
   if (!selectPageStore.is_group_page_mode) return selectOnePage()
 
@@ -268,28 +283,3 @@ function inactivePage() {
   )
 }
 </script>
-<style scoped lang="scss">
-.custom-checkbox {
-  @apply appearance-none w-4 h-4 shadow-sm bg-white border-[1.5px] border-black rounded relative cursor-pointer;
-
-  &:checked {
-    @apply bg-black;
-
-    &::after {
-      content: '';
-      @apply absolute border-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r-2 border-b-2 w-1 h-2;
-    }
-  }
-
-  &:disabled {
-    @apply cursor-not-allowed border-gray-200 bg-gray-100;
-
-    &::after {
-      @apply border-gray-200;
-    }
-  }
-}
-.btn-custom {
-  @apply justify-between text-sm font-medium py-2 px-4 rounded-md hover:brightness-90;
-}
-</style>
