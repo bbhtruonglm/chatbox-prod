@@ -1,6 +1,6 @@
 <template>
   <MenuItem
-    @click="dashboardStore.selectMenu(key)"
+    @click="selectPageStore.selectMenu(key)"
     v-for="{ key, title, icon, class_icon } of list_platform"
     :icon="icon ?? SquareIcon"
     :title="title"
@@ -23,7 +23,7 @@ import WebIcon from '@/components/Icons/Web.vue'
 import type { Component } from 'vue'
 
 const { t: $t } = useI18n()
-const dashboardStore = useSelectPageStore()
+const selectPageStore = useSelectPageStore()
 
 /** một phần tử của nền tảng */
 interface PlatformItem {
@@ -42,7 +42,7 @@ const list_platform = ref<PlatformItem[]>(getPlatform())
 
 /** Kiểm tra xem menu có được chọn không */
 function isSelectedMenu(key: string) {
-  return key === dashboardStore.current_menu
+  return key === selectPageStore.current_menu
 }
 /**khởi tạo danh sách menu */
 function getPlatform(): PlatformItem[] {

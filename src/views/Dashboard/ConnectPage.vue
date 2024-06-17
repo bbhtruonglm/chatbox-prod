@@ -11,22 +11,28 @@
       <Menu />
       <div class="w-[600px] bg-white rounded-md p-2 flex flex-col">
         <div class="font-semibold p-2 border-b border-slate-200 flex-shrink-0">
-          {{ $t('v1.view.main.dashboard.select_platform.list_invite') }}
-        </div>
-        <div
-          class="p-2 flex flex-col justify-center items-center flex-grow gap-2.5"
-        >
-          <div class="p-4 bg-gray-100 rounded-full">
-            <LayerIcon class="w-7 h-7 text-slate-700" />
-          </div>
-          <div class="font-semibold">
-            {{ $t('v1.view.main.dashboard.select_platform.empty_invite') }}
-          </div>
-          <div class="text-sm text-slate-700 text-center w-[480px]">
+          <template v-if="connectPageStore.current_menu === 'WATTING'">
+            {{ $t('v1.view.main.dashboard.select_platform.list_invite') }}
+          </template>
+          <template v-else>
             {{
-              $t('v1.view.main.dashboard.select_platform.empty_invite_guild')
+              $t('v1.view.main.dashboard.select_platform.connect_with', {
+                platform: $t(
+                  `v1.common.${connectPageStore.current_menu?.toLowerCase()}`
+                ),
+              })
             }}
-          </div>
+          </template>
+        </div>
+        <Watting v-if="connectPageStore.current_menu === 'WATTING'" />
+        <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
+        <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
+        <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
+        <div
+          v-else
+          class="p-2"
+        >
+          {{ $t('v1.common.upcoming_feature') }}
         </div>
       </div>
     </template>
@@ -34,11 +40,16 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useConnectPageStore } from '@/stores'
 
 import Modal from '@/components/Modal.vue'
 import Menu from '@/views/Dashboard/ConnectPage/Menu.vue'
+import Watting from '@/views/Dashboard/ConnectPage/Watting.vue'
+import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
+import Website from '@/views/Dashboard/ConnectPage/Website.vue'
+import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
 
-import LayerIcon from '@/components/Icons/Layer.vue'
+const connectPageStore = useConnectPageStore()
 
 /**ref của modal kết nối nền tảng */
 const modal_connect_page_ref = ref<InstanceType<typeof Modal>>()

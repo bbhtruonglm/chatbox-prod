@@ -19,7 +19,7 @@
     position="BOTTOM"
     :is_fit="false"
     :back="289"
-    :distance="17"
+    :distance="10"
   >
     <div class="dashboard-header-user-menu">
       <h6 class="title-custom">
