@@ -2,17 +2,15 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
-/**store phục vụ riêng cho dashboard */
+/**store chọn trang */
 export const useSelectPageStore = defineStore('select_page_store', () => {
   /** -------------- STAGE -------------- */
+  /**menu đang chọn */
   const current_menu = ref<string>(
     getLocal('current_selected_tab', 'ALL_PLATFORM')
   )
   // lưu lại data vào local để khi f5 không bị reset
   saveLocal(current_menu, 'current_selected_tab')
-
-  /**menu của modal kết nối nền tảng */
-  const connect_page_menu = ref<string>('WATTING')
 
   /**tìm kiếm danh sách page theo tên hoặc id */
   const search = ref('')
@@ -30,10 +28,6 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   function selectMenu(key: string) {
     current_menu.value = key
   }
-  /**chọn menu của modal kết nối nền tảng */
-  function selectConnectPageMenu(key: string) {
-    connect_page_menu.value = key
-  }
 
   /**bật tắt chế độ chat nhóm trang */
   function toggleGroupPageMode() {
@@ -45,10 +39,27 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
     search,
     is_loading,
     is_group_page_mode,
-    connect_page_menu,
 
     selectMenu,
     toggleGroupPageMode,
-    selectConnectPageMenu,
+  }
+})
+
+/**store kết nối nền tảng */
+export const useConnectPageStore = defineStore('connect_page_store', () => {
+  /** -------------- STAGE -------------- */
+  /**menu đang chọn */
+  const current_menu = ref<string>('WATTING')
+
+  /** -------------- MUTATION / ACTION -------------- */
+  /**chọn menu */
+  function selectMenu(key: string) {
+    current_menu.value = key
+  }
+
+  return {
+    current_menu,
+
+    selectMenu,
   }
 })

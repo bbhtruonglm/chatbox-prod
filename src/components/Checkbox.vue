@@ -30,7 +30,4 @@ const model = defineModel<boolean>()
     }
   }
 }
-.btn-custom {
-  @apply justify-between text-sm font-medium py-2 px-4 rounded-md hover:brightness-90;
-}
 </style>

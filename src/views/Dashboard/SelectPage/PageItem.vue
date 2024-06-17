@@ -1,75 +1,52 @@
 <template>
-  <div
+  <PageItem
+    v-model:checkbox="pageStore.selected_page_id_list[page_id]"
+    :checkbox_is_visible="selectPageStore.is_group_page_mode"
+    :checkbox_is_disabled="!isActivePage(page_info)"
+    :page_info="page_info"
     @click="selectPage"
     v-if="page_info?.type === filter"
     :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
-    class="p-2 flex items-center gap-2 hover:bg-slate-100 rounded-lg group"
   >
-    <Checkbox
-      v-if="selectPageStore.is_group_page_mode"
-      v-model="pageStore.selected_page_id_list[page_id]"
-      class="flex-shrink-0"
-      :disabled="!isActivePage(page_info)"
-    />
-    <PageAvatar
-      :page_info="page_info"
-      class="w-8 h-8 flex-shrink-0"
-    />
-    <div class="w-full min-w-0">
-      <div class="flex items-center gap-2">
-        <div class="flex-grow min-w-0 flex gap-1 items-center">
+    <template #before-name>
+      <StarIcon
+        v-if="page_info?.is_priority"
+        class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 group-hover:hidden"
+      />
+    </template>
+    <template #after-name>
+      <div class="cursor-pointer items-center gap-2.5 hidden group-hover:flex">
+        <div @click.stop="togglePagePriority()">
           <StarIcon
+            class="w-4 h-4 text-yellow-500"
             v-if="page_info?.is_priority"
-            class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 group-hover:hidden"
           />
-          <div class="truncate flex-grow min-w-0">
-            {{ page_info?.name }}
-          </div>
+          <StarOutlineIcon
+            class="w-4 h-4 text-slate-500"
+            v-else
+          />
         </div>
-        <div class="flex-shrink-0">
-          <div class="cursor-pointer items-center gap-2.5 hidden group-hover:flex">
-            <div @click.stop="togglePagePriority()">
-              <StarIcon
-                class="w-4 h-4 text-yellow-500"
-                v-if="page_info?.is_priority"
-              />
-              <StarOutlineIcon
-                class="w-4 h-4 text-slate-500"
-                v-else
-              />
-            </div>
-            <div
-              @click.stop="confirm_modal_ref?.toggleModal()"
-              v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
-              class="group/minus"
-            >
-              <MinusOutlineIcon
-                class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
-              />
-              <MinusIcon
-                class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
-              />
-            </div>
-          </div>
-          <span
-            v-if="!isActivePage(page_info)"
-            class="text-xs text-red-500 group-hover:hidden"
-          >
-            {{ $t('v1.common.expired') }}
-          </span>
+        <div
+          @click.stop="confirm_modal_ref?.toggleModal()"
+          v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
+          class="group/minus"
+        >
+          <MinusOutlineIcon
+            class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
+          />
+          <MinusIcon
+            class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
+          />
         </div>
       </div>
-      <div class="flex items-center gap-1">
-        <PageTypeIcon
-          :page_type="page_info?.type"
-          class="flex-shrink-0 w-3.5 h-3.5"
-        />
-        <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
-          {{ page_info?.fb_page_id }}
-        </div>
-      </div>
-    </div>
-  </div>
+      <span
+        v-if="!isActivePage(page_info)"
+        class="text-xs text-red-500 group-hover:hidden"
+      >
+        {{ $t('v1.common.expired') }}
+      </span>
+    </template>
+  </PageItem>
   <Alert
     ref="confirm_modal_ref"
     class_body="text-zinc-500"
@@ -120,9 +97,7 @@ import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
 import Alert from '@/components/Alert.vue'
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
-import Checkbox from '@/components/Checkbox.vue'
+import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 
 import StarIcon from '@/components/Icons/Star.vue'
 import StarOutlineIcon from '@/components/Icons/StarOutline.vue'

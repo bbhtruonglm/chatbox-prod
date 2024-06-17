@@ -1,7 +1,7 @@
 <template>
   <div class="w-48 bg-white rounded-md p-2 flex flex-col gap-1 overflow-y-auto">
     <MenuItem
-      @click="dashboardStore.selectConnectPageMenu(key)"
+      @click="connectPageStore.selectMenu(key)"
       v-for="{ key, title, icon, class_icon } of list_platform"
       :icon="icon ?? ClockIcon"
       :title="title"
@@ -14,7 +14,7 @@
 import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import { useI18n } from 'vue-i18n'
 import { ref, markRaw } from 'vue'
-import { useSelectPageStore } from '@/stores'
+import { useConnectPageStore } from '@/stores'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
@@ -24,7 +24,7 @@ import WebIcon from '@/components/Icons/Web.vue'
 import type { Component } from 'vue'
 
 const { t: $t } = useI18n()
-const dashboardStore = useSelectPageStore()
+const connectPageStore = useConnectPageStore()
 
 /** một phần tử của nền tảng */
 interface PlatformItem {
@@ -43,7 +43,7 @@ const list_platform = ref<PlatformItem[]>(getPlatform())
 
 /** Kiểm tra xem menu có được chọn không */
 function isSelectedMenu(key: string) {
-  return key === dashboardStore.connect_page_menu
+  return key === connectPageStore.current_menu
 }
 /**khởi tạo danh sách menu */
 function getPlatform(): PlatformItem[] {

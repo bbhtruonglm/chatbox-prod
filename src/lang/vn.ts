@@ -144,11 +144,32 @@ const source: Language = {
             },
           },
           select_platform: {
+            connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
             add_page: 'Thêm trang',
             waiting: 'Chờ kích hoạt',
             list_invite: 'Danh sách lời mời',
             empty_invite: 'Không có lời mời',
+            accept: 'Xác nhận lời mời',
+            denied: 'Từ chối lời mời',
+            facebook: {
+              guild: 'Kết nối Bot Bán Hàng với Trang Facebook',
+              description:
+                'Kết nối với Facebook để chat nhiều Trang tự động với AI, tối ưu chi phí Marketing với CAPI, tự động tích hợp các ứng dụng của Doanh nghiệp.',
+              title: 'Kết nối với Facebook',
+            },
+            website: {
+              guild: 'Kết nối Bot Bán Hàng với Website',
+              description: 'Kết nối với Website để ...',
+              title: 'Kết nối với Website',
+            },
+            zalo_oa: {
+              guild: 'Kết nối Bot Bán Hàng với Zalo OA',
+              description:
+                'Kết nối với Zalo OA cần phải là tài khoản Zalo OA Nâng cao hoặc Zalo Premium.',
+              lean_more: 'Tìm hiểu thêm',
+              title: 'Kết nối với Zalo OA',
+            },
             empty_invite_guild:
               'Bạn không có lời mời nào, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
             grant_permision: 'Cấp quyền',
