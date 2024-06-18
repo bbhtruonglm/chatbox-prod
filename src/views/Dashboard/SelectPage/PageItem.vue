@@ -7,15 +7,24 @@
     @click="selectPage"
     v-if="page_info?.type === filter"
     :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
+    class="border border-slate-200"
   >
-    <template #before-name>
-      <StarIcon
-        v-if="page_info?.is_priority"
-        class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 group-hover:hidden"
-      />
-    </template>
     <template #after-name>
-      <div class="cursor-pointer items-center gap-2.5 hidden group-hover:flex">
+      <div :class="{
+        'hidden group-hover:flex': !isActivePage(page_info)
+      }" class="cursor-pointer items-center gap-2.5 flex">
+        <div
+          @click.stop="confirm_modal_ref?.toggleModal()"
+          v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
+          class="group/minus hidden group-hover:flex"
+        >
+          <MinusOutlineIcon
+            class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
+          />
+          <MinusIcon
+            class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
+          />
+        </div>
         <div @click.stop="togglePagePriority()">
           <StarIcon
             class="w-4 h-4 text-yellow-500"
@@ -24,18 +33,6 @@
           <StarOutlineIcon
             class="w-4 h-4 text-slate-500"
             v-else
-          />
-        </div>
-        <div
-          @click.stop="confirm_modal_ref?.toggleModal()"
-          v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
-          class="group/minus"
-        >
-          <MinusOutlineIcon
-            class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
-          />
-          <MinusIcon
-            class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
           />
         </div>
       </div>
