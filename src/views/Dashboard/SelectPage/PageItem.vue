@@ -5,37 +5,38 @@
     :checkbox_is_disabled="!isActivePage(page_info)"
     :page_info="page_info"
     @click="selectPage"
-    v-if="page_info?.type === filter"
     :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
+    class="border border-slate-200"
   >
-    <template #before-name>
-      <StarIcon
-        v-if="page_info?.is_priority"
-        class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 group-hover:hidden"
-      />
-    </template>
     <template #after-name>
-      <div class="cursor-pointer items-center gap-2.5 hidden group-hover:flex">
-        <div @click.stop="togglePagePriority()">
-          <StarIcon
-            class="w-4 h-4 text-yellow-500"
-            v-if="page_info?.is_priority"
-          />
-          <StarOutlineIcon
-            class="w-4 h-4 text-slate-500"
-            v-else
-          />
-        </div>
-        <div
-          @click.stop="confirm_modal_ref?.toggleModal()"
+      <!-- nếu page hết hạn thì ẩn ngôi sao để ưu tiên block dưới -->
+      <div
+        :class="{
+          'hidden group-hover:flex': !isActivePage(page_info),
+        }"
+        class="cursor-pointer items-center gap-2.5 flex"
+      >
+        <!-- chỉ hiện nút xoá page khi hover -->
+        <!-- <div
+          @click.stop="confirm_unactive_modal_ref?.toggleModal()"
           v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
-          class="group/minus"
+          class="group/minus hidden group-hover:flex"
         >
           <MinusOutlineIcon
             class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
           />
           <MinusIcon
             class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
+          />
+        </div> -->
+        <div @click.stop="togglePagePriority()">
+          <StarIcon
+            class="w-4 h-4 text-yellow-500"
+            v-if="page_info?.is_priority"
+          />
+          <StarOutlineIcon
+            class="w-4 h-4 text-slate-500 hidden group-hover:flex"
+            v-else
           />
         </div>
       </div>
@@ -48,7 +49,8 @@
     </template>
   </PageItem>
   <Alert
-    ref="confirm_modal_ref"
+    ref="confirm_unactive_modal_ref"
+    class_modal="w-[507px]"
     class_body="text-zinc-500"
     class_footer="flex justify-between items-center"
   >
@@ -71,7 +73,7 @@
     </template>
     <template #footer>
       <button
-        @click="confirm_modal_ref?.toggleModal()"
+        @click="confirm_unactive_modal_ref?.toggleModal()"
         class="btn-custom bg-slate-100 text-slate-500"
       >
         {{ $t('v1.common.close') }}
@@ -81,6 +83,37 @@
         class="btn-custom bg-red-100 text-red-500"
       >
         {{ $t('v1.common.ok') }}
+      </button>
+    </template>
+  </Alert>
+  <Alert
+    ref="expired_alert_modal_ref"
+    class_modal="w-[507px]"
+    class_body="py-3"
+    class_footer="flex justify-between items-center"
+  >
+    <template #header>
+      {{ $t('v1.view.main.dashboard.select_page.expire.alert.title') }}
+    </template>
+    <template #body>
+      <div
+        v-html="
+          $t('v1.view.main.dashboard.select_page.expire.alert.description')
+        "
+      />
+    </template>
+    <template #footer>
+      <button
+        @click="expired_alert_modal_ref?.toggleModal()"
+        class="btn-custom bg-slate-100 text-slate-500"
+      >
+        {{ $t('v1.common.close') }}
+      </button>
+      <button
+        @click="$router.push('/dashboard/pricing')"
+        class="btn-custom bg-blue-100 text-blue-500"
+      >
+        {{ $t('v1.view.main.dashboard.select_page.expire.alert.upgrade') }}
       </button>
     </template>
   </Alert>
@@ -128,18 +161,16 @@ const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
 
 /**modal xác nhận huỷ trang */
-const confirm_modal_ref = ref<InstanceType<typeof Alert>>()
-
+const confirm_unactive_modal_ref = ref<InstanceType<typeof Alert>>()
+/**modal cảnh báo trang đã hết hạn */
+const expired_alert_modal_ref = ref<InstanceType<typeof Alert>>()
 /**id trang */
 const page_id = computed(() => $props.page_info?.fb_page_id)
 /**đánh dấu ưu tiên */
 const is_priority = computed(() => $props.page_info?.is_priority)
 
-/**chỉ chọn 1 page này để chat */
+/**click chọn vào 1 trang */
 function selectPage() {
-  // nếu trang đã hết hạn thì thôi
-  if (!isActivePage($props.page_info)) return
-
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó
   if (!selectPageStore.is_group_page_mode) return selectOnePage()
 
@@ -148,6 +179,9 @@ function selectPage() {
 }
 /**thay đổi giá trị lựa chọn page để chat */
 function toggleSelectThisPage() {
+  // nếu trang đã hết hạn thì thôi
+  if (!isActivePage($props.page_info)) return
+
   // xoá flag khi page không được chọn
   if (isSelectedThisPage())
     delete pageStore.selected_page_id_list[page_id.value]
@@ -161,6 +195,14 @@ function isSelectedThisPage() {
 }
 /**chỉ chat 1 page này */
 function selectOnePage() {
+  // nếu trang đã hết hạn thì thôi
+  if (!isActivePage($props.page_info)) {
+    // hiện modal cảnh báo trang đã hết hạn
+    expired_alert_modal_ref.value?.toggleModal()
+
+    return
+  }
+
   // nếu không có id trang thì thôi
   if (!page_id.value) return
 
@@ -217,7 +259,7 @@ function togglePagePriority() {
 /**huỷ kích hoạt page này | ẩn page */
 function inactivePage() {
   // tắt modal
-  confirm_modal_ref.value?.toggleModal()
+  confirm_unactive_modal_ref.value?.toggleModal()
 
   // nếu không có id trang thì thôi
   if (!page_id.value) return
@@ -258,3 +300,8 @@ function inactivePage() {
   )
 }
 </script>
+<style scoped lang="scss">
+.btn-custom {
+  @apply text-sm font-medium rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-90;
+}
+</style>

@@ -10,6 +10,8 @@
 </template>
 <script setup lang="ts">
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
+import Facebook from '@/components/OAuth/Facebook.vue'
 
 import FacebookIcon from '@/components/Icons/Facebook.vue'
+import { ref } from 'vue'
 </script>
