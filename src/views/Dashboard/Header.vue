@@ -2,7 +2,10 @@
   <div
     class="dashboard-header bg-white rounded-lg py-3 px-6 flex justify-between"
   >
-    <div class="flex gap-3 items-center">
+    <button
+      @click="$router.push('/dashboard/select-page')"
+      class="flex gap-3 items-center"
+    >
       <img
         src="@/assets/icons/bbh-mini.svg"
         class="w-9 h-11"
@@ -10,7 +13,7 @@
       <h2 class="text-2xl font-semibold">
         {{ $t('v1.common.title') }}
       </h2>
-    </div>
+    </button>
     <div class="flex gap-7 items-center">
       <template v-if="isShowSelectPageButton()">
         <button

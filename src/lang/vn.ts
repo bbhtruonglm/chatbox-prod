@@ -135,6 +135,12 @@ const source: Language = {
               description: 'Thêm mới trang để bắt đầu Chat',
             },
             expire: {
+              alert: {
+                title: 'Hết hạn sử dụng',
+                description:
+                  'Trang này đã hết hạn sử dụng. Ấn nút <b>"Nâng cấp"</b> để xem các gói nâng cấp.',
+                upgrade: 'Nâng cấp',
+              },
               title: 'Có lỗi xảy ra',
               description:
                 'Không tìm thấy gói cước nào đã được kích hoạt cho người dùng, các trang hoặc cài đặt đã bị thay đổi. Đi đến trang nâng cấp gói để sửa cài đặt.',
