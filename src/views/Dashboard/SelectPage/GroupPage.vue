@@ -22,12 +22,6 @@
           <Checkbox v-model="is_select_all_page" />
         </label>
       </div>
-      <div
-        v-if="filter === 'RECENT'"
-        class="text-center text-blue-500 text-sm"
-      >
-        {{ $t('v1.common.upcoming_feature') }}
-      </div>
       <div class="grid gap-6 grid-cols-4">
         <template v-for="page of active_page_list">
           <PageItem
@@ -39,6 +33,7 @@
       </div>
     </div>
   </div>
+  <EmptyPage v-else-if="selectPageStore.current_menu === filter" />
 </template>
 <script setup lang="ts">
 import { usePageStore, useSelectPageStore } from '@/stores'
@@ -51,6 +46,7 @@ import { isActivePage } from '@/service/helper/pricing'
 
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 
 import type { PageData, PageInfo } from '@/service/interface/app/page'
 import type { Component } from 'vue'
@@ -111,12 +107,7 @@ const is_select_all_page = computed({
 // lọc danh sách page khi được tìm kiếm
 watch(
   () => selectPageStore.search,
-  () => {
-    // kích hoạt loading
-    selectPageStore.is_loading = true
-
-    sortListPage()
-  }
+  () => sortListPage()
 )
 // nạp lại danh sách page thì có thay đổi
 watch(
@@ -133,7 +124,8 @@ function loopPageOfGroup(proceed: (page?: PageInfo) => void) {
       page?.page?.type !== $props.filter ||
       // chỉ xử lý các page còn hạn sử dụng
       !isActivePage(page?.page)
-    ) return
+    )
+      return
 
     // cb các page thuộc về nhóm
     proceed(page?.page)
@@ -195,19 +187,19 @@ function sortListPage() {
 
     /**sắp xếp các page được chọn */
     const sortPageIsSelected = () => {
-      // const selected_a =
-      //   pageStore.selected_page_id_list?.[page_a.page?.fb_page_id || '']
-      // const selected_b =
-      //   pageStore.selected_page_id_list?.[page_b.page?.fb_page_id || '']
+      const selected_a =
+        pageStore.selected_page_id_list?.[page_a.page?.fb_page_id || '']
+      const selected_b =
+        pageStore.selected_page_id_list?.[page_b.page?.fb_page_id || '']
 
-      // // nếu cả 2 page được chọn thì tính dấu sao
-      // if (selected_a && selected_b) return sortPriority()
+      // nếu cả 2 page được chọn thì tính dấu sao
+      if (selected_a && selected_b) return sortPriority()
 
-      // // nếu chỉ page 1 được chọn thì chọn page 1
-      // if (selected_a) return 1
+      // nếu chỉ page 1 được chọn thì chọn page 1
+      if (selected_a) return 1
 
-      // // nếu chỉ page 2 được chọn thì chọn page 2
-      // if (selected_b) return -1
+      // nếu chỉ page 2 được chọn thì chọn page 2
+      if (selected_b) return -1
 
       // nếu không có page nào được chọn thì tính độ ưu tiên
       return sortPriority()
@@ -219,16 +211,21 @@ function sortListPage() {
   // đảo chiều mảng, vì hàm sort chạy theo ASC
   let reverse_page_list = sort_priority_page_list.reverse()
 
-  active_page_list.value = reverse_page_list
+  // lọc ra các page thuộc về nhóm này
+  active_page_list.value = reverse_page_list?.filter(
+    page => page?.page?.type === $props.filter
+  )
 }
 /**chỉ hiện các group page được chọn */
 function filterPlatform(): boolean {
-  return (
-    // nếu là chọn toàn bộ nền tảng thì cho hiển thị
-    selectPageStore.current_menu === 'ALL_PLATFORM' ||
-    // nếu không phải chọn đúng mới được hiển thị
-    selectPageStore.current_menu === $props.filter
-  )
+  // nếu không có page nào thì không hiển thị
+  if (!active_page_list.value?.length) return false
+
+  // nếu là chọn toàn bộ nền tảng thì cho hiển thị
+  if (selectPageStore.current_menu === 'ALL_PLATFORM') return true
+
+  // nếu không phải chọn đúng nhóm mới được hiển thị
+  return selectPageStore.current_menu === $props.filter
 }
 
 // xuất hàm cho các component con sử dụng

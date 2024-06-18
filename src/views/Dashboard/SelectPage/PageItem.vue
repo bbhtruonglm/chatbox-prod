@@ -5,7 +5,6 @@
     :checkbox_is_disabled="!isActivePage(page_info)"
     :page_info="page_info"
     @click="selectPage"
-    v-if="page_info?.type === filter"
     :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
     class="border border-slate-200"
   >
@@ -18,7 +17,7 @@
         class="cursor-pointer items-center gap-2.5 flex"
       >
         <!-- chỉ hiện nút xoá page khi hover -->
-        <div
+        <!-- <div
           @click.stop="confirm_unactive_modal_ref?.toggleModal()"
           v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
           class="group/minus hidden group-hover:flex"
@@ -29,7 +28,7 @@
           <MinusIcon
             class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
           />
-        </div>
+        </div> -->
         <div @click.stop="togglePagePriority()">
           <StarIcon
             class="w-4 h-4 text-yellow-500"

@@ -10,7 +10,10 @@
         <div class="block md:hidden">
           <img src="@/assets/icons/bbh-large.svg" />
         </div>
-        <div class="hidden md:block">
+        <button
+          @click="$router.push('/dashboard/select-page')"
+          class="hidden md:block"
+        >
           <img
             v-if="!isChat()"
             src="@/assets/icons/bbh-large.svg"
@@ -21,7 +24,7 @@
             src="@/assets/icons/bbh-mini.svg"
             class="h-[37px]"
           />
-        </div>
+        </button>
       </div>
       <hr class="mt-2" />
       <div

@@ -113,6 +113,7 @@ const source: Language = {
             },
           },
           select_page: {
+            all_org: 'Tất cả tổ chức',
             select_org: 'Chọn tổ chức',
             setting_org: 'Cài đặt doanh nghiệp',
             cancel_page: 'Huỷ kích hoạt trang',
