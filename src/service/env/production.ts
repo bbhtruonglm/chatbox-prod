@@ -78,9 +78,7 @@ const ENV: Env = {
         }
     },
     zalo_oa: {
-        // TODO đổi lại domain prod và thiết lập của zalo dev
-        // https://chat.botbanhang.vn/dashboard/select-page?connect_page=ZALO_OA
-        redirect_uri: 'https://chatbox-frontend-hybrid.vercel.app/dashboard/select-page?connect_page=ZALO_OA',
+        redirect_uri: 'https://chat-v2.botbanhang.vn/dashboard/select-page?connect_page=ZALO_OA',
     },
     platform: ['FB_MESS', 'WEBSITE', 'ZALO_OA'],
     img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar'
