@@ -55,13 +55,14 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { usePageStore, useSelectPageStore } from '@/stores'
+import { useConnectPageStore, usePageStore, useSelectPageStore } from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_LOAD_LIST_PAGE_FUNCT,
+  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { preGoToChat } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
@@ -83,11 +84,15 @@ const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const $router = useRouter()
+const $route = useRoute()
+const connectPageStore = useConnectPageStore()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
 /**lấy danh sách trang đã kích hoạt */
 const loadListPage = inject(KEY_LOAD_LIST_PAGE_FUNCT)
+/**mở modal connect page */
+const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)
 
@@ -101,8 +106,22 @@ onMounted(() => {
 
   // load danh sách page
   loadListPage?.()
+
+  // kích hoạt zalo nếu phát hiện
+  triggerConnectZalo()
 })
 
+/**kích hoạt oauth zalo redirect nếu phát hiện */
+function triggerConnectZalo() {
+  // nếu không có cờ zalo thì thôi
+  if ($route.query.connect_page !== 'ZALO_OA') return
+
+  // chuyển trước tab của zalo
+  connectPageStore.selectMenu('ZALO_OA')
+  
+  // mở modal connect zalo
+  toggleModalConnectPage?.()
+}
 /**chuyển đến trang chat */
 function goToChat() {
   // chuyển đến trang chat
