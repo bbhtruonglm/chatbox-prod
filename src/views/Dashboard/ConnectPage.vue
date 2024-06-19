@@ -1,7 +1,7 @@
 <template>
   <Modal
     ref="modal_connect_page_ref"
-    class_modal="min-h-[500px]"
+    class_modal="h-[500px]"
     class_body="py-2 flex gap-2"
   >
     <template #header>
@@ -9,10 +9,21 @@
     </template>
     <template #body>
       <Menu />
-      <div class="w-[600px] bg-white rounded-md p-2 flex flex-col">
-        <div class="font-semibold p-2 border-b border-slate-200 flex-shrink-0">
+      <div class="w-[600px] bg-white rounded-md p-2 flex flex-col relative">
+        <div
+          v-if="connectPageStore.is_loading"
+          class="absolute top-14 left-1/2 -translate-x-1/2"
+        >
+          <Loading class="mx-auto" />
+        </div>
+        <div
+          class="font-semibold p-2 border-b border-slate-200 flex-shrink-0 flex items-center justify-between"
+        >
           <template v-if="connectPageStore.current_menu === 'WATTING'">
-            {{ $t('v1.view.main.dashboard.select_platform.list_invite') }}
+            <div>
+              {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
+            </div>
+            <Search />
           </template>
           <template v-else>
             {{
@@ -24,7 +35,7 @@
             }}
           </template>
         </div>
-        <Watting v-if="connectPageStore.current_menu === 'WATTING'" />
+        <ActivePage v-if="connectPageStore.current_menu === 'WATTING'" />
         <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
         <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
         <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
@@ -39,15 +50,18 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { useConnectPageStore } from '@/stores'
+import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 
+import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
 import Menu from '@/views/Dashboard/ConnectPage/Menu.vue'
-import Watting from '@/views/Dashboard/ConnectPage/Watting.vue'
+import ActivePage from '@/views/Dashboard/ConnectPage/ActivePage.vue'
 import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
+import Search from '@/views/Dashboard/ConnectPage/Search.vue'
 
 const connectPageStore = useConnectPageStore()
 
@@ -59,5 +73,9 @@ function toggleModal() {
   modal_connect_page_ref.value?.toggleModal()
 }
 
+// cung cấp hàm toggle modal cho component cha
 defineExpose({ toggleModal })
+
+// cung cấp hàm toggle modal cho component con
+provide(KEY_TOGGLE_MODAL_FUNCT, toggleModal)
 </script>

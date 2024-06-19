@@ -55,10 +55,11 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { usePageStore, useStaffStore, useSelectPageStore } from '@/stores'
-import { flow } from '@/service/helper/async'
-import { get_current_active_page } from '@/service/api/chatbox/n4-service'
-import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
+import { usePageStore, useSelectPageStore } from '@/stores'
+import {
+  KEY_GET_CHATBOT_USER_FUNCT,
+  KEY_LOAD_LIST_PAGE_FUNCT,
+} from '@/views/Dashboard/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { useRouter } from 'vue-router'
 import { preGoToChat } from '@/service/function'
@@ -78,16 +79,15 @@ import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
 
-import type { CbError } from '@/service/interface/function'
-
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
-const staffStore = useStaffStore()
 const selectPageStore = useSelectPageStore()
 const $router = useRouter()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
+/**lấy danh sách trang đã kích hoạt */
+const loadListPage = inject(KEY_LOAD_LIST_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)
 
@@ -100,35 +100,9 @@ onMounted(() => {
   getMeChatbotUser?.()
 
   // load danh sách page
-  loadListPage()
+  loadListPage?.()
 })
 
-/**lấy toàn bộ các page đang được kích hoạt của người dùng */
-function loadListPage() {
-  flow(
-    [
-      // * kích hoạt loading
-      (cb: CbError) => {
-        selectPageStore.is_loading = true
-
-        cb()
-      },
-      // * gọi api lấy danh sách page
-      (cb: CbError) =>
-        get_current_active_page({ is_active: true }, (e, r) => {
-          if (e) return cb(e)
-
-          pageStore.active_page_list = r.page_list
-          staffStore.staff_list_of_active_page = r.all_staff_list
-          cb()
-        }),
-    ],
-    e => {
-      // tắt loading
-      selectPageStore.is_loading = false
-    }
-  )
-}
 /**chuyển đến trang chat */
 function goToChat() {
   // chuyển đến trang chat
