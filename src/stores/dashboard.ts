@@ -52,6 +52,8 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   const current_menu = ref<string>('WATTING')
   /**có hiện loading không */
   const is_loading = ref(false)
+  /**tìm kiếm trang */
+  const search = ref('')
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
@@ -62,6 +64,7 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   return {
     current_menu,
     is_loading,
+    search,
 
     selectMenu,
   }

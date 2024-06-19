@@ -6,7 +6,7 @@
         <template v-for="page of list_new_page">
           <PageItem
             @click="selectPage(page?.page?.fb_page_id)"
-            v-if="page?.page?.fb_page_id"
+            v-if="page?.page?.fb_page_id && filterPage(page)"
             v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
             :checkbox_is_visible="true"
             :page_info="page?.page"
@@ -30,7 +30,7 @@
         <template v-for="page of list_new_page">
           <PageItem
             @click="selectPage(page?.page?.fb_page_id)"
-            v-if="page?.page?.fb_page_id"
+            v-if="page?.page?.fb_page_id && filterPage(page)"
             v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
             :checkbox_is_visible="true"
             :page_info="page?.page"
@@ -71,6 +71,7 @@ import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
+import { nonAccentVn } from '@/service/helper/format'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -90,6 +91,19 @@ const list_selected_page_id = ref<Record<string, boolean>>({})
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
 
+/**hiển thị các page theo tìm kiếm */
+function filterPage(page: PageData) {
+  // nếu không có giá trị tìm kiếm thì luôn hiển thị
+  if (!connectPageStore.search) return true
+
+  /**giá trị tìm kiếm đã được xử lý */
+  const SEARCH = nonAccentVn(connectPageStore.search)
+
+  return (
+    page?.page?.fb_page_id?.includes(SEARCH) ||
+    nonAccentVn(page?.page?.name || '')?.includes(SEARCH)
+  )
+}
 /**kích hoạt các trang được chọn */
 async function activePage() {
   // nếu không có trang nào được chọn thì bỏ qua

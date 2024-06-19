@@ -19,24 +19,12 @@
         <slot name="after-description" />
       </div>
     </div>
-    <button
-      @click="$emit('click')"
-      class="flex justify-between items-center py-2 px-4 gap-2 bg-slate-100 rounded-md hover:brightness-90"
-    >
-      <component
-        :is="icon"
-        class="w-4 h-4"
-      />
-      <div class="text-slate-900 text-sm font-semibold">
-        {{ title }}
-      </div>
-    </button>
+    <slot name="button" />
   </div>
 </template>
 <script setup lang="ts">
 import BotXIcon from '@/components/Icons/BotX.vue'
 import ReloadIcon from '@/components/Icons/Reload.vue'
-import FacebookIcon from '@/components/Icons/Facebook.vue'
 
 import type { Component } from 'vue'
 
@@ -48,8 +36,6 @@ const $props = withDefaults(
     guild: string
     /**chú thích */
     description: string
-    /**tiêu đề nút */
-    title: string
   }>(),
   {}
 )
