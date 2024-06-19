@@ -58,7 +58,7 @@ function getPlatform(): PlatformItem[] {
   const DEFAULT_MENU: PlatformItem[] = [
     {
       key: 'WATTING',
-      title: $t('v1.view.main.dashboard.select_platform.waiting'),
+      title: $t('v1.view.main.dashboard.select_platform.active_page'),
       icon: markRaw(ClockIcon),
     },
   ]

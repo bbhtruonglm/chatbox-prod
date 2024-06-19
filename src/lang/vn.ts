@@ -151,12 +151,13 @@ const source: Language = {
             },
           },
           select_platform: {
+            another_page: 'Các trang ở Tổ chức khác',
+            search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
             add_page: 'Thêm trang',
-            waiting: 'Chờ kích hoạt',
-            list_invite: 'Danh sách lời mời',
-            empty_invite: 'Không có lời mời',
+            active_page: 'Kích hoạt trang',
+            empty_invite: 'Không có trang cần kích hoạt',
             accept: 'Xác nhận lời mời',
             denied: 'Từ chối lời mời',
             facebook: {
@@ -178,7 +179,7 @@ const source: Language = {
               title: 'Kết nối với Zalo OA',
             },
             empty_invite_guild:
-              'Bạn không có lời mời nào, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
+              'Bạn không có trang cần kích hoạt, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
             grant_permision: 'Cấp quyền',
             click_add_page: 'Bấm thêm trang để bắt đầu!',
             active: 'Kích hoạt',
