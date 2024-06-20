@@ -1,90 +1,203 @@
 <template>
-    <div id="list-message-warper" class="h-[calc(100%_-_150px)] relative">
-        <div @scroll="onScrollMessage" id="list-message"
-            class="pt-0 pl-6 pb-10 h-full overflow-y-auto bg-gray-100">
-            <div v-if="is_loading" class="relative z-10">
-                <div class="fixed left-[50%] translate-x-[-50%]">
-                    <Loading class="mx-auto" />
-                </div>
-            </div>
-            <div v-for="(message, index) of list_message" :id="message._id" class="pt-[1px] pr-5 relative">
-                <TimeSplit :before_message="list_message?.[index - 1]" :now_message="message" />
-                <div v-if="['client', 'activity'].includes(message.message_type) && !message.ad_id"
-                    :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'page' }"
-                    class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
-                    <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
-                    <template v-if="message.message_text || message.postback_title || message.message_attachments?.length">
-                        <ClientTextMessage v-if="message.message_text" :text="message.message_text"
-                            :current_message="message" :current_index="index" :list_message="list_message" />
-                        <ClientTextMessage v-if="message.postback_title" :text="message.postback_title"
-                            :current_message="message" :current_index="index" :list_message="list_message" />
-                        <AttachmentMessage v-if="message.message_attachments?.length"
-                            :message_attachments="message.message_attachments" :message_mid="message.message_mid"
-                            :platform_type="message.platform_type"
-                            :page_id="message.fb_page_id" type="CLIENT" />
-                    </template>
-                    <UnsupportMessage v-else />
-                    <ClientMessageDate class="text-right" :now_message="message"
-                        :next_message="list_message?.[index + 1]" />
-                </div>
-                <div v-else-if="message.message_type === 'page'"
-                    :class="{ 'mb-5': list_message?.[index + 1]?.message_type === 'client' }"
-                    class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
-                        <ReplyMessage v-if="message?.snap_replay_message" :message="message?.snap_replay_message" />
-                        <template v-if="message.message_text || message.message_attachments?.length">
-                            <PageTextMessage v-if="message.message_text" :text="message.message_text" />
-                            <template v-if="message.message_attachments?.length">
-                                <AttachmentMessage
-                                    v-if="!['template', 'fallback', 'receipt'].includes(message.message_attachments?.[0]?.type || '')"
-                                    :message_attachments="message.message_attachments" :message_mid="message.message_mid"
-                                    :platform_type="message.platform_type"
-                                    :page_id="message.fb_page_id" type="PAGE" />
-                                <ChatbotMessage v-else :message_chatbot="message.message_attachments?.[0]" />
-                            </template>
-                        </template>
-                        <UnsupportMessage v-else />
-                        <MessageDate v-if="message.time" class="right-5" :time="message.time"
-                            :info="parserStaffName(message.message_metadata)" />
-                    </div>
-                </div>
-                <div v-else-if="message.message_type === 'note'" class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
-                        <NoteMessage v-if="message.message_text" :text="message.message_text" />
-                        <UnsupportMessage v-else />
-                        <MessageDate v-if="message.createdAt" class="right-5" :time="message.createdAt"
-                            :info="parserStaffName(message.message_metadata)" />
-                    </div>
-                </div>
-                <div v-else-if="message.message_type === 'system'" class="flex justify-center">
-                    <div class="w-[70%] text-center">
-                        <SystemMessage v-if="message.message_text" :text="message.message_text" />
-                        <UnsupportMessage v-else />
-                    </div>
-                </div>
-                <div v-else-if="message.message_type === 'client' && message.ad_id">
-                    <AdMessage :ad_id="message.ad_id" />
-                </div>
-                <div v-else-if="message.platform_type === 'FB_POST' && message.fb_post_id">
-                    <FacebookPost :fb_post_id="message.fb_post_id" :hide-post="() => { }" />
-                </div>
-                <div v-else class="text-center flex justify-center">
-                    <UnsupportMessage class="w-[70%]" />
-                </div>
-                <ClientRead @change_last_read_message="visibleFirstClientReadAvatar" :time="message.time" />
-                <StaffRead @change_last_read_message="visibleLastStaffReadAvatar" :time="message.time" />
-            </div>
-            <div v-for="message of messageStore.send_message_list" class="pt-[1px] pr-5 relative group">
-                <div class="flex flex-col items-end">
-                    <div class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group">
-                        <PageTempTextMessage :text="message.text" />
-                        <PageMessageError v-if="message.error" />
-                        <MessageDate v-if="message.time" class="right-5" :time="message.time" />
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div
+    @scroll="onScrollMessage"
+    id="list-message"
+    class="pt-0 pl-6 pb-10 h-full overflow-y-auto bg-[#0015810f] rounded-xl"
+  >
+    <div
+      v-if="is_loading"
+      class="relative z-10"
+    >
+      <div class="fixed left-[50%] translate-x-[-50%]">
+        <Loading class="mx-auto" />
+      </div>
     </div>
+    <div
+      v-for="(message, index) of list_message"
+      :id="message._id"
+      class="pt-[1px] pr-5 relative"
+    >
+      <TimeSplit
+        :before_message="list_message?.[index - 1]"
+        :now_message="message"
+      />
+      <div
+        v-if="
+          ['client', 'activity'].includes(message.message_type) &&
+          !message.ad_id
+        "
+        :class="{
+          'mb-5': list_message?.[index + 1]?.message_type === 'page',
+        }"
+        class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+      >
+        <ReplyMessage
+          v-if="message?.snap_replay_message"
+          :message="message?.snap_replay_message"
+        />
+        <template
+          v-if="
+            message.message_text ||
+            message.postback_title ||
+            message.message_attachments?.length
+          "
+        >
+          <ClientTextMessage
+            v-if="message.message_text"
+            :text="message.message_text"
+            :current_message="message"
+            :current_index="index"
+            :list_message="list_message"
+          />
+          <ClientTextMessage
+            v-if="message.postback_title"
+            :text="message.postback_title"
+            :current_message="message"
+            :current_index="index"
+            :list_message="list_message"
+          />
+          <AttachmentMessage
+            v-if="message.message_attachments?.length"
+            :message_attachments="message.message_attachments"
+            :message_mid="message.message_mid"
+            :platform_type="message.platform_type"
+            :page_id="message.fb_page_id"
+            type="CLIENT"
+          />
+        </template>
+        <UnsupportMessage v-else />
+        <ClientMessageDate
+          class="text-right"
+          :now_message="message"
+          :next_message="list_message?.[index + 1]"
+        />
+      </div>
+      <div
+        v-else-if="message.message_type === 'page'"
+        :class="{
+          'mb-5': list_message?.[index + 1]?.message_type === 'client',
+        }"
+        class="flex flex-col items-end"
+      >
+        <div
+          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+        >
+          <ReplyMessage
+            v-if="message?.snap_replay_message"
+            :message="message?.snap_replay_message"
+          />
+          <template
+            v-if="message.message_text || message.message_attachments?.length"
+          >
+            <PageTextMessage
+              v-if="message.message_text"
+              :text="message.message_text"
+            />
+            <template v-if="message.message_attachments?.length">
+              <AttachmentMessage
+                v-if="
+                  !['template', 'fallback', 'receipt'].includes(
+                    message.message_attachments?.[0]?.type || ''
+                  )
+                "
+                :message_attachments="message.message_attachments"
+                :message_mid="message.message_mid"
+                :platform_type="message.platform_type"
+                :page_id="message.fb_page_id"
+                type="PAGE"
+              />
+              <ChatbotMessage
+                v-else
+                :message_chatbot="message.message_attachments?.[0]"
+              />
+            </template>
+          </template>
+          <UnsupportMessage v-else />
+          <MessageDate
+            v-if="message.time"
+            class="right-5"
+            :time="message.time"
+            :info="parserStaffName(message.message_metadata)"
+          />
+        </div>
+      </div>
+      <div
+        v-else-if="message.message_type === 'note'"
+        class="flex flex-col items-end"
+      >
+        <div
+          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+        >
+          <NoteMessage
+            v-if="message.message_text"
+            :text="message.message_text"
+          />
+          <UnsupportMessage v-else />
+          <MessageDate
+            v-if="message.createdAt"
+            class="right-5"
+            :time="message.createdAt"
+            :info="parserStaffName(message.message_metadata)"
+          />
+        </div>
+      </div>
+      <div
+        v-else-if="message.message_type === 'system'"
+        class="flex justify-center"
+      >
+        <div class="w-[70%] text-center">
+          <SystemMessage
+            v-if="message.message_text"
+            :text="message.message_text"
+          />
+          <UnsupportMessage v-else />
+        </div>
+      </div>
+      <div v-else-if="message.message_type === 'client' && message.ad_id">
+        <AdMessage :ad_id="message.ad_id" />
+      </div>
+      <div
+        v-else-if="message.platform_type === 'FB_POST' && message.fb_post_id"
+      >
+        <FacebookPost
+          :fb_post_id="message.fb_post_id"
+          :hide-post="() => {}"
+        />
+      </div>
+      <div
+        v-else
+        class="text-center flex justify-center"
+      >
+        <UnsupportMessage class="w-[70%]" />
+      </div>
+      <ClientRead
+        @change_last_read_message="visibleFirstClientReadAvatar"
+        :time="message.time"
+      />
+      <StaffRead
+        @change_last_read_message="visibleLastStaffReadAvatar"
+        :time="message.time"
+      />
+    </div>
+    <div
+      v-for="message of messageStore.send_message_list"
+      class="pt-[1px] pr-5 relative group"
+    >
+      <div class="flex flex-col items-end">
+        <div
+          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+        >
+          <PageTempTextMessage :text="message.text" />
+          <PageMessageError v-if="message.error" />
+          <MessageDate
+            v-if="message.time"
+            class="right-5"
+            :time="message.time"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -120,7 +233,7 @@ import type { DebouncedFunc } from 'lodash'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
-    detail?: MessageInfo
+  detail?: MessageInfo
 }
 
 const conversationStore = useConversationStore()
@@ -141,10 +254,12 @@ const LIMIT = 20
 let old_scroll_height = ref(0)
 /**danh sách các hàm debounce cho từng staff */
 const list_debounce_staff = ref<{
-    [index: string]: DebouncedFunc<any>
+  [index: string]: DebouncedFunc<any>
 }>({})
 
-watch(() => conversationStore.select_conversation, (new_val, old_val) => {
+watch(
+  () => conversationStore.select_conversation,
+  (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
     list_message.value = []
 
@@ -158,177 +273,181 @@ watch(() => conversationStore.select_conversation, (new_val, old_val) => {
     skip.value = 0
 
     getListMessage(true)
-})
+  }
+)
 
-onMounted(() => window.addEventListener(
-    'chatbox_socket_message',
-    onRealtimeHandleMessage
-))
-onUnmounted(() => window.removeEventListener(
-    'chatbox_socket_message',
-    onRealtimeHandleMessage
-))
+onMounted(() =>
+  window.addEventListener('chatbox_socket_message', onRealtimeHandleMessage)
+)
+onUnmounted(() =>
+  window.removeEventListener('chatbox_socket_message', onRealtimeHandleMessage)
+)
 
 /**phân tích tên nv từ meta */
 function parserStaffName(meta?: string) {
-    return meta?.split('__')?.[1] || ''
+  return meta?.split('__')?.[1] || ''
 }
 /**xử lý socket message */
 function onRealtimeHandleMessage({ detail }: CustomEvent) {
-    if (!detail) return
+  if (!detail) return
 
-    // nếu không phải của khách hàng đang chọn thì chặn
-    if (
-        detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
-        detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
-    ) return
+  // nếu không phải của khách hàng đang chọn thì chặn
+  if (
+    detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
+    detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
+  )
+    return
 
-    // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
-    if (size(detail.comment)) remove(
-        list_message.value,
-        message => message._id === detail._id
+  // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
+  if (size(detail.comment))
+    remove(list_message.value, message => message._id === detail._id)
+
+  // thêm tin nhắn vào danh sách
+  list_message.value.push(detail)
+
+  // xử lý khi gặp trường hợp phát hiện tin nhắn chờ
+  if (detail?.message_mid)
+    remove(
+      messageStore.send_message_list,
+      message => message.message_id === detail?.message_mid
     )
 
-    // thêm tin nhắn vào danh sách
-    list_message.value.push(detail)
-
-    // xử lý khi gặp trường hợp phát hiện tin nhắn chờ
-    if (detail?.message_mid) remove(
-        messageStore.send_message_list,
-        message => message.message_id === detail?.message_mid
-    )
-
-    scrollToBottomMessage()
+  scrollToBottomMessage()
 }
 /**lắng nghe sự kiện khi scroll danh sách tin nhắn */
 function onScrollMessage($event: Event) {
-    handleButtonToBottom($event as UIEvent)
+  handleButtonToBottom($event as UIEvent)
 
-    loadMoreMessage($event as UIEvent)
+  loadMoreMessage($event as UIEvent)
 }
 /**ẩn hiện nút về bottom */
 function handleButtonToBottom($event: UIEvent) {
-    /**div chưa danh sách tin nhắn */
-    const LIST_MESSAGE = $event?.target as HTMLElement
+  /**div chưa danh sách tin nhắn */
+  const LIST_MESSAGE = $event?.target as HTMLElement
 
-    let { scrollHeight, scrollTop, clientHeight } = LIST_MESSAGE
+  let { scrollHeight, scrollTop, clientHeight } = LIST_MESSAGE
 
-    /**giá trị khoảng cách scroll với bottom */
-    const SCROLL_BOTTOM = scrollHeight - scrollTop - clientHeight
+  /**giá trị khoảng cách scroll với bottom */
+  const SCROLL_BOTTOM = scrollHeight - scrollTop - clientHeight
 
-    /**
-     * xử lý như thế này để giảm tải việc thay đổi store liên tục, nếu không
-     * có khả năng bị lag, treo, khi có nhiều nơi watch store, send event mà
-     * mình không phát hiện ra
-     */
-    if (SCROLL_BOTTOM > 400 && !messageStore.is_show_to_bottom) {
-        messageStore.is_show_to_bottom = true
-    }
-    if (SCROLL_BOTTOM <= 400 && messageStore.is_show_to_bottom) {
-        messageStore.is_show_to_bottom = false
-    }
+  /**
+   * xử lý như thế này để giảm tải việc thay đổi store liên tục, nếu không
+   * có khả năng bị lag, treo, khi có nhiều nơi watch store, send event mà
+   * mình không phát hiện ra
+   */
+  if (SCROLL_BOTTOM > 400 && !messageStore.is_show_to_bottom) {
+    messageStore.is_show_to_bottom = true
+  }
+  if (SCROLL_BOTTOM <= 400 && messageStore.is_show_to_bottom) {
+    messageStore.is_show_to_bottom = false
+  }
 }
 /**load thêm dữ liệu khi lăn chuột lên trên */
 function loadMoreMessage($event: UIEvent) {
-    /**div chưa danh sách tin nhắn */
-    const LIST_MESSAGE = $event?.target as HTMLElement
+  /**div chưa danh sách tin nhắn */
+  const LIST_MESSAGE = $event?.target as HTMLElement
 
-    if (!LIST_MESSAGE) return
+  if (!LIST_MESSAGE) return
 
-    /**giá trị scroll top hiện tại */
-    const SCROLL_TOP = LIST_MESSAGE?.scrollTop
+  /**giá trị scroll top hiện tại */
+  const SCROLL_TOP = LIST_MESSAGE?.scrollTop
 
-    // nếu đang chạy hoặc đã hết dữ liệu thì thôi
-    if (is_loading.value || is_done.value) return
+  // nếu đang chạy hoặc đã hết dữ liệu thì thôi
+  if (is_loading.value || is_done.value) return
 
-    // infinitve loading scroll
-    if (SCROLL_TOP < 300) getListMessage()
+  // infinitve loading scroll
+  if (SCROLL_TOP < 300) getListMessage()
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
-    // nếu đang mất mạng thì không cho gọi api
-    if (!commonStore.is_connected_internet) return
+  // nếu đang mất mạng thì không cho gọi api
+  if (!commonStore.is_connected_internet) return
 
-    /**id tin nhắn trên đầu của lần loading trước */
-    let old_first_message_id = list_message.value?.[0]?._id
+  /**id tin nhắn trên đầu của lần loading trước */
+  let old_first_message_id = list_message.value?.[0]?._id
 
-    flow([
-        // * bật loading
-        (cb: CbError) => {
-            is_loading.value = true
+  flow(
+    [
+      // * bật loading
+      (cb: CbError) => {
+        is_loading.value = true
+
+        cb()
+      },
+      // * đọc dữ liệu từ api
+      (cb: CbError) =>
+        read_message(
+          {
+            page_id: conversationStore.select_conversation?.fb_page_id,
+            client_id: conversationStore.select_conversation?.fb_client_id,
+            skip: skip.value,
+            limit: LIMIT,
+          },
+          (e, r) => {
+            if (e) return cb(e)
+            if (!r || !r.length) {
+              // gắn cờ đã load hết dữ liệu
+              is_done.value = true
+
+              return cb()
+            }
+
+            // đảo chiều mảng
+            r.reverse()
+
+            // thêm dữ liệu đã đảo chiều lên đầu
+            list_message.value.unshift(...r)
+
+            // trang tiếp theo
+            skip.value += LIMIT
 
             cb()
-        },
-        // * đọc dữ liệu từ api
-        (cb: CbError) => read_message(
-            {
-                page_id: conversationStore.select_conversation?.fb_page_id,
-                client_id: conversationStore.select_conversation?.fb_client_id,
-                skip: skip.value,
-                limit: LIMIT
-            },
-            (e, r) => {
-                if (e) return cb(e)
-                if (!r || !r.length) {
-                    // gắn cờ đã load hết dữ liệu
-                    is_done.value = true
-
-                    return cb()
-                }
-
-                // đảo chiều mảng
-                r.reverse()
-
-                // thêm dữ liệu đã đảo chiều lên đầu
-                list_message.value.unshift(...r)
-
-                // trang tiếp theo
-                skip.value += LIMIT
-
-                cb()
-            },
+          }
         ),
-        // * làm cho scroll to top mượt hơn
-        (cb: CbError) => {
-            // chạy infinitve loading scroll
-            nextTick(() => {
-                // lấy div chưa danh sách tin nhắn
-                const LIST_MESSAGE = document.getElementById('list-message')
+      // * làm cho scroll to top mượt hơn
+      (cb: CbError) => {
+        // chạy infinitve loading scroll
+        nextTick(() => {
+          // lấy div chưa danh sách tin nhắn
+          const LIST_MESSAGE = document.getElementById('list-message')
 
-                if (!LIST_MESSAGE) return
+          if (!LIST_MESSAGE) return
 
-                // nếu có scroll height, thì scroll lại div cho về đúng giá trị trước -> gần như mượt
-                if (old_scroll_height.value) LIST_MESSAGE.scrollTop =
-                    LIST_MESSAGE.scrollHeight -
-                    old_scroll_height.value
-                    + LIST_MESSAGE.scrollTop
+          // nếu có scroll height, thì scroll lại div cho về đúng giá trị trước -> gần như mượt
+          if (old_scroll_height.value)
+            LIST_MESSAGE.scrollTop =
+              LIST_MESSAGE.scrollHeight -
+              old_scroll_height.value +
+              LIST_MESSAGE.scrollTop
 
-                // lấy giá trị mới 
-                old_scroll_height.value = LIST_MESSAGE.scrollHeight
-            })
+          // lấy giá trị mới
+          old_scroll_height.value = LIST_MESSAGE.scrollHeight
+        })
 
-            cb()
-        }
-    ], e => {
-        // tắt loading
-        is_loading.value = false
+        cb()
+      },
+    ],
+    e => {
+      // tắt loading
+      is_loading.value = false
 
-        // load lần đầu thì tự động cuộn xuống
-        if (is_scroll) {
-            /**
-             * chạy logic infinitve loading scroll 
-             * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
-             * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
-             */
-            if (list_message.value.length >= LIMIT) getListMessage()
+      // load lần đầu thì tự động cuộn xuống
+      if (is_scroll) {
+        /**
+         * chạy logic infinitve loading scroll
+         * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
+         * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
+         */
+        if (list_message.value.length >= LIMIT) getListMessage()
 
-            scrollToBottomMessage()
+        scrollToBottomMessage()
 
-            setTimeout(() => scrollToBottomMessage(), 500)
-        }
+        setTimeout(() => scrollToBottomMessage(), 500)
+      }
 
-        if (e) return toastError(e)
-    })
+      if (e) return toastError(e)
+    }
+  )
 }
 /**
  * chỉ hiển thị avatar khách hàng đã đọc đến tin nhắn đầu tiên
@@ -336,12 +455,14 @@ function getListMessage(is_scroll?: boolean) {
  * nên sử dụng debounce để chỉ chạy event cuối cùng, tránh bị lặp code
  */
 const visibleFirstClientReadAvatar = debounce(() => {
-    const FIRST_AVATAR = document.querySelector('.mesage-client-read') as HTMLElement
+  const FIRST_AVATAR = document.querySelector(
+    '.mesage-client-read'
+  ) as HTMLElement
 
-    if (!FIRST_AVATAR) return
+  if (!FIRST_AVATAR) return
 
-    // thêm css để hiển thị
-    FIRST_AVATAR.style.display = 'block'
+  // thêm css để hiển thị
+  FIRST_AVATAR.style.display = 'block'
 }, 50)
 /**
  * chỉ hiển thị avatar nhân viên đã đọc tin nhắn cuối cùng
@@ -349,27 +470,27 @@ const visibleFirstClientReadAvatar = debounce(() => {
  * nên sử dụng debounce để chỉ chạy event cuối cùng, tránh bị lặp code
  */
 function visibleLastStaffReadAvatar(staff_id: string) {
-    // init hàm debounce cho từng staff nếu không tồn tại
-    if (!list_debounce_staff.value[staff_id])
-        list_debounce_staff.value[staff_id] = debounce(doVisibleAvatar, 50)
+  // init hàm debounce cho từng staff nếu không tồn tại
+  if (!list_debounce_staff.value[staff_id])
+    list_debounce_staff.value[staff_id] = debounce(doVisibleAvatar, 50)
 
-    // chạy hàm debounce
-    list_debounce_staff.value[staff_id](staff_id)
+  // chạy hàm debounce
+  list_debounce_staff.value[staff_id](staff_id)
 
-    /**hiển thị avatar staff cuối cùng */
-    function doVisibleAvatar(staff_id: string) {
-        /**toàn bộ các div avatar */
-        const LIST_AVATAR: HTMLElement[] = Array.from(
-            document.querySelectorAll(`.message-staff-read-${staff_id}`)
-        )
+  /**hiển thị avatar staff cuối cùng */
+  function doVisibleAvatar(staff_id: string) {
+    /**toàn bộ các div avatar */
+    const LIST_AVATAR: HTMLElement[] = Array.from(
+      document.querySelectorAll(`.message-staff-read-${staff_id}`)
+    )
 
-        // lặp qua toàn bộ các div
-        LIST_AVATAR.forEach((element: any, i: number) => {
-            // reset ẩn toàn bộ các avatar hiện tại
-            if (i < LIST_AVATAR.length - 1) element.style.display = 'none'
-            // chỉ hiển thị avatar cuối cùng
-            else element.style.display = 'block'
-        })
-    }
+    // lặp qua toàn bộ các div
+    LIST_AVATAR.forEach((element: any, i: number) => {
+      // reset ẩn toàn bộ các avatar hiện tại
+      if (i < LIST_AVATAR.length - 1) element.style.display = 'none'
+      // chỉ hiển thị avatar cuối cùng
+      else element.style.display = 'block'
+    })
+  }
 }
 </script>

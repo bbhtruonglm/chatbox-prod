@@ -10,7 +10,7 @@
       v-if="commonStore.is_loading_full_screen"
       type="FULL"
     />
-    <div class="h-full overflow-y-auto p-3">
+    <div class="h-full overflow-y-auto">
       <router-view />
     </div>
   </div>

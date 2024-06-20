@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full p-3">
     <Header class="flex-shrink-0" />
     <div class="overflow-hidden pt-3 h-full">
       <RouterView />
