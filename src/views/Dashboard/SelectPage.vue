@@ -10,6 +10,12 @@
         />
         <SelectOrg />
       </div>
+      <div
+        v-if="selectPageStore.is_loading"
+        class="absolute left-1/2 -translate-x-1/2 top-14"
+      >
+        <Loading class="mx-auto" />
+      </div>
       <EmptyPage v-if="!pageStore.countActivePage()" />
       <div
         v-else
@@ -18,13 +24,6 @@
         }"
         class="overflow-y-auto flex flex-col gap-3"
       >
-        <div
-          v-if="selectPageStore.is_loading"
-          class="absolute left-1/2 -translate-x-1/2"
-        >
-          <Loading class="mx-auto" />
-        </div>
-
         <GroupPage
           filter="RECENT"
           :icon="ClockIcon"
@@ -118,7 +117,7 @@ function triggerConnectZalo() {
 
   // chuyển trước tab của zalo
   connectPageStore.selectMenu('ZALO_OA')
-  
+
   // mở modal connect zalo
   toggleModalConnectPage?.()
 }

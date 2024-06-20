@@ -86,6 +86,9 @@ export class IndexedDB {
     }
     /**ghi dữ liệu vào db */
     public set(key: string, value: any, proceed: Cb) {
+        // nếu không có dữ liệu thì thôi
+        if (!value) return proceed()
+
         if (!this.db) return setTimeout(() => this.set(key, value, proceed), 50)
 
         const CONNECTION = this.db.transaction(this.database_table, 'readwrite')

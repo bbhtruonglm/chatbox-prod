@@ -56,6 +56,7 @@ function loadListPage() {
 
           pageStore.active_page_list = r.page_list
           staffStore.staff_list_of_active_page = r.all_staff_list
+
           cb()
         }),
     ],
