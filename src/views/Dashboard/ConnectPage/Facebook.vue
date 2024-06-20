@@ -5,6 +5,7 @@
     :description="
       $t('v1.view.main.dashboard.select_platform.facebook.description')
     "
+    class_guild="w-[482px]"
   >
     <template #button>
       <Facebook
@@ -65,10 +66,11 @@ async function syncFacebookPage(access_token: string, from: string) {
         resolve(undefined)
       })
     )
+    
+    // quay lại page danh sách trang
+    connectPageStore.selectMenu('WATTING')
   } catch (e) {}
 
-  // quay lại page danh sách trang
-  connectPageStore.selectMenu('WATTING')
 
   // tắt loading
   commonStore.is_loading_full_screen = false

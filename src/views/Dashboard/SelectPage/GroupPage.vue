@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { usePageStore, useSelectPageStore } from '@/stores'
-import { ref, watch, provide, computed } from 'vue'
+import { ref, watch, provide, computed, onMounted } from 'vue'
 import { map } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { useI18n } from 'vue-i18n'
@@ -103,6 +103,9 @@ const is_select_all_page = computed({
     })
   },
 })
+
+// load danh sách trang khi component được tạo
+onMounted(() => sortListPage())
 
 // lọc danh sách page khi được tìm kiếm
 watch(

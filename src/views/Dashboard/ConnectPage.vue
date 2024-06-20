@@ -9,7 +9,7 @@
     </template>
     <template #body>
       <Menu />
-      <div class="w-[600px] bg-white rounded-md p-2 flex flex-col relative">
+      <div class="w-[655px] bg-white rounded-md p-2 flex flex-col relative">
         <div
           v-if="connectPageStore.is_loading"
           class="absolute top-14 left-1/2 -translate-x-1/2"
@@ -24,6 +24,11 @@
               {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
             </div>
             <Search />
+          </template>
+          <template v-else-if="connectPageStore.current_menu === 'WEBSITE'">
+            {{
+              $t('v1.view.main.dashboard.select_platform.website.title')
+            }}
           </template>
           <template v-else>
             {{

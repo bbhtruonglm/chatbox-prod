@@ -5,6 +5,7 @@
     :description="
       $t('v1.view.main.dashboard.select_platform.zalo_oa.description')
     "
+    class_guild="w-[482px]"
   >
     <template #after-description>
       <span class="cursor-pointer relative">
