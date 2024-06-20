@@ -10,7 +10,10 @@
         class="w-10 h-10 flex-shrink-0"
       />
     </div>
-    <div class="text-center w-[482px]">
+    <div
+      :class="class_guild"
+      class="text-center"
+    >
       <div class="font-semibold">
         {{ guild }}
       </div>
@@ -36,6 +39,8 @@ const $props = withDefaults(
     guild: string
     /**chú thích */
     description: string
+    /**class cho guild */
+    class_guild?: string
   }>(),
   {}
 )

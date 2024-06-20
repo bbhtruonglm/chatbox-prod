@@ -167,9 +167,14 @@ const source: Language = {
               title: 'Kết nối với Facebook',
             },
             website: {
-              guild: 'Kết nối Bot Bán Hàng với Website',
-              description: 'Kết nối với Website để ...',
-              title: 'Kết nối với Website',
+              title: 'Chat trên Website',
+              guild: 'Tạo Chat trên Website',
+              description:
+                'Thêm công cụ Chat trên Website, tự động theo dõi thao tác khách hàng trên Website.',
+              btn_title: 'Tạo công cụ Chat',
+              name: 'Tên hiển thị',
+              input: 'Nhập tên (ví dụ tenmien.com)',
+              wrong_name: 'Tên website không hợp lệ',
             },
             zalo_oa: {
               guild: 'Kết nối Bot Bán Hàng với Zalo OA',
