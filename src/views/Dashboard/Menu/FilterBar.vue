@@ -1,5 +1,5 @@
 <template>
-    <NavItem @click="menu_ref?.toggleDropdown" :is_only_show_icon="isChat()" :icon="toggleSvg"
+    <NavItem @click="menu_ref?.toggleDropdown" :icon="toggleSvg"
         :title="$t('v1.view.main.dashboard.nav.menu')" />
 
     <FilterBarItem :is_disable_tooltip="true" @mouseover="filter_interact?.filter_popover_ref?.mouseover"
@@ -50,7 +50,7 @@ import { reactive, ref } from 'vue'
 import { useConversationStore, useCommonStore } from '@/stores'
 import { 
     isActiveMessageFilter, 
-    isChat, isFilterActive,
+    isFilterActive,
     resetConversationFilter, 
     isActiveFilter 
 } from '@/service/function'

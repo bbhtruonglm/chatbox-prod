@@ -1,5 +1,5 @@
 <template>
-    <div ref="input_chat_warper" class="w-full min-h-[49px] relative">
+    <div ref="input_chat_warper" class="w-full min-h-[49px] relative flex-shrink-0">
         <div @click="scrollToBottomMessage()" v-if="messageStore.is_show_to_bottom"
             :class="is_show_label_list ? 'top-[-210px]' : 'top-[-85px]'"
             class="absolute left-[50%] translate-x-[-50%] border rounded-full flex items-center justify-center w-[35px] h-[35px] bg-white cursor-pointer shadow-xl">
@@ -8,7 +8,7 @@
 
         <QuickAnswer ref="quick_answer_ref" />
 
-        <div :class="is_expand_label ? 'h-[79px]' : 'h-[29px]'" class="flex border-t">
+        <div :class="is_expand_label ? 'h-[79px]' : 'h-[29px]'" class="flex">
             <div v-if="is_loading_label"
                 class="absolute w-full h-[150px] top-[-150px] lef-0 flex justify-center z-10 bg-slate-400/50">
                 <Loading />
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div class="border-t flex items-center">
+        <div class="flex items-center bg-white rounded-full">
             <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_file')" @click="selectAttachmentFromDevice"
                 class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center mr-2">
                 <img src="@/assets/icons/clip.svg" width="17" height="17" />
@@ -83,7 +83,7 @@
             </div>
         </div>
     </div>
-    <div class="w-full flex items-center h-[49px] relative">
+    <div class="w-full flex items-center h-[49px] relative flex-shrink-0">
         <div v-tooltip="$t('v1.view.main.dashboard.chat.action.select_emoji')"
             class="w-[30px] h-[30px] cursor-pointer flex justify-center items-center relative mr-2"
             @click="toggleEmoji">
@@ -177,8 +177,6 @@ watch(() => conversationStore.list_widget_token?.data, () => getListWidget())
 
 onMounted(() => {
     window.addEventListener('message', onWidgetEvent)
-
-    onChangeHeightInput()
 })
 onUnmounted(() => window.removeEventListener('message', onWidgetEvent))
 
@@ -369,33 +367,6 @@ function getCurrentLabel() {
         conversationStore.select_conversation?.fb_page_id,
         conversationStore.select_conversation?.label_id
     )
-}
-/**lắng nghe sự thay đổi độ cao của input, để thay đổi độ cao danh sách tin nhắn */
-function onChangeHeightInput() {
-    /**input chat */
-    const INPUT_CHAT = input_chat_warper.value
-
-    // lắng nghe sự thay đổi
-    new ResizeObserver(function (entries) {
-        for (var entry of entries) {
-            if (entry.target !== INPUT_CHAT) return
-
-            /**độ cao mới */
-            const NEW_HEIGHT = entry.contentRect.height
-
-            resizeHeightMessageList(NEW_HEIGHT)
-        }
-    }).observe(INPUT_CHAT)
-}
-/**thay đổi độ cao của danh sách tin nhắn */
-function resizeHeightMessageList(new_height: number) {
-    /**mục tiêu */
-    const TARGET = document.getElementById('list-message-warper')
-
-    if (!TARGET) return
-
-    // thay đổi độ cao của danh sách tin nhắn cho khớp với màn hình
-    TARGET.style.height = `calc(100% - ${100 + new_height}px)`
 }
 /**xử lý sự kiện nhấn enter ở ô chat */
 function submitInput($event: KeyboardEvent) {

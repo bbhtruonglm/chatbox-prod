@@ -1,6 +1,6 @@
 <template>
     <div v-if="conversationStore.select_conversation"
-        class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-y-auto">
+        class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-y-auto bg-white rounded-lg flex-shrink-0">
         <div class="flex items-center col-span-2 xl:col-span-1">
             <ClientAvatar @click="openClientInfo" :client_name="conversationStore.select_conversation?.client_name"
                 :client_id="conversationStore.select_conversation?.fb_client_id"
@@ -69,9 +69,7 @@
             </button>
         </div>
     </div>
-    <template>
-        <ClientInfo ref="client_info_modal_ref" />
-    </template>
+    <ClientInfo ref="client_info_modal_ref" />
 </template>
 <script setup lang="ts">
 import {

@@ -1,4 +1,4 @@
-import { useConversationStore, usePageStore, useCommonStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
@@ -82,13 +82,6 @@ export const selectConversation = (conversation: ConversationInfo) => {
 
     // tự động focus vào input chat
     document.getElementById('chat-text-input-message')?.focus()
-}
-
-/**kiểm tra có đang trong trang chat hay không */
-export const isChat = () => {
-    const $route = useRoute()
-
-    return $route.path?.includes('/chat')
 }
 
 /**cuộn xuống cuối trang */
