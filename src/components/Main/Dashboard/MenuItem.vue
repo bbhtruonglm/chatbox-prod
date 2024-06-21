@@ -11,11 +11,7 @@
     <div class="flex-grow text-left">
       {{ title }}
     </div>
-    <Badge
-      v-if="alert_value"
-      :value="alert_value"
-      class="flex-shrink-0"
-    />
+    <slot />
   </button>
 </template>
 <script setup lang="ts">
@@ -29,8 +25,6 @@ const $props = withDefaults(
     icon: Component
     /** Tiêu đề */
     title: string
-    /** Số lượng thông báo */
-    alert_value?: number
     /** Đã chọn */
     is_selected?: boolean
     /** Icon class */

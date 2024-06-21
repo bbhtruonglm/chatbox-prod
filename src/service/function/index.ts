@@ -248,11 +248,6 @@ export function isFilterActive() {
     return true
 }
 
-/**nếu là màn điện thoại thì ẩn nav sau khi chọn menu */
-export function selectNav($router: Router, path: string) {
-    $router.push(path)
-}
-
 /**lấy dữ liệu ngôn ngữ hiện tại */
 export function getLocale() {
     // đọc ngôn ngữ hiện tại được lưu từ local storage

@@ -18,6 +18,7 @@
           width: _width,
           height: _height,
         }"
+        :class="class_content"
         class="absolute shadow-lg rounded-md p-2 bg-white z-20"
       >
         <slot />
@@ -28,7 +29,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 
-import type { ComponentRef } from '@/service/interface/vue'
+import type { ComponentRef, ModalPosition } from '@/service/interface/vue'
 
 const $emit = defineEmits(['close_dropdown', 'open_dropdown'])
 
@@ -41,13 +42,15 @@ const $props = withDefaults(
     /**độ dài của component */
     height?: string
     /**hướng của dropdown */
-    position?: 'TOP' | 'LEFT' | 'RIGHT' | 'BOTTOM'
+    position?: ModalPosition
     /**width hoặc height sẽ bằng với phần tử cha */
     is_fit?: boolean
     /**khoảng cách so với mục tiêu */
     distance?: number
     /**lùi div lại một khoảng */
     back?: number
+    /**class thêm cho nội dung */
+    class_content?: string
   }>(),
   {
     teleport_to: 'body',
@@ -87,9 +90,18 @@ function teleportToTarget($event?: MouseEvent) {
   nextTick(() => {
     // bên phải
     if ($props.position === 'RIGHT') {
-      // căn chỉnh vị trí
-      dropdown_ref.value.style.left = `${x + width + $props.distance}px`
+      // khoảng cách left: left của target + độ rộng target + khoảng cách thêm
+      const LEFT = x + width + $props.distance
+
+      // bên trái
+      dropdown_ref.value.style.left = `${LEFT}px`
+      // top = top của target - lùi lại
       dropdown_ref.value.style.top = `${y - $props.back}px`
+
+      // left của modal - kích thước tam giác
+      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px`
+      // top của target + một nửa độ cao của target - kích thước tam giác
+      triangle_ref.value.style.top = `${y + height / 2 - TRIANGLE_SIZE}px`
 
       // căn lại kích thước nếu cần
       if ($props.is_fit) _height.value = `${height}px`
@@ -129,6 +141,11 @@ function teleportToTarget($event?: MouseEvent) {
       dropdown_ref.value.style.top = `${
         y - dropdown_ref.value.offsetHeight - $props.distance
       }px`
+
+      // left của target + một nửa độ rộng của target - kích thước tam giác
+      triangle_ref.value.style.left = `${x + width / 2 - TRIANGLE_SIZE}px`
+      // top cơ bản của dropdown - kích thước tam giác
+      triangle_ref.value.style.top = `${y - TRIANGLE_SIZE - $props.distance}px`
 
       // căn lại kích thước nếu cần
       if ($props.is_fit) _width.value = `${width}px`
