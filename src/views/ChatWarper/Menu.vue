@@ -89,7 +89,6 @@
     <User
       position="TOP"
       :back="10"
-      :distance="15"
     />
   </div>
   <Attach ref="attach_ref" />

@@ -92,7 +92,7 @@
         </div>
     </div>
     <template>
-        <Popover ref="label_popover_ref" position="RIGHT" :is_fit="false" width="auto" height="auto">
+        <Popover ref="label_popover_ref" position="RIGHT" :is_fit="false" width="auto" height="auto" :back="8">
             <div class="max-w-[300px] max-h-[200px] flex flex-wrap justify-center">
                 <template v-for="label_id of getLabelValid(source?.fb_page_id, source?.label_id)?.slice(3)">
                     <Label :page_id="source?.fb_page_id" :label_id="label_id" />

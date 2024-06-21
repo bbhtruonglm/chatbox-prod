@@ -18,7 +18,7 @@
     :is_fit="false"
     :position="position"
     :back="back"
-    :distance="distance"
+    :distance="10"
     class_content="flex flex-col gap-1"
   >
     <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
@@ -99,8 +99,6 @@ const $props = withDefaults(
     position: ModalPosition
     /**lùi lại bao nhiêu */
     back: number
-    /**khoảng cách với target */
-    distance: number
   }>(),
   {}
 )

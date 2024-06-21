@@ -91,7 +91,7 @@ function teleportToTarget($event?: MouseEvent) {
     // bên phải
     if ($props.position === 'RIGHT') {
       // khoảng cách left: left của target + độ rộng target + khoảng cách thêm
-      const LEFT = x + width + $props.distance
+      const LEFT = x + width + $props.distance + TRIANGLE_SIZE
 
       // bên trái
       dropdown_ref.value.style.left = `${LEFT}px`
@@ -139,13 +139,13 @@ function teleportToTarget($event?: MouseEvent) {
       // căn chỉnh vị trí
       dropdown_ref.value.style.left = `${x - $props.back}px`
       dropdown_ref.value.style.top = `${
-        y - dropdown_ref.value.offsetHeight - $props.distance
+        y - dropdown_ref.value.offsetHeight - $props.distance - TRIANGLE_SIZE
       }px`
 
       // left của target + một nửa độ rộng của target - kích thước tam giác
       triangle_ref.value.style.left = `${x + width / 2 - TRIANGLE_SIZE}px`
       // top cơ bản của dropdown - kích thước tam giác
-      triangle_ref.value.style.top = `${y - TRIANGLE_SIZE - $props.distance}px`
+      triangle_ref.value.style.top = `${y - TRIANGLE_SIZE * 2 - $props.distance}px`
 
       // căn lại kích thước nếu cần
       if ($props.is_fit) _width.value = `${width}px`

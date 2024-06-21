@@ -34,7 +34,6 @@
       <User
         position="BOTTOM"
         :back="289"
-        :distance="10"
       />
     </div>
   </div>
