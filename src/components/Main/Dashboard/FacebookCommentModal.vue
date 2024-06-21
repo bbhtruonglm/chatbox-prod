@@ -11,13 +11,7 @@
             <div class="sm:w-[888px] h-[75vh] overflow-y-auto">
                 <div v-for="(comment, index) in post_comments" class="flex justify-between mb-3">
                     <div>
-                        <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
-                            :client_id="conversationStore.select_conversation?.fb_client_id"
-                            :page_id="conversationStore.select_conversation?.fb_page_id"
-                            :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                            :platform_type="conversationStore.select_conversation?.platform_type" size="40"
-                            :client_avatar="conversationStore.select_conversation?.client_avatar"
-                            class="rounded-full" />
+                        <ClientAvatar :conversation="conversationStore.select_conversation" class="w-10 h-10" />
                     </div>
                     <div class="ml-3 w-full">
 
@@ -45,13 +39,8 @@
                                     v-if="chil_comment.from?.id === conversationStore.select_conversation?.fb_page_id"
                                     :page_info="pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page"
                                     class="rounded-full w-10 h-10" />
-                                <ClientAvatar v-else :client_name="chil_comment.from?.name"
-                                    :client_id="chil_comment.from?.id"
-                                    :page_id="conversationStore.select_conversation?.fb_page_id"
-                                    :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                                    :platform_type="conversationStore.select_conversation?.platform_type" size="40"
-                                    :client_avatar="conversationStore.select_conversation?.client_avatar"
-                                    class="rounded-full" />
+                                <!-- TODO phải đổi lại thành tên và ảnh của child -->
+                                <ClientAvatar v-else :conversation="conversationStore.select_conversation" class="w-10 h-10" />
                             </div>
                             <div class="ml-3">
                                 <div class="rounded-lg bg-slate-100 p-2 text-sm w-fit">

@@ -31,7 +31,10 @@
           {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
         </button>
       </template>
-      <User />
+      <User
+        position="BOTTOM"
+        :back="289"
+      />
     </div>
   </div>
 </template>
@@ -41,7 +44,7 @@ import { useRoute } from 'vue-router'
 import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { inject } from 'vue'
 
-import User from '@/views/Dashboard/Header/User.vue'
+import User from '@/components/User.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'

@@ -49,6 +49,7 @@ const source: Language = {
       version: 'Phiên bản',
       on_update_app: 'Đang cập nhật phiên bản mới...',
       expired: 'Quá hạn',
+      more: 'Thêm'
     },
     view: {
       network: {

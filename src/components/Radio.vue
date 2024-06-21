@@ -1,21 +1,11 @@
 <template>
   <input
-    v-if="true_value && false_value"
     @click.stop
+    ref="radio_ref"
     v-model="model"
-    ref="checkbox_ref"
-    type="checkbox"
-    :true-value="true_value"
-    :false-value="false_value"
-    class="custom-checkbox"
-  />
-  <input
-    v-else
-    @click.stop
-    v-model="model"
-    ref="checkbox_ref"
-    type="checkbox"
-    class="custom-checkbox"
+    type="radio"
+    :value="value"
+    class="custom-radio"
   />
 </template>
 <script setup lang="ts">
@@ -23,10 +13,8 @@ import { ref } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
-    /**giá trị đúng của checkbox này */
-    true_value?: any
-    /**giá trị sai của checkbox này */
-    false_value?: any
+    /**giá trị custom của radio này */
+    value?: string
   }>(),
   {}
 )
@@ -34,18 +22,18 @@ const $props = withDefaults(
 /** Khai báo v-model */
 const model = defineModel<any>()
 
-/**ref của radio button */
-const checkbox_ref = ref<HTMLInputElement>()
+/**ref của input radio */
+const radio_ref = ref<HTMLInputElement>()
 
-/**click vào checkbox */
+/**click vào radio */
 function click() {
-  checkbox_ref.value?.click()
+  radio_ref.value?.click()
 }
 
 defineExpose({ click })
 </script>
 <style scoped lang="scss">
-.custom-checkbox {
+.custom-radio {
   @apply appearance-none w-4 h-4 shadow-sm bg-white border-[1.5px] border-black rounded relative cursor-pointer;
 
   &:checked {

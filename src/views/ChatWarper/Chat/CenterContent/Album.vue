@@ -132,7 +132,7 @@ import { useConversationStore } from '@/stores'
 import { toast, toastError } from '@/service/helper/alert'
 
 import Modal from '@/components/Modal.vue'
-import FilterButton from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/ChatWarper/Menu/FilterModal/FilterButton.vue'
 import Loading from '@/components/Loading.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'

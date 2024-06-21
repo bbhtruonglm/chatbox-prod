@@ -2,7 +2,7 @@ import type { PageType } from './page'
 
 export interface FilterConversation {
     /**lọc hội thoại chưa đọc */
-    unread_message?: boolean
+    unread_message?: 'true' | 'false'
     /**tìm kiếm hội thoại theo tên | sdt | email */
     search?: string
     /**lọc hội thoại có tên */
@@ -31,9 +31,9 @@ export interface FilterConversation {
     /**lọc hội thoại không có nhãn x */
     not_label_id?: string[]
     /**lọc hội thoại chưa trả lời */
-    not_response_client?: boolean
+    not_response_client?: 'true' | 'false'
     /**lọc hội thoại chưa gắn nhãn */
-    not_exist_label?: boolean
+    not_exist_label?: 'true' | 'false'
     /**lọc hội thoại có email */
     have_email?: 'YES' | 'NO'
     /**lọc theo nền tảng */

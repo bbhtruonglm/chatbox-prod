@@ -2,13 +2,8 @@
     <div v-if="conversationStore.select_conversation"
         class="pl-[50px] md:pl-0 border-b h-[50px] grid grid-cols-3 xl:grid-cols-2 overflow-y-auto bg-white rounded-lg flex-shrink-0">
         <div class="flex items-center col-span-2 xl:col-span-1">
-            <ClientAvatar @click="openClientInfo" :client_name="conversationStore.select_conversation?.client_name"
-                :client_id="conversationStore.select_conversation?.fb_client_id"
-                :page_id="conversationStore.select_conversation?.fb_page_id"
-                :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                :platform_type="conversationStore.select_conversation?.platform_type" size="37"
-                :client_avatar="conversationStore.select_conversation?.client_avatar"
-                class="rounded-full cursor-pointer ml-1" />
+            <ClientAvatar @click="openClientInfo" :conversation="conversationStore.select_conversation" 
+            class="cursor-pointer ml-1 w-9 h-9" />
             <div class="ml-3">
                 <div class="flex items-center">
                     <div @click="copyToClipboard(conversationStore.select_conversation?.client_name || '')"
