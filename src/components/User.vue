@@ -80,7 +80,7 @@ import { useRouter } from 'vue-router'
 import Dropdown from '@/components/Dropdown.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
-import Badge from '@/views/Dashboard/Header/Badge.vue'
+import Badge from '@/components/Badge.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'

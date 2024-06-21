@@ -1,81 +1,102 @@
 <template>
-    <div :class="animate_pulse" :style="`width:${size}px;height:${size}px;`" class="overflow-hidden bg-slate-200">
-
-        <div :style="{ 'background': letterToColorCode(client_name) }"
-            class="w-full h-full flex justify-center items-center font-semibold text-white"
-            v-if="client_name && platform_type === 'WEBSITE'">
-            {{ nameToLetter(client_name) }}
-        </div>
-
-        <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'FB_MESS'"
-            :src="loadImageUrl()" class="w-full h-full" />
-
-        <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'FB_INSTAGRAM'"
-            :src="loadImageUrl()" class="w-full h-full" />
-
-        <img @error="onImageError" @load="removeAnimatePulse" :loading="loading" v-if="platform_type === 'ZALO_OA'"
-            :src="client_avatar" class="w-full h-full" />
+  <div
+    :class="animate_pulse"
+    class="overflow-hidden bg-slate-200 rounded-oval"
+  >
+    <div
+      :style="{ background: letterToColorCode() }"
+      class="w-full h-full flex justify-center items-center font-semibold text-white"
+      v-if="
+        conversation?.client_name && conversation?.platform_type === 'WEBSITE'
+      "
+    >
+      {{ nameToLetter(conversation?.client_name) }}
     </div>
+
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-if="conversation?.platform_type === 'FB_MESS'"
+      :src="loadImageUrl()"
+      class="w-full h-full"
+    />
+
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-if="conversation?.platform_type === 'FB_INSTAGRAM'"
+      :src="loadImageUrl()"
+      class="w-full h-full"
+    />
+
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-if="conversation?.platform_type === 'ZALO_OA'"
+      :src="conversation?.client_avatar"
+      class="w-full h-full"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useChatbotUserStore } from '@/stores'
 import { nameToLetter } from '@/service/helper/format'
 
-import type { PageType } from '@/service/interface/app/page'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
 
-const $props = withDefaults(defineProps<{
-    client_id?: string
-    page_id?: string
-    staff_id?: string
-    platform_type?: PageType
-    size?: string
-    loading?: 'lazy' | 'eager'
-    /**tên khách hàng */
-    client_name?: string
-    /**link ảnh */
-    client_avatar?: string
-}>(), {
-    size: '40',
-    loading: 'lazy'
-})
+const $props = withDefaults(
+  defineProps<{
+    conversation?: ConversationInfo
+  }>(),
+  {}
+)
+
+const chatbotUserStore = useChatbotUserStore()
 
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
 
+/**kích thước thực tế của hình ảnh */
+const ACTUAL_SIZE = 64
+
 onMounted(() => {
-    // tắt hiệu ứng với dạng web
-    if ($props.platform_type === 'WEBSITE') removeAnimatePulse()
+  // tắt hiệu ứng với dạng web
+  if ($props.conversation?.platform_type === 'WEBSITE') removeAnimatePulse()
 })
 
 /**tạo bg dựa trên chữ cái */
-function letterToColorCode(character: string) {
-    // lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường
-    const INPUT = character.charAt(0).toLowerCase()
+function letterToColorCode() {
+  let character = $props.conversation?.client_name
 
-    // Chuyển đổi ký tự thành mã màu, Lấy mã Unicode và trừ đi mã 'a' (97)
-    let charCode = INPUT.charCodeAt(0) - 97
+  // lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường
+  const INPUT = character?.charAt(0).toLowerCase()
 
-    // Chuyển đổi số nguyên thành giá trị RGB
-    var red = (charCode * 30) % 256;
-    var green = (charCode * 20) % 256;
-    var blue = (charCode * 10) % 256;
+  // Chuyển đổi ký tự thành mã màu, Lấy mã Unicode và trừ đi mã 'a' (97)
+  let charCode = (INPUT?.charCodeAt(0) || 0) - 97
 
-    return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+  // Chuyển đổi số nguyên thành giá trị RGB
+  var red = (charCode * 30) % 256
+  var green = (charCode * 20) % 256
+  var blue = (charCode * 10) % 256
+
+  return 'rgb(' + red + ', ' + green + ', ' + blue + ')'
 }
 /**tắt hiệu ứng ẩn hiện khi ảnh load thành công */
 function removeAnimatePulse() {
-    animate_pulse.value = ''
+  animate_pulse.value = ''
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-
-
-    return `${$env.img_host}/${$props.client_id}?page_id=${$props.page_id}&staff_id=${$props.staff_id}&width=${$props.size}&height=${$props.size}&type=${$props.platform_type}`
+  return `${$env.img_host}/${$props.conversation?.fb_client_id}?page_id=${$props.conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}&type=${$props.conversation?.platform_type}`
 }
 /**khi ảnh load thất bại thì thay thế ảnh mặc định vào */
 function onImageError($event: Event) {
-    const image = $event.target as HTMLImageElement
+  const image = $event.target as HTMLImageElement
 
-    image.src = `${$env.img_host}/1111111111?width=${$props.size}&height=${$props.size}`
+  image.src = `${$env.img_host}/1111111111?width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}`
 }
 </script>

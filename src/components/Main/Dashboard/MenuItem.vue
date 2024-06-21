@@ -15,7 +15,7 @@
   </button>
 </template>
 <script setup lang="ts">
-import Badge from '@/views/Dashboard/Header/Badge.vue'
+import Badge from '@/components/Badge.vue'
 
 import type { Component } from 'vue'
 

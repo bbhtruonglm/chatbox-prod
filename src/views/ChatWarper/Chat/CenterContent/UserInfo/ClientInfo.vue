@@ -9,13 +9,7 @@
                     <h2 class="mb-5 font-semibold">
                         {{ $t('v1.view.main.dashboard.chat.client.basic') }}
                     </h2>
-                    <ClientAvatar :client_name="conversationStore.select_conversation?.client_name"
-                        :client_id="conversationStore.select_conversation?.fb_client_id"
-                        :page_id="conversationStore.select_conversation?.fb_page_id"
-                        :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-                        :platform_type="conversationStore.select_conversation?.platform_type" size="100"
-                        :client_avatar="conversationStore.select_conversation?.client_avatar"
-                        class="rounded-full cursor-pointer" />
+                    <ClientAvatar :conversation="conversationStore.select_conversation" class="rounded-full cursor-pointer w-24 h-24" />
                     <div class="font-semibold text-slate-500 text-lg mt-2">
                         {{ conversationStore.select_conversation?.client_name }}
                     </div>

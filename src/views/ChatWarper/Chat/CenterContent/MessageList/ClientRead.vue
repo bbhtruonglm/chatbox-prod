@@ -1,10 +1,5 @@
 <template>
-    <ClientAvatar v-if="isClientLastReadThisMessage()" :client_name="conversationStore.select_conversation?.client_name"
-        :client_id="conversationStore.select_conversation?.fb_client_id"
-        :page_id="conversationStore.select_conversation?.fb_page_id" :staff_id="chatbotUserStore.chatbot_user?.fb_staff_id"
-        :platform_type="conversationStore.select_conversation?.platform_type" size="15"
-        :client_avatar="conversationStore.select_conversation?.client_avatar"
-        class="mesage-client-read rounded-full absolute right-0 bottom-[50%] hidden" />
+    <ClientAvatar v-if="isClientLastReadThisMessage()" :conversation="conversationStore.select_conversation" class="mesage-client-read rounded-full absolute right-0 bottom-[50%] hidden w-4 h-4" />
 </template>
 <script setup lang="ts">
 import { useConversationStore, useChatbotUserStore } from '@/stores'

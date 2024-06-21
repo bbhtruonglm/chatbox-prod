@@ -150,7 +150,16 @@ export const getPageCurrentStaff = (page_id?: string) => {
         ?.[page_id as string]
         ?.current_staff
 }
+/**lấy dữ liệu của nhân viên của trang */
+export const getStaffInfo = (page_id?: string, staff_id?: string) => {
+    const pageStore = usePageStore()
 
+    return pageStore
+        .selected_page_list_info
+        ?.[page_id!]
+        ?.staff_list
+        ?.[staff_id!]
+}
 /**lấy thông tin của trang */
 export const getPageInfo = (page_id?: string) => {
     const pageStore = usePageStore()

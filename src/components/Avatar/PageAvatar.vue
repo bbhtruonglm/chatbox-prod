@@ -1,7 +1,7 @@
 <template>
   <div
     :class="animate_pulse"
-    class="overflow-hidden bg-slate-200 custom-rounded"
+    class="overflow-hidden bg-slate-200 rounded-oval"
   >
     <img
       @load="removeAnimatePulse"
@@ -90,11 +90,3 @@ function loadImageUrl(page_id?: string) {
   }?width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}`
 }
 </script>
-<style scoped lang="scss">
-.custom-rounded {
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E");
-}
-</style>

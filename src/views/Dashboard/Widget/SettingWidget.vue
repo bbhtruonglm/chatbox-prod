@@ -102,7 +102,7 @@ import { flow } from '@/service/helper/async'
 import { reactive } from 'vue'
 
 import Modal from '@/components/Modal.vue'
-import FilterButton from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterButton.vue'
+import FilterButton from '@/views/ChatWarper/Menu/FilterModal/FilterButton.vue'
 import Title from '@/views/Dashboard/Widget/Title.vue'
 import Role from '@/views/Dashboard/Widget/Role.vue'
 

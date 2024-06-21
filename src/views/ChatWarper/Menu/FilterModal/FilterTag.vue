@@ -6,11 +6,9 @@
     width="450px"
     height="500px"
     position="RIGHT"
-    :back="300"
+    :back="250"
   >
-    <MenuTitle
-      :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')"
-    />
+    <MenuTitle :title="$t('v1.view.main.dashboard.chat.filter.label.title')" />
     <div
       class="py-3 grid gap-2"
       :class="{
@@ -28,12 +26,41 @@
         ref="search_ref"
         type="text"
         :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-        class="border px-3 py-1 rounded-lg focus:outline-none w-full"
+        class="border px-3 py-1 rounded-lg focus:outline-none"
         v-on:keyup="searchLabel"
         v-model="label_search_name"
       />
     </div>
-    <div class="h-[calc(100%_-_88px)] overflow-y-auto">
+    <div class="flex justify-between py-3 border-t border-b">
+      <p>
+        {{
+          $t('v1.view.main.dashboard.chat.filter.label.filteration_condition')
+        }}
+      </p>
+      <div class="flex items-center">
+        <p class="mr-3">
+          {{ $t('v1.view.main.dashboard.chat.filter.label.or') }}
+        </p>
+        <input
+          :checked="!conversationStore.option_filter_page_data.label_and"
+          :value="false"
+          v-model="conversationStore.option_filter_page_data.label_and"
+          type="radio"
+          class="accent-orange-600 w-[20px] h-[20px]"
+        />
+        <p class="mr-3 ml-8">
+          {{ $t('v1.view.main.dashboard.chat.filter.label.and') }}
+        </p>
+        <input
+          v-model="conversationStore.option_filter_page_data.label_and"
+          :value="true"
+          :checked="conversationStore.option_filter_page_data.label_and"
+          type="radio"
+          class="accent-orange-600 w-[20px] h-[20px] mr-3"
+        />
+      </div>
+    </div>
+    <div class="h-[calc(100%_-_136px)] overflow-y-auto">
       <TagItem
         :is_disable="isDisableLabel(index)"
         v-for="(item, index) of label_list"
@@ -54,7 +81,7 @@ import { watch } from 'vue'
 
 import SelectPage from './Tag/SelectPage.vue'
 import Dropdown from '@/components/Dropdown.vue'
-import TagItem from '@/views/ChatWarper/Chat/LeftBar/FilterModal/Tag/TagItem.vue'
+import TagItem from '@/views/ChatWarper/Menu/FilterModal/Tag/TagItem.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
@@ -92,7 +119,8 @@ function onOpenDropdown() {
 }
 /** Xoá lọc */
 function clearThisFilter() {
-  delete conversationStore.option_filter_page_data.not_label_id
+  // xoá store lọc
+  delete conversationStore.option_filter_page_data.label_id
 
   // loại bỏ gắn cờ
   label_list.value = label_list.value.map(label => {
@@ -123,9 +151,7 @@ function getLabelList() {
   label_list.value = map(snap_labels.value, label => {
     // check từ store
     if (
-      conversationStore.option_filter_page_data.not_label_id?.includes(
-        label?._id
-      )
+      conversationStore.option_filter_page_data.label_id?.includes(label?._id)
     )
       label.is_selected = true
 
@@ -146,7 +172,7 @@ function isDisableLabel(index: number) {
   const FILTER = conversationStore.option_filter_page_data
 
   // nếu bên lọc nhãn đã chọn thì bỏ qua
-  return FILTER.label_id?.includes(SELECTED_LABEL._id)
+  return FILTER.not_label_id?.includes(SELECTED_LABEL._id)
 }
 /** Chọn nhãn */
 function selectLabel(index: number) {
@@ -170,7 +196,7 @@ function selectLabel(index: number) {
     ?.map(label => label._id)
 
   // lưu lại id nhãn đã chọn vào store
-  FILTER.not_label_id = size(list_id) ? list_id : undefined
+  FILTER.label_id = size(list_id) ? list_id : undefined
 
   // sort đã chọn lên đầu
   label_list.value = sortLabel(label_list.value)

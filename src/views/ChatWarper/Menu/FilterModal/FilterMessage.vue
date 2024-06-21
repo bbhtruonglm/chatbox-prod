@@ -45,7 +45,7 @@ import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Popover from '@/components/Popover.vue'
-import FilterCheckbox from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterCheckbox.vue'
+import FilterCheckbox from '@/views/ChatWarper/Menu/FilterModal/FilterCheckbox.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import ChatDotIcon from '@/components/Icons/ChatDot.vue'

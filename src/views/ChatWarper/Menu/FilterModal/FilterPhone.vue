@@ -27,7 +27,7 @@ import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Popover from '@/components/Popover.vue'
-import FilterRadio from '@/views/ChatWarper/Chat/LeftBar/FilterModal/FilterRadio.vue'
+import FilterRadio from '@/views/ChatWarper/Menu/FilterModal/FilterRadio.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import PhoneIcon from '@/components/Icons/Phone.vue'
