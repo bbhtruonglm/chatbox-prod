@@ -46,6 +46,8 @@ import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
 import Menu from '@/views/ChatWarper/Menu.vue'
 
+import BellSound from '@/assets/sound/notification-sound.mp3'
+
 import type { CbError } from '@/service/interface/function'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
@@ -68,6 +70,8 @@ initRequireData()
 const socket_connection = ref<WebSocket>()
 /**gắn cờ đóng kết nối hoàn toàn */
 const is_force_close_socket = ref(false)
+/**cờ xác định người dùng có đang focus vào tab chat không */
+const is_focus_chat_tab = ref(true)
 
 watch(
   () => conversationStore.select_conversation,
@@ -78,10 +82,27 @@ onMounted(() => {
   getPageInfoToChat()
 
   initExtensionLogic()
+
+  checkAllowNoti()
+
+  // lắng nghe người dùng focus chat
+  window.addEventListener('focus', checkFocusChatTab)
+  window.addEventListener('blur', checkFocusChatTab)
 })
 // tiêu huỷ kết nối socket khi thoát khỏi component này
-onUnmounted(() => closeSocketConnect())
+onUnmounted(() => {
+  closeSocketConnect()
 
+  // huỷ lắng nghe focus chat
+  window.removeEventListener('focus', checkFocusChatTab)
+  window.removeEventListener('blur', checkFocusChatTab)
+})
+
+/**kiểm tra xem người dùng có đang ở trong tab chatbox không */
+function checkFocusChatTab($event: FocusEvent) {
+  // nếu type của sự kiện là focus thì đánh dấu đang focus, ngược lại thì không
+  is_focus_chat_tab.value = $event.type === 'focus'
+}
 /**xử lý sự kiện vứt file vào để gửi */
 function onDropFile($event: DragEvent) {
   // chặn các hành động mặc định, vd như mở file ở tab mới
@@ -390,10 +411,10 @@ function onSocketFromChatboxServer() {
     let { staff, conversation, message, event } = socket_data
 
     // gửi thông điệp đến component xử lý user online
-    if (size(staff))
-      window.dispatchEvent(
-        new CustomEvent('chatbox_socket_staff', { detail: staff })
-      )
+    // if (size(staff))
+    //   window.dispatchEvent(
+    //     new CustomEvent('chatbox_socket_staff', { detail: staff })
+    //   )
 
     // gửi thông điệp đến component xử lý danh sách hội thoại
     if (validateConversation(conversation, message))
@@ -411,7 +432,79 @@ function onSocketFromChatboxServer() {
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_message', { detail: message })
       )
+
+    // thông báo cho người dùng nếu là tin nhắn của khách hàng gửi cho page
+    if (message?.message_type === 'client') triggerAlert(conversation)
   }
+}
+/**gửi thông báo cho nhân viên hiện tại */
+function triggerAlert(conversation?: ConversationInfo) {
+  // nếu người dùng đang focus vào tab chat thì không cần thông báo
+  if (is_focus_chat_tab.value) return
+
+  // phát nhạc thông báo
+  ringBell()
+
+  // bắn web noti
+  pushWebNoti(conversation)
+}
+/**gửi thông báo bằng web noti - không chạy trên mac */
+async function pushWebNoti(conversation?: ConversationInfo) {
+  // dừng nếu không đủ điều kiện thực thi
+  if (
+    // nếu trình duyệt không hỗ trợ
+    !('Notification' in window) ||
+    // nếu người dùng không cấp quyền
+    Notification.permission !== 'granted'
+  )
+    return
+
+  /**tiêu đề */
+  const TITLE = $t('v1.common.title')
+  /**link avatar của khách hàng */
+  const AVATAR = `https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar/${conversation?.fb_client_id}?page_id=${conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=64&height=64&type=${conversation?.platform_type}`
+  /**nội dung muốn thông báo */
+  const MESSAGE_ALERT = conversation?.client_name
+    ? $t('v1.view.main.dashboard.chat.new_message_alert', {
+        name: conversation?.client_name,
+        message: conversation?.last_message,
+      })
+    : $t('v1.view.main.dashboard.chat.new_message_alert')
+
+  /**tạo đối tượng thông báo noti + thực hiện noti */
+  const NOTI = new Notification(TITLE, { body: MESSAGE_ALERT, icon: AVATAR })
+
+  // chờ 5 giây
+  await new Promise(resolve => setTimeout(resolve, 5000))
+
+  // tắt noti
+  NOTI.close()
+}
+/**phát nhạc thông báo */
+function ringBell() {
+  const BELL = new Audio(BellSound)
+  BELL.volume = 0.3
+  BELL.play()
+}
+/**kiểm tra xem người dùng có cấp quyền cho phép thông báo không */
+function checkAllowNoti() {
+  // * lưu ý web noti chỉ chạy trên window, mac không chạy
+
+  // nếu trình duyệt không hỗ trợ thì thôi
+  if (!('Notification' in window)) return
+
+  // nếu người dùng từ chối cấp quyền rồi thì thôi
+  if (Notification.permission === 'denied') return
+
+  // hỏi xin quyền từ người dùng
+  Notification.requestPermission(permission => {
+    // nếu trình duyệt đã hỗ trợ quyền này thì dừng
+    if ('permission' in Notification) return
+
+    // nếu trình duyệt không hỗ trợ thì dùng thủ thuật để lưu lại quyền
+    // @ts-ignore
+    Notification.permission = permission
+  })
 }
 /**kiểm tra hội thoại có thoả mãn diều kiện lọc để được xuất hiện không */
 function validateConversation(
