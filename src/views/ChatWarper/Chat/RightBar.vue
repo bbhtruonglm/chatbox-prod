@@ -2,7 +2,7 @@
   <div
     class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-3"
   >
-    <UserInfo @toggle_change_assign_staff="toggleChangeAssignStaff" />
+    <UserInfo />
     <template v-for="widget of widget_list">
       <div
         v-if="!widget.is_hidden"
@@ -39,7 +39,6 @@
       </div>
     </template>
   </div>
-  <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
@@ -53,7 +52,6 @@ import { intersection } from 'lodash'
 import { copy } from '@/service/helper/format'
 
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
-import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
@@ -65,8 +63,6 @@ const conversationStore = useConversationStore()
 const widget_list = ref<AppInstalledInfo[]>([])
 /**danh sách widget */
 const snap_widget_list = ref<AppInstalledInfo[]>([])
-/**modal assign nhân viên */
-const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
 /** Tên widget đang được chọn */
 const widget_selected = ref<string>('all')
 
@@ -75,10 +71,6 @@ watch(
   () => getListWidget()
 )
 
-/**ẩn hiện modal */
-function toggleChangeAssignStaff($event: MouseEvent) {
-  change_staff_ref.value?.toggle($event)
-}
 /**lọc ra các widget bên phải */
 function getWidgetRight() {
   return widget_list.value?.filter(widget => widget.position === 'RIGHT')

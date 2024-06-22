@@ -371,11 +371,11 @@ const source: Language = {
             empty_conversation: 'Không tìm thấy hội thoại!',
             empty_select_conversation: 'Chọn một khách hàng để bắt đầu!',
             assign_staff: {
-              title: 'Chỉ định cuộc trò chuyện',
+              title: 'Chọn nhân viên',
             },
             action: {
-              open_facebook: 'Mở trang cá nhân',
-              open_inbox: 'Mở hộp thư Facebook',
+              open_facebook: 'Trang cá nhân Fb',
+              open_inbox: 'Mở hộp thư Fb',
               mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',
@@ -416,7 +416,7 @@ const source: Language = {
               del_staff: 'Nhân viên đã xoá',
             },
             client: {
-              title: 'Thông tin khách hàng',
+              title: 'Xem thông tin',
               basic: 'Thông tin cơ bản',
               info: 'Thông tin cá nhân',
               reload_info: 'Làm mới thông tin khách hàng',
