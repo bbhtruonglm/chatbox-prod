@@ -1,16 +1,16 @@
 <template>
-  <Teleport :to="teleport_to">
-    <div
-      v-if="is_open"
-      class="absolute top-0 left-0 h-screen w-screen z-20"
-    >
+  <Teleport
+    :to="teleport_to"
+    v-if="is_open"
+  >
+    <div class="absolute top-0 left-0 h-screen w-screen z-20">
       <div
         @click="toggleDropdown()"
         class="w-full h-full"
       ></div>
       <div
         ref="triangle_ref"
-        class="absolute z-10 rotate-45 w-4 h-4 shadow-sm bg-white"
+        class="absolute z-30 rotate-45 w-4 h-4 shadow-[inset-x-sm] bg-white"
       />
       <div
         ref="dropdown_ref"
@@ -74,6 +74,10 @@ const dropdown_ref = ref<ComponentRef>()
 /**ref của triangle */
 const triangle_ref = ref<ComponentRef>()
 
+/**đóng modal khi nhấn esc */
+function closeOnEsc($event: KeyboardEvent) {
+  if ($event.key === 'Escape') immediatelyHide()
+}
 /**dịch chuyển dropdown đến vị trí */
 function teleportToTarget($event?: MouseEvent) {
   // tịnh tiến vị trí
@@ -145,7 +149,9 @@ function teleportToTarget($event?: MouseEvent) {
       // left của target + một nửa độ rộng của target - kích thước tam giác
       triangle_ref.value.style.left = `${x + width / 2 - TRIANGLE_SIZE}px`
       // top cơ bản của dropdown - kích thước tam giác
-      triangle_ref.value.style.top = `${y - TRIANGLE_SIZE * 2 - $props.distance}px`
+      triangle_ref.value.style.top = `${
+        y - TRIANGLE_SIZE * 2 - $props.distance
+      }px`
 
       // căn lại kích thước nếu cần
       if ($props.is_fit) _width.value = `${width}px`
@@ -156,6 +162,9 @@ function teleportToTarget($event?: MouseEvent) {
 function toggleDropdown($event?: MouseEvent) {
   // mở modal
   if (!is_open.value) {
+    // khi component được render thì lắng nghe sự kiện nhấn esc
+    document.addEventListener('keyup', closeOnEsc)
+
     // mở modal
     is_open.value = true
 
@@ -170,6 +179,9 @@ function toggleDropdown($event?: MouseEvent) {
 /**tắt ngay lập tức */
 function immediatelyHide() {
   if (!is_open.value) return
+
+  // khi component bị xóa thì loại bỏ sự kiện nhấn esc
+  document.removeEventListener('keyup', closeOnEsc)
 
   is_open.value = false
 

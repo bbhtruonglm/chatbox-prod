@@ -1,9 +1,7 @@
 <template>
   <div
-    :class="{
-      'text-slate-500': !source?.unread_message_amount,
-    }"
-    class="flex items-center text-xs font-medium gap-2 justify-between"
+    :class="source?.unread_message_amount ? 'font-medium' : 'text-slate-500'"
+    class="flex items-center text-xs gap-2 justify-between"
   >
     <div class="truncate">
       <template v-if="source?.last_message_type === 'page'">

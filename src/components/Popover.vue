@@ -1,9 +1,11 @@
 <template>
-  <Teleport :to="teleport_to">
+  <Teleport
+    :to="teleport_to"
+    v-if="is_open"
+  >
     <div
       @mouseover="hoverPopover"
       @mouseleave="leavePopover"
-      v-if="is_open"
       ref="popover_ref"
       :style="{
         width: _width,
@@ -17,7 +19,7 @@
     >
       <div
         ref="triangle_ref"
-        class="absolute rotate-45 w-4 h-4 shadow-sm bg-white"
+        class="absolute rotate-45 w-4 h-4 shadow-[inset-x-sm] bg-white z-20"
       />
       <div
         :class="class_content"

@@ -6,7 +6,10 @@
     >
       {{ $t('v1.common.title') }}
     </div>
-    <Badge :value="countAllUnRead()" />
+    <Badge
+      v-if="count_all_unread"
+      :value="count_all_unread"
+    />
   </div>
   <div class="flex-shrink-0 px-2 relative">
     <SearchIcon
@@ -22,9 +25,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useConversationStore } from '@/stores'
-import { debounce, map, sumBy, values } from 'lodash'
+import { debounce, sumBy, values } from 'lodash'
 import { useI18n } from 'vue-i18n'
 
 import Badge from '@/components/Badge.vue'
@@ -38,6 +41,8 @@ const { t: $t } = useI18n()
 const version = npm_package_version
 /**giá trị của ô tìm kiếm hội thoại */
 const search_conversation = ref<string>()
+/**tổng số tin nhắn chưa đọc */
+const count_all_unread = computed(countAllUnRead)
 
 onMounted(() => {
   if (conversationStore.option_filter_page_data.search) {
