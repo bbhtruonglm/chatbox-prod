@@ -46,15 +46,9 @@ import type { ComponentRef } from '@/service/interface/vue'
 
 const conversationStore = useConversationStore()
 
-const change_staff_ref = ref<ComponentRef>()
-
 /**ref của modal widget bottom */
 const bottom_widget_modal_ref = ref<ComponentRef>()
 
-/**ẩn hiện modal */
-function toggleChangeAssignStaff($event: MouseEvent) {
-  change_staff_ref.value?.toggle($event)
-}
 /**ẩn hiện modal */
 function toggleBottomWidget($event: MouseEvent) {
   bottom_widget_modal_ref.value?.toggleModal($event)

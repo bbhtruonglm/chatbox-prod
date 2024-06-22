@@ -1,9 +1,22 @@
 <template>
-    <Dropdown ref="change_staff_dropdown_ref" @open_dropdown="onOpenDropdown()" :is_fit="false" width="350px"
-        height="360px">
-        <SearchStaff ref="search_ref" @search_staff="searchStaff" />
-        <StaffItem @select_staff="assignConversationtoStaff" :staffs="staffs" :select_staff_id="fb_staff_id" />
-    </Dropdown>
+  <Dropdown
+    ref="change_staff_dropdown_ref"
+    @open_dropdown="onOpenDropdown()"
+    :is_fit="false"
+    width="350px"
+    height="360px"
+    :back="250"
+  >
+    <SearchStaff
+      ref="search_ref"
+      @search_staff="searchStaff"
+    />
+    <StaffItem
+      @select_staff="assignConversationtoStaff"
+      :staffs="staffs"
+      :select_staff_id="fb_staff_id"
+    />
+  </Dropdown>
 </template>
 
 <script setup lang="ts">
@@ -42,91 +55,101 @@ const search_ref = ref<ComponentRef>()
 
 /**hiện thị */
 function toggle($event: MouseEvent) {
-    change_staff_dropdown_ref.value?.toggleDropdown($event)
+  change_staff_dropdown_ref.value?.toggleDropdown($event)
 }
 /**tự động focus vào search trên pc */
 function onOpenDropdown() {
-    setTimeout(() => search_ref.value?.focus(), 50)    
+  setTimeout(() => search_ref.value?.focus(), 50)
 
-    getStaffsByPageId()
+  getStaffsByPageId()
 }
 /** Lấy ra danh sách user theo page hiện tại đang chọn */
 function getStaffsByPageId() {
-    // * Xóa tên nhân viên đang tìm kiếm
-    search_staff_name.value = ''
+  // * Xóa tên nhân viên đang tìm kiếm
+  search_staff_name.value = ''
 
-    // * Lấy ID page hiện tại
-    const curent_page_id: string = $route.query.page_id as string
+  // * Lấy ID page hiện tại
+  const curent_page_id: string = $route.query.page_id as string
 
-    // * Lấy ra thông tin page hiện tại từ store
-    const current_page = pageStore.selected_page_list_info[curent_page_id]
+  // * Lấy ra thông tin page hiện tại từ store
+  const current_page = pageStore.selected_page_list_info[curent_page_id]
 
-    // * Lưu lại danh sách nhân viên
-    staffs.value = current_page.staff_list || {}
-    snap_staffs.value = staffs.value
+  // * Lưu lại danh sách nhân viên
+  staffs.value = current_page.staff_list || {}
+  snap_staffs.value = staffs.value
 
-    // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
-    fb_staff_id.value = conversationStore.select_conversation?.fb_staff_id || ''
+  // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
+  fb_staff_id.value = conversationStore.select_conversation?.fb_staff_id || ''
 
-    // * Đưa nhân viên được assign lên đầu danh sách
-    pushStaffSelectedToTop()
+  // * Đưa nhân viên được assign lên đầu danh sách
+  pushStaffSelectedToTop()
 }
 /** Phân công cuộc trò chuyện cho nhân viên */
 function assignConversationtoStaff(staff: StaffInfo) {
-    // * Nếu data conversation không tồn tại thì dừng lại
-    if (!conversationStore.select_conversation) return
+  // * Nếu data conversation không tồn tại thì dừng lại
+  if (!conversationStore.select_conversation) return
 
-    // * Nếu nhân viên đã được assign thì không chạy logic nữa
-    if (fb_staff_id.value === staff.fb_staff_id) return
+  // * Nếu nhân viên đã được assign thì không chạy logic nữa
+  if (fb_staff_id.value === staff.fb_staff_id) return
 
-    // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
-    fb_staff_id.value = staff.fb_staff_id
+  // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
+  fb_staff_id.value = staff.fb_staff_id
 
-    // * Đưa nhân viên được assign lên đầu danh sách
-    pushStaffSelectedToTop()
+  // * Đưa nhân viên được assign lên đầu danh sách
+  pushStaffSelectedToTop()
 
-    flow([
-        // * Gọi api để update nhân viên được assign
-        (cb: CbError) => set_assign_staff_conversation({
-            page_id: conversationStore.select_conversation?.fb_page_id as string,
-            client_id: conversationStore.select_conversation?.fb_client_id as string,
+  flow(
+    [
+      // * Gọi api để update nhân viên được assign
+      (cb: CbError) =>
+        set_assign_staff_conversation(
+          {
+            page_id: conversationStore.select_conversation
+              ?.fb_page_id as string,
+            client_id: conversationStore.select_conversation
+              ?.fb_client_id as string,
             new_staff_id: staff.fb_staff_id,
             old_staff_id: conversationStore.select_conversation?.fb_staff_id,
-        }, (e, r) => {
+          },
+          (e, r) => {
             if (e) return cb(e)
 
             cb()
-        }),
-        // * ẩn dropdown sau khi chạy xong
-        (cb: CbError) => {
-            change_staff_dropdown_ref.value?.immediatelyHide()
+          }
+        ),
+      // * ẩn dropdown sau khi chạy xong
+      (cb: CbError) => {
+        change_staff_dropdown_ref.value?.immediatelyHide()
 
-            cb()
-        },
-    ], undefined, true)
+        cb()
+      },
+    ],
+    undefined,
+    true
+  )
 }
 /** Lọc hội thoại theo nhân viên */
 function searchStaff(search_staff_name: string) {
-    if (!search_staff_name) return staffs.value = snap_staffs.value
-    staffs.value = {}
-    map(snap_staffs.value, (item: StaffInfo) => {
-        let search_name: string = nonAccentVn(search_staff_name)
-        let staff_name: string = nonAccentVn(item.name)
-        if (staff_name.includes(search_name)) {
-            staffs.value[item.fb_staff_id] = item
-        }
-    })
+  if (!search_staff_name) return (staffs.value = snap_staffs.value)
+  staffs.value = {}
+  map(snap_staffs.value, (item: StaffInfo) => {
+    let search_name: string = nonAccentVn(search_staff_name)
+    let staff_name: string = nonAccentVn(item.name)
+    if (staff_name.includes(search_name)) {
+      staffs.value[item.fb_staff_id] = item
+    }
+  })
 }
 /** Đưa nhân viên được assign lên đầu danh sách */
 function pushStaffSelectedToTop() {
-    let new_staff_list: { [index: string]: StaffInfo } = {}
-    new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
-    map(staffs.value, (item) => {
-        if (item && item.fb_staff_id !== fb_staff_id.value) {
-            new_staff_list[item.fb_staff_id] = staffs.value[item.fb_staff_id]
-        }
-    })
-    staffs.value = new_staff_list
+  let new_staff_list: { [index: string]: StaffInfo } = {}
+  new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
+  map(staffs.value, item => {
+    if (item && item.fb_staff_id !== fb_staff_id.value) {
+      new_staff_list[item.fb_staff_id] = staffs.value[item.fb_staff_id]
+    }
+  })
+  staffs.value = new_staff_list
 }
 
 defineExpose({ toggle })
