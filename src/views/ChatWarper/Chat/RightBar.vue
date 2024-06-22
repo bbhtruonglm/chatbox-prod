@@ -120,10 +120,12 @@ function getListWidget() {
             return widget.active_widget && IS_ACCESSIBLE && IS_RIGHT
           })
           ?.map(widget => {
-            // nếu dạng nhỏ nhất thì auto ẩn luôn
-            if (widget.app_installed_size === 'MINIMUM') widget.is_show = false
-            // hiển thị toàn bộ widget
-            else widget.is_show = true
+            // mặc định ẩn tất cả các widget
+            widget.is_show = false
+            // // nếu dạng nhỏ nhất thì auto ẩn luôn
+            // if (widget.app_installed_size === 'MINIMUM') widget.is_show = false
+            // // hiển thị toàn bộ widget
+            // else widget.is_show = true
 
             // thêm token cho url
             widget.url = getIframeUrl(widget)
@@ -136,6 +138,9 @@ function getListWidget() {
             else return -1
           }) || []
       )
+
+      // chỉ hiển thị widget đầu tiên
+      if (widget_list.value?.[0]) widget_list.value[0].is_show = true
 
       snap_widget_list.value = widget_list.value
 

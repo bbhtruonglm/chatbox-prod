@@ -48,7 +48,7 @@
       </span>
     </template>
   </PageItem>
-  <Alert
+  <!-- <Alert
     ref="confirm_unactive_modal_ref"
     class_modal="w-[507px]"
     class_body="text-zinc-500"
@@ -85,7 +85,7 @@
         {{ $t('v1.common.ok') }}
       </button>
     </template>
-  </Alert>
+  </Alert> -->
   <Alert
     ref="expired_alert_modal_ref"
     class_modal="w-[507px]"

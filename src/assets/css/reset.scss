@@ -1,0 +1,4 @@
+// loại bỏ outline mặc định của btn
+button {
+  @apply focus:outline-none;
+}

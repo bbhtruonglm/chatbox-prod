@@ -1,5 +1,8 @@
 <template>
-  <Teleport to="body">
+  <Teleport
+    to="body"
+    v-if="is_open"
+  >
     <Transition
       enter-active-class="transition ease-in-out duration-500"
       leave-active-class="transition ease-in-out duration-500"
@@ -8,7 +11,6 @@
     >
       <div
         @click="toggleModal"
-        v-if="is_open"
         class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20 shadow-lg"
       >
         <div
