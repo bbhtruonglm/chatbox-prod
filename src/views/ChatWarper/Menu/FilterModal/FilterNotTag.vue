@@ -1,7 +1,6 @@
 <template>
-  <Dropdown
-    ref="filter_dropdown_ref"
-    @open_dropdown="onOpenDropdown"
+  <Popover
+    ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
     height="500px"
@@ -43,7 +42,7 @@
         :is_selected="item?.is_selected"
       />
     </div>
-  </Dropdown>
+  </Popover>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
@@ -53,7 +52,7 @@ import { copy, nonAccentVn } from '@/service/helper/format'
 import { watch } from 'vue'
 
 import SelectPage from './Tag/SelectPage.vue'
-import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover.vue'
 import TagItem from '@/views/ChatWarper/Menu/FilterModal/Tag/TagItem.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
@@ -70,7 +69,7 @@ const snap_labels = ref<{ [index: string]: LabelInfo }>({})
 /** ID page hiện tại đang được chọn */
 const label_search_name = ref<string>('')
 /**ref của dropdown */
-const filter_dropdown_ref = ref<ComponentRef>()
+const filter_popover_ref = ref<ComponentRef>()
 /**ref của dropdown search */
 const search_ref = ref<ComponentRef>()
 
@@ -86,10 +85,6 @@ onMounted(() => {
   }
 })
 
-/**tự động focus vào search */
-function onOpenDropdown() {
-  setTimeout(() => search_ref.value?.focus(), 50)
-}
 /** Xoá lọc */
 function clearThisFilter() {
   delete conversationStore.option_filter_page_data.not_label_id
@@ -192,10 +187,6 @@ const searchLabel = debounce(($event: Event) => {
 
   label_list.value = sortLabel(temp)
 }, 300)
-/**hiện thị dropdown */
-function toggle($event: MouseEvent) {
-  filter_dropdown_ref.value?.toggleDropdown($event)
-}
 /** Hiển thị nhãn theo page đã chọn */
 function filterLabelByPage(page_id: string) {
   if (!page_id) {
@@ -220,5 +211,5 @@ function filterLabelByPage(page_id: string) {
   label_search_name.value = ''
 }
 
-defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter })
 </script>

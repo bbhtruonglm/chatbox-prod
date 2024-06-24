@@ -35,8 +35,6 @@ import { ref, nextTick } from 'vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 
-const $emit = defineEmits(['close_dropdown', 'open_dropdown'])
-
 const $props = withDefaults(
   defineProps<{
     /**dịch chuyển component này đến vị trí nào */
@@ -171,15 +169,10 @@ function mouseover($event: any) {
   if (is_open.value) return
 
   // mở modal
-  if (!is_open.value) {
-    // mở modal
-    is_open.value = true
+  is_open.value = true
 
-    // dịch chuyển popover đến vị chí cần thiết
-    teleportToTarget($event)
-  }
-  // tắt modal
-  else is_open.value = false
+  // dịch chuyển popover đến vị chí cần thiết
+  teleportToTarget($event)
 }
 /**xử lý sự kiện khi di chuột ra ngoài mục tiêu */
 function mouseleave() {

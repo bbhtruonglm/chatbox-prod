@@ -6,11 +6,14 @@
     <template v-for="widget of widget_list">
       <div
         v-if="!widget.is_hidden"
-        class="rounded-lg bg-white overflow-hidden flex-shrink-0"
+        :class="{
+          'flex-grow': widget.is_show,
+        }"
+        class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col"
       >
         <button
           @click="toggleWidget(widget)"
-          class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0"
+          class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
         >
           {{ widget.snap_app.name }}
           <ArrowDown
@@ -24,10 +27,10 @@
           v-if="widget.is_show"
           :class="
             widget.app_installed_size === 'FULL'
-              ? 'h-[calc(100vh_-_119px)]'
-              : 'h-[300px]'
+              ? 'min-h-[calc(100vh_-_132px)]'
+              : 'min-h-[300px]'
           "
-          class="w-full border-t"
+          class="w-full border-t flex-grow"
         >
           <iframe
             :id="`widget-${widget._id}`"
@@ -77,7 +80,13 @@ function getWidgetRight() {
 }
 /**ẩn hiện widget */
 function toggleWidget(widget: AppInstalledInfo) {
-  widget.is_show = !widget.is_show
+  // loop danh sách widget để xử lý
+  widget_list.value?.forEach(item => {
+    // toggle widget được chọn
+    if (widget._id === item._id) item.is_show = !item.is_show
+    // ẩn tất cả các widget còn lại
+    else item.is_show = false
+  })
 }
 /**đọc danh sách các widget của trang này */
 function getListWidget() {

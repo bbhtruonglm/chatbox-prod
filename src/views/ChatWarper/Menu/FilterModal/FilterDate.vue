@@ -1,6 +1,6 @@
 <template>
-  <Dropdown
-    ref="filter_dropdown_ref"
+  <Popover
+    ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
     height="auto"
@@ -82,7 +82,7 @@
         />
       </div>
     </div>
-  </Dropdown>
+  </Popover>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -98,7 +98,7 @@ import {
   getTime,
 } from 'date-fns'
 
-import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover.vue'
 import DatePicker from '@/components/DatePicker.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
@@ -119,7 +119,7 @@ const EXACTLY_TIME_RANGE = [
 const TOMORROW_TIME = getTime(startOfDay(addDays(new Date(), 1)))
 
 /**ref của dropdown */
-const filter_dropdown_ref = ref<ComponentRef>()
+const filter_popover_ref = ref<ComponentRef>()
 
 /**tính toán time range hiện tại đang chọn có thoả mãn mốc thời gian hay không */
 function isActiveExactlyTime(name: string) {
@@ -223,10 +223,6 @@ function selectExactlyTimeRange(name: string) {
 function clearThisFilter() {
   delete conversationStore.option_filter_page_data.time_range
 }
-/**hiện thị dropdown */
-function toggle($event: MouseEvent) {
-  filter_dropdown_ref.value?.toggleDropdown($event)
-}
 
-defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter })
 </script>

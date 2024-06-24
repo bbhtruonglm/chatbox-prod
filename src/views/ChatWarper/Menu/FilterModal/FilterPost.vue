@@ -1,6 +1,6 @@
 <template>
-  <Dropdown
-    ref="filter_dropdown_ref"
+  <Popover
+    ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
     height="570px"
@@ -241,7 +241,7 @@
         {{ $t('v1.view.main.dashboard.chat.filter.post.filter') }}
       </button>
     </div>
-  </Dropdown>
+  </Popover>
   <FilterDateOfPost
     ref="date_picket_ref"
     :time_picked="updateFilterTime"
@@ -255,7 +255,7 @@ import { get_post_list } from '@/service/api/chatbox/n4-service'
 import { useConversationStore, usePageStore } from '@/stores'
 import { format } from 'date-fns'
 
-import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover.vue'
 import FilterDateOfPost from '@/components/Main/Dashboard/FilterDateOfPost.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
@@ -268,7 +268,7 @@ const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 
 /**ref của dropdown */
-const filter_dropdown_ref = ref<ComponentRef>()
+const filter_popover_ref = ref<ComponentRef>()
 /** ref của date picker */
 const date_picket_ref = ref<ComponentRef>()
 /** Danh sách bài post */
@@ -302,7 +302,7 @@ onMounted(() => {
 
 /** Hiển thị dropdown */
 function toggle($event?: MouseEvent) {
-  filter_dropdown_ref.value?.toggleDropdown($event)
+  filter_popover_ref.value?.toggleDropdown($event)
 }
 /** Xoá lọc */
 function clearThisFilter() {
@@ -425,7 +425,7 @@ function mergePostSelect(): string {
   return post_selected.join(' ')
 }
 
-defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter })
 </script>
 
 <style>
