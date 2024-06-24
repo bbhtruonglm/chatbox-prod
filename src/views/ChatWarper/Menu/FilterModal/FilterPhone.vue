@@ -8,14 +8,16 @@
     class_content="flex flex-col gap-1"
   >
     <MenuTitle :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
-    <FilterRadio
-      value="YES"
+    <FilterCheckbox
+      true_value="YES"
+      :false_value="undefined"
       v-model="conversationStore.option_filter_page_data.have_phone"
       :icon="PhoneIcon"
       :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')"
     />
-    <FilterRadio
-      value="NO"
+    <FilterCheckbox
+      true_value="NO"
+      :false_value="undefined"
       v-model="conversationStore.option_filter_page_data.have_phone"
       :icon="MinusIcon"
       :title="$t('v1.view.main.dashboard.chat.filter.phone.exclude_phone')"
@@ -27,7 +29,7 @@ import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Popover from '@/components/Popover.vue'
-import FilterRadio from '@/views/ChatWarper/Menu/FilterModal/FilterRadio.vue'
+import FilterCheckbox from '@/views/ChatWarper/Menu/FilterModal/FilterCheckbox.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import PhoneIcon from '@/components/Icons/Phone.vue'

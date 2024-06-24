@@ -11,7 +11,12 @@
         />
         <ArrowDown class="-rotate-90 w-2 h-2 text-slate-500 flex-shrink-0" />
       </template>
-      <div class="text-left truncate text-sm font-semibold flex-grow min-w-0">
+      <div
+        :class="{
+          'font-semibold': source?.unread_message_amount,
+        }"
+        class="text-left truncate text-sm flex-grow min-w-0"
+      >
         {{ source?.client_name }}
       </div>
     </div>

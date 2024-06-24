@@ -3,7 +3,7 @@
     v-if="is_loading"
     class="relative"
   >
-    <div class="absolute left-[50%] translate-x-[-50%]">
+    <div class="absolute left-1/2 -translate-x-1/2">
       <Loading class="mx-auto" />
     </div>
   </div>
@@ -12,7 +12,7 @@
     v-if="size(conversationStore.conversation_list)"
     class="overflow-y-auto"
     :items="map(conversationStore.conversation_list)"
-    :item-size="72"
+    :item-size="76"
     key-field="data_key"
     v-slot="{ item }"
   >

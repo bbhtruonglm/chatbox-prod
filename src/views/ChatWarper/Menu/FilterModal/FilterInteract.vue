@@ -10,15 +10,17 @@
     <MenuTitle
       :title="$t('v1.view.main.dashboard.chat.filter.interact.title')"
     />
-    <FilterRadio
+    <FilterCheckbox
       v-model="conversationStore.option_filter_page_data.display_style"
-      value="INBOX"
+      true_value="INBOX"
+      :false_value="undefined"
       :icon="ChatDotIcon"
       :title="$t('v1.view.main.dashboard.chat.filter.interact.message')"
     />
-    <FilterRadio
+    <FilterCheckbox
       v-model="conversationStore.option_filter_page_data.display_style"
-      value="COMMENT"
+      true_value="COMMENT"
+      :false_value="undefined"
       :icon="NewSpaperIcon"
       :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')"
     />
@@ -29,7 +31,7 @@ import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Popover from '@/components/Popover.vue'
-import FilterRadio from '@/views/ChatWarper/Menu/FilterModal/FilterRadio.vue'
+import FilterCheckbox from '@/views/ChatWarper/Menu/FilterModal/FilterCheckbox.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import ChatDotIcon from '@/components/Icons/ChatDot.vue'

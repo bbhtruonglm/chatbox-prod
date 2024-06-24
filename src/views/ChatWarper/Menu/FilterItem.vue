@@ -7,7 +7,7 @@
       :title="title"
     />
     <button
-      @click.stop="$emit('cancel_filter')"
+      v-tooltip="$t('v1.view.main.dashboard.chat.filter.un_filter')"
       v-if="is_active"
       class="absolute top-[1px] right-[1px]"
     >
@@ -22,8 +22,6 @@
 import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'
 
 import type { Component } from 'vue'
-
-const $emit = defineEmits(['cancel_filter'])
 
 withDefaults(
   defineProps<{

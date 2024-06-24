@@ -4,7 +4,7 @@
     :class="{
       'bg-slate-200': isSelectThisClient(),
     }"
-    class="flex items-center hover:bg-slate-200 w-full group rounded-xl p-2 gap-3"
+    class="flex items-center hover:bg-slate-200 w-full group rounded-xl p-2 gap-3 mb-1"
   >
     <ClientAvatar :source="source" />
     <div class="flex flex-col gap-0.5 flex-grow min-w-0 relative">
@@ -13,7 +13,7 @@
       <ClientSupport :source="source" />
       <hr
         v-if="!isSelectThisClient()"
-        class="absolute w-full -bottom-2.5 group-hover:hidden"
+        class="absolute w-full -bottom-3.5 group-hover:hidden"
       />
     </div>
   </button>

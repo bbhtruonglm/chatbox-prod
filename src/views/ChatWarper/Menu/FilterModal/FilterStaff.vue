@@ -1,7 +1,6 @@
 <template>
-  <Dropdown
-    ref="filter_dropdown_ref"
-    @open_dropdown="onOpenDropdown"
+  <Popover
+    ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
     height="500px"
@@ -39,7 +38,7 @@
         />
       </div>
     </div>
-  </Dropdown>
+  </Popover>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -48,7 +47,7 @@ import { map, debounce, sortBy, mapValues, size } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { watch } from 'vue'
 
-import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
@@ -65,7 +64,7 @@ const snap_staffs = ref<{ [index: string]: StaffInfo }>({})
 /** Search staff name */
 const search_staff_name = ref<string>('')
 /**ref của dropdown */
-const filter_dropdown_ref = ref<ComponentRef>()
+const filter_popover_ref = ref<ComponentRef>()
 /**ref của dropdown search */
 const search_ref = ref<ComponentRef>()
 
@@ -74,10 +73,6 @@ watch(
   () => getStaffs()
 )
 
-/**tự động focus vào search */
-function onOpenDropdown() {
-  setTimeout(() => search_ref.value?.focus(), 50)
-}
 /** Xoá lọc */
 function clearThisFilter() {
   // xoá store lọc
@@ -156,10 +151,6 @@ const searchStaff = debounce(($event: Event) => {
 
   staff_list.value = sortStaff(temp)
 }, 300)
-/**hiện thị dropdown */
-function toggle($event: MouseEvent) {
-  filter_dropdown_ref.value?.toggleDropdown($event)
-}
 
-defineExpose({ toggle, filter_dropdown_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter })
 </script>

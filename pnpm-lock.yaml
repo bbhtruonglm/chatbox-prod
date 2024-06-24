@@ -17,9 +17,6 @@ importers:
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
-      emoji-mart-vue-fast:
-        specifier: ^15.0.0
-        version: 15.0.2(vue@3.4.27(typescript@4.7.4))
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -498,9 +495,6 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  core-js@3.37.1:
-    resolution: {integrity: sha512-Xn6qmxrQZyB0FFY8E3bgRXei3lWDJHhvI+u0q9TKIYM49G8pAr0FgnnrFRAmsbptZL1yxRADVXn+x5AGsbBfyw==}
-
   cross-spawn@6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
     engines: {node: '>=4.8'}
@@ -562,11 +556,6 @@ packages:
 
   electron-to-chromium@1.4.798:
     resolution: {integrity: sha512-by9J2CiM9KPGj9qfp5U4FcPSbXJG7FNzqnYaY4WLzX+v2PHieVGmnsA4dxfpGE3QEC7JofpPZmn7Vn1B9NR2+Q==}
-
-  emoji-mart-vue-fast@15.0.2:
-    resolution: {integrity: sha512-q7VaE6yRrlQd+jpHPToh1XnIatgACkQjBj0vQ7uNaWrbVsKlhZaOsqZVoegT5IZt5XkYoR2x4MHMNep/BJP9rw==}
-    peerDependencies:
-      vue: '>2.0.0'
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -1770,8 +1759,6 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  core-js@3.37.1: {}
-
   cross-spawn@6.0.5:
     dependencies:
       nice-try: 1.0.5
@@ -1837,12 +1824,6 @@ snapshots:
   eastasianwidth@0.2.0: {}
 
   electron-to-chromium@1.4.798: {}
-
-  emoji-mart-vue-fast@15.0.2(vue@3.4.27(typescript@4.7.4)):
-    dependencies:
-      '@babel/runtime': 7.24.7
-      core-js: 3.37.1
-      vue: 3.4.27(typescript@4.7.4)
 
   emoji-regex@8.0.0: {}
 

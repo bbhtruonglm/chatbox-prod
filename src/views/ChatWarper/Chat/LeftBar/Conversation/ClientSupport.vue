@@ -26,7 +26,7 @@
         v-tooltip.bottom="source?.client_phone"
         v-if="source?.client_phone"
         src="@/assets/icons/phone.svg"
-        class="w-2.5 h-2.5"
+        class="w-3 h-3"
       />
       <template v-if="isFindUid() || source?.client_bio?.fb_uid">
         <Loading
@@ -34,13 +34,13 @@
             $t('v1.view.main.dashboard.chat.extension.findding_uid')
           "
           v-if="isFindUid()"
-          :size="10"
+          :size="12"
         />
         <img
           v-else
           v-tooltip.bottom="`Uid: ${source?.client_bio?.fb_uid}`"
           src="@/assets/icons/id.svg"
-          class="w-2.5 h-2.5"
+          class="w-3 h-3"
         />
       </template>
       <!-- <div

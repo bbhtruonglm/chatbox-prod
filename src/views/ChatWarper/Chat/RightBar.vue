@@ -6,11 +6,14 @@
     <template v-for="widget of widget_list">
       <div
         v-if="!widget.is_hidden"
-        class="rounded-lg bg-white overflow-hidden flex-shrink-0"
+        :class="{
+          'flex-grow': widget.is_show,
+        }"
+        class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col"
       >
         <button
           @click="toggleWidget(widget)"
-          class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0"
+          class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
         >
           {{ widget.snap_app.name }}
           <ArrowDown
@@ -24,10 +27,10 @@
           v-if="widget.is_show"
           :class="
             widget.app_installed_size === 'FULL'
-              ? 'h-[calc(100vh_-_119px)]'
-              : 'h-[300px]'
+              ? 'min-h-[calc(100vh_-_132px)]'
+              : 'min-h-[300px]'
           "
-          class="w-full border-t"
+          class="w-full border-t flex-grow"
         >
           <iframe
             :id="`widget-${widget._id}`"
@@ -48,7 +51,7 @@ import {
   getPageWidget,
   getPageCurrentStaff,
 } from '@/service/function'
-import { intersection } from 'lodash'
+import { intersection, sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
 
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
@@ -61,127 +64,104 @@ const conversationStore = useConversationStore()
 
 /**danh sách widget */
 const widget_list = ref<AppInstalledInfo[]>([])
-/**danh sách widget */
-const snap_widget_list = ref<AppInstalledInfo[]>([])
-/** Tên widget đang được chọn */
-const widget_selected = ref<string>('all')
 
 watch(
   () => conversationStore.list_widget_token?.data,
   () => getListWidget()
 )
 
-/**lọc ra các widget bên phải */
-function getWidgetRight() {
-  return widget_list.value?.filter(widget => widget.position === 'RIGHT')
-}
 /**ẩn hiện widget */
 function toggleWidget(widget: AppInstalledInfo) {
-  widget.is_show = !widget.is_show
+  // loop danh sách widget để xử lý
+  widget_list.value?.forEach(item => {
+    // toggle widget được chọn
+    if (widget._id === item._id) item.is_show = !item.is_show
+    // ẩn tất cả các widget còn lại
+    else item.is_show = false
+  })
 }
 /**đọc danh sách các widget của trang này */
-function getListWidget() {
+async function getListWidget() {
   /**id trang */
   const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+  /**danh sách token của widget */
+  const LIST_WIDGET_TOKEN = conversationStore.list_widget_token
 
   if (!PAGE_ID) return
+
+  if (
+    // nếu vẫn trong 1 trang và
+    LIST_WIDGET_TOKEN.new_page_id === LIST_WIDGET_TOKEN.old_page_id &&
+    // đã có dữ liệu widget rồi
+    widget_list.value?.length
+  )
+    // loop danh sách widget hiện tại để xử lý
+    return widget_list.value.map(widget => {
+      // nếu widget ở dạng cũ
+      if (!widget.snap_app?.is_post_message) {
+        // reload lại iframe từ đầu
+        widget.url = getIframeUrl(widget)
+        return
+      }
+
+      // nếu widget là dạng post mess mới thì không reload iframe nữa mà gửi sự kiện đến iframe
+      sendEventToIframe(widget, {
+        from: 'CHATBOX',
+        type: 'RELOAD',
+        payload: {
+          access_token: conversationStore.list_widget_token?.data?.[widget._id],
+        },
+      })
+    })
+
+  // nếu khác trang, hoặc widget chưa tồn tại
+
+  // đợi vue render xong mới chạy tiếp
+  await new Promise(resolve => nextTick(() => resolve(undefined)))
+
+  /**danh sách widget của trang này */
+  let temp_list_widget = getPageWidget(PAGE_ID) || []
 
   /**các nhóm mà nhân viên này được phép truy cập dữ liệu */
   const GROUP_STAFF = getPageCurrentStaff(PAGE_ID)?.group_staff
 
-  // nếu khác trang, hoặc widget chưa tồn tại, thì render lại danh sách
-  if (
-    conversationStore.list_widget_token.new_page_id !==
-      conversationStore.list_widget_token.old_page_id ||
-    !widget_list.value?.length
-  )
-    nextTick(() => {
-      widget_list.value = copy(
-        getPageWidget(PAGE_ID)
-          ?.filter(widget => {
-            /**kiểm tra user có quyền xem widget này không */
-            const IS_ACCESSIBLE = intersection(
-              widget.access_group,
-              GROUP_STAFF
-            )?.length
+  // lọc lại danh sách widget
+  temp_list_widget = temp_list_widget?.filter(widget => {
+    /**kiểm tra user có quyền xem widget này không */
+    const IS_ACCESSIBLE = intersection(widget.access_group, GROUP_STAFF)?.length
 
-            /**chỉ hiển thị widget cho bên phải */
-            const IS_RIGHT = widget.position === 'RIGHT'
+    // chỉ hiển thị widget được kích hoạt và có quyền xem
+    return widget.active_widget && IS_ACCESSIBLE
+  })
 
-            // chỉ hiển thị widget được kích hoạt và có quyền xem
-            return widget.active_widget && IS_ACCESSIBLE && IS_RIGHT
-          })
-          ?.map(widget => {
-            // mặc định ẩn tất cả các widget
-            widget.is_show = false
-            // // nếu dạng nhỏ nhất thì auto ẩn luôn
-            // if (widget.app_installed_size === 'MINIMUM') widget.is_show = false
-            // // hiển thị toàn bộ widget
-            // else widget.is_show = true
+  // thêm dữ liệu cần thiết cho widget sau khi lọc
+  temp_list_widget = temp_list_widget?.map(widget => {
+    // mặc định ẩn tất cả các widget
+    widget.is_show = false
 
-            // thêm token cho url
-            widget.url = getIframeUrl(widget)
+    // thêm token cho url
+    widget.url = getIframeUrl(widget)
 
-            return widget
-          })
-          ?.sort((a, b) => {
-            // sort theo index từ 0 -> n
-            if (a.index_position > b.index_position) return 1
-            else return -1
-          }) || []
-      )
-
-      // chỉ hiển thị widget đầu tiên
-      if (widget_list.value?.[0]) widget_list.value[0].is_show = true
-
-      snap_widget_list.value = widget_list.value
-
-      filterWidget()
-    })
-  // nếu đổi hội thoại nhưng cùng trang
-  else {
-    // loop danh sách widget hiện tại để xử lý
-    widget_list.value.map(widget => {
-      // nếu widget là dạng post mess thì không reload iframe nữa
-      if (widget.snap_app?.is_post_message) {
-        /**iframe widget mục tiêu */
-        const IFRAME = document.getElementById(
-          `widget-${widget._id}`
-        ) as HTMLIFrameElement
-
-        // gửi sự kiện đến iframe để load lại dữ liệu cần thiết
-        IFRAME?.contentWindow?.postMessage(
-          {
-            from: 'CHATBOX',
-            type: 'RELOAD',
-            payload: {
-              access_token:
-                conversationStore.list_widget_token?.data?.[widget._id],
-            },
-          },
-          '*'
-        )
-      }
-      // các widget cũ vẫn reload iframe
-      else widget.url = getIframeUrl(widget)
-    })
-  }
-}
-/** Lọc widget theo tên */
-function filterWidget(widget_select?: AppInstalledInfo) {
-  if (!widget_select) {
-    widget_selected.value = 'all'
-    widget_list.value = snap_widget_list.value.map(widget => {
-      widget.is_hidden = false
-      return widget
-    })
-    return
-  }
-  widget_selected.value = widget_select._id
-  widget_list.value = snap_widget_list.value.map(widget => {
-    widget.is_hidden = true
-    if (widget._id === widget_select._id) widget.is_hidden = false
     return widget
   })
+
+  // sắp xếp lại danh sách widget theo index
+  temp_list_widget = sortBy(temp_list_widget, 'index_position')
+
+  // chỉ hiển thị widget đầu tiên
+  if (temp_list_widget?.[0]) temp_list_widget[0].is_show = true
+
+  // render lại danh sách
+  widget_list.value = copy(temp_list_widget)
+}
+/**gửi sự kiện đến iframe được chọn */
+function sendEventToIframe(widget: AppInstalledInfo, payload: any) {
+  /**iframe widget mục tiêu */
+  const IFRAME = document.getElementById(
+    `widget-${widget._id}`
+  ) as HTMLIFrameElement
+
+  // gửi sự kiện đến iframe để load lại dữ liệu cần thiết
+  IFRAME?.contentWindow?.postMessage(payload, '*')
 }
 </script>
