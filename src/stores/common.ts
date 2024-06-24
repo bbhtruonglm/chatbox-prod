@@ -38,6 +38,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const force_send_message_over_inbox = ref(false)
     /**có đang kết nối vào mạng hay không */
     const is_connected_internet = ref(true)
+    /**gắn cờ input chat đang có dữ liệu */
+    const is_typing = ref(false)
 
     return {
         is_loading_full_screen,
@@ -47,6 +49,7 @@ export const useCommonStore = defineStore('common_store', () => {
         extension_status,
         force_send_message_over_inbox,
         is_connected_internet,
+        is_typing,
 
         triggerRequirePricing,
     }

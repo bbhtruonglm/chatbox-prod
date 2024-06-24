@@ -394,6 +394,18 @@ const source: Language = {
             },
             input: {
               add_tag: 'Gắn thẻ',
+              ai: {
+                title: 'Tính năng AI',
+                auto_label: 'Tự động gắn nhãn',
+                auto_translate: 'Tự động dịch (Tiếng Anh)',
+                manager_plugin: 'Quản lý Plugin AI',
+              },
+              file: {
+                title: 'Quản lý tập tin',
+                image: 'Tải lên ảnh',
+                file: 'Tải lên file',
+                album: 'Album ảnh'
+              }
             },
             message: {
               error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
