@@ -1,5 +1,5 @@
 <template>
-    <img v-if="url" :src="url" class="w-full h-full bg-white object-contain" />
+    <img v-if="url" :src="url" class="object-contain rounded-lg" />
 </template>
 <script setup lang="ts">
 const $props = withDefaults(defineProps<{
