@@ -157,15 +157,18 @@ export interface ChatbotButton {
     payload?: string
 }
 
+/**dữ liệu của trả lời nhanh */
 export interface QuickAnswerInfo {
     /** ID bản ghi */
-    id: string
+    id?: string
     /** Tiêu đề */
-    title: string
+    title?: string
     /** Nội dung */
-    content: string
+    content?: string
     /** ID page fb */
-    fb_page_id: string
+    fb_page_id?: string
     /** Danh sách ảnh đính kèm */
-    list_images: string[]
+    list_images?: string[]
+    /**dánh dấu là tính năng của AI đính kèm */
+    is_ai?: boolean
 }

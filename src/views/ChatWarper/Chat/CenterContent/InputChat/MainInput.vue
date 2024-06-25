@@ -1,5 +1,6 @@
 <template>
   <div
+    id="main_input_chat"
     :class="{
       'pr-3': isVisibleSendBtn(),
     }"
@@ -8,7 +9,10 @@
     <div class="flex gap-2 items-end flex-grow">
       <AiManager />
       <AttachmentMenu />
-      <Input ref="input_chat_ref" />
+      <Input
+        ref="input_chat_ref"
+        @keyup="quick_answer_ref?.handleChatValue"
+      />
     </div>
     <SendIcon
       v-if="isVisibleSendBtn()"
@@ -16,7 +20,7 @@
       @click="input_chat_ref?.sendMessage"
       class="w-8 h-8 cursor-pointer flex-shrink-0"
     />
-    <QuickAnswer />
+    <QuickAnswer ref="quick_answer_ref" />
   </div>
 </template>
 <script setup lang="ts">
@@ -38,6 +42,8 @@ const { t: $t } = useI18n()
 
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<InstanceType<typeof Input>>()
+/**ref của modal chọn câu trả lời nhanh */
+const quick_answer_ref = ref<InstanceType<typeof QuickAnswer>>()
 
 /**có hiển thị nút gửi tin không */
 function isVisibleSendBtn() {
