@@ -15,7 +15,10 @@
         :label_info
         @click="toggleLabel(label_info._id)"
       />
-      <div class="w-full" />
+      <div
+        v-if="getActiveLabel()?.length"
+        class="w-full"
+      />
       <LabelItem
         v-for="label_info of getUnactiveLabel()"
         :label_info

@@ -1,5 +1,5 @@
 <template>
-    <audio class="w-full h-full" controls preload="metadata">
+    <audio class="w-56 h-16 " controls preload="metadata">
         <source :src="url" type="audio/mpeg">
     </audio>
 </template>

@@ -3,54 +3,49 @@
     :class="{
       'justify-end': type === 'PAGE',
     }"
-    class="flex flex-wrap mt-[1px] relative z-1"
+    class="flex flex-wrap relative z-1 gap-2"
   >
     <template v-for="attachment of horizontal_attachment_list">
       <div
         v-if="attachment.type !== 'fallback'"
         @click="viewAttachment(getFile(attachment.index))"
-        :class="
-        // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
-        // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
-        // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
-        // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
-        // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
-          horizontal_attachment_list?.length === 1 ? 'h-[168px]' : 'h-[84px]'
-        "
-        class="rounded-lg bg-slate-200 shadow mr-[1px] mb-[1px] overflow-hidden cursor-pointer hover:opacity-50"
+        class="cursor-pointer hover:brightness-90"
       >
         <ImageAttachment
           v-if="getTypeFromIndex(attachment.index) === 'image'"
           :url="getFileUrl(attachment.index)"
+          :class="
+            // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
+            // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
+            // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
+            // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
+            // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
+            horizontal_attachment_list?.length === 1 ? 'h-40' : 'h-20'
+          "
         />
         <AnotherAttachment
           v-else
           :url="getFileUrl(attachment.index)"
+          :name="getFileName(attachment.index)"
         />
       </div>
     </template>
     <template v-for="attachment of vertical_attachment_list">
-      <div class="mt-[1px] w-full h-full flex justify-end">
-        <div
-          class="rounded-lg overflow-hidden w-[200px] h-[120px]"
-          v-if="getTypeFromIndex(attachment.index) === 'video'"
-        >
-          <VideoAttachment :url="getFileUrl(attachment.index)" />
-        </div>
-        <div
-          class="w-[300px] h-[50px]"
-          v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
-        >
-          <AudioAttachment :url="getFileUrl(attachment.index)" />
-        </div>
-      </div>
+      <VideoAttachment
+        v-if="getTypeFromIndex(attachment.index) === 'video'"
+        :url="getFileUrl(attachment.index)"
+      />
+      <AudioAttachment
+        v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
+        :url="getFileUrl(attachment.index)"
+      />
     </template>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useMessageStore } from '@/stores'
-import { size } from 'lodash'
+import { last, size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
 import { ref } from 'vue'
 
@@ -66,16 +61,10 @@ import type {
 
 const $props = withDefaults(
   defineProps<{
-    /**mảng các tập tin của tin nhắn này */
-    message_attachments: AttachmentInfo[]
-    /**id tin nhắn của nền tảng gốc */
-    message_mid?: string
-    /**id trang */
-    page_id: string
+    /**dữ liệu của tin nhắn */
+    message: MessageInfo
     /**được gửi từ đâu */
     type: 'CLIENT' | 'PAGE'
-    /**loại nền tảng của tin nhắn */
-    platform_type: MessageInfo['platform_type']
     /**có phải là tin nhắn trả lời không */
     is_reply?: boolean
   }>(),
@@ -92,7 +81,7 @@ const vertical_attachment_list = ref<AttachmentInfo[]>([])
 const horizontal_attachment_list = ref<AttachmentInfo[]>([])
 
 watch(
-  () => $props.message_attachments,
+  () => $props.message?.message_attachments,
   () => getAttachmentInfo()
 )
 
@@ -100,9 +89,28 @@ onMounted(() => getAttachmentInfo())
 
 /**lấy link fb của file */
 function getFileUrl(index?: number) {
+  // nếu không có index thì không cần xử lý
   if (index === undefined) return ''
 
   return getAttachmentFromStore()?.[index]?.payload?.url
+}
+/**lấy tên của file */
+function getFileName(index?: number) {
+  try {
+    /**đường dẫn của file */
+    const FILE_PATH = getFileUrl(index)
+
+    // nếu không có đường dẫn thì thôi
+    if (!FILE_PATH) return ''
+
+    /**Sử dụng URL API để tách phần pathname */
+    const PATH = new URL(FILE_PATH)?.pathname
+
+    // lấy tên file từ pathname
+    return last(PATH?.split('/'))
+  } catch (e) {
+    return ''
+  }
 }
 /**lấy dữ liệu của file */
 function getFile(index?: number) {
@@ -118,7 +126,7 @@ function getTypeFromIndex(index?: number) {
 }
 /**đọc dữ liệu của tập tin */
 function getAttachmentFromStore() {
-  const TARGET_ID = $props.message_mid as string
+  const TARGET_ID = $props.message?.message_mid
 
   if (!TARGET_ID) return []
 
@@ -127,18 +135,18 @@ function getAttachmentFromStore() {
 /**đọc dữ liệu của file để hiển thị */
 function getAttachmentInfo() {
   // hình ảnh của nền tảng khác FB không cần xử lý lấy link mới nhất
-  if ($props.platform_type !== 'FB_MESS') {
+  if ($props.message?.platform_type !== 'FB_MESS') {
     // thêm index vào để mapping với dữ liệu
-    let list_att = $props.message_attachments?.map((attr, index) => ({
+    let list_att = $props.message?.message_attachments?.map((attr, index) => ({
       ...attr,
       index,
-    }))
+    })) || []
 
     // luôn luôn hiển thị dọc
     horizontal_attachment_list.value = list_att
 
     // nạp thông tin att vào store
-    messageStore.attachment_list[$props.message_mid as string] = list_att
+    messageStore.attachment_list[$props.message?.message_mid || ''] = list_att
 
     return
   }
@@ -146,7 +154,7 @@ function getAttachmentInfo() {
   // xử lý hình ảnh cho riêng FB
 
   // không có file thì không cần xử lý
-  if (!size($props.message_attachments)) return
+  if (!size($props.message?.message_attachments)) return
 
   // chia file thành 2 dạng hiển thị ngang và dọc
 
@@ -155,7 +163,7 @@ function getAttachmentInfo() {
   horizontal_attachment_list.value = []
 
   // duyệt qua từng file
-  $props.message_attachments.forEach((attachment, index) => {
+  $props.message?.message_attachments?.forEach((attachment, index) => {
     // thêm index vào để mapping với dữ liệu lấy từ sv về
     attachment.index = index
 
@@ -174,7 +182,7 @@ function getAttachmentInfo() {
 
   if (size(getAttachmentFromStore())) return
 
-  const TARGET_ID = $props.message_mid as string
+  const TARGET_ID = $props.message?.message_mid
 
   if (!TARGET_ID) return
 
@@ -182,7 +190,7 @@ function getAttachmentInfo() {
     {
       target_id: TARGET_ID,
       type: 'MESSAGE',
-      page_id: $props.page_id,
+      page_id: $props.message?.fb_page_id,
     },
     (e, r) => {
       if (e || !r) return

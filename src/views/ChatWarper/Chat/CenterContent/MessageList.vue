@@ -2,20 +2,22 @@
   <div
     @scroll="onScrollMessage"
     id="list-message"
-    class="pt-0 pl-6 pb-10 h-full overflow-y-auto bg-[#0015810f] rounded-xl"
+    class="py-3 pb-5 px-4 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-xl"
   >
     <div
       v-if="is_loading"
       class="relative z-10"
     >
-      <div class="fixed left-[50%] translate-x-[-50%]">
+      <div class="fixed left-1/2 -translate-x-1/2">
         <Loading class="mx-auto" />
       </div>
     </div>
     <div
       v-for="(message, index) of list_message"
-      :id="message._id"
-      class="pt-[1px] pr-5 relative"
+      :class="{
+        'items-end': message.message_type === 'page',
+      }"
+      class="relative flex flex-col gap-1"
     >
       <TimeSplit
         :before_message="list_message?.[index - 1]"
@@ -26,45 +28,23 @@
           ['client', 'activity'].includes(message.message_type) &&
           !message.ad_id
         "
-        :class="{
-          'mb-5': list_message?.[index + 1]?.message_type === 'page',
-        }"
-        class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+        class="message-size group"
       >
         <ReplyMessage
           v-if="message?.snap_replay_message"
           :message="message?.snap_replay_message"
         />
-        <template
-          v-if="
-            message.message_text ||
-            message.postback_title ||
-            message.message_attachments?.length
-          "
-        >
-          <ClientTextMessage
-            v-if="message.message_text"
-            :text="message.message_text"
-            :current_message="message"
-            :current_index="index"
-            :list_message="list_message"
-          />
-          <ClientTextMessage
-            v-if="message.postback_title"
-            :text="message.postback_title"
-            :current_message="message"
-            :current_index="index"
-            :list_message="list_message"
-          />
-          <AttachmentMessage
-            v-if="message.message_attachments?.length"
-            :message_attachments="message.message_attachments"
-            :message_mid="message.message_mid"
-            :platform_type="message.platform_type"
-            :page_id="message.fb_page_id"
-            type="CLIENT"
-          />
-        </template>
+        <ClientTextMessage
+          v-if="message.message_text || message.postback_title"
+          :current_message="message"
+          :current_index="index"
+          :list_message="list_message"
+        />
+        <AttachmentMessage
+          v-else-if="message.message_attachments?.length"
+          :message="message"
+          type="CLIENT"
+        />
         <UnsupportMessage v-else />
         <ClientMessageDate
           class="text-right"
@@ -74,52 +54,42 @@
       </div>
       <div
         v-else-if="message.message_type === 'page'"
-        :class="{
-          'mb-5': list_message?.[index + 1]?.message_type === 'client',
-        }"
-        class="flex flex-col items-end"
+        class="message-size group"
       >
-        <div
-          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+        <ReplyMessage
+          v-if="message?.snap_replay_message"
+          :message="message?.snap_replay_message"
+        />
+        <template
+          v-if="message.message_text || message.message_attachments?.length"
         >
-          <ReplyMessage
-            v-if="message?.snap_replay_message"
-            :message="message?.snap_replay_message"
+          <PageTextMessage
+            v-if="message.message_text"
+            :text="message.message_text"
           />
-          <template
-            v-if="message.message_text || message.message_attachments?.length"
-          >
-            <PageTextMessage
-              v-if="message.message_text"
-              :text="message.message_text"
+          <template v-if="message.message_attachments?.length">
+            <AttachmentMessage
+              v-if="
+                !['template', 'fallback', 'receipt'].includes(
+                  message.message_attachments?.[0]?.type || ''
+                )
+              "
+              :message="message"
+              type="PAGE"
             />
-            <template v-if="message.message_attachments?.length">
-              <AttachmentMessage
-                v-if="
-                  !['template', 'fallback', 'receipt'].includes(
-                    message.message_attachments?.[0]?.type || ''
-                  )
-                "
-                :message_attachments="message.message_attachments"
-                :message_mid="message.message_mid"
-                :platform_type="message.platform_type"
-                :page_id="message.fb_page_id"
-                type="PAGE"
-              />
-              <ChatbotMessage
-                v-else
-                :message_chatbot="message.message_attachments?.[0]"
-              />
-            </template>
+            <ChatbotMessage
+              v-else
+              :message_chatbot="message.message_attachments?.[0]"
+            />
           </template>
-          <UnsupportMessage v-else />
-          <MessageDate
-            v-if="message.time"
-            class="right-5"
-            :time="message.time"
-            :info="parserStaffName(message.message_metadata)"
-          />
-        </div>
+        </template>
+        <UnsupportMessage v-else />
+        <MessageDate
+          v-if="message.time"
+          class="right-0"
+          :time="message.time"
+          :info="parserStaffName(message.message_metadata)"
+        />
       </div>
       <div
         v-else-if="message.message_type === 'note'"
@@ -164,12 +134,7 @@
           :hide-post="() => {}"
         />
       </div>
-      <div
-        v-else
-        class="text-center flex justify-center"
-      >
-        <UnsupportMessage class="w-[70%]" />
-      </div>
+      <UnsupportMessage v-else />
       <ClientRead
         @change_last_read_message="visibleFirstClientReadAvatar"
         :time="message.time"
@@ -181,7 +146,7 @@
     </div>
     <div
       v-for="message of messageStore.send_message_list"
-      class="pt-[1px] pr-5 relative group"
+      class="relative group"
     >
       <div class="flex flex-col items-end">
         <div
@@ -494,3 +459,8 @@ function visibleLastStaffReadAvatar(staff_id: string) {
   }
 }
 </script>
+<style scoped lang="scss">
+.message-size {
+  @apply w-fit max-w-96;
+}
+</style>

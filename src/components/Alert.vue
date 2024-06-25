@@ -11,7 +11,7 @@
     >
       <div
         @click="toggleModal"
-        class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20 shadow-lg"
+        class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20"
       >
         <div
           @click.stop

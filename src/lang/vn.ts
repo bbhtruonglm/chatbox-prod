@@ -354,7 +354,7 @@ const source: Language = {
             },
             operate_by: 'Vận hành bởi',
             search: 'Tìm kiếm hội thoại',
-            send_to: 'Gửi tin nhắn đến',
+            send_to: 'Gửi tin nhắn đến {name}',
             extension: {
               findding: 'Đang kết nối với Extension',
               connected: 'Đã kết nối thành công đến Extension',
@@ -466,8 +466,13 @@ const source: Language = {
               },
             },
             quick_answer: {
+              enter: 'Enter để chọn',
+              guild: 'Dùng ↑ hoặc ↓ để di chuyển',
               title: 'Trả lời nhanh',
               search: 'Tìm kiếm câu trả lời nhanh',
+              ai: 'Tính năng AI:',
+              translate: 'Tự động dịch văn bản chat sang Tiếng Anh',
+              auto_complete: 'Tự động hoàn thành câu'
             },
             post: {
               post_by: 'Đăng bởi',

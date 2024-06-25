@@ -5,11 +5,14 @@
     @input="calcIsTyping"
     @keydown.enter="submitInput"
     @paste="onPasteImage"
+    @keyup="$emit('keyup', $event)"
     class="max-h-32 overflow-y-auto relative w-full h-full focus:outline-none flex flex-col justify-center word-break-all mb-1.5"
     contenteditable="true"
-    :placeholder="`${$t('v1.view.main.dashboard.chat.send_to')} ${
-      conversationStore.select_conversation?.client_name
-    }`"
+    :placeholder="
+      $t('v1.view.main.dashboard.chat.send_to', {
+        name: conversationStore.select_conversation?.client_name,
+      })
+    "
   />
 </template>
 <script setup lang="ts">
@@ -36,7 +39,10 @@ import type { TempSendMessage } from '@/service/interface/app/message'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
 
-const $emit = defineEmits(['input'])
+const $emit = defineEmits<{
+  /**xuất sự kiện keyup ra bên ngoài */
+  keyup: [$event: KeyboardEvent]
+}>()
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -57,7 +63,7 @@ const facebook_error = ref<{
 /**tính toán xem ô input có dữ liệu không */
 function calcIsTyping($event: Event) {
   // gắn cờ input có dữ liệu
-  commonStore.is_typing = !! ($event.target as HTMLDivElement)?.innerText?.length
+  commonStore.is_typing = !!($event.target as HTMLDivElement)?.innerText?.length
 }
 /**lấy ảnh khi được ctrl + v vào input */
 function onPasteImage() {
@@ -88,21 +94,18 @@ function onPasteImage() {
     })
   }, 100)
 }
-// TODO khi ấn enter ở trả lời nhanh thì sao?
 /**xử lý sự kiện nhấn enter ở ô chat */
 function submitInput($event: KeyboardEvent) {
-  // nếu bấm shift + enter thì chỉ xuống dòng
+  // nếu bấm shift + enter thì chỉ xuống dòng, không submit
   if ($event.shiftKey) return
 
-  // nếu bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
+  // nếu chỉ bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
   $event.preventDefault()
 
-  // // nếu đang mở trả lời nhanh thì enter sẽ chọn câu trả lời
-  // if (quick_answer_ref.value?.is_show) return
-  // // nếu không thì gửi tin nhắn bình thường
-  // else sendMessage()
-
-  sendMessage()
+  // nếu đang mở trả lời nhanh thì không submit, mà chạy vào logic chọn câu trả lời
+  if (commonStore.is_show_quick_answer) return
+  // nếu không thì gửi tin nhắn bình thường
+  else sendMessage()
 }
 /**gửi tin nhắn */
 function sendMessage() {
