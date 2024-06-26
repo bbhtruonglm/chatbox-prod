@@ -1,45 +1,41 @@
 <template>
-  <div class="relative z-1">
-    <button
-      @click="moveSlider('LEFT')"
-      class="custom-btn -left-4"
-    >
-      <ArrowDownIcon class="w-3 h-3 rotate-90" />
-    </button>
-    <button
-      @click="moveSlider('RIGHT')"
-      class="custom-btn -right-4"
-    >
-      <ArrowDownIcon class="w-3 h-3 -rotate-90" />
-    </button>
+  <div class="relative">
+    <template v-if="isShowArrow()">
+      <ArrowDownIcon
+        @click="moveSlider('LEFT')"
+        class="custom-btn rotate-90 -left-1"
+      />
+      <ArrowDownIcon
+        @click="moveSlider('RIGHT')"
+        class="custom-btn -rotate-90 -right-1"
+      />
+    </template>
     <div
       ref="slider_warper_ref"
-      class="relative w-52 h-[306px] overflow-x-auto scroll-smooth"
+      class="overflow-x-auto scroll-smooth flex gap-1"
     >
-      <div class="absolute flex h-full gap-1">
+      <div
+        v-for="item of data"
+        class="bg-white p-2 rounded-lg flex flex-col gap-1 w-47 flex-shrink-0"
+      >
         <div
-          v-for="item of data"
-          class="bg-white overflow-hidden p-2 rounded-lg flex flex-col gap-1 w-52"
-        >
-          <div
-            :style="{
-              'background-image': `url(${item?.image_url})`,
-            }"
-            class="h-28 bg-no-repeat bg-center bg-cover flex-shrink-0 rounded-lg"
-          />
-          <div class="text-sm">
-            <div class="font-medium truncate">
-              {{ item?.title }}
-            </div>
-            <div class="text-slate-500 truncate">
-              {{ item?.subtitle }}
-            </div>
+          :style="{
+            'background-image': `url(${item?.image_url})`,
+          }"
+          class="h-24 bg-no-repeat bg-center bg-cover flex-shrink-0 rounded-lg"
+        />
+        <div class="text-sm">
+          <div class="font-medium truncate">
+            {{ item?.title }}
           </div>
-          <ButtonList
-            :data="item?.buttons"
-            class="text-sm"
-          />
+          <div class="text-slate-500 truncate">
+            {{ item?.subtitle }}
+          </div>
         </div>
+        <ButtonList
+          :data="item?.buttons"
+          class="text-sm"
+        />
       </div>
     </div>
   </div>
@@ -67,7 +63,7 @@ const slider_warper_ref = ref<ComponentRef>()
 /**di chuyển các item bên trong slider */
 function moveSlider(direction: 'LEFT' | 'RIGHT') {
   /**độ rộng của 1 slider */
-  const WIDTH = 212
+  const WIDTH = 192
 
   // qua trái
   if (direction === 'LEFT') slider_warper_ref.value.scrollLeft -= WIDTH
@@ -75,9 +71,16 @@ function moveSlider(direction: 'LEFT' | 'RIGHT') {
   // qua phải
   if (direction === 'RIGHT') slider_warper_ref.value.scrollLeft += WIDTH
 }
+/**quản lý việc hiển thị mũi tên điều hướng */
+function isShowArrow() {
+  return ($props.data?.length || 0) > 2
+}
 </script>
 <style scoped lang="scss">
 .custom-btn {
-  @apply rounded-full bg-slate-200 p-2 absolute z-10 top-1/2 -translate-y-1/2;
+  @apply cursor-pointer w-3 h-3 absolute flex-shrink-0 z-10 top-1/2 -translate-y-1/2;
+}
+.w-47 {
+  width: 11.8rem;
 }
 </style>

@@ -12,7 +12,7 @@
                         <div class="">{{ $t('v1.view.main.dashboard.setting.personal_setting.allow_overide') }}</div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" v-model="enable_personal_setting" class="sr-only peer"
+                        <input type="checkbox" v-model="is_enable_personal_setting" class="sr-only peer"
                             @change="toogleEnablePersonalSetting()">
                         <div
                             class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500">
@@ -20,7 +20,7 @@
                     </label>
                 </div>
             </div>
-            <div class="md:w-[500px] w-full py-3" v-if="enable_personal_setting">
+            <div class="md:w-[500px] w-full py-3" v-if="is_enable_personal_setting">
                 <div class="flex justify-between items-center">
                     <div class="flex">
                         <div class="">{{ $t('v1.view.main.dashboard.setting.personal_setting.hide_page_avatar') }}</div>
@@ -44,7 +44,7 @@
             </div>
         </template>
         <template v-slot:footer>
-            <div class="flex justify-center w-full mb-2" @click="savePersonalSetting()" v-if="enable_personal_setting">
+            <div class="flex justify-center w-full mb-2" @click="savePersonalSetting()" v-if="is_enable_personal_setting">
                 <button class="bg-orange-500 text-white px-3 py-1.5 rounded-lg">
                     {{ $t('v1.common.update') }}
                 </button>
@@ -76,8 +76,8 @@ const personal_setting = ref<{
     [index: string]: boolean | string
 }>(chatbotUserStore.personal_settings)
 /** Có mở chế độ ghi đè setting của page hay không */
-const enable_personal_setting = ref<boolean>(
-    chatbotUserStore.enable_personal_setting
+const is_enable_personal_setting = ref<boolean>(
+    chatbotUserStore.is_enable_personal_setting
 )
 
 /** Mở modal của pricing detail */
@@ -97,12 +97,12 @@ function savePersonalSetting() {
 }
 /** Bật tắt chế độ ghi đè thiết lập page */
 function toogleEnablePersonalSetting() {
-    if (enable_personal_setting.value) {
-        setItem('enable_personal_setting', 'yes')
-        chatbotUserStore.enable_personal_setting = true
+    if (is_enable_personal_setting.value) {
+        setItem('is_enable_personal_setting', 'yes')
+        chatbotUserStore.is_enable_personal_setting = true
     } else {
-        setItem('enable_personal_setting', 'no')
-        chatbotUserStore.enable_personal_setting = false
+        setItem('is_enable_personal_setting', 'no')
+        chatbotUserStore.is_enable_personal_setting = false
     }
 }
 
