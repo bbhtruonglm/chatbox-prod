@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isShowTimeSplit()"
-    class="text-center text-xs font-medium text-slate-500"
+    class="text-center text-xs font-medium text-slate-500 w-full pb-3"
   >
     {{ formatNowDate() }}
   </div>
