@@ -58,8 +58,3 @@ function isVisibleSendBtn() {
 // xuất hàm cho component con xử dụng
 provide(IS_VISIBLE_SEND_BTN_FUNCT, isVisibleSendBtn)
 </script>
-<style scoped lang="scss">
-.word-break-all {
-  word-break: break-all;
-}
-</style>

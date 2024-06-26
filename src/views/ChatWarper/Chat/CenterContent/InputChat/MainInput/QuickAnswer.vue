@@ -75,7 +75,7 @@ import { computed, inject, nextTick, ref } from 'vue'
 import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { nonAccentVn } from '@/service/helper/format'
 import { get_quick_answer } from '@/service/api/chatbox/widget'
-import { size } from 'lodash'
+import { last, size } from 'lodash'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 import { useI18n } from 'vue-i18n'
 
@@ -308,14 +308,24 @@ function scrollIntoView(id: string) {
 function handleChatValue($event: KeyboardEvent) {
   /**phím người dùng nhấn */
   const KEY = $event.key
+  /**nội dung chat */
+  const INPUT_VALUE = ($event.target as HTMLDivElement)?.innerText
+
+  // nếu modal đã mở
+  if (commonStore.is_show_quick_answer) onModalShowed(KEY, INPUT_VALUE)
+  // nếu modal chưa mở
+  else onModalHid(INPUT_VALUE)
+}
+/**xử lý sự kiện khi modal đã hiển thị */
+function onModalShowed(key: string, value: string) {
   /**số lượng câu trả lời */
   const SIZE_LIST_ANSWER = list_answer.value?.length
 
   // * bấm Esc thì tắt modal
-  if (KEY === 'Escape' && commonStore.is_show_quick_answer) return toggleModal()
+  if (key === 'Escape') return toggleModal()
 
   // * bấm mũi tên xuống
-  if (KEY === 'ArrowDown' && commonStore.is_show_quick_answer) {
+  if (key === 'ArrowDown') {
     // nếu đã hết câu trả lời thì đặt index về -1 để quay lại ban đầu
     if (selected_answer_index.value >= SIZE_LIST_ANSWER - 1)
       selected_answer_index.value = -1
@@ -329,7 +339,7 @@ function handleChatValue($event: KeyboardEvent) {
   }
 
   // * bấm Mũi tên lên
-  if (KEY === 'ArrowUp' && commonStore.is_show_quick_answer) {
+  if (key === 'ArrowUp') {
     // nếu là câu trả lời đầu tiên thì chạy xuống cuối
     if (!selected_answer_index.value)
       selected_answer_index.value = SIZE_LIST_ANSWER
@@ -343,22 +353,19 @@ function handleChatValue($event: KeyboardEvent) {
   }
 
   // bấm Enter thì chọn câu trả lời nhanh đang được select
-  if (KEY === 'Enter' && commonStore.is_show_quick_answer)
+  if (key === 'Enter')
     return selectQuickAnswer(list_answer.value[selected_answer_index.value])
 
-  /**nội dung chat */
-  const INPUT_VALUE = ($event.target as HTMLDivElement)?.innerText
-
-  // nếu gõ gạch thì mở modal
-  if (INPUT_VALUE === '/' && !commonStore.is_show_quick_answer)
-    return toggleModal()
-
-  // nếu xoá hết nội dung thì tắt modal
-  if (!INPUT_VALUE && commonStore.is_show_quick_answer) return toggleModal()
+  // nếu không có gạch mà đang mở thì tắt modal
+  if (!value.includes('/')) return toggleModal()
 
   // tìm kiếm câu trả lời nhanh nếu đang mở modal
-  if (INPUT_VALUE?.startsWith('/') && commonStore.is_show_quick_answer)
-    seachQuickAnswer(INPUT_VALUE?.slice(1))
+  if (value?.includes('/')) seachQuickAnswer(last(value.split('/')))
+}
+/**xử lý sự kiện khi modal đã tắt / không hiển thị */
+function onModalHid(value: string) {
+  // nếu gõ gạch ở cuối câu mà chưa mở thì mở modal
+  if (value.endsWith('/')) return toggleModal()
 }
 /**chọn câu trả lời nhanh mặc định */
 function setDefaultQuickAnswer() {

@@ -33,7 +33,7 @@ const chatbotUserStore = useChatbotUserStore()
 /**lấy cài đặt nhãn */
 function getLabelConfig() {
   // * Trường hợp bật chế độ ghi đè thiết lập page
-  if (chatbotUserStore.enable_personal_setting) {
+  if (chatbotUserStore.is_enable_personal_setting) {
     return (
       (chatbotUserStore.personal_settings.display_label_type as string) ||
       getPageInfo($props.page_id)?.display_label_type ||

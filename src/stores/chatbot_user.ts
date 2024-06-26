@@ -26,8 +26,8 @@ export const useChatbotUserStore = defineStore('chatbot_user_store', () => {
   )
 
   /** Có mở chế độ ghi đè setting của page hay không */
-  const enable_personal_setting = ref<boolean>(
-    getItem('enable_personal_setting') === 'yes' ? true : false
+  const is_enable_personal_setting = ref<boolean>(
+    getItem('is_enable_personal_setting') === 'yes' ? true : false
   )
 
   // lưu dữ liệu xuống indexed khi có thay đổi
@@ -44,7 +44,7 @@ export const useChatbotUserStore = defineStore('chatbot_user_store', () => {
   return {
     chatbot_user,
     personal_settings,
-    enable_personal_setting,
+    is_enable_personal_setting,
 
     getStaffId,
   }

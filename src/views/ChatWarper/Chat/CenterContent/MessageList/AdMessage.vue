@@ -1,42 +1,31 @@
 <template>
-    <div class="pt-4 w-full flex justify-center text-xs items-center">
-        <p class="text-slate-400 whitespace-nowrap mr-1">
-            Khách hàng đã trả lời từ quảng cáo
-        </p>
-        <p class=" text-blue-500 mr-2" >{{ $props.ad_id }}</p>
-        <!-- <Loading v-if="loading" :size="16" />
-        <img v-tooltip="$t('v1.view.main.dashboard.chat.action.reload_ad')" @click="reloadAd()" class="cursor-pointer" v-if="!loading" :src="RefreshIcon"> -->
-    </div>
-    <FacebookPost v-if="!hide_fb_post" :ad_id="$props.ad_id" :hide-post="hideFbPost"/>
+  <div
+    v-if="!fb_post_ref?.is_get_post_success"
+    class="text-xs text-center"
+  >
+    <span class="text-slate-500 whitespace-nowrap mr-1">
+      {{ $t('v1.view.main.dashboard.chat.post.ad_from') }}
+    </span>
+    <span class="text-blue-500">{{ $props.ad_id }}</span>
+  </div>
+  <FacebookPost
+    ref="fb_post_ref"
+    :ad_id="$props.ad_id"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-// import Loading from '@/components/Loading.vue';
-import FacebookPost from './FacebookPost.vue';
-// import RefreshIcon from '@/assets/icons/refresh-icon.svg'
+import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FacebookPost.vue'
 
-const $props = withDefaults(defineProps<{
+const $props = withDefaults(
+  defineProps<{
     ad_id: string
-}>(), {})
+  }>(),
+  {}
+)
 
-/** Trạng thái loading */
-const loading = ref<boolean>(false)
-/** Trạng thái hiện bài post */
-const hide_fb_post = ref<boolean>(false)
-
-/** Tải lại dữ liệu ad */
-// function reloadAd() {
-//     loading.value = true
-//     setTimeout(function() { loading.value = false }, 3000)
-
-//     // TODO Cần gọi api để tải lại dữ liệu ad
-// }
-
-/** Ẩn hiện bài post */
-function hideFbPost(status: boolean) {
-    hide_fb_post.value = status
-}
-
+/**ref của tin nhắn dạng post */
+const fb_post_ref = ref<InstanceType<typeof FacebookPost>>()
 </script>

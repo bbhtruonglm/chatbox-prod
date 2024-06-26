@@ -9,7 +9,8 @@
   >
     <component
       :is="icon"
-      class="w-6 h-6 m-auto text-slate-900"
+      :class="class_icon"
+      class="w-6 h-6 m-auto"
     />
   </button>
 </template>
@@ -27,7 +28,11 @@ withDefaults(
     is_active?: boolean
     /**có huỷ bỏ tooltip không */
     is_disable_tooltip?: boolean
+    /**class thêm cho icon */
+    class_icon?: string
   }>(),
-  {}
+  {
+    class_icon: 'text-slate-900'
+  }
 )
 </script>

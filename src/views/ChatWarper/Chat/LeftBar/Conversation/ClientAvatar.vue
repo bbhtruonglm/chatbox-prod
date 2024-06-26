@@ -36,8 +36,12 @@ function controlPageAvatarVisible() {
     // nếu page đang thiết lập ẩn, thì luôn ẩn mà không cần quan tâm đến thiết lập của user
     getPageInfo($props.source?.fb_page_id)?.is_hide_page_avatar ||
     // nếu user đã thiết lập ẩn thì cũng ẩn luôn
-    (chatbotUserStore.enable_personal_setting &&
-      chatbotUserStore.personal_settings?.is_hide_page_avatar)
+    (
+      // đang kích hoạt thiết lập cá nhân
+      chatbotUserStore.is_enable_personal_setting &&
+      // thiết lập cá nhân: thiết lập ẩn avatar page
+      chatbotUserStore.personal_settings?.is_hide_page_avatar
+    )
   )
     return 'hidden group-hover:block'
 

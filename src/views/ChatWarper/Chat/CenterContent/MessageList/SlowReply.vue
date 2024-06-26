@@ -1,15 +1,13 @@
 <template>
-  <MessageDate
-    :time="now_message.time || now_message.createdAt"
-    :after="calcDuration()"
-  />
+  <div class="text-xs pl-5">
+    {{ $t('v1.view.main.dashboard.chat.message.reply_time') }}:
+    <span class="text-red-500">{{ calcDuration() }}</span>
+  </div>
 </template>
 <script setup lang="ts">
 import { formatDistanceStrict } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import viLocale from 'date-fns/locale/vi'
-
-import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageDate.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 
@@ -41,6 +39,6 @@ function calcDuration() {
     locale: viLocale,
   })
 
-  return `${$t('v1.view.main.dashboard.chat.message.reply_time')}: ${duration}`
+  return duration
 }
 </script>

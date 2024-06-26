@@ -12,129 +12,170 @@
         <Loading class="mx-auto" />
       </div>
     </div>
-    <div
-      v-for="(message, index) of list_message"
-      :class="{
-        'items-end': message.message_type === 'page',
-      }"
-      class="relative flex flex-col gap-1"
-    >
-      <TimeSplit
-        :before_message="list_message?.[index - 1]"
-        :now_message="message"
-      />
+    <div v-for="(message, index) of list_message">
       <div
-        v-if="
-          ['client', 'activity'].includes(message.message_type) &&
-          !message.ad_id
-        "
-        class="message-size group"
-      >
-        <ReplyMessage
-          v-if="message?.snap_replay_message"
-          :message="message?.snap_replay_message"
-        />
-        <ClientTextMessage
-          v-if="message.message_text || message.postback_title"
-          :current_message="message"
-          :current_index="index"
-          :list_message="list_message"
-        />
-        <AttachmentMessage
-          v-else-if="message.message_attachments?.length"
-          :message="message"
-          type="CLIENT"
-        />
-        <UnsupportMessage v-else />
-        <ClientMessageDate
-          class="text-right"
-          :now_message="message"
-          :next_message="list_message?.[index + 1]"
-        />
-      </div>
-      <div
-        v-else-if="message.message_type === 'page'"
-        class="message-size group"
-      >
-        <ReplyMessage
-          v-if="message?.snap_replay_message"
-          :message="message?.snap_replay_message"
-        />
-        <template
-          v-if="message.message_text || message.message_attachments?.length"
-        >
-          <PageTextMessage
-            v-if="message.message_text"
-            :text="message.message_text"
-          />
-          <template v-if="message.message_attachments?.length">
-            <AttachmentMessage
-              v-if="
-                !['template', 'fallback', 'receipt'].includes(
-                  message.message_attachments?.[0]?.type || ''
-                )
-              "
-              :message="message"
-              type="PAGE"
-            />
-            <ChatbotMessage
-              v-else
-              :message_chatbot="message.message_attachments?.[0]"
-            />
-          </template>
-        </template>
-        <UnsupportMessage v-else />
-        <MessageDate
-          v-if="message.time"
-          class="right-0"
-          :time="message.time"
-          :info="parserStaffName(message.message_metadata)"
-        />
-      </div>
-      <div
-        v-else-if="message.message_type === 'note'"
-        class="flex flex-col items-end"
+        :class="{
+          'py-2': ['client', 'page', 'note'].includes(message.message_type),
+        }"
+        class="flex gap-1"
       >
         <div
-          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
+          v-if="
+            (message.message_type === 'client' && !message.ad_id) ||
+            message.fb_post_id
+          "
+          class="flex-shrink-0"
         >
-          <NoteMessage
-            v-if="message.message_text"
-            :text="message.message_text"
+          <ClientAvatar
+            :conversation="conversationStore.select_conversation"
+            class="w-8 h-8"
+          />
+        </div>
+        <div
+          :class="{
+            'items-end':
+              ['page', 'note'].includes(message.message_type) || message.ad_id,
+          }"
+          class="relative flex flex-col w-full"
+        >
+          <TimeSplit
+            :before_message="list_message?.[index - 1]"
+            :now_message="message"
+          />
+          <div
+            v-if="
+              ['client', 'activity'].includes(message.message_type) &&
+              !message.ad_id
+            "
+            class="message-size group"
+          >
+            <MessageDate :time="message.time || message.createdAt" />
+            <ReplyMessage
+              v-if="message?.snap_replay_message"
+              :message="message?.snap_replay_message"
+            />
+            <ClientTextMessage
+              v-if="message.message_text || message.postback_title"
+              :current_message="message"
+              :current_index="index"
+              :list_message="list_message"
+            />
+            <AttachmentMessage
+              v-else-if="message.message_attachments?.length"
+              :message="message"
+              type="CLIENT"
+            />
+            <UnsupportMessage v-else />
+            <SlowReply
+              v-if="
+                calcIsClientRepSlow(
+                  message?.fb_page_id,
+                  message?.time || message?.createdAt,
+                  index,
+                  list_message
+                )
+              "
+              :now_message="message"
+              :next_message="list_message?.[index + 1]"
+            />
+          </div>
+          <div
+            v-else-if="message.message_type === 'page'"
+            class="message-size group"
+          >
+            <MessageDate
+              v-if="message.time"
+              class="right-0"
+              :time="message.time"
+              :info="parserStaffName(message.message_metadata)"
+            />
+            <ReplyMessage
+              v-if="message?.snap_replay_message"
+              :message="message?.snap_replay_message"
+            />
+            <template
+              v-if="message.message_text || message.message_attachments?.length"
+            >
+              <PageTextMessage
+                v-if="message.message_text"
+                :current_message="message"
+                :current_index="index"
+                :list_message="list_message"
+              />
+              <template v-if="message.message_attachments?.length">
+                <AttachmentMessage
+                  v-if="
+                    !['template', 'fallback', 'receipt'].includes(
+                      message.message_attachments?.[0]?.type || ''
+                    )
+                  "
+                  :message="message"
+                  type="PAGE"
+                />
+                <ChatbotMessage
+                  v-else
+                  :message_chatbot="message.message_attachments?.[0]"
+                />
+              </template>
+            </template>
+            <UnsupportMessage v-else />
+            <div
+              v-if="calcIsPageRepSlow(message?.fb_page_id, index, list_message)"
+              class="text-white bg-red-500 rounded-full text-[10px] w-2.5 h-2.5 flex items-center justify-center absolute right-[-44px] bottom-0"
+            >
+              !
+            </div>
+          </div>
+          <div
+            v-else-if="message.message_type === 'note'"
+            class="message-size group"
+          >
+            <MessageDate
+              v-if="message.createdAt"
+              class="right-0"
+              :time="message.createdAt"
+              :info="parserStaffName(message.message_metadata)"
+            />
+            <NoteMessage
+              v-if="message.message_text"
+              :text="message.message_text"
+            />
+            <UnsupportMessage v-else />
+          </div>
+          <div
+            v-else-if="message.message_type === 'system'"
+            class="text-center px-20"
+          >
+            <SystemMessage
+              v-if="message.message_text"
+              :text="message.message_text"
+            />
+            <UnsupportMessage v-else />
+          </div>
+          <AdMessage
+            v-else-if="message.message_type === 'client' && message.ad_id"
+            :ad_id="message.ad_id"
+          />
+          <FacebookPost
+            v-else-if="
+              message.platform_type === 'FB_POST' && message.fb_post_id
+            "
+            :fb_post_id="message.fb_post_id"
           />
           <UnsupportMessage v-else />
-          <MessageDate
-            v-if="message.createdAt"
-            class="right-5"
-            :time="message.createdAt"
-            :info="parserStaffName(message.message_metadata)"
+        </div>
+        <div
+          v-if="
+            ['page', 'note'].includes(message.message_type) || message.ad_id
+          "
+          class="flex-shrink-0 flex items-end"
+        >
+          <PageAvatar
+            :page_info="getPageInfo(message?.fb_page_id)"
+            class="w-6 h-6"
           />
         </div>
       </div>
-      <div
-        v-else-if="message.message_type === 'system'"
-        class="flex justify-center"
-      >
-        <div class="w-[70%] text-center">
-          <SystemMessage
-            v-if="message.message_text"
-            :text="message.message_text"
-          />
-          <UnsupportMessage v-else />
-        </div>
-      </div>
-      <div v-else-if="message.message_type === 'client' && message.ad_id">
-        <AdMessage :ad_id="message.ad_id" />
-      </div>
-      <div
-        v-else-if="message.platform_type === 'FB_POST' && message.fb_post_id"
-      >
-        <FacebookPost
-          :fb_post_id="message.fb_post_id"
-          :hide-post="() => {}"
-        />
-      </div>
-      <UnsupportMessage v-else />
       <ClientRead
         @change_last_read_message="visibleFirstClientReadAvatar"
         :time="message.time"
@@ -146,20 +187,16 @@
     </div>
     <div
       v-for="message of messageStore.send_message_list"
-      class="relative group"
+      class="relative group flex flex-col gap-1 items-end py-2"
     >
-      <div class="flex flex-col items-end">
-        <div
-          class="w-fit max-w-[370px] md:max-w-[250px] xl:max-w-[370px] group"
-        >
-          <PageTempTextMessage :text="message.text" />
-          <PageMessageError v-if="message.error" />
-          <MessageDate
-            v-if="message.time"
-            class="right-5"
-            :time="message.time"
-          />
-        </div>
+      <div class="message-size group">
+        <MessageDate
+          v-if="message.time"
+          class="right-0"
+          :time="message.time"
+        />
+        <PageTempTextMessage :text="message.text" />
+        <PageMessageError v-if="message.error" />
       </div>
     </div>
   </div>
@@ -170,12 +207,16 @@ import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import { scrollToBottomMessage } from '@/service/function'
+import {
+  calcIsClientRepSlow,
+  calcIsPageRepSlow,
+  getPageInfo,
+  scrollToBottomMessage,
+} from '@/service/function'
 import { debounce, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageDate.vue'
-import ClientMessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/ClientMessageDate.vue'
 import TimeSplit from '@/views/ChatWarper/Chat/CenterContent/MessageList/TimeSplit.vue'
 import ChatbotMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ChatbotMessage.vue'
 import AttachmentMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage.vue'
@@ -191,6 +232,9 @@ import StaffRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/StaffRe
 import AdMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AdMessage.vue'
 import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FacebookPost.vue'
 import ReplyMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ReplyMessage.vue'
+import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'

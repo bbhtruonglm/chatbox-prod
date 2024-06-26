@@ -1,6 +1,6 @@
 <template>
   <div
-    class="text-xs text-white bg-black/60 absolute group-hover:block hidden w-max z-10 py-1 px-2 rounded-md"
+    class="text-[10px] text-slate-500 absolute group-hover:block hidden w-max z-10 -top-3.5"
   >
     <span
       v-if="info"

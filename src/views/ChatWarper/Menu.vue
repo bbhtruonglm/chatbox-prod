@@ -17,7 +17,7 @@
         <SquaresPlusIcon class="w-6 h-6 m-auto group-hover:text-red-600" />
       </button>
       <hr class="border-slate-700 w-8 mx-auto" />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_interact?.filter_popover_ref?.mouseover"
         @mouseleave="filter_interact?.filter_popover_ref?.mouseleave"
@@ -26,7 +26,7 @@
         :icon="InboxIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.interact.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_message?.filter_popover_ref?.mouseover"
         @mouseleave="filter_message?.filter_popover_ref?.mouseleave"
@@ -35,7 +35,7 @@
         :icon="ChatDotIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.message.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_phone?.filter_popover_ref?.mouseover"
         @mouseleave="filter_phone?.filter_popover_ref?.mouseleave"
@@ -44,7 +44,7 @@
         :icon="PhoneIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.phone.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_date?.filter_popover_ref?.mouseover"
         @mouseleave="filter_date?.filter_popover_ref?.mouseleave"
@@ -53,7 +53,7 @@
         :icon="DateIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.time.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_tag?.filter_popover_ref?.mouseleave"
@@ -62,7 +62,7 @@
         :icon="TagIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.label.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_not_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_not_tag?.filter_popover_ref?.mouseleave"
@@ -71,7 +71,7 @@
         :icon="TagNotIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_staff?.filter_popover_ref?.mouseover"
         @mouseleave="filter_staff?.filter_popover_ref?.mouseleave"
@@ -80,7 +80,7 @@
         :icon="UsersIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')"
       />
-      <FilterItem
+      <NavItem
         :is_disable_tooltip="true"
         @mouseover="filter_post?.filter_popover_ref?.mouseover"
         @mouseleave="filter_post?.filter_popover_ref?.mouseleave"
@@ -89,10 +89,11 @@
         :icon="NewSpaperIcon"
         :title="$t('v1.view.main.dashboard.chat.filter.post.title')"
       />
-      <FilterItem
+      <NavItem
         v-if="isFilterActive()"
         @click="clearAllFilter()"
         :icon="CloseBoldIcon"
+        class_icon="text-red-600"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')"
       />
     </div>
@@ -124,7 +125,7 @@ import {
 
 import Attach from '@/views/ChatWarper/Menu/Attach.vue'
 import User from '@/components/User.vue'
-import FilterItem from '@/views/ChatWarper/Menu/FilterItem.vue'
+import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'
 import FilterInteract from '@/views/ChatWarper/Menu/FilterModal/FilterInteract.vue'
 import FilterMessage from '@/views/ChatWarper/Menu/FilterModal/FilterMessage.vue'
 import FilterPhone from '@/views/ChatWarper/Menu/FilterModal/FilterPhone.vue'
