@@ -47,7 +47,7 @@
               ['client', 'activity'].includes(message.message_type) &&
               !message.ad_id
             "
-            class="message-size group"
+            class="message-size group relative"
           >
             <MessageDate :time="message.time || message.createdAt" />
             <ReplyMessage
@@ -81,7 +81,7 @@
           </div>
           <div
             v-else-if="message.message_type === 'page'"
-            class="message-size group"
+            class="message-size group relative"
           >
             <MessageDate
               v-if="message.time"
@@ -128,7 +128,7 @@
           </div>
           <div
             v-else-if="message.message_type === 'note'"
-            class="message-size group"
+            class="message-size group relative"
           >
             <MessageDate
               v-if="message.createdAt"
@@ -189,7 +189,7 @@
       v-for="message of messageStore.send_message_list"
       class="relative group flex flex-col gap-1 items-end py-2"
     >
-      <div class="message-size group">
+      <div class="message-size group relative">
         <MessageDate
           v-if="message.time"
           class="right-0"
