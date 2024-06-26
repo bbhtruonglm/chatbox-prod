@@ -415,7 +415,7 @@ const source: Language = {
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
-              reply_time: 'Phản hồi tin nhắn',
+              reply_time: 'Phản hồi chậm',
             },
             widget: {
               title: 'Widget',
@@ -475,6 +475,8 @@ const source: Language = {
               auto_complete: 'Tự động hoàn thành câu'
             },
             post: {
+              from_ad: 'Từ quảng cáo',
+              ad_from: 'Khách hàng đã trả lời từ quảng cáo',
               post_by: 'Đăng bởi',
               cannot_get_post: 'Không lấy được dữ liệu bài viết...',
               open_on_facebook: 'Mở trên Facebook',
@@ -485,7 +487,6 @@ const source: Language = {
               cancel: 'Hủy',
               send_message: 'Gửi tin nhắn',
               send_message_success: 'Gửi tin thành công',
-              from_ad: 'Bài viết từ quảng cáo',
             },
             album: {
               title: 'Quản lý tập tin',
