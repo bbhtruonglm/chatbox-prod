@@ -130,7 +130,7 @@ function sendMessage() {
   if (size(messageStore.upload_file_list)) sendFile(PAGE_ID, CLIENT_ID)
 }
 /**gửi tin nhắn dạng văn bản */
-function sendText(
+async function sendText(
   page_id: string,
   client_id: string,
   text: string,
@@ -142,10 +142,54 @@ function sendText(
   // đánh dấu là input đã hết text
   commonStore.is_typing = false
 
+  // scroll xuống cuối trang
   scrollToBottomMessage()
 
-  // gửi force qua ext
-  if (commonStore.force_send_message_over_inbox)
+  /**tạo id cho tin nhắn tạm */
+  const TEMP_ID = uniqueId(text)
+
+  // thêm vào danh sách tin nhắn tạm
+  messageStore.send_message_list.push({
+    text,
+    time: new Date().toISOString(),
+    temp_id: TEMP_ID,
+  })
+
+  try {
+    // gửi tin nhắn bằng api chính thống
+    const MESSAGE_ID = await new Promise<string>((resolve, reject) =>
+      send_message(
+        {
+          page_id,
+          client_id,
+          text,
+          type: 'FACEBOOK_MESSAGE',
+        },
+        (e, r) => {
+          // nếu có lỗi thì báo lỗi
+          if (e) return reject(e)
+          // nếu không có id tin nhắn thì báo lỗi
+          if (!r?.message_id) return reject(r)
+
+          // nếu có id tin nhắn thì trả về id
+          resolve(r?.message_id)
+        }
+      )
+    )
+
+    // cập nhật id tin nhắn thật vào tin nhắn tạm
+    messageStore.updateTempMessage(TEMP_ID, 'message_id', MESSAGE_ID)
+  } catch (e) {
+    // nếu không có ext thì báo lỗi
+    if (commonStore.extension_status !== 'FOUND') {
+      // đánh dấu tin nhắn tạm là có lỗi
+      messageStore.updateTempMessage(TEMP_ID, 'error', true)
+
+      // xử lý thông báo lỗi
+      return handleSendMessageError(e)
+    }
+
+    // nếu bật ext thì gửi lại 1 lần nữa
     sendTextMesage(
       conversationStore.select_conversation?.platform_type,
       page_id,
@@ -154,61 +198,9 @@ function sendText(
       conversationStore.select_conversation?.client_bio?.fb_uid,
       text
     )
-  // gửi chính thống
-  else {
-    /**nội dung tin nhắn vừa được gửi */
-    const TEMP_SEND_MESSAGE: TempSendMessage = {
-      text,
-      time: new Date().toISOString(),
-      temp_id: uniqueId(text),
-    }
 
-    // thêm vào danh sách tin nhắn tạm
-    messageStore.send_message_list.push(TEMP_SEND_MESSAGE)
-
-    // gửi tin nhắn bằng api chính thống
-    send_message(
-      {
-        page_id,
-        client_id,
-        text,
-        type: 'FACEBOOK_MESSAGE',
-      },
-      (e, r) => {
-        if (e || !r?.message_id) {
-          // nếu bật ext thì gửi lại 1 lần nữa
-          if (commonStore.extension_status === 'FOUND') {
-            sendTextMesage(
-              conversationStore.select_conversation?.platform_type,
-              page_id,
-              client_id,
-              pageStore?.selected_page_list_info?.[page_id]?.page
-                ?.fb_page_token,
-              conversationStore.select_conversation?.client_bio?.fb_uid,
-              text
-            )
-
-            // xoá tin nhắn tạm
-            remove(
-              messageStore.send_message_list,
-              message => message.temp_id === TEMP_SEND_MESSAGE.temp_id
-            )
-
-            return
-          }
-
-          // nếu không có ext thì báo lỗi
-          TEMP_SEND_MESSAGE.error = true
-
-          handleSendMessageError(e || r)
-
-          return
-        }
-
-        // sử dụng tính chất obj của js để thêm id tin nhắn vào phần tử trong mảng
-        TEMP_SEND_MESSAGE.message_id = r?.message_id
-      }
-    )
+    // xoá tin nhắn tạm khỏi danh sách
+    messageStore.removeTempMessage(TEMP_ID)
   }
 }
 /**gửi tập tin */
@@ -376,10 +368,6 @@ function handleSendMessageError(error: any) {
     case 10:
       toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
       break
-    // case 10:
-    //     facebook_error.value = get(error, 'error')
-    //     facebook_error_ref.value.toggleModal()
-    //     break;
     case 551:
       toastError($t('v1.view.main.dashboard.chat.facebook_errors.551'))
       break

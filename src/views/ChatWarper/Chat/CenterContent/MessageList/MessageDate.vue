@@ -6,7 +6,7 @@
       v-if="info"
       class="mr-1"
     >
-      <span class="font-semibold">{{ info }}</span>
+      <span class="font-medium">{{ info }}</span>
       {{ $t('v1.view.main.dashboard.chat.message.sent') }}
     </span>
     <span v-if="time">

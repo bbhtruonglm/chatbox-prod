@@ -20,7 +20,7 @@
         :class="{
           'py-2': ['client', 'page', 'note'].includes(message.message_type),
         }"
-        class="flex gap-1"
+        class="flex gap-1 relative"
       >
         <div
           v-if="
@@ -122,12 +122,6 @@
               </template>
             </template>
             <UnsupportMessage v-else />
-            <div
-              v-if="calcIsPageRepSlow(message?.fb_page_id, index, list_message)"
-              class="text-white bg-red-500 rounded-full text-[10px] w-2.5 h-2.5 flex items-center justify-center absolute right-[-44px] bottom-0"
-            >
-              !
-            </div>
           </div>
           <div
             v-else-if="message.message_type === 'note'"
@@ -166,6 +160,10 @@
             :fb_post_id="message.fb_post_id"
           />
           <UnsupportMessage v-else />
+          <DoubleCheckIcon
+            v-if="isLastPageMessage(message, index)"
+            class="w-3 h-3 text-green-500 absolute -bottom-1.5 -right-11"
+          />
         </div>
         <PageStaffAvatar
           :message
@@ -173,11 +171,11 @@
             ['page', 'note'].includes(message.message_type) || message.ad_id
           "
         />
+        <ClientRead
+          @change_last_read_message="visibleFirstClientReadAvatar"
+          :time="message.time"
+        />
       </div>
-      <ClientRead
-        @change_last_read_message="visibleFirstClientReadAvatar"
-        :time="message.time"
-      />
       <StaffRead
         @change_last_read_message="visibleLastStaffReadAvatar"
         :time="message.time"
@@ -187,31 +185,35 @@
       v-for="message of messageStore.send_message_list"
       class="relative group flex flex-col gap-1 items-end py-2"
     >
-      <div class="message-size group relative">
-        <MessageDate
-          v-if="message.time"
-          class="right-0"
-          :time="message.time"
+      <div class="message-size group relative flex gap-1 items-end">
+        <PageTempTextMessage
+          :text="message.text"
+          :class="{
+            'border border-red-500': message.error,
+          }"
         />
-        <PageTempTextMessage :text="message.text" />
-        <PageMessageError v-if="message.error" />
+        <StaffAvatar
+          :id="chatbotUserStore.chatbot_user?.fb_staff_id"
+          class="w-6 h-6 rounded-oval flex-shrink-0"
+        />
       </div>
+      <SendStatus :is_error="message.error" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import {
+  useConversationStore,
+  useMessageStore,
+  useCommonStore,
+  useChatbotUserStore,
+} from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import {
-  calcIsClientRepSlow,
-  calcIsPageRepSlow,
-  getPageInfo,
-  scrollToBottomMessage,
-} from '@/service/function'
-import { debounce, remove, size } from 'lodash'
+import { calcIsClientRepSlow, scrollToBottomMessage } from '@/service/function'
+import { debounce, findLastIndex, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageDate.vue'
@@ -222,7 +224,7 @@ import UnsupportMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/
 import ClientTextMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ClientTextMesage.vue'
 import PageTextMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageTextMessage.vue'
 import PageTempTextMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageTempTextMessage.vue'
-import PageMessageError from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageMessageError.vue'
+import SendStatus from '@/views/ChatWarper/Chat/CenterContent/MessageList/SendStatus.vue'
 import SystemMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/SystemMessage.vue'
 import NoteMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/NoteMessage.vue'
 import ClientRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/ClientRead.vue'
@@ -232,8 +234,10 @@ import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/Face
 import ReplyMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ReplyMessage.vue'
 import PageStaffAvatar from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageStaffAvatar.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'
+
+import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
@@ -247,6 +251,7 @@ interface CustomEvent extends Event {
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
+const chatbotUserStore = useChatbotUserStore()
 
 /**danh sách tin nhắn hiện tại */
 const list_message = ref<MessageInfo[]>([])
@@ -283,6 +288,13 @@ watch(
     getListMessage(true)
   }
 )
+/**vị trí của tin nhắn cuối cùng nhân viên gửi */
+const last_client_message_index = computed(() =>
+  findLastIndex(
+    list_message.value,
+    m => m.message_type === 'page' && !!m.message_metadata
+  )
+)
 
 onMounted(() =>
   window.addEventListener('chatbox_socket_message', onRealtimeHandleMessage)
@@ -291,6 +303,16 @@ onUnmounted(() =>
   window.removeEventListener('chatbox_socket_message', onRealtimeHandleMessage)
 )
 
+/**kiểm tra xem tin nhắn này có phải là tin nhắn cuối cùng của nhân viên gửi không */
+function isLastPageMessage(message: MessageInfo, index: number) {
+  // chỉ tính tin nhắn của trang
+  if (message.message_type !== 'page') return false
+  // phải là tin do nhân viên gửi
+  if (!message.message_metadata) return false
+
+  // nếu là tin nhắn cuối cùng của nhân viên gửi
+  return index === last_client_message_index.value
+}
 /**phân tích tên nv từ meta */
 function parserStaffName(meta?: string) {
   return meta?.split('__')?.[1] || ''

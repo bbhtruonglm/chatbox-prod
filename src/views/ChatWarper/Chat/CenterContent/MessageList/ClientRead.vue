@@ -1,14 +1,14 @@
 <template>
-  <DoubleCheckIcon
+  <ClientAvatar
     v-if="isClientLastReadThisMessage()"
     :conversation="conversationStore.select_conversation"
-    class="mesage-client-read absolute -right-4 -bottom-1 hidden w-3 h-3 text-green-600"
+    class="mesage-client-read absolute -right-4 bottom-5 hidden w-3 h-3 text-green-600"
   />
 </template>
 <script setup lang="ts">
-import { useConversationStore, useChatbotUserStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 
-import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
+import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 
 const $emit = defineEmits(['change_last_read_message'])
 
