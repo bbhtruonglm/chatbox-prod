@@ -6,7 +6,7 @@
     @keydown.enter="submitInput"
     @paste="onPasteImage"
     @keyup="$emit('keyup', $event)"
-    class="max-h-32 overflow-y-auto w-full h-full focus:outline-none word-break-break-word mb-1.5"
+    class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word mb-1.5"
     contenteditable="true"
     :placeholder="
       $t('v1.view.main.dashboard.chat.send_to', {

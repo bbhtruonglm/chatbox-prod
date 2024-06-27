@@ -46,6 +46,7 @@ const source: Language = {
       create: 'Tạo',
       incomming: 'Sắp ra mắt',
       expand: 'Mở rộng',
+      contract: 'Thu gọn',
       version: 'Phiên bản',
       on_update_app: 'Đang cập nhật phiên bản mới...',
       expired: 'Quá hạn',
@@ -408,6 +409,7 @@ const source: Language = {
               }
             },
             message: {
+              sent: 'đã gửi',
               error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
               attachment: {
                 title: 'Chi tiết tập tin đính kèm',

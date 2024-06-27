@@ -12,7 +12,10 @@
         <Loading class="mx-auto" />
       </div>
     </div>
-    <div v-for="(message, index) of list_message">
+    <div
+      v-for="(message, index) of list_message"
+      class="relative"
+    >
       <div
         :class="{
           'py-2': ['client', 'page', 'note'].includes(message.message_type),
@@ -164,17 +167,12 @@
           />
           <UnsupportMessage v-else />
         </div>
-        <div
+        <PageStaffAvatar
+          :message
           v-if="
             ['page', 'note'].includes(message.message_type) || message.ad_id
           "
-          class="flex-shrink-0 flex items-end"
-        >
-          <PageAvatar
-            :page_info="getPageInfo(message?.fb_page_id)"
-            class="w-6 h-6"
-          />
-        </div>
+        />
       </div>
       <ClientRead
         @change_last_read_message="visibleFirstClientReadAvatar"
@@ -232,6 +230,7 @@ import StaffRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/StaffRe
 import AdMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AdMessage.vue'
 import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FacebookPost.vue'
 import ReplyMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ReplyMessage.vue'
+import PageStaffAvatar from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageStaffAvatar.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'

@@ -4,17 +4,14 @@
   >
     <span
       v-if="info"
-      class="mr-2"
-      >{{ info }}:</span
+      class="mr-1"
     >
-    <span v-if="time">{{
-      format_date(new Date(time), 'HH:mm:ss, dd/MM/yyyy')
-    }}</span>
-    <span
-      v-if="after"
-      class="ml-2"
-      >{{ after }}</span
-    >
+      <span class="font-semibold">{{ info }}</span>
+      {{ $t('v1.view.main.dashboard.chat.message.sent') }}
+    </span>
+    <span v-if="time">
+      {{ format_date(new Date(time), 'HH:mm:ss, dd/MM/yyyy') }}
+    </span>
   </div>
 </template>
 <script setup lang="ts">
@@ -26,8 +23,6 @@ const $props = withDefaults(
     time?: string
     /**dữ liệu hiển thị thêm, vd tên nv gửi tin nhắn */
     info?: string
-    /**dữ liệu hiển thị thêm, vd tên nv gửi tin nhắn */
-    after?: string
   }>(),
   {}
 )

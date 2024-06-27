@@ -2,7 +2,7 @@
   <DoubleCheckIcon
     v-if="isClientLastReadThisMessage()"
     :conversation="conversationStore.select_conversation"
-    class="mesage-client-read absolute -right-3.5 bottom-0 hidden w-3 h-3 text-green-600"
+    class="mesage-client-read absolute -right-4 -bottom-1 hidden w-3 h-3 text-green-600"
   />
 </template>
 <script setup lang="ts">
