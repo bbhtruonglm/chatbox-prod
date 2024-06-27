@@ -39,17 +39,16 @@
       </button>
     </div>
     <div class="flex justify-between">
-      <div
-        v-if="ad_id"
-        class="flex items-center gap-1"
-      >
-        <SpeakerIcon
-          v-tooltip.bottom="$t('v1.view.main.dashboard.chat.post.from_ad')"
-          class="w-3 h-3"
-        />
-        <span class="text-xs text-gray-500">
-          {{ $t('v1.view.main.dashboard.chat.post.from_ad') }}
-        </span>
+      <div class="flex items-center gap-1">
+        <template v-if="ad_id">
+          <SpeakerIcon
+            v-tooltip.bottom="$t('v1.view.main.dashboard.chat.post.from_ad')"
+            class="w-3 h-3"
+          />
+          <span class="text-xs text-gray-500">
+            {{ $t('v1.view.main.dashboard.chat.post.from_ad') }}
+          </span>
+        </template>
       </div>
       <a
         class="text-blue-500 text-xs underline cursor-pointer"

@@ -408,13 +408,7 @@ function onSocketFromChatboxServer() {
 
     if (!size(socket_data)) return
 
-    let { staff, conversation, message, event } = socket_data
-
-    // gửi thông điệp đến component xử lý user online
-    // if (size(staff))
-    //   window.dispatchEvent(
-    //     new CustomEvent('chatbox_socket_staff', { detail: staff })
-    //   )
+    let { conversation, message, event } = socket_data
 
     // gửi thông điệp đến component xử lý danh sách hội thoại
     if (validateConversation(conversation, message))

@@ -33,13 +33,18 @@
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { find, keys, map, mapValues, size } from 'lodash'
+import { find, keys, map, mapValues, set, size } from 'lodash'
 import {
   read_conversation,
   reset_read_conversation,
 } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
-import { useConversationStore, useCommonStore, usePageStore } from '@/stores'
+import {
+  useConversationStore,
+  useCommonStore,
+  usePageStore,
+  useChatbotUserStore,
+} from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
 import { selectConversation, setParamChat } from '@/service/function'
@@ -70,6 +75,7 @@ const $router = useRouter()
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
+const chatbotUserStore = useChatbotUserStore()
 
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
@@ -146,10 +152,13 @@ onUnmounted(() => {
 
 /**xử lý socket conversation */
 function onRealtimeUpdateConversation({ detail }: CustomEvent) {
+  // nếu không có dữ liệu thì thôi
   if (!detail) return
 
+  // nạp dữ liệu
   let { conversation, event } = detail
 
+  // nếu không có dữ liệu hội thoại thì thôi
   if (!conversation) return
 
   // bỏ qua record của page chat cho page
@@ -175,6 +184,9 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
     conversationStore.select_conversation.last_read_message =
       conversation.last_read_message
     conversationStore.select_conversation.staff_read = conversation.staff_read
+
+    // làm mới thời gian nhân viên hiện tại đọc tin nhắn
+    hardRenewCurrentStaffRead()
   }
 
   if (
@@ -203,6 +215,30 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
       ...conversationStore.conversation_list,
     }
   }
+}
+/**
+ * - hàm này dùng để ghi đè thời gian nhân viên hiện tại đọc tin nhắn mới này
+ * thành hiện tại
+ * - để tránh lỗi user hiện tại nhắn thêm tin, nhưng avatar user đọc tin nhắn
+ * vẫn ở các tin trước đó (do giá trị read chỉ được update khi click vào hội
+ * thoại, nó chưa được làm mới, socket vẫn trả về giá trị cũ) -> cần set lại 
+ * thủ công
+ * => muốn chuẩn hơn, cần fix ở backend, khi user gửi tin nhắn thành công, thì
+ * update staff_read của user đó, trước khi socket
+ */
+function hardRenewCurrentStaffRead() {
+  // nếu chưa chọn hội thoại nào thì thôi
+  if (!conversationStore.select_conversation) return
+
+  // nếu không có id nhân viên hiện tại thì thôi
+  if (!chatbotUserStore.chatbot_user?.fb_staff_id) return
+
+  // nạp thời gian đọc tin nhắn mới
+  set(
+    conversationStore.select_conversation,
+    ['staff_read', chatbotUserStore.chatbot_user?.fb_staff_id],
+    new Date().getTime()
+  )
 }
 /**đọc danh sách hội thoại lần đầu tiên */
 function loadConversationFirstTime(is_first_time?: boolean) {

@@ -6,7 +6,7 @@
         ? label_info?.bg_color
         : 'white',
     }"
-    class="text-[10px] w-fit px-1 rounded"
+    class="text-xs w-fit px-2 rounded-md py-0.5"
   >
     {{ label_info?.title }}
   </button>

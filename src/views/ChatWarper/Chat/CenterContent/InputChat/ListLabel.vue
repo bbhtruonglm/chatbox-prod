@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="is_expand_label ? 'h-20' : 'h-4'"
+    :class="is_expand_label ? 'max-h-40 min-h-5' : 'h-5'"
     class="flex pl-6 gap-2"
   >
     <div
@@ -8,6 +8,22 @@
       class="absolute z-10 left-1/2 -translate-x-1/2"
     >
       <Loading />
+    </div>
+
+    <div class="flex items-end">
+      <button
+        v-tooltip="
+          is_expand_label ? $t('v1.common.contract') : $t('v1.common.expand')
+        "
+        @click="is_expand_label = !is_expand_label"
+      >
+        <ArrowCircleUp
+          :class="{
+            'rotate-180': is_expand_label,
+          }"
+          class="w-5 h-5 duration-500"
+        />
+      </button>
     </div>
     <div class="w-full overflow-y-auto flex flex-wrap justify-start gap-2">
       <LabelItem
@@ -25,15 +41,6 @@
         @click="toggleLabel(label_info._id)"
       />
     </div>
-    <button
-      v-tooltip="$t('v1.common.expand')"
-      @click="is_expand_label = !is_expand_label"
-    >
-      <img
-        src="@/assets/icons/expand.svg"
-        class="m-auto w-4 h-4"
-      />
-    </button>
   </div>
 </template>
 <script setup lang="ts">
@@ -47,6 +54,8 @@ import { IS_ACTIVE_LABEL_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/Inp
 
 import Loading from '@/components/Loading.vue'
 import LabelItem from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel/LabelItem.vue'
+
+import ArrowCircleUp from '@/components/Icons/ArrowCircleUp.vue'
 
 const conversationStore = useConversationStore()
 
