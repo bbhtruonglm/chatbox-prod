@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="is_expand_label ? 'h-40' : 'h-5'"
+    :class="is_expand_label ? 'max-h-40 min-h-5' : 'h-5'"
     class="flex pl-6 gap-2"
   >
     <div
