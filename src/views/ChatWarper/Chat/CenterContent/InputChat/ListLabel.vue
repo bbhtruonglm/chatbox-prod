@@ -1,7 +1,7 @@
 <template>
   <div
     :class="is_expand_label ? 'max-h-40 min-h-5' : 'h-5'"
-    class="flex pl-6 gap-2"
+    class="flex pl-4 gap-2"
   >
     <div
       v-if="is_loading_label"
