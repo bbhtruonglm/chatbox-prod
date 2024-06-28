@@ -25,6 +25,7 @@ const source: Language = {
       status: 'Trạng thái',
       staff: 'Nhân viên',
       month: 'Tháng',
+      change: 'Sửa',
       type: 'Loại',
       select_all: 'Chọn tất cả',
       active: 'Kích hoạt',
@@ -50,7 +51,7 @@ const source: Language = {
       version: 'Phiên bản',
       on_update_app: 'Đang cập nhật phiên bản mới...',
       expired: 'Quá hạn',
-      more: 'Thêm'
+      more: 'Thêm',
     },
     view: {
       network: {
@@ -405,8 +406,8 @@ const source: Language = {
                 title: 'Quản lý tập tin',
                 image: 'Tải lên ảnh',
                 file: 'Tải lên file',
-                album: 'Album ảnh'
-              }
+                album: 'Album ảnh',
+              },
             },
             message: {
               sent: 'đã gửi',
@@ -474,7 +475,7 @@ const source: Language = {
               search: 'Tìm kiếm câu trả lời nhanh',
               ai: 'Tính năng AI:',
               translate: 'Tự động dịch văn bản chat sang Tiếng Anh',
-              auto_complete: 'Tự động hoàn thành câu'
+              auto_complete: 'Tự động hoàn thành câu',
             },
             post: {
               from_ad: 'Từ quảng cáo',
@@ -656,6 +657,69 @@ const source: Language = {
               just_show_text: 'Hiện văn bản',
               dot_with_color: 'Chỉ hiện chấm màu',
               dot_with_color_and_toottip: 'Hiện chấm màu có chú giải',
+            },
+          },
+          org: {
+            menu: {
+              pay: 'Thanh toán',
+              app: 'Ứng dụng',
+              api: 'API',
+            },
+            recharge: 'Nạp tiền',
+            setting: {
+              title: 'Cài đặt chung',
+              require_two_factor: 'Yêu cầu bật xác thực 2 lớp',
+              member: 'Thành viên',
+              add_history: 'Đã thêm {count} ngày trước',
+              remove_staff: 'Xoá nhân viên',
+              customer_info: {
+                title: 'Thông tin khách hàng',
+                customer_code: 'Mã khách hàng',
+                contract_code: 'Mã hợp đồng',
+                company_name: 'Tên công ty',
+                tax_code: 'Mã số thuế',
+                representative: 'Người đại diện',
+                address: 'Địa chỉ',
+                phone: 'Số điện thoại',
+                email: 'Email',
+                guild_1:
+                  'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). Bot Bán Hàng sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
+                guild_2:
+                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới hotro@botbanhang.vn',
+              },
+            },
+            pay: {
+              account: 'Tài khoản',
+              balance: 'Số dư tài khoản',
+              pack_info: 'Thông tin gói cước',
+              pack_use: 'Gói đang sử dụng',
+              pack_time: 'Thời gian sử dụng',
+              page_amount: 'Số lượng trang',
+              staff_amount: 'Số lượng nhân sự',
+              ai_text: 'AI văn bản',
+              ai_image: 'AI hình ảnh',
+              ai_sound: 'AI âm thanh',
+              ai_video: 'AI video',
+              upgrade_pack: 'Nâng cấp gói cước',
+              free: 'Miễn phí',
+              pro: 'Pro',
+              unlimited: 'Không giới hạn',
+              text_month: 'ký tự / Tháng',
+              image_month: 'Hình ảnh / Tháng',
+              minute_month: 'phút / Tháng',
+              month: 'tháng',
+              next_pay: 'Kỳ thanh toán tiếp theo:',
+              text: 'ký tự',
+              image: 'ình ảnh',
+              minute: 'phút',
+              second: 'giây',
+              guild_1:
+                'Cuối mỗi tháng của kỳ thanh toán, hệ thống tự động làm mới lại các chỉ số sử dụng về 0.',
+              auto_pay: 'Tự động thanh toán',
+              guild_2:
+                'Khi lưu lượng sử dụng AI đạt đến giới hạn, hệ thống mặc định ngừng sử dụng. Nếu bật “Tự động thanh toán”, hệ thống sẽ tự động mua thêm lưu lượng và không vượt quá số tiền hiện tại có trong “Số dư tài khoản”. Nếu số dư tài khoản không đủ, hệ thống sẽ dừng các chức năng AI.',
+              buy_more_page: 'Mua thêm trang',
+              buy_more_staff: 'Mua thêm nhân viên',
             },
           },
         },

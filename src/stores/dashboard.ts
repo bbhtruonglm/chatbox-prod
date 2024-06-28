@@ -69,3 +69,16 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
     selectMenu,
   }
 })
+
+/**store quản lý tổ chức */
+export const useOrgStore = defineStore('org_store', () => {
+  /** -------------- STAGE -------------- */
+  /**có hiện loading không */
+  const is_loading = ref(false)
+
+  /** -------------- MUTATION / ACTION -------------- */
+
+  return {
+    is_loading,
+  }
+})

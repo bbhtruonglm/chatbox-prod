@@ -18,19 +18,26 @@
       <template v-if="isShowSelectPageButton()">
         <button
           @click="toggleModalConnectPage?.()"
-          class="btn-custom"
+          class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
         >
           <PlusCircleIcon class="w-3 h-3" />
           {{ $t('v1.view.main.dashboard.nav.select_platform') }}
         </button>
         <button
           @click="selectPageStore.toggleGroupPageMode()"
-          class="btn-custom"
+          class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
         >
           <SquaresPlusIcon class="w-3 h-3" />
           {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
         </button>
       </template>
+      <button
+        v-if="$route.path.includes('/dashboard/org/')"
+        class="btn-custom text-sm font-semibold py-2 px-4 bg-blue-600 text-white"
+      >
+        <VndPlusIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.org.recharge') }}
+      </button>
       <User
         position="BOTTOM"
         :back="289"
@@ -48,6 +55,7 @@ import User from '@/components/User.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
+import VndPlusIcon from '@/components/Icons/VndPlus.vue'
 
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()
@@ -68,7 +76,7 @@ function isShowSelectPageButton() {
 <style scoped lang="scss">
 .dashboard-header {
   .btn-custom {
-    @apply py-1.5 px-2 text-xs font-medium bg-slate-200 rounded flex items-center gap-1 hover:brightness-90 h-7;
+    @apply rounded flex items-center gap-1 hover:brightness-90;
   }
 }
 </style>

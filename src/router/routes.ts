@@ -15,6 +15,12 @@ import Noti from '@/views/Dashboard/Noti.vue'
 import Download from '@/views/Dashboard/Download.vue'
 import User from '@/views/Dashboard/User.vue'
 
+import Org from '@/views/Dashboard/Org.vue'
+import OrgSetting from '@/views/Dashboard/Org/Setting.vue'
+import OrgPay from '@/views/Dashboard/Org/Pay.vue'
+import OrgApp from '@/views/Dashboard/Org/App.vue'
+import OrgApi from '@/views/Dashboard/Org/Api.vue'
+
 export const routes = [
   { path: '/', redirect: '/oauth' },
   { path: '/oauth', component: OAuth },
@@ -28,6 +34,17 @@ export const routes = [
       { path: 'select-platform', component: SelectPlatform },
       { path: 'pricing', component: Pricing },
       { path: 'widget', component: Widget },
+      {
+        path: 'org',
+        redirect: '/dashboard/org/setting',
+        component: Org,
+        children: [
+          { path: 'setting', component: OrgSetting },
+          { path: 'pay', component: OrgPay },
+          { path: 'app', component: OrgApp },
+          { path: 'api', component: OrgApi },
+        ],
+      },
       { path: 'noti', component: Noti },
       { path: 'download', component: Download },
       { path: 'user', component: User },

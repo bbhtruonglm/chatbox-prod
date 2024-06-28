@@ -23,7 +23,7 @@
   >
     <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
     <MenuItem
-      @click="redirectMenu('noti')"
+      @click="redirectMenu('org')"
       :icon="BriefCaseIcon"
       :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
     />
