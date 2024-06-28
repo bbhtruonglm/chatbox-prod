@@ -1,27 +1,27 @@
 <template>
-  <div
-    v-if="filterPlatform()"
-    class="rounded-lg py-3 px-4 bg-white flex gap-3"
-  >
-    <component
-      :is="icon"
-      class="flex-shrink-0 w-5 h-5"
-    />
-    <div class="flex flex-col gap-3 w-full">
-      <div class="flex justify-between">
-        <div class="text-sm font-medium">
-          {{ title }}
+  <CardItem v-if="filterPlatform()">
+    <template #icon>
+      <component
+        #icon
+        :is="icon"
+        class="w-5 h-5"
+      />
+    </template>
+    <template #title>
+      {{ title }}
+    </template>
+    <template #action>
+      <label
+        v-if="selectPageStore.is_group_page_mode"
+        class="flex items-center gap-1 px-6 cursor-pointer"
+      >
+        <div class="font-medium text-sm">
+          {{ $t('v1.view.main.dashboard.select_page.select_all_page') }}
         </div>
-        <label
-          v-if="selectPageStore.is_group_page_mode"
-          class="flex items-center gap-1 px-6 cursor-pointer"
-        >
-          <div class="font-medium text-sm">
-            {{ $t('v1.view.main.dashboard.select_page.select_all_page') }}
-          </div>
-          <Checkbox v-model="is_select_all_page" />
-        </label>
-      </div>
+        <Checkbox v-model="is_select_all_page" />
+      </label>
+    </template>
+    <template #item>
       <div class="grid gap-6 grid-cols-4">
         <template v-for="page of active_page_list">
           <PageItem
@@ -31,8 +31,8 @@
           />
         </template>
       </div>
-    </div>
-  </div>
+    </template>
+  </CardItem>
   <EmptyPage v-else-if="selectPageStore.current_menu === filter" />
 </template>
 <script setup lang="ts">
@@ -47,6 +47,7 @@ import { isActivePage } from '@/service/helper/pricing'
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
+import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 
 import type { PageData, PageInfo } from '@/service/interface/app/page'
 import type { Component } from 'vue'
