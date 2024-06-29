@@ -17,9 +17,12 @@ import User from '@/views/Dashboard/User.vue'
 
 import Org from '@/views/Dashboard/Org.vue'
 import OrgSetting from '@/views/Dashboard/Org/Setting.vue'
-import OrgPay from '@/views/Dashboard/Org/Pay.vue'
 import OrgApp from '@/views/Dashboard/Org/App.vue'
 import OrgApi from '@/views/Dashboard/Org/Api.vue'
+
+import OrgPay from '@/views/Dashboard/Org/Pay.vue'
+import OrgPayInfo from '@/views/Dashboard/Org/Pay/Info.vue'
+import OrgPayReCharge from '@/views/Dashboard/Org/Pay/ReCharge.vue'
 
 export const routes = [
   { path: '/', redirect: '/oauth' },
@@ -40,7 +43,15 @@ export const routes = [
         component: Org,
         children: [
           { path: 'setting', component: OrgSetting },
-          { path: 'pay', component: OrgPay },
+          {
+            path: 'pay',
+            redirect: '/dashboard/org/pay/info',
+            component: OrgPay,
+            children: [
+              { path: 'info', component: OrgPayInfo },
+              { path: 'recharge', component: OrgPayReCharge },
+            ],
+          },
           { path: 'app', component: OrgApp },
           { path: 'api', component: OrgApi },
         ],

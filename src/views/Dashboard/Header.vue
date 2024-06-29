@@ -31,13 +31,7 @@
           {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
         </button>
       </template>
-      <button
-        v-if="$route.path.includes('/dashboard/org/')"
-        class="btn-custom text-sm font-semibold py-2 px-4 bg-blue-600 text-white"
-      >
-        <VndPlusIcon class="w-4 h-4" />
-        {{ $t('v1.view.main.dashboard.org.recharge') }}
-      </button>
+      <ReChargeBtn v-if="$route.path.includes('/dashboard/org/')" />
       <User
         position="BOTTOM"
         :back="289"
@@ -52,10 +46,10 @@ import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { inject } from 'vue'
 
 import User from '@/components/User.vue'
+import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import VndPlusIcon from '@/components/Icons/VndPlus.vue'
 
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()

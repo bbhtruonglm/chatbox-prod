@@ -117,6 +117,7 @@
         </div>
         <button
           v-if="type === 'FREE'"
+          @click="upgrade_modal_ref?.toggleModal()"
           class="custom-btn"
         >
           {{ $t('v1.view.main.dashboard.org.pay.upgrade_pack') }}
@@ -135,6 +136,7 @@
       </div>
     </template>
   </CardItem>
+  <UpgradeModal ref="upgrade_modal_ref" />
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
@@ -143,8 +145,10 @@ import { format as date_format } from 'date-fns'
 import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Item from '@/views/Dashboard/Org/Pay/PackInfo/Item.vue'
+import UpgradeModal from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'
+import { ref } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -153,6 +157,9 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+/**ref của modal mua gói mới */
+const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
 </script>
 <style scoped lang="scss">
 .custom-btn {

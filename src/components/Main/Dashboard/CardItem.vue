@@ -3,7 +3,7 @@
     <div class="flex-shrink-0">
       <slot name="icon" />
     </div>
-    <div class="flex flex-col gap-3 w-full">
+    <div class="flex flex-col gap-3 w-full min-w-0">
       <div class="flex justify-between">
         <div class="text-sm font-medium">
           <slot name="title" />
