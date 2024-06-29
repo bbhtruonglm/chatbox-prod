@@ -52,6 +52,8 @@ const source: Language = {
       on_update_app: 'Đang cập nhật phiên bản mới...',
       expired: 'Quá hạn',
       more: 'Thêm',
+      back: 'Quay lại',
+      copy: 'Sao chép',
     },
     view: {
       network: {
@@ -733,6 +735,67 @@ const source: Language = {
               status_list: {
                 paid: 'Đã thanh toán',
               },
+              upgrade: {
+                title: 'Gói nâng cấp',
+                current: 'Gói hiện tại',
+                trial_day_7: 'Dùng thử miễn phí 7 ngày',
+                contact_us: 'Liên hệ chúng tôi',
+                price: 'Giá:',
+                page: 'Số trang:',
+                member: 'Số thành viên:',
+                more: 'xem thêm',
+                contact: 'Liên hệ',
+                staff: 'Nhâm sự:',
+                discount: 'Theo Năm (-40%)',
+                company: 'Doanh nghiệp',
+              },
+              recharge: {
+                amount: 'Số tiền nạp',
+                amount_description:
+                  'Số tiền nạp tối thiểu 50.000đ, tối đa 250.000.000đ',
+                invoice: 'Hóa đơn',
+                no_invoice: 'Không xuất hóa đơn',
+                need_invoice: 'Xuất hóa đơn',
+                pay: 'Thanh toán',
+                transfer: 'Chuyển khoản',
+                vnpay: 'VNPay',
+                zalopay: 'Zalo Pay',
+                momo: 'Momo',
+                card: 'Visa, Master, JSB (qua cổng Zalopay)',
+                continue: 'Tiếp tục',
+                invoice_info: {
+                  title: 'Thông tin xuất hóa đơn',
+                  tax_code: 'MST',
+                },
+                transfer_info: {
+                  account: 'Số tài khoản thụ hưởng',
+                  name: 'Tên tài khoản thụ hưởng',
+                  bank: 'Ngân hàng thụ hưởng',
+                  qr: 'Hoặc quét mã QR bằng ứng dụng ngân hàng',
+                  guild:
+                    'Sau khi Quý khách thanh toán chuyển khoản, hãy ấn nút <b>"KIỂM TRA THANH TOÁN"</b> bên dưới để hệ thống tự động xác nhận.',
+                  hint: 'Lưu ý',
+                  hint_1:
+                    'Vui lòng đọc ký hướng dẫn sử dụng Chuyển khoản nhanh tại',
+                  hint_2:
+                    'Bot Bán Hàng không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản',
+                  hint_3: 'Vui lòng giữ biên lai để đối chứng khi cần thiết',
+                  hint_4:
+                    'Quý khách vui lòng không chỉnh sửa số tài khoản và tên tài khoản thụ hưởng được cung cấp',
+                  here: 'Đây',
+                  check: 'Kiểm tra thanh toán',
+                },
+              },
+            },
+            app: {
+              title: 'Ứng dụng AI',
+              auto_translate_en: 'Tự động dịch ngôn ngữ sang Tiếng anh',
+              auto_hint_quick_answer: 'Tự động gợi ý câu trả lời',
+              auto_alert_complain:
+                'Tự động cảnh báo khách hàng phàn nàn về dịch vụ',
+              auto_tag: 'Tự động gắn nhãn',
+              widget: 'Widget',
+              remove_widget: 'Xoá widget',
             },
           },
         },

@@ -1,5 +1,4 @@
 <template>
-  <SelectOrg />
   <General />
   <Page />
   <Staff />
