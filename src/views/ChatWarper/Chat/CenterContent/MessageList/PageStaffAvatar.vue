@@ -3,18 +3,18 @@
     <StaffAvatar
       v-if="getStaffId()"
       :id="staff_id"
-      class="w-6 h-6 rounded-oval"
+      class="w-8 h-8 rounded-oval"
     />
     <PageAvatar
       v-else
       :page_info="getPageInfo(message?.fb_page_id)"
-      class="w-6 h-6"
+      class="w-8 h-8"
     />
   </div>
 </template>
 <script setup lang="ts">
 import { getPageInfo } from '@/service/function'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'

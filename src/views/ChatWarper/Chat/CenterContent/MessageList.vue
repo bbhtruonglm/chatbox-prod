@@ -16,6 +16,10 @@
       v-for="(message, index) of list_message"
       class="relative"
     >
+      <TimeSplit
+        :before_message="list_message?.[index - 1]"
+        :now_message="message"
+      />
       <div
         :class="{
           'py-2': ['client', 'page', 'note'].includes(message.message_type),
@@ -41,10 +45,6 @@
           }"
           class="relative flex flex-col w-full"
         >
-          <TimeSplit
-            :before_message="list_message?.[index - 1]"
-            :now_message="message"
-          />
           <div
             v-if="
               ['client', 'activity'].includes(message.message_type) &&

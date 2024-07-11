@@ -1,6 +1,6 @@
 <template>
   <div
-    class="message-box z-1 break-words whitespace-pre-line bg-white"
+    class="message-box z-1 break-words whitespace-pre-line bg-[#FFF8E1]"
   >
     {{ current_message.message_text }}
   </div>
