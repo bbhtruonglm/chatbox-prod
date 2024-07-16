@@ -20,19 +20,22 @@
         {{ source?.client_name }}
       </div>
     </div>
-    <Badge
-      v-if="isNewMessage()"
-      :value="source?.unread_message_amount!"
-      class="flex-shrink-0"
-    />
+    <div class="flex-shrink-0 text-xs">
+      {{ formatLastMessageTime(source?.last_message_time) }}
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import { useConversationStore } from '@/stores'
 import { getStaffInfo } from '@/service/function'
+import {
+  format as format_date,
+  isThisWeek,
+  isThisYear,
+  formatDistanceToNow,
+} from 'date-fns'
+import viLocale from 'date-fns/locale/vi'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import Badge from '@/components/Badge.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
@@ -45,19 +48,24 @@ const $props = withDefaults(
   {}
 )
 
-const conversationStore = useConversationStore()
+/**20 giây trước, 2 ngày trước, ... */
+function genAgoDate(timestamp: number) {
+  return formatDistanceToNow(new Date(timestamp), {
+    addSuffix: true,
+    locale: viLocale,
+  })
+}
+/**format lại thời gian trước khi hiển thị */
+function formatLastMessageTime(timestamp?: number) {
+  if (!timestamp) return ''
 
-/**có đánh dấu hội thoại này là chưa đọc không */
-function isNewMessage(): boolean {
-  // nếu đang chọn hội thoại này thì không hiện
-  if (
-    conversationStore.select_conversation?.data_key ===
-      $props.source?.data_key &&
-    !conversationStore.select_conversation?.is_force_unread
-  )
-    return false
+  // nếu thời gian trong tuần thì chỉ hiện ago
+  if (isThisWeek(timestamp)) return genAgoDate(timestamp)
 
-  // tính toán dựa trên số tin nhắn chưa đọc
-  return !!$props.source?.unread_message_amount
+  // nếu trong năm thì hiện ngày tháng
+  if (isThisYear(timestamp)) return format_date(timestamp, 'dd/MM')
+
+  // nếu khác năm thì hiện full
+  return format_date(timestamp, 'dd/MM/yy')
 }
 </script>

@@ -3,25 +3,23 @@
     :class="source?.unread_message_amount ? 'font-medium' : 'text-slate-500'"
     class="flex items-center text-xs gap-2 justify-between"
   >
-    <div class="truncate">
+    <div class="truncate h-5">
       <template v-if="source?.last_message_type === 'page'">
         {{ $t('v1.view.main.dashboard.chat.you') }}
       </template>
       {{ source?.last_message }}
     </div>
-    <div class="flex-shrink-0">
-      {{ formatLastMessageTime(source?.last_message_time) }}
-    </div>
+    <Badge
+      v-if="isNewMessage()"
+      :value="source?.unread_message_amount!"
+      class="flex-shrink-0"
+    />
   </div>
 </template>
 <script setup lang="ts">
-import {
-  format as format_date,
-  isThisWeek,
-  isThisYear,
-  formatDistanceToNow,
-} from 'date-fns'
-import viLocale from 'date-fns/locale/vi'
+import { useConversationStore } from '@/stores'
+
+import Badge from '@/components/Badge.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 
@@ -32,24 +30,19 @@ const $props = withDefaults(
   {}
 )
 
-/**20 giây trước, 2 ngày trước, ... */
-function genAgoDate(timestamp: number) {
-  return formatDistanceToNow(new Date(timestamp), {
-    addSuffix: true,
-    locale: viLocale,
-  })
-}
-/**format lại thời gian trước khi hiển thị */
-function formatLastMessageTime(timestamp?: number) {
-  if (!timestamp) return ''
+const conversationStore = useConversationStore()
 
-  // nếu thời gian trong tuần thì chỉ hiện ago
-  if (isThisWeek(timestamp)) return genAgoDate(timestamp)
+/**có đánh dấu hội thoại này là chưa đọc không */
+function isNewMessage(): boolean {
+  // nếu đang chọn hội thoại này thì không hiện
+  if (
+    conversationStore.select_conversation?.data_key ===
+      $props.source?.data_key &&
+    !conversationStore.select_conversation?.is_force_unread
+  )
+    return false
 
-  // nếu trong năm thì hiện ngày tháng
-  if (isThisYear(timestamp)) return format_date(timestamp, 'dd/MM')
-
-  // nếu khác năm thì hiện full
-  return format_date(timestamp, 'dd/MM/yy')
+  // tính toán dựa trên số tin nhắn chưa đọc
+  return !!$props.source?.unread_message_amount
 }
 </script>

@@ -19,6 +19,7 @@ import type { ConversationInfo } from '../interface/app/conversation'
 import type { AppInstalledInfo } from '../interface/app/widget'
 import type { Router } from 'vue-router'
 import type { MessageInfo } from '../interface/app/message'
+import { copyToClipboard } from '../helper/copyWithAlert'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -386,4 +387,63 @@ export function calcIsPageRepSlow(
 
   // tính dựa vào hàm trước
   return calcIsClientRepSlow(page_id, before_date, BEFORE_INDEX, list_message)
+}
+
+/**xử lý chuỗi tin nhắn trước khi hiển thị */
+export function renderText(text: string) {
+  /**regex kiểm tra số điện thoại */
+  const REGEX_PHONE =
+    /[\/]?(?:[+]84|0)(?:[\-\.\s])?[35789]+[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}/
+
+  /**regex kiểm tra email */
+  const REGEX_EMAIL =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
+
+  /**regex kiểm tra url */
+  const REGEX_URL = /((http|https)?:\/\/[^\s]+)/g
+
+  /**số điện thoại */
+  let phone = REGEX_PHONE.exec(text)?.[0]?.trim()
+  /**email */
+  let email = REGEX_EMAIL.exec(text)?.[0]?.trim()
+  /**đường dẫn url */
+  let url = REGEX_URL.exec(text)?.[0]?.trim()
+
+  // nếu sdt nằm trong link, thì loại bỏ sdt tìm được
+  if (phone && url && url.includes(phone)) phone = undefined
+
+  // nếu trong sdt có dấu '/' thì bỏ sdt tìm được
+  if (phone?.includes('/')) phone = undefined
+
+  // thay đổi hiển thị của sdt
+  if (phone)
+    text = text.replace(phone, ` <span class="phone-detect">${phone}</span>`)
+
+  // thay đổi hiển thị của email
+  if (email)
+    text = text.replace(email, ` <span class="email-detect">${email}</span>`)
+
+  // thay đổi hiển thị của url
+  if (url)
+    text = text.replace(
+      url,
+      `<a class="link-detect" href="${url}" target="_blank">${url}</a>`
+    )
+
+  // trả về chuỗi đã xử lý
+  return text
+}
+
+/**xử lý sự kiện click vào tin nhắn để sao chép sdt, email */
+export function clickCopyPhoneEmail($event: MouseEvent) {
+  /**mục tiêu thực tế được click */
+  const TARGET = $event.target as HTMLElement
+
+  // nếu không phải là sdt, email thì thôi
+  if (!['phone-detect', 'email-detect'].includes(TARGET.className)) return
+
+  /**giá trị cấn copy */
+  const VALUE = TARGET.innerText
+
+  copyToClipboard(VALUE)
 }

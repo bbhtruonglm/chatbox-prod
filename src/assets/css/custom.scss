@@ -48,3 +48,12 @@
 .word-break-break-word {
   word-break: break-word;
 }
+
+.phone-detect,
+.email-detect {
+  @apply cursor-copy text-white rounded px-1 bg-orange-500 text-sm;
+}
+
+.link-detect {
+  @apply text-blue-500 underline;
+}

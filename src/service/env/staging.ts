@@ -84,7 +84,7 @@ const ENV: Env = {
         redirect_uri: 'https://localhost:8000/dashboard/select-page?connect_page=ZALO_OA',
     },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM', 'ZALO_OA'],
-    img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
+    img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar'
 }
 
 export default ENV
