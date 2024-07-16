@@ -14,6 +14,6 @@
 <script setup lang="ts">
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Menu from '@/views/Dashboard/Org/Menu.vue'
-import SelectOrg from '@/views/Dashboard/SelectPage/SelectOrg.vue'
+import SelectOrg from '@/views/Dashboard/Org/SelectOrg.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 </script>

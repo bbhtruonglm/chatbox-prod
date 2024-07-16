@@ -1,17 +1,23 @@
 import { read_me_chatbot_user } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
-import { useChatbotUserStore } from '@/stores'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
 import { onMounted } from 'vue'
 import { signout } from '@/service/helper/oauth'
+import { read_org } from '@/service/api/chatbox/billing'
+import { toastError } from '@/service/helper/alert'
 
 import type { CbError } from '@/service/interface/function'
 
 /**load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
   const chatbotUserStore = useChatbotUserStore()
+  const orgStore = useOrgStore()
 
   // init các dữ liệu cần thiết
-  onMounted(() => getMeChatbotUser())
+  onMounted(() => {
+    getMeChatbotUser()
+    getAllOrg()
+  })
 
   /**đọc các thông tin của user hiện tại đang đăng nhập */
   function getMeChatbotUser() {
@@ -35,6 +41,16 @@ export function initRequireData() {
       ],
       undefined
     )
+  }
+  /**lấy danh sách các tổ chức của người dùng này */
+  async function getAllOrg() {
+    try {
+      // lấy danh sách các tổ chức
+      orgStore.list_org = await read_org()
+    } catch (e) {
+      // hiển thị thông báo lỗi
+      toastError(e)
+    }
   }
 
   return { getMeChatbotUser }

@@ -2,14 +2,11 @@
   <div class="flex items-center gap-3">
     <Select
       v-if="orgStore.list_org?.length"
-      v-model="selected_org_id"
+      v-model="orgStore.selected_org_id"
       :filter_off="true"
       :placeholder="$t('v1.view.main.dashboard.select_page.select_org')"
       class="w-60 text-slate-700"
     >
-      <Option value="ALL_ORG">
-        {{ $t('v1.view.main.dashboard.select_page.all_org') }}
-      </Option>
       <Option
         v-for="org of orgStore.list_org"
         :value="org.org_id"
@@ -29,7 +26,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { watch } from 'vue'
 import { useOrgStore } from '@/stores'
 
 import Select from '@/components/Select.vue'
@@ -38,6 +35,18 @@ import Loading from '@/components/Loading.vue'
 
 const orgStore = useOrgStore()
 
-// biến tạm, xử lý sau
-const selected_org_id = ref<string>('ALL_ORG')
+// nạp dữ liệu tổ chức hiện tại khi load toàn bộ danh sách tổ chức
+watch(() => orgStore.list_org, getCurrentOrgInfo)
+
+/**nạp dữ liệu của tổ chức hiện tại được chọn */
+function getCurrentOrgInfo() {
+  // nếu chưa có tổ chức nào được chọn thì chọn tổ chức đầu tiên
+  if (!orgStore.selected_org_id)
+    orgStore.selected_org_id = orgStore.list_org?.[0]?.org_id
+
+  // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức
+  orgStore.selected_org_info = orgStore.list_org?.find(
+    org => org.org_id === orgStore.selected_org_id
+  )
+}
 </script>

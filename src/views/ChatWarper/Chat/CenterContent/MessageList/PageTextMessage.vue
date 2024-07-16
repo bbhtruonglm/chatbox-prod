@@ -1,11 +1,12 @@
 <template>
   <div
+    @click="clickCopyPhoneEmail"
+    v-html="renderText(current_message.message_text || '')"
     class="message-box z-1 break-words whitespace-pre-line bg-[#FFF8E1]"
-  >
-    {{ current_message.message_text }}
-  </div>
+  />
 </template>
 <script setup lang="ts">
+import { clickCopyPhoneEmail, renderText } from '@/service/function'
 import type { MessageInfo } from '@/service/interface/app/message'
 
 const $props = withDefaults(

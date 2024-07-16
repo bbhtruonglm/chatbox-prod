@@ -5,9 +5,11 @@
     </template>
     <template #title>
       {{ $t('v1.common.page') }}
-      ({{ size(pageStore.active_page_list) }}/{{
-        size(pageStore.active_page_list)
-      }})
+      (
+      {{ orgStore.selected_org_info?.org_package?.org_current_page }}
+      /
+      {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
+      )
     </template>
     <template #action>
       <button
@@ -86,9 +88,9 @@
 <script setup lang="ts">
 import { update_page } from '@/service/api/chatbox/n4-service'
 import { flow } from '@/service/helper/async'
-import { ref } from 'vue'
-import { usePageStore, useCommonStore } from '@/stores'
-import { size } from 'lodash'
+import { ref, computed } from 'vue'
+import { usePageStore, useCommonStore, useOrgStore } from '@/stores'
+import { set, size } from 'lodash'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
@@ -103,6 +105,7 @@ import type { PageInfo } from '@/service/interface/app/page'
 
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
+const orgStore = useOrgStore()
 
 /**modal xác nhận huỷ trang */
 const confirm_unactive_modal_ref = ref<InstanceType<typeof Alert>>()

@@ -13,6 +13,8 @@ export interface Env {
         n5_app_v1: string
         n5_app_v2: string
         n6_static: string
+        /**api quản lý tổ chức */
+        billing: string
         n8_merge: string
         widget: string
         page_setting_view: string

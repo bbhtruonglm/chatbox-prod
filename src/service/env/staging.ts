@@ -13,6 +13,7 @@ const ENV: Env = {
         n4_service_v2: 'https://dev-api.botbanhang.vn/v1/n4_service',
         n5_app_v2: 'https://dev-api.botbanhang.vn/v1/n5_app',
         n6_static: 'https://dev-api.botbanhang.vn/v1/n6_static',
+        billing: 'https://dev-api.botbanhang.vn/v1/billing',
 
         n4_service_v1: 'https://service.sellingpage.net',
         n5_app_v1: 'https://app.sellingpage.net',
@@ -84,7 +85,7 @@ const ENV: Env = {
         redirect_uri: 'https://localhost:8000/dashboard/select-page?connect_page=ZALO_OA',
     },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM', 'ZALO_OA'],
-    img_host: 'https://dev.sellingpage.net/v1/n6_static/app/facebook/avatar'
+    img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar'
 }
 
 export default ENV
