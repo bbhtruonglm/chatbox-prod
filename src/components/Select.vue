@@ -40,7 +40,7 @@
       <input
         ref="select_input_ref"
         type="text"
-        class="rounded-lg w-full h-full pl-8 pr-8 focus:outline-none text-sm"
+        class="rounded-lg w-full pl-8 pr-8 h-9 focus:outline-none text-sm"
         :placeholder="placeholder"
         v-model="search"
       />
