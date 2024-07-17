@@ -52,7 +52,7 @@ import { ref } from 'vue'
 
 import CloseIcon from '@/components/Icons/Close.vue'
 
-const $emit = defineEmits(['close_modal'])
+const $emit = defineEmits(['close_modal', 'open_modal'])
 
 const $props = withDefaults(
   defineProps<{
@@ -78,6 +78,8 @@ function toggleModal() {
 
   // bắn sự kiện ra ngoài khi modal đã tắt
   if (!is_open.value) $emit('close_modal')
+  // bắn sự kiện ra ngoài khi modal đã mở
+  else $emit('open_modal')
 }
 
 // public chức năng ẩn hiện modal để có thể được gọi từ bên ngoài component

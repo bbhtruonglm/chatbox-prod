@@ -1,4 +1,5 @@
 import type { ChatbotUserInfo } from "./chatbot_user"
+import type { PageInfo } from "./page"
 
 /**tổ chức */
 export interface OrgInfo {
@@ -119,3 +120,13 @@ export interface MemberShipInfo {
 
 /**gói của tổ chức */
 export type OrgPackage = 'FREE' | 'TRIAL' | 'PRO' | 'BUSINESS'
+
+/**bảng tạm liên kết giữa tổ chức và trang */
+export interface OwnerShipInfo {
+  /**inject thêm thông tin của trang */
+  page_info?: PageInfo
+  /**id của tổ chức */
+  org_id?: string
+  /**id của trang của tổ chức */
+  page_id?: string
+}

@@ -798,6 +798,10 @@ const source: Language = {
               remove_widget: 'Xoá widget',
             },
           },
+          org_page: {
+            title: 'Thêm trang vào tổ chức',
+            guild: 'Chuyển trang về tổ chức của bạn'
+          }
         },
       },
     },

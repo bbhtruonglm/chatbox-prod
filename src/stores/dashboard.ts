@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
+
 import type { OrgInfo } from '@/service/interface/app/billing'
 
 /**store chọn trang */
@@ -78,10 +79,7 @@ export const useOrgStore = defineStore('org_store', () => {
   const is_loading = ref(false)
   /**danh sách các tổ chức của user này */
   const list_org = ref<OrgInfo[]>()
-  /**
-   * id của tổ chức đang được chọn
-   * - nếu là ALL_ORG thì hiển thị tất cả tổ chức
-   */
+  /**id của tổ chức đang được chọn */
   const selected_org_id = ref<string | undefined>(getLocal('selected_org_id', ''))
   // lưu lại data vào local để khi f5 không bị reset
   saveLocal(selected_org_id, 'selected_org_id')
