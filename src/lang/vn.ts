@@ -672,7 +672,7 @@ const source: Language = {
               title: 'Cài đặt chung',
               require_two_factor: 'Yêu cầu bật xác thực 2 lớp',
               member: 'Thành viên',
-              add_history: 'Đã thêm {count} ngày trước',
+              add_history: 'Đã thêm {duration}',
               remove_staff: 'Xoá nhân viên',
               customer_info: {
                 title: 'Thông tin khách hàng',
@@ -689,6 +689,16 @@ const source: Language = {
                 guild_2:
                   'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới hotro@botbanhang.vn',
               },
+              staff: {
+                title: 'Thêm nhân viên vào tổ chức',
+                guild: 'Danh sách các nhân viên trong các trang mà bạn sở hữu',
+                find: 'Tìm kiếm nhân viên',
+                inactive: {
+                  title: 'Huỷ kích hoạt nhân viên: {name}',
+                  explain:
+                    'Nhân viên này sẽ bị bỏ khỏi Doanh nghiệp, gói cước.',
+                },
+              }
             },
             pay: {
               account: 'Tài khoản',

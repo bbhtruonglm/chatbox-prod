@@ -116,6 +116,7 @@ export interface MemberShipInfo {
   staff_id?: string
   /**vai trò của nhân viên trong tổ chức */
   ms_role?: 'ADMIN' | 'STAFF'
+  createdAt?: string
 }
 
 /**gói của tổ chức */

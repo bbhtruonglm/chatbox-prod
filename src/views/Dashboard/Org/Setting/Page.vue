@@ -55,9 +55,9 @@
     :selected_page
     ref="confirm_inactive_modal_ref"
   />
-  <OrgPage
+  <OwnerShip
     @done="getOs()"
-    ref="org_page_ref"
+    ref="owner_ship_ref"
   />
 </template>
 <script setup lang="ts">
@@ -68,7 +68,7 @@ import { toastError } from '@/service/helper/alert'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
-import OrgPage from '@/views/Dashboard/OrgPage.vue'
+import OwnerShip from '@/views/Dashboard/OwnerShip.vue'
 import ConfirmInactive from '@/views/Dashboard/Org/Setting/Page/ConfirmInactive.vue'
 
 import StackIcon from '@/components/Icons/Stack.vue'
@@ -84,7 +84,7 @@ const orgStore = useOrgStore()
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**modal thêm trang vào tổ chức */
-const org_page_ref = ref<InstanceType<typeof OrgPage>>()
+const owner_ship_ref = ref<InstanceType<typeof OwnerShip>>()
 /**page đang được chọn */
 const selected_page = ref<PageInfo>()
 /**danh sách trang trong tổ chức */
@@ -148,6 +148,6 @@ function openAddPageModal() {
   if (isReachPageQuota()) return
 
   // mở modal thêm trang
-  org_page_ref.value?.toggleModal()
+  owner_ship_ref.value?.toggleModal()
 }
 </script>
