@@ -27,6 +27,8 @@ export interface OrgInfo {
     org_address?: string
     /**email tổ chức */
     org_email?: string
+    /**đại diện tổ chức */
+    org_representative?: string
   }
   /**các thiết lập của tổ chức */
   org_config?: {

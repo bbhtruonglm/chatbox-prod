@@ -8,44 +8,85 @@
     </template>
     <template #action>
       <button
+        v-if="!is_edit"
+        @click="activeEdit"
         class="bg-blue-600 text-white py-1 px-4 rounded-md text-sm font-medium"
       >
         {{ $t('v1.common.change') }}
       </button>
+      <div
+        v-else
+        class="flex gap-2"
+      >
+        <button
+          @click="save"
+          class="bg-green-600 text-white py-1 px-4 rounded-md text-sm font-medium"
+        >
+          {{ $t('v1.common.ok') }}
+        </button>
+        <button
+          @click="cancelEdit"
+          class="bg-gray-600 text-white py-1 px-4 rounded-md text-sm font-medium"
+        >
+          {{ $t('v1.common.cancel') }}
+        </button>
+      </div>
     </template>
     <template #item>
       <div class="grid grid-cols-2 text-sm font-medium gap-2 pr-5">
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.customer_code')"
-          value="BC-00017337"
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.customer_code')
+          "
+          v-model="org_info.org_customer_code"
+          :is_edit
         />
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.contract_code')"
-          value="BBH-00017337/2009"
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.contract_code')
+          "
+          v-model="org_info.org_contract_code"
+          :is_edit
         />
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.company_name')"
-          value="Chatbot Việt Nam"
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.company_name')
+          "
+          v-model="org_info.org_company_name"
+          :is_edit
         />
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.tax_code')"
-          value="0303030303"
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.tax_code')
+          "
+          v-model="org_info.org_tax_code"
+          :is_edit
         />
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.representative')"
-          value="Lê Văn A"
+          :title="
+            $t(
+              'v1.view.main.dashboard.org.setting.customer_info.representative'
+            )
+          "
+          v-model="org_info.org_representative"
+          :is_edit
         />
         <Item
-          :title="$t('v1.view.main.dashboard.org.setting.customer_info.address')"
-          value="Biệt thự số 1, đường số abc, phường abc, quận abc, TP.HCM"
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.address')
+          "
+          v-model="org_info.org_address"
+          :is_edit
         />
         <Item
           :title="$t('v1.view.main.dashboard.org.setting.customer_info.phone')"
-          value="0909090909"
+          v-model="org_info.org_phone"
+          :is_edit
         />
         <Item
           :title="$t('v1.view.main.dashboard.org.setting.customer_info.email')"
-          value="hotro@botbanhang.vn"
+          v-model="org_info.org_email"
+          :is_edit
         />
       </div>
       <ul class="list-disc list-inside text-xs text-slate-500">
@@ -54,14 +95,89 @@
         </li>
         <li class="pl-4 -indent-4">
           {{ $t('v1.view.main.dashboard.org.setting.customer_info.guild_2') }}
+          hotro@botbanhang.vn
         </li>
       </ul>
     </template>
   </CardItem>
 </template>
 <script setup lang="ts">
+import { useOrgStore } from '@/stores'
+import { computed, ref } from 'vue'
+import { set } from 'lodash'
+import { copy } from '@/service/helper/format'
+import { toast, toastError } from '@/service/helper/alert'
+import { update_org } from '@/service/api/chatbox/billing'
+import { useI18n } from 'vue-i18n'
+
 import Item from '@/views/Dashboard/Org/Setting/CustomerInfo/Item.vue'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
+
+import type { OrgInfo } from '@/service/interface/app/billing'
+
+const orgStore = useOrgStore()
+const { t: $t } = useI18n()
+
+/**có kích hoat chế độ sửa không */
+const is_edit = ref(false)
+/**dữ liệu trước khi sửa */
+const old_info = ref<OrgInfo['org_info']>({})
+
+/** Lấy thông tin khách hàng */
+const org_info = computed({
+  get() {
+    return orgStore.selected_org_info?.org_info || {}
+  },
+  set(val) {
+    set(orgStore, 'selected_org_info.org_info', val)
+  },
+})
+
+/**bắt đầu chỉnh sửa nội dung */
+function activeEdit() {
+  // lưu lại thông tin cũ
+  old_info.value = copy(org_info.value)
+
+  // kích hoạt chế độ sửa
+  is_edit.value = true
+}
+/**hủy bỏ chỉnh sửa */
+function cancelEdit() {
+  // nếu đang xử lý thì không cho huỷ
+  if (orgStore.is_loading) return
+
+  // khôi phục lại thông tin cũ
+  org_info.value = copy(old_info.value || {})
+
+  // tắt chế độ sửa
+  is_edit.value = false
+}
+/**lưu lại thông tin mới */
+async function save() {
+  // nếu chưa chọn org thì không làm gì
+  if (!orgStore.selected_org_id || orgStore.is_loading) return
+
+  // bật chế độ loading
+  orgStore.is_loading = true
+
+  try {
+    // gửi request lên server
+    await update_org(orgStore.selected_org_id, {
+      org_info: org_info.value,
+    })
+
+    // tắt chế độ sửa
+    is_edit.value = false
+
+    toast('success', $t('v1.common.update_success'))
+  } catch (e) {
+    // nếu có lỗi thì thông báo lỗi
+    toastError(e)
+  }
+
+  // tắt chế độ loading
+  orgStore.is_loading = false
+}
 </script>

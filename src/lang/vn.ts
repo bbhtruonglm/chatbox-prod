@@ -675,6 +675,7 @@ const source: Language = {
               add_history: 'Đã thêm {duration}',
               remove_staff: 'Xoá nhân viên',
               customer_info: {
+                empty: 'Chưa có dữ liệu',
                 title: 'Thông tin khách hàng',
                 customer_code: 'Mã khách hàng',
                 contract_code: 'Mã hợp đồng',
@@ -687,7 +688,7 @@ const source: Language = {
                 guild_1:
                   'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). Bot Bán Hàng sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
                 guild_2:
-                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới hotro@botbanhang.vn',
+                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới',
               },
               staff: {
                 title: 'Thêm nhân viên vào tổ chức',

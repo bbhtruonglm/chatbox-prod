@@ -61,7 +61,7 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useOrgStore } from '@/stores'
 import { read_os } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
@@ -90,7 +90,10 @@ const selected_page = ref<PageInfo>()
 /**danh sách trang trong tổ chức */
 const list_os = ref<OwnerShipInfo[]>()
 
-onMounted(() => getOs())
+// nạp dữ liệu trang khi component được mount
+onMounted(getOs)
+// nạp dữ liệu trang khi tổ chức được chọn
+watch(() => orgStore.selected_org_id, getOs)
 
 /**chuẩn bị huỷ kích hoạt trang */
 function prepareInactivePage(page?: PageInfo) {
@@ -113,13 +116,13 @@ async function doneInactivePage() {
 }
 /**lấy danh sách trang của tổ chức này */
 async function getOs() {
+  // nếu chưa chọn tổ chức thì thôi
+  if (!orgStore.selected_org_id) return
+
   // bật loading
   orgStore.is_loading = true
 
   try {
-    // nếu chưa chọn tổ chức thì thôi
-    if (!orgStore.selected_org_id) return
-
     // lấy danh sách trang của tổ chức
     list_os.value = await read_os(orgStore.selected_org_id)
 
