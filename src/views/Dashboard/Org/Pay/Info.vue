@@ -1,7 +1,6 @@
 <template>
   <AccountInfo />
-  <PackInfo type="FREE" />
-  <PackInfo type="MONTH" />
+  <PackInfo />
   <Analytic />
   <History />
 </template>

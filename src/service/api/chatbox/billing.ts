@@ -1,5 +1,5 @@
 import { chatboxSync } from '@/service/api/chatbox/common'
-import type { MemberShipInfo, OrgInfo, OwnerShipInfo } from '@/service/interface/app/billing'
+import type { MemberShipInfo, OrgInfo, OwnerShipInfo, TransactionInfo, WalletInfo } from '@/service/interface/app/billing'
 
 /**đọc danh sách tổ chức */
 export const read_org = async (): Promise<OrgInfo[]> =>
@@ -69,4 +69,22 @@ export const kick_ms = async (
   chatboxSync({
     uri: `${$env.host.billing}/app/member_ship/kick_member`,
     body: { org_id, member_id },
+  })
+
+/**đọc thông tin của ví */
+export const read_wallet = async (
+  org_id: string
+): Promise<WalletInfo> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/wallet/read_wallet`,
+    body: { org_id },
+  })
+
+/**đọc thông giao dịch */
+export const read_txn = async (
+  org_id: string
+): Promise<TransactionInfo[]> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/transaction/read_txn`,
+    body: { org_id },
   })
