@@ -165,7 +165,9 @@ export interface TransactionInfo {
   /**phương thức thanh toán */
   txn_payment_method?: PaymentMethod
   /**các dữ liệu cần lưu thêm của giao dịch */
-  txn_data?: {}
+  txn_data?: {
+    user_info?: ChatbotUserInfo
+  }
   /**loại giao dịch */
   txn_type?: BillingType
   /**mô tả giao dịch */

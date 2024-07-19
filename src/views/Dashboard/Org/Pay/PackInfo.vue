@@ -179,9 +179,8 @@ import { format as date_format } from 'date-fns'
 import { computed, ref } from 'vue'
 import { useOrgStore } from '@/stores'
 import { set } from 'lodash'
-import { toast, toastError } from '@/service/helper/alert'
-import { update_org } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
+import { initRequireData } from '@/views/Dashboard/Org/composable'
 
 import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
@@ -192,6 +191,8 @@ import QueueIcon from '@/components/Icons/Queue.vue'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+const { updateOrg } = initRequireData()
 
 /**ref của modal mua gói mới */
 const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
@@ -210,32 +211,6 @@ const org_is_auto_charge = computed({
   },
 })
 
-/**update thông tin org lên server */
-async function updateOrg() {
-  // bật loading
-  orgStore.is_loading = true
-
-  try {
-    // nếu chưa chọn org thì thôi
-    if (!orgStore.selected_org_id) return
-
-    // gọi api update
-    orgStore.selected_org_info = await update_org(orgStore.selected_org_id, {
-      org_config: {
-        org_is_auto_charge: org_is_auto_charge.value,
-      },
-    })
-
-    // thông báo thành công
-    toast('success', $t('v1.common.update_success'))
-  } catch (e) {
-    // thông báo lỗi
-    toastError(e)
-  }
-
-  // tắt loading
-  orgStore.is_loading = false
-}
 /**có phải là gói miễn phí không */
 function isFreePack() {
   return orgStore.selected_org_info?.org_package?.org_package_type === 'FREE'

@@ -38,8 +38,19 @@
                 <td class="pr-2.5 py-3 sticky-left text-left">
                   {{ txn.txn_id }}
                 </td>
-                <td class="px-2.5 whitespace-nowrap text-left text-green-600">
-                  {{ $t('v1.view.main.dashboard.org.pay.status_list.paid') }}
+                <td
+                  :class="{
+                    'text-green-600': txn.txn_status === 'SUCCESS',
+                    'text-yellow-600': txn.txn_status === 'PENDING',
+                    'text-red-600': txn.txn_status === 'FAILED',
+                  }"
+                  class="px-2.5 whitespace-nowrap text-left"
+                >
+                  {{
+                    $t(
+                      `v1.view.main.dashboard.org.pay.status_list.${txn.txn_status}`
+                    )
+                  }}
                 </td>
                 <td class="px-2.5 whitespace-nowrap text-right">
                   {{ currency(txn.txn_amount) || 0 }}
@@ -49,7 +60,7 @@
                   {{ formatDate(txn.createdAt) }}
                 </td>
                 <td class="px-2.5 whitespace-nowrap text-left">
-                  {{ txn.user_id }}
+                  {{ txn.txn_data?.user_info?.full_name }}
                 </td>
                 <td
                   class="pl-2.5 text-right text-blue-700 cursor-pointer font-medium"

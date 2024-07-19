@@ -22,9 +22,15 @@
               {{ $t('v1.view.main.dashboard.org.pay.recharge.amount') }}
             </div>
             <div class="p-4 pt-0 flex flex-col gap-2">
-              <input
-                type="text"
-                value="500.000"
+              <Cleave
+                v-model="amount"
+                :options="{
+                  numeral: true,
+                  numeralThousandsGroupStyle: 'thousand',
+                  delimiter: '.',
+                  numeralDecimalMark: ',',
+                  numeralIntegerScale: 9,
+                }"
                 class="focus:outline-orange-500 py-2 px-3 rounded-md border w-[530px]"
               />
               <div class="text-sm text-slate-500">
@@ -44,22 +50,24 @@
             <div class="p-4 pt-0 flex flex-col gap-5">
               <div class="flex gap-5">
                 <Radio
-                  v-model="invoice_type"
-                  value="NO"
+                  v-model="is_issue_invoice"
+                  :value="false"
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.no_invoice')
                   "
+                  :disabled="PAY_STEP === 'STEP_2'"
                 />
                 <Radio
-                  v-model="invoice_type"
-                  value="YES"
+                  v-model="is_issue_invoice"
+                  :value="true"
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
                   "
+                  :disabled="PAY_STEP === 'STEP_2'"
                 />
               </div>
               <div
-                v-if="invoice_type === 'YES'"
+                v-if="is_issue_invoice"
                 class="flex flex-col gap-1 text-sm"
               >
                 <div class="font-semibold">
@@ -70,12 +78,15 @@
                   }}
                 </div>
                 <div class="font-semibold">
-                  CTCP Công nghệ Chatbot Việt Nam -
+                  {{ orgStore.selected_org_info?.org_info?.org_company_name }}
+                  -
                   {{
                     $t(
                       'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
                     )
-                  }}: 0108514811
+                  }}
+                  :
+                  {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -85,7 +96,9 @@
                       )
                     }}:
                   </div>
-                  <div>Toà nhà Tây Hà Tower, Nam Từ Liêm, Hà Nội</div>
+                  <div>
+                    {{ orgStore.selected_org_info?.org_info?.org_address }}
+                  </div>
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -95,7 +108,11 @@
                       )
                     }}:
                   </div>
-                  <div>Lê Anh Tiến</div>
+                  <div>
+                    {{
+                      orgStore.selected_org_info?.org_info?.org_representative
+                    }}
+                  </div>
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -105,7 +122,9 @@
                       )
                     }}:
                   </div>
-                  <div>0988123123</div>
+                  <div>
+                    {{ orgStore.selected_org_info?.org_info?.org_phone }}
+                  </div>
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -115,7 +134,9 @@
                       )
                     }}:
                   </div>
-                  <div>minh@botbanhang.vn</div>
+                  <div>
+                    {{ orgStore.selected_org_info?.org_info?.org_email }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -126,146 +147,26 @@
               {{ $t('v1.view.main.dashboard.org.pay.recharge.pay') }}
             </div>
             <div class="p-4 pt-0 flex flex-col gap-5">
-              <template v-for="payment_method of LIST_PAYMENT_METHOD">
+              <template v-for="method of LIST_PAYMENT_METHOD">
                 <Radio
                   v-if="
                     PAY_STEP === 'STEP_1' ||
-                    (PAY_STEP === 'STEP_2' &&
-                      selected_payment_method === payment_method.value)
+                    (PAY_STEP === 'STEP_2' && payment_method === method.value)
                   "
-                  v-model="selected_payment_method"
-                  :value="payment_method.value"
-                  :title="payment_method.title"
+                  v-model="payment_method"
+                  :value="method.value"
+                  :title="method.title"
+                  :disabled="method.disabled"
+                  :class="{
+                    '!cursor-not-allowed': method.disabled,
+                  }"
                 />
               </template>
               <template v-if="PAY_STEP === 'STEP_2'">
-                <template v-if="selected_payment_method === 'TRANSFER'">
-                  <div
-                    class="rounded-lg w-[674px] border border-slate-300 grid grid-cols-2 overflow-hidden text-sm"
-                  >
-                    <div
-                      class="bg-slate-200 p-5 flex flex-col gap-2.5 border-r border-slate-300"
-                    >
-                      <div>
-                        <div class="text-slate-700">
-                          {{
-                            $t(
-                              'v1.view.main.dashboard.org.pay.recharge.transfer_info.account'
-                            )
-                          }}:
-                        </div>
-                        <div class="flex gap-3 items-center">
-                          <div
-                            class="border border-green-800 bg-green-50 py-2 px-3 rounded-lg font-semibold w-fit"
-                          >
-                            1919191919191919
-                          </div>
-                          <div class="text-blue-700 cursor-copy">
-                            {{ $t('v1.common.copy') }}
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-slate-700">
-                          {{
-                            $t(
-                              'v1.view.main.dashboard.org.pay.recharge.transfer_info.name'
-                            )
-                          }}:
-                        </div>
-                        <div
-                          class="border border-green-800 bg-green-50 py-2 px-3 rounded-lg font-semibold w-fit"
-                        >
-                          CTCP Công nghệ Chatbot Việt Nam
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-slate-700">
-                          {{
-                            $t(
-                              'v1.view.main.dashboard.org.pay.recharge.transfer_info.bank'
-                            )
-                          }}:
-                        </div>
-                        <div class="font-medium">
-                          TCB - Ngân hàng Kỹ thương Việt Nam - Chi nhánh Hà
-                          Thành
-                        </div>
-                      </div>
-                    </div>
-                    <div class="p-5 flex flex-col gap-2.5 items-center">
-                      <div>
-                        {{
-                          $t(
-                            'v1.view.main.dashboard.org.pay.recharge.transfer_info.qr'
-                          )
-                        }}
-                      </div>
-                      <img
-                        src="@/assets/imgs/demo_qr.png"
-                        class="w-44 h-44"
-                      />
-                    </div>
-                  </div>
-                  <div
-                    v-html="
-                      $t(
-                        'v1.view.main.dashboard.org.pay.recharge.transfer_info.guild'
-                      )
-                    "
-                    class="text-slate-700 w-[674px]"
-                  />
-                  <div
-                    class="text-sm py-3 px-5 rounded-lg bg-yellow-50 w-[572px]"
-                  >
-                    <div class="font-semibold">
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.pay.recharge.transfer_info.hint'
-                        )
-                      }}:
-                    </div>
-                    <ul class="list-disc list-inside">
-                      <li class="pl-3">
-                        {{
-                          $t(
-                            'v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_1'
-                          )
-                        }}
-                        <a
-                          href="javascript:;"
-                          class="underline"
-                          >{{
-                            $t(
-                              'v1.view.main.dashboard.org.pay.recharge.transfer_info.here'
-                            )
-                          }}</a
-                        >
-                      </li>
-                      <li class="pl-3">
-                        {{
-                          $t(
-                            'v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_2'
-                          )
-                        }}
-                      </li>
-                      <li class="pl-3">
-                        {{
-                          $t(
-                            'v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_3'
-                          )
-                        }}
-                      </li>
-                      <li class="pl-3">
-                        {{
-                          $t(
-                            'v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_4'
-                          )
-                        }}
-                      </li>
-                    </ul>
-                  </div>
+                <template v-if="payment_method === 'TRANSFER'">
+                  <TransferInfo />
                   <button
+                    @click="checkPayment"
                     class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
                   >
                     {{
@@ -279,7 +180,7 @@
               </template>
               <button
                 v-if="PAY_STEP === 'STEP_1'"
-                @click="nextStep"
+                @click="createTxn"
                 class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit"
               >
                 {{ $t('v1.view.main.dashboard.org.pay.recharge.continue') }}
@@ -294,17 +195,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Cleave from 'vue-cleave-component'
+import { useOrgStore } from '@/stores'
+import { toast, toastError } from '@/service/helper/alert'
+import {
+  create_txn,
+  read_txn,
+  read_wallet,
+} from '@/service/api/chatbox/billing'
+import { useRouter } from 'vue-router'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
+import TransferInfo from '@/views/Dashboard/Org/Pay/ReCharge/TransferInfo.vue'
 
 import BackIcon from '@/components/Icons/Back.vue'
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
+import type { TransactionInfo } from '@/service/interface/app/billing'
+
 const { t: $t } = useI18n()
+const orgStore = useOrgStore()
+const $router = useRouter()
 
 /**các phương thức thanh toán */
-const LIST_PAYMENT_METHOD = [
+const LIST_PAYMENT_METHOD: {
+  title: string
+  value: TransactionInfo['txn_payment_method']
+  disabled?: boolean
+}[] = [
   {
     title: $t('v1.view.main.dashboard.org.pay.recharge.transfer'),
     value: 'TRANSFER',
@@ -312,31 +231,118 @@ const LIST_PAYMENT_METHOD = [
   {
     title: $t('v1.view.main.dashboard.org.pay.recharge.vnpay'),
     value: 'VNPAY',
+    disabled: true,
   },
   {
     title: $t('v1.view.main.dashboard.org.pay.recharge.zalopay'),
-    value: 'ZALOPAY',
+    value: 'ZALO_PAY',
+    disabled: true,
   },
   {
     title: $t('v1.view.main.dashboard.org.pay.recharge.momo'),
     value: 'MOMO',
+    disabled: true,
   },
   {
     title: $t('v1.view.main.dashboard.org.pay.recharge.card'),
     value: 'CARD',
+    disabled: true,
   },
 ]
-
-/**có xuất hoá đơn không */
-const invoice_type = ref<'YES' | 'NO'>('NO')
-/**phương thức thanh toán đang chọn */
-const selected_payment_method = ref<string>('TRANSFER')
 /**bước thanh toán */
 const PAY_STEP = ref<'STEP_1' | 'STEP_2'>('STEP_1')
 
-/**tiếp tục thanh toán */
-function nextStep() {
-  // chuyển sang bước 2
-  PAY_STEP.value = 'STEP_2'
+/**số tiền nạp */
+const amount = ref<string>('500000')
+/**có xuất hoá đơn không */
+const is_issue_invoice = ref<boolean>(false)
+/**phương thức thanh toán đang chọn */
+const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
+/**thông tin giao dịch mới tạo */
+const txn_info = ref<TransactionInfo>()
+
+/**tạo mới giao dịch */
+async function createTxn() {
+  // nếu chưa chọn tổ chức nào thì không thực hiện
+  if (!orgStore.selected_org_id || orgStore.is_loading) return
+
+  // kích hoạt trạng thái loading
+  orgStore.is_loading = true
+
+  try {
+    /**số tiền nạp */
+    const AMOUNT = Number(amount.value)
+
+    // kiểm tra số tiền nạp có hợp lệ không
+    if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
+      throw $t('v1.view.main.dashboard.org.pay.recharge.amount_description')
+
+    /**lấy thông tin ví hiện tại */
+    const WALLET_INFO = await read_wallet(orgStore.selected_org_id)
+
+    /**id ví */
+    const WALLET_ID = WALLET_INFO?.wallet_id
+
+    // kiểm tra ví có tồn tại không
+    if (!WALLET_ID)
+      throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
+
+    // tạo giao dịch
+    txn_info.value = await create_txn(
+      orgStore.selected_org_id,
+      WALLET_ID,
+      AMOUNT,
+      payment_method.value,
+      is_issue_invoice.value
+    )
+
+    // chuyển sang bước 2
+    PAY_STEP.value = 'STEP_2'
+  } catch (e) {
+    // hiển thị thông báo lỗi
+    toastError(e)
+  }
+
+  // tắt trạng thái loading
+  orgStore.is_loading = false
+}
+/**kiểm tra trạng thái thanh toán đã thành công chưa */
+async function checkPayment() {
+  // nếu chưa chọn tổ chức nào thì không thực hiện
+  if (
+    !orgStore.selected_org_id ||
+    !txn_info.value?.txn_id ||
+    orgStore.is_loading
+  )
+    return
+
+  // kích hoạt trạng thái loading
+  orgStore.is_loading = true
+
+  try {
+    /**kết quả trả về */
+    const RES = await read_txn(orgStore.selected_org_id, txn_info.value?.txn_id)
+
+    // nếu giao dịch chưa được xác minh thì thôi
+    if (RES?.[0]?.txn_status !== 'SUCCESS') throw 'NOT_SUCCESS'
+
+    // thông báo thành công
+    toast('success', $t('v1.view.main.dashboard.org.pay.recharge.success'))
+
+    // quay về trang chính
+    $router.push('/dashboard/org/pay/info')
+  } catch (e) {
+    // nếu giao dịch chưa thành công
+    if (e === 'NOT_SUCCESS')
+      toast(
+        'warning',
+        $t('v1.view.main.dashboard.org.pay.recharge.not_success')
+      )
+    // hiển thị thông báo lỗi
+    else toastError(e)
+  }
+
+  // tắt trạng thái loading
+  orgStore.is_loading = false
 }
 </script>

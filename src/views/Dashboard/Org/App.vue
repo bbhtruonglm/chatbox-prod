@@ -7,21 +7,33 @@
       {{ $t('v1.view.main.dashboard.org.app.title') }}
     </template>
     <template #item>
-      <Toggle class_toggle="peer-checked:bg-black">
+      <Toggle
+        v-model="org_is_ai_auto_translate"
+        class_toggle="peer-checked:bg-black"
+      >
         {{ $t('v1.view.main.dashboard.org.app.auto_translate_en') }}
       </Toggle>
-      <Toggle class_toggle="peer-checked:bg-black">
+      <Toggle
+        v-model="org_is_ai_auto_suggest_response"
+        class_toggle="peer-checked:bg-black"
+      >
         {{ $t('v1.view.main.dashboard.org.app.auto_hint_quick_answer') }}
       </Toggle>
-      <Toggle class_toggle="peer-checked:bg-black">
+      <Toggle
+        v-model="org_is_ai_auto_alert_complain"
+        class_toggle="peer-checked:bg-black"
+      >
         {{ $t('v1.view.main.dashboard.org.app.auto_alert_complain') }}
       </Toggle>
-      <Toggle class_toggle="peer-checked:bg-black">
+      <Toggle
+        v-model="org_is_ai_auto_auto_tag"
+        class_toggle="peer-checked:bg-black"
+      >
         {{ $t('v1.view.main.dashboard.org.app.auto_tag') }}
       </Toggle>
     </template>
   </CardItem>
-  <CardItem>
+  <!-- <CardItem>
     <template #icon>
       <SquaresPlusIcon class="w-5 h-5" />
     </template>
@@ -70,10 +82,14 @@
         </ActorItem>
       </div>
     </template>
-  </CardItem>
+  </CardItem> -->
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore } from '@/stores'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
+import { computed } from 'vue'
+import { set } from 'lodash'
+import { useI18n } from 'vue-i18n'
+import { initRequireData } from '@/views/Dashboard/Org/composable'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Toggle from '@/components/Toggle.vue'
@@ -90,4 +106,66 @@ import WebIcon from '@/components/Icons/Web.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 
 const chatbotUserStore = useChatbotUserStore()
+const orgStore = useOrgStore()
+const { t: $t } = useI18n()
+
+const { updateOrg } = initRequireData()
+
+/**AI tự động dịch */
+const org_is_ai_auto_translate = computed({
+  get() {
+    return orgStore.selected_org_info?.org_config?.org_is_ai_auto_translate
+  },
+  set(val) {
+    set(orgStore, 'selected_org_info.org_config.org_is_ai_auto_translate', val)
+
+    // cập nhật lên server
+    updateOrg()
+  },
+})
+/**AI tự động tạo câu trả lời */
+const org_is_ai_auto_suggest_response = computed({
+  get() {
+    return orgStore.selected_org_info?.org_config
+      ?.org_is_ai_auto_suggest_response
+  },
+  set(val) {
+    set(
+      orgStore,
+      'selected_org_info.org_config.org_is_ai_auto_suggest_response',
+      val
+    )
+
+    // cập nhật lên server
+    updateOrg()
+  },
+})
+/**AI tự động cảnh báo khách phàn nàn */
+const org_is_ai_auto_alert_complain = computed({
+  get() {
+    return orgStore.selected_org_info?.org_config?.org_is_ai_auto_alert_complain
+  },
+  set(val) {
+    set(
+      orgStore,
+      'selected_org_info.org_config.org_is_ai_auto_alert_complain',
+      val
+    )
+
+    // cập nhật lên server
+    updateOrg()
+  },
+})
+/**AI tự động gắn nhãn */
+const org_is_ai_auto_auto_tag = computed({
+  get() {
+    return orgStore.selected_org_info?.org_config?.org_is_ai_auto_auto_tag
+  },
+  set(val) {
+    set(orgStore, 'selected_org_info.org_config.org_is_ai_auto_auto_tag', val)
+
+    // cập nhật lên server
+    updateOrg()
+  },
+})
 </script>

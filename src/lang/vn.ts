@@ -747,7 +747,9 @@ const source: Language = {
               operator: 'Người thao tác',
               view: 'Xem',
               status_list: {
-                paid: 'Đã thanh toán',
+                SUCCESS: 'Đã thanh toán',
+                PENDING: 'Chờ thanh toán',
+                FAILED: 'Thanh toán thất bại',
               },
               upgrade: {
                 title: 'Gói nâng cấp',
@@ -764,6 +766,9 @@ const source: Language = {
                 company: 'Doanh nghiệp',
               },
               recharge: {
+                wrong_wallet_id: 'Thông tin tài khoản không chính xác',
+                not_success: 'Giao dịch chưa hoàn thành',
+                success: 'Giao dịch thành công',
                 amount: 'Số tiền nạp',
                 amount_description:
                   'Số tiền nạp tối thiểu 50.000đ, tối đa 250.000.000đ',

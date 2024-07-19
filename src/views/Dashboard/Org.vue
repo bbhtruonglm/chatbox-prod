@@ -10,7 +10,7 @@
     <template #content>
       <div class="flex gap-3">
         <SelectOrg />
-        <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay/info')" />
+        <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay')" />
       </div>
       <RouterView />
     </template>
