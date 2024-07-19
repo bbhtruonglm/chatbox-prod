@@ -1,4 +1,5 @@
 import type { ChatbotUserInfo } from "./chatbot_user"
+import type { PageInfo } from "./page"
 
 /**tổ chức */
 export interface OrgInfo {
@@ -26,6 +27,8 @@ export interface OrgInfo {
     org_address?: string
     /**email tổ chức */
     org_email?: string
+    /**đại diện tổ chức */
+    org_representative?: string
   }
   /**các thiết lập của tổ chức */
   org_config?: {
@@ -115,7 +118,92 @@ export interface MemberShipInfo {
   staff_id?: string
   /**vai trò của nhân viên trong tổ chức */
   ms_role?: 'ADMIN' | 'STAFF'
+  createdAt?: string
 }
 
 /**gói của tổ chức */
 export type OrgPackage = 'FREE' | 'TRIAL' | 'PRO' | 'BUSINESS'
+
+/**bảng tạm liên kết giữa tổ chức và trang */
+export interface OwnerShipInfo {
+  /**inject thêm thông tin của trang */
+  page_info?: PageInfo
+  /**id của tổ chức */
+  org_id?: string
+  /**id của trang của tổ chức */
+  page_id?: string
+}
+
+/**thông tin của ví */
+export interface WalletInfo {
+  /**id của ví */
+  wallet_id?: string
+  /**tổ chức sở hữu ví này: 1-1 */
+  org_id?: string
+  /**số dư hiện tại của ví */
+  wallet_balance?: number
+}
+
+/**thông tin giao dịch */
+export interface TransactionInfo {
+  /**id của giao dịch */
+  txn_id?: string
+  /**tổ chức thực hiện giao dịch này */
+  org_id?: string
+  /**id hoá đơn của giao dịch này */
+  invoice_id?: string
+  /**dánh dấu có xuất hoá đơn hay không */
+  txn_is_issue_invoice?: boolean
+  /**id của người đại diện tổ chức, người thực tế thực hiện giao dịch này */
+  user_id?: string
+  /**id của ví chủ của giao dịch */
+  wallet_id?: string
+  /**số tiền của giao dịch này */
+  txn_amount?: number
+  /**trạng thái của giao dịch */
+  txn_status?: TransactionStatus
+  /**phương thức thanh toán */
+  txn_payment_method?: PaymentMethod
+  /**các dữ liệu cần lưu thêm của giao dịch */
+  txn_data?: {}
+  /**loại giao dịch */
+  txn_type?: BillingType
+  /**mô tả giao dịch */
+  txn_description?: string
+  /**ngày tạo */
+  createdAt?: string
+}
+
+/**
+ * trạng thái của giao dịch
+ * - chờ thanh toán
+ * - thành công
+ * - thất bại
+ */
+export type TransactionStatus = 'PENDING' | 'SUCCESS' | 'FAILED'
+
+/**
+ * phương thức thanh toán
+ * - tiền mặt
+ * - chuyển khoản
+ * - VNPAY
+ * - ZALO PAY
+ * - MOMO
+ * - thẻ tín dụng hoặc thẻ ATM
+ */
+export type PaymentMethod =
+  | 'CASH'
+  | 'TRANSFER'
+  | 'VNPAY'
+  | 'ZALO_PAY'
+  | 'MOMO'
+  | 'CARD'
+  | 'INTERNAL'
+
+/**
+ * loại giao dịch
+ * - nạp tiền vào ví
+ * - rút tiền ra khỏi ví
+ * - thanh toán cho hóa đơn
+ */
+export type BillingType = 'DEPOSIT' | 'WITHDRAW' | 'PAYMENT'

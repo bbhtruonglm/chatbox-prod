@@ -1,4 +1,4 @@
-import { chatbox } from '@/service/api/chatbox/common'
+import { chatbox, chatboxSync } from '@/service/api/chatbox/common'
 
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
 import type { GetPageGroupStaff, GroupStaffInfo, PageList, PageWebsiteCreate, GetFbPostInfo } from '@/service/interface/app/page'
@@ -64,6 +64,17 @@ export const update_page = (
     uri: `${$env.host.n4_service_v2}/app/page/update_page`,
     body,
 }, proceed)
+/**cập nhật một số dữ liệu của page - bất đồng bộ */
+export const update_page_sync = async (
+    body: {
+        page_id?: string
+        is_priority?: boolean
+        is_active?: boolean
+    },
+) => chatboxSync({
+    uri: `${$env.host.n4_service_v2}/app/page/update_page`,
+    body,
+})
 
 /**đồng bộ dữ liệu page mới nhất từ facebook */
 export const sync_facebook_page = (

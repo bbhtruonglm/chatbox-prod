@@ -5,31 +5,35 @@
     </template>
     <template #title>
       {{ $t('v1.common.page') }}
-      (
-      {{ orgStore.selected_org_info?.org_package?.org_current_page }}
-      /
-      {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
-      )
+      ({{ orgStore.selected_org_info?.org_package?.org_current_page }}/{{
+        orgStore.selected_org_info?.org_package?.org_quota_page
+      }})
     </template>
     <template #action>
       <button
-        class="bg-blue-600 text-white py-1 px-4 rounded-md text-sm font-medium"
+        @click="openAddPageModal"
+        :class="
+          isReachPageQuota()
+            ? 'cursor-not-allowed bg-slate-200 text-slate-500'
+            : 'bg-blue-600 text-white'
+        "
+        class="py-1 px-4 rounded-md text-sm font-medium"
       >
         {{ $t('v1.common.more') }}
       </button>
     </template>
     <template #item>
       <div class="grid gap-6 grid-cols-4">
-        <template v-for="page of pageStore.active_page_list">
+        <template v-for="os of list_os">
           <PageItem
-            v-if="page?.page"
-            :page_info="page?.page"
+            v-if="os?.page_info"
+            :page_info="os?.page_info"
             :checkbox_is_visible="false"
             class="cursor-pointer"
           >
             <template #after-name>
               <div
-                @click.stop="confirm_unactive_modal_ref?.toggleModal()"
+                @click.stop="prepareInactivePage(os?.page_info)"
                 v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
                 class="group/minus hidden group-hover:flex"
               >
@@ -46,120 +50,107 @@
       </div>
     </template>
   </CardItem>
-  <Alert
-    ref="confirm_unactive_modal_ref"
-    class_modal="w-[507px]"
-    class_body="text-zinc-500"
-    class_footer="flex justify-between items-center"
-  >
-    <template #header>
-      {{
-        $t('v1.view.main.dashboard.select_page.inactive_page.title', {
-          name: selected_page?.name,
-        })
-      }}
-    </template>
-    <template #body>
-      <div>
-        {{ $t('v1.view.main.dashboard.select_page.inactive_page.explain') }}
-      </div>
-      <div
-        v-html="
-          $t('v1.view.main.dashboard.select_page.inactive_page.active_guild')
-        "
-      />
-    </template>
-    <template #footer>
-      <button
-        @click="confirm_unactive_modal_ref?.toggleModal()"
-        class="btn-custom bg-slate-100 text-slate-500"
-      >
-        {{ $t('v1.common.close') }}
-      </button>
-      <button
-        @click="inactivePage"
-        class="btn-custom bg-red-100 text-red-500"
-      >
-        {{ $t('v1.common.ok') }}
-      </button>
-    </template>
-  </Alert>
+  <ConfirmInactive
+    @done="doneInactivePage"
+    :selected_page
+    ref="confirm_inactive_modal_ref"
+  />
+  <OwnerShip
+    @done="getOs()"
+    ref="owner_ship_ref"
+  />
 </template>
 <script setup lang="ts">
-import { update_page } from '@/service/api/chatbox/n4-service'
-import { flow } from '@/service/helper/async'
-import { ref, computed } from 'vue'
-import { usePageStore, useCommonStore, useOrgStore } from '@/stores'
-import { set, size } from 'lodash'
+import { ref, onMounted, watch } from 'vue'
+import { useOrgStore } from '@/stores'
+import { read_os } from '@/service/api/chatbox/billing'
+import { toastError } from '@/service/helper/alert'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
-import Alert from '@/components/Alert.vue'
+import OwnerShip from '@/views/Dashboard/OwnerShip.vue'
+import ConfirmInactive from '@/views/Dashboard/Org/Setting/Page/ConfirmInactive.vue'
 
 import StackIcon from '@/components/Icons/Stack.vue'
 import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 
-import type { CbError } from '@/service/interface/function'
 import type { PageInfo } from '@/service/interface/app/page'
+import type { OwnerShipInfo } from '@/service/interface/app/billing'
+import { remove } from 'lodash'
 
-const pageStore = usePageStore()
-const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 
 /**modal xác nhận huỷ trang */
-const confirm_unactive_modal_ref = ref<InstanceType<typeof Alert>>()
+const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
+/**modal thêm trang vào tổ chức */
+const owner_ship_ref = ref<InstanceType<typeof OwnerShip>>()
 /**page đang được chọn */
 const selected_page = ref<PageInfo>()
+/**danh sách trang trong tổ chức */
+const list_os = ref<OwnerShipInfo[]>()
 
-/**huỷ kích hoạt page này | ẩn page */
-function inactivePage() {
-  // tắt modal
-  confirm_unactive_modal_ref.value?.toggleModal()
+// nạp dữ liệu trang khi component được mount
+onMounted(getOs)
+// nạp dữ liệu trang khi tổ chức được chọn
+watch(() => orgStore.selected_org_id, getOs)
 
-  /**id trang */
-  const PAGE_ID = selected_page.value?.fb_page_id
+/**chuẩn bị huỷ kích hoạt trang */
+function prepareInactivePage(page?: PageInfo) {
+  // chọn trang
+  selected_page.value = page
 
-  // nếu không có id trang thì thôi
-  if (!PAGE_ID) return
+  // hiển thị alert cảnh báo
+  confirm_inactive_modal_ref.value?.toggleModal()
+}
+/**hoàn thành việc huỷ kích hoạt trang */
+async function doneInactivePage() {
+  // xoá trang khỏi danh sách trang đang chọn
+  remove(
+    list_os.value || [],
+    os => os?.page_info?.fb_page_id === selected_page.value?.fb_page_id
+  )
 
-  flow(
-    [
-      // * kích hoạt loading
-      (cb: CbError) => {
-        commonStore.is_loading_full_screen = true
+  // xoá trang đang chọn
+  selected_page.value = undefined
+}
+/**lấy danh sách trang của tổ chức này */
+async function getOs() {
+  // nếu chưa chọn tổ chức thì thôi
+  if (!orgStore.selected_org_id) return
 
-        cb()
-      },
-      // * call api update page
-      (cb: CbError) =>
-        update_page({ page_id: PAGE_ID, is_active: false }, (e, r) => {
-          if (e) return cb(e)
+  // bật loading
+  orgStore.is_loading = true
 
-          cb()
-        }),
-      // * xoá page bị ẩn khỏi danh sách page và danh sách page đang chọn (nếu có)
-      (cb: CbError) => {
-        // xoá dữ liệu trang khỏi danh sách dữ liệu trang đang chọn
-        delete pageStore.active_page_list[PAGE_ID]
+  try {
+    // lấy danh sách trang của tổ chức
+    list_os.value = await read_os(orgStore.selected_org_id)
 
-        // xoá id trang khỏi danh sách id trang được chọn
-        delete pageStore.selected_page_id_list[PAGE_ID]
+    // ghi đè lại tổng số trang hiện tại
+    if (orgStore.selected_org_info?.org_package)
+      orgStore.selected_org_info.org_package.org_current_page =
+        list_os.value.length
+  } catch (e) {
+    // thông báo lỗi
+    toastError(e)
+  }
 
-        // TODO load lại danh sách trang sau khi xong
-
-        cb()
-      },
-    ],
-    e => {
-      // tắt loading
-      commonStore.is_loading_full_screen = false
-    }
+  // tắt loading
+  orgStore.is_loading = false
+}
+/**kiểm tra xem tổ chức đã đạt tới giới hạn trang chưa */
+function isReachPageQuota() {
+  return (
+    (orgStore.selected_org_info?.org_package?.org_current_page || 0) >=
+    (orgStore.selected_org_info?.org_package?.org_quota_page || 0)
   )
 }
-</script>
-<style scoped lang="scss">
-.btn-custom {
-  @apply text-sm font-medium rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-90;
+/**mở modal thêm trang */
+function openAddPageModal() {
+  // nếu đã đạt tới giới hạn trang thì thôi
+  if (isReachPageQuota()) return
+
+  // mở modal thêm trang
+  owner_ship_ref.value?.toggleModal()
 }
-</style>
+</script>

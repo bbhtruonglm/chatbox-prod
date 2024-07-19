@@ -672,9 +672,10 @@ const source: Language = {
               title: 'Cài đặt chung',
               require_two_factor: 'Yêu cầu bật xác thực 2 lớp',
               member: 'Thành viên',
-              add_history: 'Đã thêm {count} ngày trước',
+              add_history: 'Đã thêm {duration}',
               remove_staff: 'Xoá nhân viên',
               customer_info: {
+                empty: 'Chưa có dữ liệu',
                 title: 'Thông tin khách hàng',
                 customer_code: 'Mã khách hàng',
                 contract_code: 'Mã hợp đồng',
@@ -687,8 +688,18 @@ const source: Language = {
                 guild_1:
                   'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). Bot Bán Hàng sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
                 guild_2:
-                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới hotro@botbanhang.vn',
+                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới',
               },
+              staff: {
+                title: 'Thêm nhân viên vào tổ chức',
+                guild: 'Danh sách các nhân viên trong các trang mà bạn sở hữu',
+                find: 'Tìm kiếm nhân viên',
+                inactive: {
+                  title: 'Huỷ kích hoạt nhân viên: {name}',
+                  explain:
+                    'Nhân viên này sẽ bị bỏ khỏi Doanh nghiệp, gói cước.',
+                },
+              }
             },
             pay: {
               account: 'Tài khoản',
@@ -698,12 +709,15 @@ const source: Language = {
               pack_time: 'Thời gian sử dụng',
               page_amount: 'Số lượng trang',
               staff_amount: 'Số lượng nhân sự',
+              fau: 'FAU chatbot',
               ai_text: 'AI văn bản',
               ai_image: 'AI hình ảnh',
               ai_sound: 'AI âm thanh',
               ai_video: 'AI video',
               upgrade_pack: 'Nâng cấp gói cước',
               free: 'Miễn phí',
+              trial: 'Dùng thử (Pro)',
+              business: 'Doanh nghiệp',
               pro: 'Pro',
               unlimited: 'Không giới hạn',
               text_month: 'ký tự / Tháng',
@@ -712,7 +726,7 @@ const source: Language = {
               month: 'tháng',
               next_pay: 'Kỳ thanh toán tiếp theo:',
               text: 'ký tự',
-              image: 'ình ảnh',
+              image: 'hình ảnh',
               minute: 'phút',
               second: 'giây',
               guild_1:
@@ -798,6 +812,10 @@ const source: Language = {
               remove_widget: 'Xoá widget',
             },
           },
+          org_page: {
+            title: 'Thêm trang vào tổ chức',
+            guild: 'Chuyển trang về tổ chức của bạn'
+          }
         },
       },
     },

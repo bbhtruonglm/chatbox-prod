@@ -29,6 +29,7 @@
 import { getStaffInfo } from '@/service/function'
 import {
   format as format_date,
+  isToday,
   isThisWeek,
   isThisYear,
   formatDistanceToNow,
@@ -54,13 +55,17 @@ function genAgoDate(timestamp: number) {
     addSuffix: true,
     locale: viLocale,
   })
+    ?.replace('khoảng', '')
+    ?.replace('dưới', '')
+    ?.replace('nữa', 'trước')
+    ?.trim()
 }
 /**format lại thời gian trước khi hiển thị */
 function formatLastMessageTime(timestamp?: number) {
   if (!timestamp) return ''
 
-  // nếu thời gian trong tuần thì chỉ hiện ago
-  if (isThisWeek(timestamp)) return genAgoDate(timestamp)
+  // nếu thời gian trong ngày thì chỉ hiện ago
+  if (isToday(timestamp)) return genAgoDate(timestamp)
 
   // nếu trong năm thì hiện ngày tháng
   if (isThisYear(timestamp)) return format_date(timestamp, 'dd/MM')

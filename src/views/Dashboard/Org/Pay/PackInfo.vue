@@ -9,104 +9,139 @@
     <template #item>
       <div class="flex flex-col gap-2.5">
         <div
-          v-if="type === 'MONTH'"
+          v-if="!isFreePack()"
           class="text-slate-500 text-sm font-medium"
         >
           {{ $t('v1.view.main.dashboard.org.pay.guild_1') }}
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_use')">
-            <template v-if="type === 'FREE'">
-              {{ $t('v1.view.main.dashboard.org.pay.free') }}
-            </template>
-            <template v-if="type === 'MONTH'">
-              {{ $t('v1.view.main.dashboard.org.pay.pro') }}
-            </template>
+            {{
+              $t(
+                `v1.view.main.dashboard.org.pay.${orgStore.selected_org_info?.org_package?.org_package_type?.toLowerCase()}`
+              )
+            }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_time')">
-            <template v-if="type === 'FREE'">
+            <template v-if="isFreePack()">
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
-            <template v-if="type === 'MONTH'">
+            <template v-else-if="isTrialPack() || isProPack()">
               1
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
                 ({{ $t('v1.view.main.dashboard.org.pay.next_pay') }}
-                {{ date_format(new Date(), 'dd/MM/yyyy') }})
+                {{ calcNextPay() }})
               </span>
             </template>
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.page_amount')">
-            <template v-if="type === 'FREE'"> 2 </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">2</span> / 5
-            </template>
+            <span class="text-green-700">
+              {{
+                orgStore.selected_org_info?.org_package?.org_current_page || 0
+              }}
+            </span>
+            /
+            {{ orgStore.selected_org_info?.org_package?.org_quota_page || 0 }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.staff_amount')">
-            <template v-if="type === 'FREE'"> 5 </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">8</span> / 20
-            </template>
+            <span class="text-green-700">
+              {{
+                orgStore.selected_org_info?.org_package?.org_current_staff || 0
+              }}
+            </span>
+            /
+            {{ orgStore.selected_org_info?.org_package?.org_quota_staff || 0 }}
+          </Item>
+          <Item :title="$t('v1.view.main.dashboard.org.pay.fau')">
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_fau
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_fau
+              ) || 0
+            }}
+            FAU
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_text')">
-            <template v-if="type === 'FREE'">
-              {{ currency(10000) }}
-              {{ $t('v1.view.main.dashboard.org.pay.text_month') }}
-            </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">
-                {{ currency(10000) }}
-              </span>
-              /
-              {{ currency(10000) }}
-              {{ $t('v1.view.main.dashboard.org.pay.text') }}
-            </template>
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_ai_text
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_ai_text
+              ) || 0
+            }}
+            {{ $t('v1.view.main.dashboard.org.pay.text') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_image')">
-            <template v-if="type === 'FREE'">
-              {{ currency(10000) }}
-              {{ $t('v1.view.main.dashboard.org.pay.image_month') }}
-            </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">
-                {{ currency(3) }}
-              </span>
-              /
-              {{ currency(30) }}
-              {{ $t('v1.view.main.dashboard.org.pay.image') }}
-            </template>
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_ai_image
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_ai_image
+              ) || 0
+            }}
+            {{ $t('v1.view.main.dashboard.org.pay.image') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_sound')">
-            <template v-if="type === 'FREE'">
-              {{ currency(10000) }}
-              {{ $t('v1.view.main.dashboard.org.pay.minute_month') }}
-            </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">
-                {{ currency(3) }}
-              </span>
-              /
-              {{ currency(30) }}
-              {{ $t('v1.view.main.dashboard.org.pay.minute') }}
-            </template>
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_ai_sound
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_ai_sound
+              ) || 0
+            }}
+            {{ $t('v1.view.main.dashboard.org.pay.minute') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_video')">
-            <template v-if="type === 'FREE'"> - </template>
-            <template v-if="type === 'MONTH'">
-              <span class="text-green-700">
-                {{ currency(3) }}
-              </span>
-              /
-              {{ currency(30) }}
-              {{ $t('v1.view.main.dashboard.org.pay.second') }}
-            </template>
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_ai_video
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_ai_video
+              ) || 0
+            }}
+            {{ $t('v1.view.main.dashboard.org.pay.second') }}
           </Item>
         </div>
         <div
-          v-if="type === 'MONTH'"
+          v-if="!isFreePack()"
           class="text-slate-500 text-sm font-medium rounded-xl border p-3 flex flex-col gap-2.5"
         >
-          <Toggle class_toggle="peer-checked:bg-black">
+          <Toggle
+            v-model="org_is_auto_charge"
+            class_toggle="peer-checked:bg-black"
+          >
             <span class="text-green-600">
               {{ $t('v1.view.main.dashboard.org.pay.auto_pay') }}
             </span>
@@ -116,14 +151,14 @@
           </div>
         </div>
         <button
-          v-if="type === 'FREE'"
+          v-if="isFreePack()"
           @click="upgrade_modal_ref?.toggleModal()"
           class="custom-btn"
         >
           {{ $t('v1.view.main.dashboard.org.pay.upgrade_pack') }}
         </button>
         <div
-          v-if="type === 'MONTH'"
+          v-else
           class="flex gap-3"
         >
           <button class="custom-btn">
@@ -141,6 +176,12 @@
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
 import { format as date_format } from 'date-fns'
+import { computed, ref } from 'vue'
+import { useOrgStore } from '@/stores'
+import { set } from 'lodash'
+import { toast, toastError } from '@/service/helper/alert'
+import { update_org } from '@/service/api/chatbox/billing'
+import { useI18n } from 'vue-i18n'
 
 import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
@@ -148,18 +189,82 @@ import Item from '@/views/Dashboard/Org/Pay/PackInfo/Item.vue'
 import UpgradeModal from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'
-import { ref } from 'vue'
 
-const $props = withDefaults(
-  defineProps<{
-    /**loại gói cước */
-    type: 'FREE' | 'MONTH'
-  }>(),
-  {}
-)
+const orgStore = useOrgStore()
+const { t: $t } = useI18n()
 
 /**ref của modal mua gói mới */
 const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
+
+/**có kích hoạt tự động thanh toán không */
+const org_is_auto_charge = computed({
+  get() {
+    return orgStore.selected_org_info?.org_config?.org_is_auto_charge
+  },
+  set(val) {
+    // set giá trị mới
+    set(orgStore, 'selected_org_info.org_config.org_is_auto_charge', val)
+
+    // gọi hàm update thông tin org
+    updateOrg()
+  },
+})
+
+/**update thông tin org lên server */
+async function updateOrg() {
+  // bật loading
+  orgStore.is_loading = true
+
+  try {
+    // nếu chưa chọn org thì thôi
+    if (!orgStore.selected_org_id) return
+
+    // gọi api update
+    orgStore.selected_org_info = await update_org(orgStore.selected_org_id, {
+      org_config: {
+        org_is_auto_charge: org_is_auto_charge.value,
+      },
+    })
+
+    // thông báo thành công
+    toast('success', $t('v1.common.update_success'))
+  } catch (e) {
+    // thông báo lỗi
+    toastError(e)
+  }
+
+  // tắt loading
+  orgStore.is_loading = false
+}
+/**có phải là gói miễn phí không */
+function isFreePack() {
+  return orgStore.selected_org_info?.org_package?.org_package_type === 'FREE'
+}
+/**có phải là gói dùng thử không */
+function isTrialPack() {
+  return orgStore.selected_org_info?.org_package?.org_package_type === 'TRIAL'
+}
+/**có phải là gói pro không */
+function isProPack() {
+  return orgStore.selected_org_info?.org_package?.org_package_type === 'PRO'
+}
+/**có phải là gói doanh nghiệp không */
+function isBusinessPack() {
+  return (
+    orgStore.selected_org_info?.org_package?.org_package_type === 'BUSINESS'
+  )
+}
+/**tính thời gian thanh toán tiếp theo */
+function calcNextPay() {
+  /**thời gian hết hạn */
+  const END_DATE = orgStore.selected_org_info?.org_package?.org_end_date
+
+  // nếu không có thời gian hết hạn thì trả về rỗng
+  if (!END_DATE) return ''
+
+  // trả về thời gian thanh toán tiếp theo
+  return date_format(new Date(END_DATE), 'dd/MM/yyyy')
+}
 </script>
 <style scoped lang="scss">
 .custom-btn {

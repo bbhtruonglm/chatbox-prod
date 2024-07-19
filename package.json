@@ -16,7 +16,8 @@
     "build-only-dev": "vite build --mode dev",
     "build-only-staging": "vite build --mode staging",
     "build-only-prod": "vite build --mode prod",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "async": "^3.2.4",
