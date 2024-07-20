@@ -16,6 +16,7 @@ const ENV: Env = {
         n5_app_v2: 'https://chatbox-app-v2.botbanhang.vn',
         n6_static: 'https://chatbox-static-v3.botbanhang.vn',
         billing: 'https://chatbox-billing.botbanhang.vn',
+        ai: 'https://chatbox-ai.botbanhang.vn',
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://setting-chatbox.botbanhang.vn',

@@ -87,6 +87,9 @@ import TextIcon from '@/components/Icons/Text.vue'
 
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
 import { getPageInfo, getStaffInfo } from '@/service/function'
+import { toastError } from '@/service/helper/alert'
+import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
+import type { SourceChat } from '@/service/interface/app/ai'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -99,13 +102,13 @@ const CACHE_LIST_ANSWER = new Map<string, QuickAnswerInfo[]>()
 const MAX_ANSWER = 200
 const AI_FEATURE: QuickAnswerInfo[] = [
   {
-    id: 'dich',
+    id: 'translate',
     title: 'dich',
     content: $t('v1.view.main.dashboard.chat.quick_answer.translate'),
     is_ai: true,
   },
   {
-    id: 'hoanthanh',
+    id: 'complete',
     title: 'hoanthanh',
     content: $t('v1.view.main.dashboard.chat.quick_answer.auto_complete'),
     is_ai: true,
@@ -239,10 +242,10 @@ function focusChat() {
 /**chọn trả lời nhanh */
 function selectQuickAnswer(answer: QuickAnswerInfo) {
   /**nội dung của câu trả lời nhanh này */
-  let { content, list_images, is_ai } = answer
+  let { id, content, list_images, is_ai } = answer
 
-  // TODO tạm thời chưa xử lý AI
-  if (is_ai) return
+  //  xử lý AI
+  if (is_ai) return handleAi(id)
 
   /**input chat mục tiêu */
   const INPUT_CHAT = document.getElementById('chat-text-input-message')
@@ -272,6 +275,126 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
 
   // focus vào lại input chat
   focusChat()
+}
+/**xử lý AI */
+function handleAi(action?: string) {
+  // nếu không có hành động gì thì thôi
+  if (!action) return
+
+  // xử lý hành động
+  switch (action) {
+    case 'translate':
+      transalate()
+      break
+    case 'complete':
+      complete()
+      break
+  }
+}
+/**dịch nội dung */
+async function transalate() {
+  // nếu đang loading thì thôi
+  if (is_loading.value) return
+
+  // bật loading
+  is_loading.value = true
+
+  try {
+    /**input chat */
+    const INPUT_CHAT = document.getElementById('chat-text-input-message')
+
+    // nếu không có input chat thì thôi
+    if (!INPUT_CHAT) throw 'DONE'
+
+    /**nội dung chat */
+    const TEXT = INPUT_CHAT?.innerText
+
+    // nếu không có nội dung thì thôi
+    if (!TEXT) throw 'DONE'
+
+    // gọi api dịch
+    const RES = await text_translate({
+      from: 'vn',
+      to: 'en',
+      text: TEXT,
+    })
+
+    // nếu không có dữ liệu thì thôi
+    if (!RES?.text)
+      throw $t('v1.view.main.dashboard.chat.quick_answer.translate_error')
+
+    // thay đổi nội dung chat thành dịch
+    INPUT_CHAT.innerText = RES.text
+  } catch (e) {
+    // hiển thị thông báo lỗi
+    if (e !== 'DONE') toastError(e)
+  }
+
+  // tắt modal
+  commonStore.is_show_quick_answer = false
+
+  // focus vào lại input chat
+  focusChat()
+
+  // tắt loading
+  is_loading.value = false
+}
+/**hoàn thành câu */
+async function complete() {
+  // nếu đang loading thì thôi
+  if (is_loading.value || !messageStore.list_message) return
+
+  // bật loading
+  is_loading.value = true
+
+  try {
+    /**nội dung chat */
+    const SOURCE: SourceChat[] = messageStore.list_message
+      ?.filter(message => message?.message_text)
+      ?.map(message => {
+        return {
+          type: message.message_type === 'client' ? 'CLIENT' : 'PAGE',
+          content: message.message_text || '',
+        }
+      })
+
+    /**input chat */
+    const INPUT_CHAT = document.getElementById('chat-text-input-message')
+
+    // nếu không có input chat thì thôi
+    if (!INPUT_CHAT) throw 'DONE'
+
+    /**nội dung chat */
+    const TEXT = INPUT_CHAT?.innerText
+
+    // nếu không có nội dung thì thôi
+    if (!TEXT) throw 'DONE'
+
+    // gọi api tạo nội dung
+    const RES = await gen_answer({
+      source: SOURCE,
+      current: TEXT,
+    })
+
+    // nếu không có dữ liệu thì thôi
+    if (!RES?.text)
+      throw $t('v1.view.main.dashboard.chat.quick_answer.complete_error')
+
+    // thay đổi nội dung mới vào input chat
+    INPUT_CHAT.innerText = RES.text
+  } catch (e) {
+    // hiển thị thông báo lỗi
+    if (e !== 'DONE') toastError(e)
+  }
+
+  // tắt modal
+  commonStore.is_show_quick_answer = false
+
+  // focus vào lại input chat
+  focusChat()
+
+  // tắt loading
+  is_loading.value = false
 }
 /**thay thế template message thành data của conversation */
 function replaceTemplateMessage(content: string) {

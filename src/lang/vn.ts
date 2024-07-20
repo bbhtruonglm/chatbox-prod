@@ -471,6 +471,8 @@ const source: Language = {
               },
             },
             quick_answer: {
+              translate_error: 'Dịch thất bại',
+              complete_error: 'Hoàn thành câu thất bại',
               enter: 'Enter để chọn',
               guild: 'Dùng ↑ hoặc ↓ để di chuyển',
               title: 'Trả lời nhanh',
