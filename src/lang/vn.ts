@@ -752,8 +752,11 @@ const source: Language = {
                 FAILED: 'Thanh toán thất bại',
               },
               upgrade: {
+                not_enough_money: 'Số dư tài khoản không đủ',
                 title: 'Gói nâng cấp',
                 current: 'Gói hiện tại',
+                back_free: 'Về gói miễn phí',
+                pro: 'Nâng cấp gói Pro',
                 trial_day_7: 'Dùng thử miễn phí 7 ngày',
                 contact_us: 'Liên hệ chúng tôi',
                 price: 'Giá:',
@@ -764,6 +767,7 @@ const source: Language = {
                 staff: 'Nhâm sự:',
                 discount: 'Theo Năm (-40%)',
                 company: 'Doanh nghiệp',
+                success: 'Thanh toán thành công'
               },
               recharge: {
                 wrong_wallet_id: 'Thông tin tài khoản không chính xác',

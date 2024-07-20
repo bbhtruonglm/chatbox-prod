@@ -52,7 +52,17 @@
                     )
                   }}
                 </td>
-                <td class="px-2.5 whitespace-nowrap text-right">
+                <td
+                  :class="{
+                    'text-green-600': txn.txn_type === 'DEPOSIT',
+                    'text-red-600': ['PAYMENT', 'WITHDRAW'].includes(
+                      txn.txn_type || ''
+                    ),
+                  }"
+                  class="px-2.5 whitespace-nowrap text-right"
+                >
+                  <span v-if="txn.txn_type !== 'DEPOSIT'">-</span>
+                  <span v-else>+</span>
                   {{ currency(txn.txn_amount) || 0 }}
                   đ
                 </td>

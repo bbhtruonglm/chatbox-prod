@@ -9,7 +9,7 @@
     <template #item>
       <div class="flex flex-col gap-2.5">
         <div
-          v-if="!isFreePack()"
+          v-if="!orgStore.isFreePack()"
           class="text-slate-500 text-sm font-medium"
         >
           {{ $t('v1.view.main.dashboard.org.pay.guild_1') }}
@@ -23,10 +23,10 @@
             }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_time')">
-            <template v-if="isFreePack()">
+            <template v-if="orgStore.isFreePack()">
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
-            <template v-else-if="isTrialPack() || isProPack()">
+            <template v-else-if="orgStore.isTrialPack() || orgStore.isProPack()">
               1
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
@@ -135,7 +135,7 @@
           </Item>
         </div>
         <div
-          v-if="!isFreePack()"
+          v-if="!orgStore.isFreePack()"
           class="text-slate-500 text-sm font-medium rounded-xl border p-3 flex flex-col gap-2.5"
         >
           <Toggle
@@ -151,7 +151,7 @@
           </div>
         </div>
         <button
-          v-if="isFreePack()"
+          v-if="orgStore.isFreePack()"
           @click="upgrade_modal_ref?.toggleModal()"
           class="custom-btn"
         >
@@ -211,24 +211,6 @@ const org_is_auto_charge = computed({
   },
 })
 
-/**có phải là gói miễn phí không */
-function isFreePack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'FREE'
-}
-/**có phải là gói dùng thử không */
-function isTrialPack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'TRIAL'
-}
-/**có phải là gói pro không */
-function isProPack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'PRO'
-}
-/**có phải là gói doanh nghiệp không */
-function isBusinessPack() {
-  return (
-    orgStore.selected_org_info?.org_package?.org_package_type === 'BUSINESS'
-  )
-}
 /**tính thời gian thanh toán tiếp theo */
 function calcNextPay() {
   /**thời gian hết hạn */

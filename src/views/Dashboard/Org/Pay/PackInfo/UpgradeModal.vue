@@ -48,8 +48,19 @@
                   </li>
                 </ul>
               </div>
-              <button class="btn bg-green-500 cursor-not-allowed">
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+              <button
+                @click="downgradeFreePack"
+                :class="{
+                  'cursor-not-allowed': orgStore.isFreePack(),
+                }"
+                class="btn bg-green-500"
+              >
+                <template v-if="orgStore.isFreePack()">
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.back_free') }}
+                </template>
               </button>
             </div>
             <div class="w-96 item">
@@ -58,7 +69,10 @@
                   <div class="tex-xl font-bold">
                     {{ $t('v1.view.main.dashboard.org.pay.pro') }}
                   </div>
-                  <Toggle class_toggle="peer-checked:bg-black">
+                  <Toggle
+                    v-model="is_full_year"
+                    class_toggle="peer-checked:bg-black"
+                  >
                     <span class="text-green-600">
                       {{
                         $t('v1.view.main.dashboard.org.pay.upgrade.discount')
@@ -88,8 +102,27 @@
                   </li>
                 </ul>
               </div>
-              <button class="btn bg-blue-600">
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.trial_day_7') }}
+              <button
+                @click="activeTrialOrProPack"
+                :class="{
+                  'cursor-not-allowed': orgStore.isProPack(),
+                }"
+                class="btn bg-blue-600"
+              >
+                <template
+                  v-if="
+                    orgStore.isFreePack() &&
+                    !orgStore.selected_org_info?.org_package?.org_has_trial
+                  "
+                >
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.trial_day_7') }}
+                </template>
+                <template v-else-if="orgStore.isProPack()">
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.pro') }}
+                </template>
               </button>
             </div>
             <div class="w-64 item">
@@ -117,8 +150,19 @@
                   </li>
                 </ul>
               </div>
-              <button class="btn bg-slate-500">
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.contact_us') }}
+              <button
+                :class="{
+                  'cursor-not-allowed': orgStore.isBusinessPack(),
+                }"
+                @click="contactUs"
+                class="btn bg-slate-500"
+              >
+                <template v-if="orgStore.isBusinessPack()">
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.contact_us') }}
+                </template>
               </button>
             </div>
           </div>
@@ -130,16 +174,86 @@
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
 import { ref } from 'vue'
+import { useOrgStore } from '@/stores'
+import { openNewTab } from '@/service/function'
+import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
+import { toast, toastError } from '@/service/helper/alert'
+import {
+  purchase_package,
+  read_wallet,
+} from '@/service/api/chatbox/billing'
+import { useI18n } from 'vue-i18n'
 
 import Toggle from '@/components/Toggle.vue'
 
+const orgStore = useOrgStore()
+const { t: $t } = useI18n()
+
 /**ẩn hiện modal */
 const is_open = ref(false)
+/**mua gói Pro 1 năm */
+const is_full_year = ref(false)
 
 /**ẩn hiện modal */
 function toggleModal() {
   is_open.value = !is_open.value
 }
+/**liên hệ với chúng tôi */
+function contactUs() {
+  // nếu đang ở gói doanh nghiệp thì không mở tab
+  if (orgStore.isBusinessPack()) return
+
+  // mở tab liên hệ với chúng tôi
+  openNewTab(BBH_PAGE_MESS)
+}
+/**kích hoạt gói dùng thử hoặc gói pro */
+async function activeTrialOrProPack() {
+  // nếu chưa chọn org thì không làm gì
+  if (!orgStore.selected_org_id || orgStore.is_loading) return
+
+  // kích hoạt loading
+  orgStore.is_loading = true
+
+  try {
+    /**
+     * tính toán gói cần mua
+     * - nếu chưa mua bao giờ thì cho dùng thử trước
+     * - nếu đã dùng thử rồi thì mua gói pro
+     */
+    const PACKAGE = orgStore.selected_org_info?.org_package?.org_has_trial
+      ? 'PRO'
+      : 'TRIAL'
+
+    /**dữ liệu của ví */
+    const WALLET = await read_wallet(orgStore.selected_org_id)
+
+    // nếu không có ví thì thông báo lỗi
+    if (!WALLET?.wallet_id)
+      throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
+
+    // yêu cầu mua gói
+    await purchase_package(orgStore.selected_org_id, WALLET?.wallet_id, PACKAGE)
+
+    // thông báo mua gói thành công
+    toast('success', $t('v1.view.main.dashboard.org.pay.upgrade.success'))
+
+    // chờ 1s
+    await new Promise(cb => setTimeout(cb, 1000))
+
+    // reload lại trang
+    window.location.reload()
+  } catch (e) {
+    if (e === 'WALLET.NOT_ENOUGH_MONEY')
+      toastError($t('v1.view.main.dashboard.org.pay.upgrade.not_enough_money'))
+    // nếu có lỗi thì hiện thông báo lỗi
+    else toastError(e)
+  }
+
+  // tắt loading
+  orgStore.is_loading = false
+}
+/**hạ xuống gói free */
+function downgradeFreePack() {}
 
 defineExpose({ toggleModal })
 </script>
