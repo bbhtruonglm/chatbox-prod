@@ -80,18 +80,41 @@ export const useOrgStore = defineStore('org_store', () => {
   /**danh sách các tổ chức của user này */
   const list_org = ref<OrgInfo[]>()
   /**id của tổ chức đang được chọn */
-  const selected_org_id = ref<string | undefined>(getLocal('selected_org_id', ''))
+  const selected_org_id = ref<string | undefined>(
+    getLocal('selected_org_id', '')
+  )
   // lưu lại data vào local để khi f5 không bị reset
   saveLocal(selected_org_id, 'selected_org_id')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
 
   /** -------------- MUTATION / ACTION -------------- */
+  /**có phải là gói miễn phí không */
+  function isFreePack() {
+    return selected_org_info.value?.org_package?.org_package_type === 'FREE'
+  }
+  /**có phải là gói dùng thử không */
+  function isTrialPack() {
+    return selected_org_info.value?.org_package?.org_package_type === 'TRIAL'
+  }
+  /**có phải là gói pro không */
+  function isProPack() {
+    return selected_org_info.value?.org_package?.org_package_type === 'PRO'
+  }
+  /**có phải là gói doanh nghiệp không */
+  function isBusinessPack() {
+    return selected_org_info.value?.org_package?.org_package_type === 'BUSINESS'
+  }
 
   return {
     is_loading,
     list_org,
     selected_org_id,
     selected_org_info,
+
+    isFreePack,
+    isTrialPack,
+    isProPack,
+    isBusinessPack,
   }
 })

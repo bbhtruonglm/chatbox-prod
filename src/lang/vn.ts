@@ -384,6 +384,7 @@ const source: Language = {
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',
               send_message: 'Nhấn để gửi tin nhắn',
+              stop_action: 'Nhấn để dừng hành động AI',
               open_quick_anwser: 'Chọn câu trả lời nhanh',
               select_file: 'Đính kèm tập tin',
               select_emoji: 'Chọn biểu tượng cảm xúc',
@@ -471,6 +472,8 @@ const source: Language = {
               },
             },
             quick_answer: {
+              translate_error: 'Dịch thất bại',
+              complete_error: 'Hoàn thành câu thất bại',
               enter: 'Enter để chọn',
               guild: 'Dùng ↑ hoặc ↓ để di chuyển',
               title: 'Trả lời nhanh',
@@ -747,11 +750,16 @@ const source: Language = {
               operator: 'Người thao tác',
               view: 'Xem',
               status_list: {
-                paid: 'Đã thanh toán',
+                SUCCESS: 'Đã thanh toán',
+                PENDING: 'Chờ thanh toán',
+                FAILED: 'Thanh toán thất bại',
               },
               upgrade: {
+                not_enough_money: 'Số dư tài khoản không đủ',
                 title: 'Gói nâng cấp',
                 current: 'Gói hiện tại',
+                back_free: 'Về gói miễn phí',
+                pro: 'Nâng cấp gói Pro',
                 trial_day_7: 'Dùng thử miễn phí 7 ngày',
                 contact_us: 'Liên hệ chúng tôi',
                 price: 'Giá:',
@@ -762,8 +770,12 @@ const source: Language = {
                 staff: 'Nhâm sự:',
                 discount: 'Theo Năm (-40%)',
                 company: 'Doanh nghiệp',
+                success: 'Thanh toán thành công'
               },
               recharge: {
+                wrong_wallet_id: 'Thông tin tài khoản không chính xác',
+                not_success: 'Giao dịch chưa hoàn thành',
+                success: 'Giao dịch thành công',
                 amount: 'Số tiền nạp',
                 amount_description:
                   'Số tiền nạp tối thiểu 50.000đ, tối đa 250.000.000đ',

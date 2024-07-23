@@ -5,6 +5,7 @@
       type="radio"
       :value="value"
       class="accent-black w-5 h-5"
+      :disabled
     />
     <span class="text-sm font-medium">
       {{ title }}
@@ -17,7 +18,9 @@ const $props = withDefaults(
     /**tiêu đề */
     title: string
     /**giá trị */
-    value: string
+    value?: string | boolean
+    /**trạng thái disabled */
+    disabled?: boolean
   }>(),
   {}
 )

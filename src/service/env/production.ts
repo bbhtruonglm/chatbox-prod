@@ -16,6 +16,7 @@ const ENV: Env = {
         n5_app_v2: 'https://chatbox-app-v2.botbanhang.vn',
         n6_static: 'https://chatbox-static-v3.botbanhang.vn',
         billing: 'https://chatbox-billing.botbanhang.vn',
+        ai: 'https://chatbox-ai.botbanhang.vn',
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
         page_setting_view: 'https://setting-chatbox.botbanhang.vn',
@@ -80,6 +81,7 @@ const ENV: Env = {
     },
     zalo_oa: {
         redirect_uri: 'https://chatv2.botbanhang.vn/dashboard/select-page?connect_page=ZALO_OA',
+        // https://chat.botbanhang.vn/main/dashboard/select-platform?current_selected_tab=ZALO_OA
     },
     platform: ['FB_MESS', 'WEBSITE', 'ZALO_OA'],
     img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar'

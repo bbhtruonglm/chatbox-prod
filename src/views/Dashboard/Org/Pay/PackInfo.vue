@@ -9,7 +9,7 @@
     <template #item>
       <div class="flex flex-col gap-2.5">
         <div
-          v-if="!isFreePack()"
+          v-if="!orgStore.isFreePack()"
           class="text-slate-500 text-sm font-medium"
         >
           {{ $t('v1.view.main.dashboard.org.pay.guild_1') }}
@@ -23,10 +23,10 @@
             }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_time')">
-            <template v-if="isFreePack()">
+            <template v-if="orgStore.isFreePack()">
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
-            <template v-else-if="isTrialPack() || isProPack()">
+            <template v-else-if="orgStore.isTrialPack() || orgStore.isProPack()">
               1
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
@@ -135,7 +135,7 @@
           </Item>
         </div>
         <div
-          v-if="!isFreePack()"
+          v-if="!orgStore.isFreePack()"
           class="text-slate-500 text-sm font-medium rounded-xl border p-3 flex flex-col gap-2.5"
         >
           <Toggle
@@ -151,7 +151,7 @@
           </div>
         </div>
         <button
-          v-if="isFreePack()"
+          v-if="orgStore.isFreePack()"
           @click="upgrade_modal_ref?.toggleModal()"
           class="custom-btn"
         >
@@ -179,9 +179,8 @@ import { format as date_format } from 'date-fns'
 import { computed, ref } from 'vue'
 import { useOrgStore } from '@/stores'
 import { set } from 'lodash'
-import { toast, toastError } from '@/service/helper/alert'
-import { update_org } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
+import { initRequireData } from '@/views/Dashboard/Org/composable'
 
 import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
@@ -192,6 +191,8 @@ import QueueIcon from '@/components/Icons/Queue.vue'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+const { updateOrg } = initRequireData()
 
 /**ref của modal mua gói mới */
 const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
@@ -210,50 +211,6 @@ const org_is_auto_charge = computed({
   },
 })
 
-/**update thông tin org lên server */
-async function updateOrg() {
-  // bật loading
-  orgStore.is_loading = true
-
-  try {
-    // nếu chưa chọn org thì thôi
-    if (!orgStore.selected_org_id) return
-
-    // gọi api update
-    orgStore.selected_org_info = await update_org(orgStore.selected_org_id, {
-      org_config: {
-        org_is_auto_charge: org_is_auto_charge.value,
-      },
-    })
-
-    // thông báo thành công
-    toast('success', $t('v1.common.update_success'))
-  } catch (e) {
-    // thông báo lỗi
-    toastError(e)
-  }
-
-  // tắt loading
-  orgStore.is_loading = false
-}
-/**có phải là gói miễn phí không */
-function isFreePack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'FREE'
-}
-/**có phải là gói dùng thử không */
-function isTrialPack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'TRIAL'
-}
-/**có phải là gói pro không */
-function isProPack() {
-  return orgStore.selected_org_info?.org_package?.org_package_type === 'PRO'
-}
-/**có phải là gói doanh nghiệp không */
-function isBusinessPack() {
-  return (
-    orgStore.selected_org_info?.org_package?.org_package_type === 'BUSINESS'
-  )
-}
 /**tính thời gian thanh toán tiếp theo */
 function calcNextPay() {
   /**thời gian hết hạn */

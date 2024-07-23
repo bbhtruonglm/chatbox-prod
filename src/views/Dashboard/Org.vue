@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="orgStore.is_loading"
-    class="absolute top-9 left-1/2 -translate-x-1/2"
+    class="absolute top-9 left-1/2 -translate-x-1/2 z-50"
   >
     <Loading />
   </div>
@@ -10,7 +10,7 @@
     <template #content>
       <div class="flex gap-3">
         <SelectOrg />
-        <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay/info')" />
+        <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay')" />
       </div>
       <RouterView />
     </template>

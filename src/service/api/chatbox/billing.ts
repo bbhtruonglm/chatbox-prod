@@ -1,10 +1,18 @@
 import { chatboxSync } from '@/service/api/chatbox/common'
-import type { MemberShipInfo, OrgInfo, OwnerShipInfo, TransactionInfo, WalletInfo } from '@/service/interface/app/billing'
+import type {
+  MemberShipInfo,
+  OrgInfo,
+  OrgPackage,
+  OwnerShipInfo,
+  TransactionInfo,
+  WalletInfo,
+} from '@/service/interface/app/billing'
 
-/**đọc danh sách tổ chức */
-export const read_org = async (): Promise<OrgInfo[]> =>
+/**đọc tổ chức */
+export const read_org = async (org_id?: string): Promise<OrgInfo[]> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/organization/read_org`,
+    body: { org_id },
   })
 
 /**cập nhật thiết lập, thông tin một tổ chức */
@@ -72,9 +80,7 @@ export const kick_ms = async (
   })
 
 /**đọc thông tin của ví */
-export const read_wallet = async (
-  org_id: string
-): Promise<WalletInfo> =>
+export const read_wallet = async (org_id: string): Promise<WalletInfo> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/wallet/read_wallet`,
     body: { org_id },
@@ -82,9 +88,44 @@ export const read_wallet = async (
 
 /**đọc thông giao dịch */
 export const read_txn = async (
-  org_id: string
+  org_id: string,
+  txn_id?: string
 ): Promise<TransactionInfo[]> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/transaction/read_txn`,
-    body: { org_id },
+    body: { org_id, txn_id },
+  })
+
+/**đọc thông giao dịch */
+export const create_txn = async (
+  org_id: string,
+  wallet_id: string,
+  txn_amount: number,
+  txn_payment_method: TransactionInfo['txn_payment_method'],
+  txn_is_issue_invoice: boolean
+): Promise<TransactionInfo> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/transaction/create_txn`,
+    body: {
+      org_id,
+      wallet_id,
+      txn_amount,
+      txn_payment_method,
+      txn_is_issue_invoice,
+    },
+  })
+
+/**mua gói */
+export const purchase_package = async (
+  org_id: string,
+  wallet_id: string,
+  package_type: OrgPackage
+): Promise<TransactionInfo> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/wallet/purchase_package`,
+    body: {
+      org_id,
+      wallet_id,
+      package_type,
+    },
   })

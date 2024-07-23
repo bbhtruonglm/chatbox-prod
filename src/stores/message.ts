@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { remove } from 'lodash'
 
 import type {
   AttachmentCacheList,
   AttachmentInfo,
+  MessageInfo,
   TempSendMessage,
 } from '@/service/interface/app/message'
 import type { UploadFile } from '@/service/interface/app/album'
-import { remove } from 'lodash'
 
 export const useMessageStore = defineStore('message_store', () => {
+  /**danh sách tin nhắn hiện tại */
+  const list_message = ref<MessageInfo[]>([])
+
   /**danh sách tin nhắn tạm vừa được gửi */
   const send_message_list = ref<TempSendMessage[]>([])
 
@@ -27,6 +31,9 @@ export const useMessageStore = defineStore('message_store', () => {
 
   /**gắn cờ file đang gửi */
   const is_send_file = ref(false)
+
+  /**có phải input đang chạy AI không */
+  const is_input_run_ai = ref(false)
 
   /**gắn cờ hiện nút đi scroll xuống bottom */
   const is_show_to_bottom = ref(false)
@@ -49,6 +56,7 @@ export const useMessageStore = defineStore('message_store', () => {
   }
 
   return {
+    list_message,
     send_message_list,
     attachment_list,
     select_attachment,
@@ -56,6 +64,7 @@ export const useMessageStore = defineStore('message_store', () => {
     upload_file_list,
     is_send_file,
     is_show_to_bottom,
+    is_input_run_ai,
 
     updateTempMessage,
     removeTempMessage,

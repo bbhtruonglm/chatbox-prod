@@ -38,11 +38,11 @@ const LIST_MENU = [
     icon: markRaw(AiBoldIcon),
     path: 'app',
   },
-  {
-    title: $t('v1.view.main.dashboard.org.menu.api'),
-    icon: markRaw(CodeIcon),
-    path: 'api',
-  },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.menu.api'),
+  //   icon: markRaw(CodeIcon),
+  //   path: 'api',
+  // },
 ]
 
 /**tạo ra đường dẫn của org */

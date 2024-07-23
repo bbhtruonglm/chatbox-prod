@@ -20,17 +20,18 @@
 import { useOrgStore } from '@/stores'
 import { computed } from 'vue'
 import { set } from 'lodash'
+import { initRequireData } from '@/views/Dashboard/Org/composable'
+import { useI18n } from 'vue-i18n'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Toggle from '@/components/Toggle.vue'
 
 import CogIcon from '@/components/Icons/Cog.vue'
-import { update_org } from '@/service/api/chatbox/billing'
-import { toast, toastError } from '@/service/helper/alert'
-import { useI18n } from 'vue-i18n'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+const { updateOrg } = initRequireData()
 
 /**có kích hoạt 2fa không */
 const org_is_active_2fa = computed({
@@ -46,31 +47,4 @@ const org_is_active_2fa = computed({
     updateOrg()
   },
 })
-
-/**update thông tin org lên server */
-async function updateOrg() {
-  // bật loading
-  orgStore.is_loading = true
-
-  try {
-    // nếu chưa chọn org thì thôi
-    if (!orgStore.selected_org_id) return
-
-    // gọi api update
-    orgStore.selected_org_info = await update_org(orgStore.selected_org_id, {
-      org_config: {
-        org_is_active_2fa: org_is_active_2fa.value,
-      },
-    })
-
-    // thông báo thành công
-    toast('success', $t('v1.common.update_success'))
-  } catch (e) {
-    // thông báo lỗi
-    toastError(e)
-  }
-
-  // tắt loading
-  orgStore.is_loading = false
-}
 </script>

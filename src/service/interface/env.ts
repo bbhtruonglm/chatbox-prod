@@ -15,6 +15,8 @@ export interface Env {
         n6_static: string
         /**api quản lý tổ chức */
         billing: string
+        /**quản lý ai */
+        ai: string
         n8_merge: string
         widget: string
         page_setting_view: string

@@ -12,14 +12,28 @@
       <Input
         ref="input_chat_ref"
         @keyup="quick_answer_ref?.handleChatValue"
+        :class="{
+          'animate-fast-pulse': messageStore.is_input_run_ai,
+        }"
       />
     </div>
-    <SendIcon
+    <div
       v-if="isVisibleSendBtn()"
-      v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')"
-      @click="input_chat_ref?.sendMessage"
       class="w-8 h-8 cursor-pointer flex-shrink-0"
-    />
+    >
+      <StopIcon
+        v-if="messageStore.is_input_run_ai"
+        @click="messageStore.is_input_run_ai = !messageStore.is_input_run_ai"
+        v-tooltip="$t('v1.view.main.dashboard.chat.action.stop_action')"
+        class="w-full h-full"
+      />
+      <SendIcon
+        v-else
+        v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')"
+        @click="input_chat_ref?.sendMessage"
+        class="w-full h-full"
+      />
+    </div>
     <QuickAnswer ref="quick_answer_ref" />
   </div>
 </template>
@@ -35,6 +49,7 @@ import AttachmentMenu from '@/views/ChatWarper/Chat/CenterContent/InputChat/Main
 import Input from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/Input.vue'
 
 import SendIcon from '@/components/Icons/Send.vue'
+import StopIcon from '@/components/Icons/Stop.vue'
 
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
@@ -58,3 +73,8 @@ function isVisibleSendBtn() {
 // xuất hàm cho component con xử dụng
 provide(IS_VISIBLE_SEND_BTN_FUNCT, isVisibleSendBtn)
 </script>
+<style scoped lang="scss">
+.animate-fast-pulse {
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+</style>

@@ -13,11 +13,11 @@
       </div>
     </div>
     <div
-      v-for="(message, index) of list_message"
+      v-for="(message, index) of messageStore.list_message"
       class="relative"
     >
       <TimeSplit
-        :before_message="list_message?.[index - 1]"
+        :before_message="messageStore.list_message?.[index - 1]"
         :now_message="message"
       />
       <div
@@ -61,7 +61,7 @@
               v-if="message.message_text || message.postback_title"
               :current_message="message"
               :current_index="index"
-              :list_message="list_message"
+              :list_message="messageStore.list_message"
             />
             <AttachmentMessage
               v-else-if="message.message_attachments?.length"
@@ -75,11 +75,11 @@
                   message?.fb_page_id,
                   message?.time || message?.createdAt,
                   index,
-                  list_message
+                  messageStore.list_message
                 )
               "
               :now_message="message"
-              :next_message="list_message?.[index + 1]"
+              :next_message="messageStore.list_message?.[index + 1]"
             />
           </div>
           <div
@@ -103,7 +103,7 @@
                 v-if="message.message_text"
                 :current_message="message"
                 :current_index="index"
-                :list_message="list_message"
+                :list_message="messageStore.list_message"
               />
               <template v-if="message.message_attachments?.length">
                 <AttachmentMessage
@@ -254,7 +254,7 @@ const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
 
 /**danh sách tin nhắn hiện tại */
-const list_message = ref<MessageInfo[]>([])
+// const list_message = ref<MessageInfo[]>([])
 /**có đang load tin nhắn hay không */
 const is_loading = ref(false)
 /**gắn cờ đã load hết dữ liệu */
@@ -274,7 +274,7 @@ watch(
   () => conversationStore.select_conversation,
   (new_val, old_val) => {
     // * reset danh sách tin nhắn khi đổi khách hàng
-    list_message.value = []
+    messageStore.list_message = []
 
     // * reset danh sách tin nhắn chờ
     messageStore.send_message_list = []
@@ -291,7 +291,7 @@ watch(
 /**vị trí của tin nhắn cuối cùng nhân viên gửi */
 const last_client_message_index = computed(() =>
   findLastIndex(
-    list_message.value,
+    messageStore.list_message,
     m => m.message_type === 'page' && !!m.message_metadata
   )
 )
@@ -330,10 +330,10 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
 
   // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
   if (size(detail.comment))
-    remove(list_message.value, message => message._id === detail._id)
+    remove(messageStore.list_message, message => message._id === detail._id)
 
   // thêm tin nhắn vào danh sách
-  list_message.value.push(detail)
+  messageStore.list_message.push(detail)
 
   // xử lý khi gặp trường hợp phát hiện tin nhắn chờ
   if (detail?.message_mid)
@@ -394,7 +394,7 @@ function getListMessage(is_scroll?: boolean) {
   if (!commonStore.is_connected_internet) return
 
   /**id tin nhắn trên đầu của lần loading trước */
-  let old_first_message_id = list_message.value?.[0]?._id
+  let old_first_message_id = messageStore.list_message?.[0]?._id
 
   flow(
     [
@@ -426,7 +426,7 @@ function getListMessage(is_scroll?: boolean) {
             r.reverse()
 
             // thêm dữ liệu đã đảo chiều lên đầu
-            list_message.value.unshift(...r)
+            messageStore.list_message.unshift(...r)
 
             // trang tiếp theo
             skip.value += LIMIT
@@ -468,7 +468,7 @@ function getListMessage(is_scroll?: boolean) {
          * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
          * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
          */
-        if (list_message.value.length >= LIMIT) getListMessage()
+        if (messageStore.list_message.length >= LIMIT) getListMessage()
 
         scrollToBottomMessage()
 

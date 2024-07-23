@@ -14,6 +14,7 @@ const ENV: Env = {
         n5_app_v2: 'https://dev-api.botbanhang.vn/v1/n5_app',
         n6_static: 'https://dev-api.botbanhang.vn/v1/n6_static',
         billing: 'https://dev-api.botbanhang.vn/v1/billing',
+        ai: 'https://dev-api.botbanhang.vn/v1/ai',
 
         n4_service_v1: 'https://service.sellingpage.net',
         n5_app_v1: 'https://app.sellingpage.net',
