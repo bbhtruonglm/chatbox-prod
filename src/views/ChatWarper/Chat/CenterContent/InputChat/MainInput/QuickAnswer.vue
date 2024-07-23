@@ -257,7 +257,8 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
   content = replaceTemplateMessage(content)
 
   // gán giá trị vào input
-  INPUT_CHAT.innerText = content
+  // INPUT_CHAT.innerText = content
+  setInputText(content)
 
   // nếu trả lời nhanh có ảnh thì thêm vào danh sách tập tin đính kèm
   if (size(list_images))
@@ -294,12 +295,18 @@ function handleAi(action?: string) {
 /**dịch nội dung */
 async function transalate() {
   // nếu đang loading thì thôi
-  if (is_loading.value) return
+  if (messageStore.is_input_run_ai) return
 
-  // bật loading
-  is_loading.value = true
+  // đánh dấu đang chạy AI
+  messageStore.is_input_run_ai = true
 
   try {
+    // tắt modal
+    commonStore.is_show_quick_answer = false
+
+    // focus vào lại input chat
+    focusChat()
+
     /**input chat */
     const INPUT_CHAT = document.getElementById('chat-text-input-message')
 
@@ -307,47 +314,78 @@ async function transalate() {
     if (!INPUT_CHAT) throw 'DONE'
 
     /**nội dung chat */
-    const TEXT = INPUT_CHAT?.innerText
+    let text = INPUT_CHAT?.innerText
 
     // nếu không có nội dung thì thôi
-    if (!TEXT) throw 'DONE'
+    if (!text) throw 'DONE'
+
+    // xóa dấu /dich ở cuối câu, loại bỏ khoảng trắng
+    text = text.replace(/\/(?:d(?:ich|ic|i)?|\/)?$/, '').trim()
+
+    // cập nhật lại input trước 1 lần
+    setInputText(text)
 
     // gọi api dịch
-    const RES = await text_translate({
-      from: 'vn',
-      to: 'en',
-      text: TEXT,
-    })
+    const RES = await text_translate({ from: 'vn', to: 'en', text })
 
     // nếu không có dữ liệu thì thôi
     if (!RES?.text)
       throw $t('v1.view.main.dashboard.chat.quick_answer.translate_error')
 
-    // thay đổi nội dung chat thành dịch
-    INPUT_CHAT.innerText = RES.text
+    // thay đổi nội dung chat thành dịch, nếu chưa bị huỷ
+    if (messageStore.is_input_run_ai) setInputText(RES.text)
   } catch (e) {
     // hiển thị thông báo lỗi
     if (e !== 'DONE') toastError(e)
   }
 
-  // tắt modal
-  commonStore.is_show_quick_answer = false
+  // đánh dấu AI đã chạy xong
+  messageStore.is_input_run_ai = false
+}
+/**đặt nội dung vào input chat + giữ con trỏ ở cuối */
+function setInputText(text: string) {
+  /**input chat */
+  const INPUT_CHAT = document.getElementById('chat-text-input-message')
 
-  // focus vào lại input chat
-  focusChat()
+  // nếu không có input chat thì thôi
+  if (!INPUT_CHAT) return
 
-  // tắt loading
-  is_loading.value = false
+  // thay đổi nội dung chat
+  INPUT_CHAT.innerText = text
+
+  /**đối tượng Range */
+  const RANGE = document.createRange()
+
+  /**đối tượng Selection */
+  const SELECTION = window.getSelection()
+
+  // Đặt điểm bắt đầu của RANGE ở cuối phần tử
+  RANGE.selectNodeContents(INPUT_CHAT)
+
+  // Đặt điểm kết thúc của RANGE ở cuối phần tử
+  RANGE.collapse(false)
+
+  // Xóa mọi lựa chọn hiện tại
+  SELECTION?.removeAllRanges()
+
+  // Thêm RANGE mới vào SELECTION
+  SELECTION?.addRange(RANGE)
 }
 /**hoàn thành câu */
 async function complete() {
   // nếu đang loading thì thôi
-  if (is_loading.value || !messageStore.list_message) return
+  if (messageStore.is_input_run_ai || !messageStore.list_message) return
 
-  // bật loading
-  is_loading.value = true
+  // đánh dấu đang chạy AI
+  messageStore.is_input_run_ai = true
 
   try {
+    // tắt modal
+    commonStore.is_show_quick_answer = false
+
+    // focus vào lại input chat
+    focusChat()
+
     /**nội dung chat */
     const SOURCE: SourceChat[] = messageStore.list_message
       ?.filter(message => message?.message_text)
@@ -365,36 +403,41 @@ async function complete() {
     if (!INPUT_CHAT) throw 'DONE'
 
     /**nội dung chat */
-    const TEXT = INPUT_CHAT?.innerText
+    let text = INPUT_CHAT?.innerText
 
     // nếu không có nội dung thì thôi
-    if (!TEXT) throw 'DONE'
+    if (!text) throw 'DONE'
+
+    // xóa dấu /hoanthanh ở cuối câu, loại bỏ khoảng trắng
+    text = text
+      .replace(
+        /\/(?:h(?:oanthanh|oanthan|oantha|oanth|oant|oan|oa|o)?|\/)?$/,
+        ''
+      )
+      .trim()
+
+    // cập nhật lại input trước 1 lần
+    setInputText(text)
 
     // gọi api tạo nội dung
     const RES = await gen_answer({
       source: SOURCE,
-      current: TEXT,
+      current: text,
     })
 
     // nếu không có dữ liệu thì thôi
     if (!RES?.text)
       throw $t('v1.view.main.dashboard.chat.quick_answer.complete_error')
 
-    // thay đổi nội dung mới vào input chat
-    INPUT_CHAT.innerText = RES.text
+    // thay đổi nội dung mới vào input chat, nếu chưa bị huỷ
+    if (messageStore.is_input_run_ai) setInputText(RES.text)
   } catch (e) {
     // hiển thị thông báo lỗi
     if (e !== 'DONE') toastError(e)
   }
 
-  // tắt modal
-  commonStore.is_show_quick_answer = false
-
-  // focus vào lại input chat
-  focusChat()
-
-  // tắt loading
-  is_loading.value = false
+  // đánh dấu AI đã chạy xong
+  messageStore.is_input_run_ai = false
 }
 /**thay thế template message thành data của conversation */
 function replaceTemplateMessage(content: string) {
@@ -488,7 +531,13 @@ function onModalShowed(key: string, value: string) {
 /**xử lý sự kiện khi modal đã tắt / không hiển thị */
 function onModalHid(value: string) {
   // nếu gõ gạch ở cuối câu mà chưa mở thì mở modal
-  if (value.endsWith('/')) return toggleModal()
+  if (!value.endsWith('/')) return
+  
+  // mở modal
+  toggleModal()
+  
+  // chọn câu đầu tiên nếu có
+  setDefaultQuickAnswer()
 }
 /**chọn câu trả lời nhanh mặc định */
 function setDefaultQuickAnswer() {

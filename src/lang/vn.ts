@@ -384,6 +384,7 @@ const source: Language = {
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',
               send_message: 'Nhấn để gửi tin nhắn',
+              stop_action: 'Nhấn để dừng hành động AI',
               open_quick_anwser: 'Chọn câu trả lời nhanh',
               select_file: 'Đính kèm tập tin',
               select_emoji: 'Chọn biểu tượng cảm xúc',

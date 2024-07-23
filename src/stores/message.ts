@@ -32,6 +32,9 @@ export const useMessageStore = defineStore('message_store', () => {
   /**gắn cờ file đang gửi */
   const is_send_file = ref(false)
 
+  /**có phải input đang chạy AI không */
+  const is_input_run_ai = ref(false)
+
   /**gắn cờ hiện nút đi scroll xuống bottom */
   const is_show_to_bottom = ref(false)
 
@@ -61,6 +64,7 @@ export const useMessageStore = defineStore('message_store', () => {
     upload_file_list,
     is_send_file,
     is_show_to_bottom,
+    is_input_run_ai,
 
     updateTempMessage,
     removeTempMessage,
