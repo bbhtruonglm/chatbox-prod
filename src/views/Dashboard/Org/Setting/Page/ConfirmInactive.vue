@@ -7,18 +7,18 @@
   >
     <template #header>
       {{
-        $t('v1.view.main.dashboard.select_page.inactive_page.title', {
+        $t('v1.view.main.dashboard.org.setting.inactive_page.title', {
           name: selected_page?.name,
         })
       }}
     </template>
     <template #body>
       <div>
-        {{ $t('v1.view.main.dashboard.select_page.inactive_page.explain') }}
+        {{ $t('v1.view.main.dashboard.org.setting.inactive_page.explain') }}
       </div>
       <div
         v-html="
-          $t('v1.view.main.dashboard.select_page.inactive_page.active_guild')
+          $t('v1.view.main.dashboard.org.setting.inactive_page.active_guild')
         "
       />
     </template>

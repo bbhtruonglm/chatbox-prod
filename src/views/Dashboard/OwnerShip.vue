@@ -65,7 +65,10 @@ import { useConnectPageStore, useOrgStore } from '@/stores'
 import { ref } from 'vue'
 import { useCommonStore } from '@/stores'
 import { filter, keyBy, map, mapValues, size } from 'lodash'
-import { get_current_active_page } from '@/service/api/chatbox/n4-service'
+import {
+  get_current_active_page,
+  update_page_sync,
+} from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { nonAccentVn } from '@/service/helper/format'
 import { add_os, read_os } from '@/service/api/chatbox/billing'
@@ -128,6 +131,9 @@ async function activePage() {
       async (value, page_id) => {
         // nếu trang không được chọn thì bỏ qua
         if (!value || !page_id || !orgStore.selected_org_id) return
+
+        // * call api kích hoạt trang
+        await update_page_sync({ page_id: page_id as string, is_active: true })
 
         // thêm trang vào tổ chức
         await add_os(orgStore.selected_org_id, page_id as string)

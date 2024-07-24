@@ -48,7 +48,7 @@
       </div>
     </template>
   </DashboardLayout>
-  <RequirePricing />
+  <!-- <RequirePricing /> -->
 </template>
 
 <script setup lang="ts">
@@ -66,7 +66,7 @@ import { preGoToChat } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
-import RequirePricing from '@/components/Main/RequirePricing.vue'
+// import RequirePricing from '@/components/Main/RequirePricing.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Menu from '@/views/Dashboard/SelectPage/Menu.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'

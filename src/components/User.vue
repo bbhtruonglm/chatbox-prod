@@ -1,10 +1,10 @@
 <template>
   <button @click="openMenu">
     <div class="relative w-fit mx-auto">
-      <Badge
+      <!-- <Badge
         :value="2"
         class="absolute z-10 -right-2 -top-1"
-      />
+      /> -->
       <StaffAvatar
         :id="chatbotUserStore.getStaffId()"
         class="w-9 h-9 hover:brightness-90 rounded-full"
@@ -27,7 +27,7 @@
       :icon="BriefCaseIcon"
       :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
     />
-    <MenuItem
+    <!-- <MenuItem
       @click="redirectMenu('noti')"
       :icon="UsersIcon"
       :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
@@ -41,7 +41,7 @@
         :value="1"
         class="flex-shrink-0"
       />
-    </MenuItem>
+    </MenuItem> -->
     <hr class="my-1" />
     <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
     <MenuItem
@@ -49,7 +49,7 @@
       :icon="UserIcon"
       :title="$t('v1.view.main.dashboard.header.menu.user_info')"
     />
-    <MenuItem
+    <!-- <MenuItem
       @click="redirectMenu('noti')"
       :icon="BellIcon"
       :title="$t('v1.view.main.dashboard.header.menu.alert')"
@@ -58,12 +58,12 @@
         :value="2"
         class="flex-shrink-0"
       />
-    </MenuItem>
-    <MenuItem
+    </MenuItem> -->
+    <!-- <MenuItem
       @click="redirectMenu('user')"
       :icon="CogIcon"
       :title="$t('v1.view.main.dashboard.header.menu.setting')"
-    />
+    /> -->
     <MenuItem
       @click="signout"
       :icon="LogOutIcon"

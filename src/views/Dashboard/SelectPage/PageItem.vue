@@ -1,34 +1,24 @@
 <template>
+  <!-- :checkbox_is_disabled="!isActivePage(page_info)" -->
+  <!-- :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'" -->
   <PageItem
     v-model:checkbox="pageStore.selected_page_id_list[page_id]"
     :checkbox_is_visible="selectPageStore.is_group_page_mode"
-    :checkbox_is_disabled="!isActivePage(page_info)"
     :page_info="page_info"
     @click="selectPage"
-    :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'"
-    class="border border-slate-200"
+    class="border border-slate-200 cursor-pointer"
   >
     <template #after-name>
       <!-- nếu page hết hạn thì ẩn ngôi sao để ưu tiên block dưới -->
-      <div
-        :class="{
+      <!-- :class="{
           'hidden group-hover:flex': !isActivePage(page_info),
-        }"
-        class="cursor-pointer items-center gap-2.5 flex"
-      >
+        }" -->
+      <div class="cursor-pointer items-center gap-2.5 flex">
         <!-- chỉ hiện nút xoá page khi hover -->
-        <!-- <div
-          @click.stop="confirm_unactive_modal_ref?.toggleModal()"
-          v-tooltip="$t('v1.view.main.dashboard.select_page.cancel_page')"
-          class="group/minus hidden group-hover:flex"
-        >
-          <MinusOutlineIcon
-            class="w-4 h-4 text-slate-500 group-hover/minus:hidden"
-          />
-          <MinusIcon
-            class="w-4 h-4 text-slate-900 hidden group-hover/minus:block"
-          />
-        </div> -->
+        <HidePage
+          :page_id
+          :page_name="page_info?.name"
+        />
         <div @click.stop="togglePagePriority()">
           <StarIcon
             class="w-4 h-4 text-yellow-500"
@@ -40,87 +30,19 @@
           />
         </div>
       </div>
-      <span
+      <!-- <span
         v-if="!isActivePage(page_info)"
         class="text-xs text-red-500 group-hover:hidden"
       >
         {{ $t('v1.common.expired') }}
-      </span>
+      </span> -->
     </template>
   </PageItem>
-  <!-- <Alert
-    ref="confirm_unactive_modal_ref"
-    class_modal="w-[507px]"
-    class_body="text-zinc-500"
-    class_footer="flex justify-between items-center"
-  >
-    <template #header>
-      {{
-        $t('v1.view.main.dashboard.select_page.inactive_page.title', {
-          name: page_info?.name,
-        })
-      }}
-    </template>
-    <template #body>
-      <div>
-        {{ $t('v1.view.main.dashboard.select_page.inactive_page.explain') }}
-      </div>
-      <div
-        v-html="
-          $t('v1.view.main.dashboard.select_page.inactive_page.active_guild')
-        "
-      />
-    </template>
-    <template #footer>
-      <button
-        @click="confirm_unactive_modal_ref?.toggleModal()"
-        class="btn-custom bg-slate-100 text-slate-500"
-      >
-        {{ $t('v1.common.close') }}
-      </button>
-      <button
-        @click="inactivePage"
-        class="btn-custom bg-red-100 text-red-500"
-      >
-        {{ $t('v1.common.ok') }}
-      </button>
-    </template>
-  </Alert> -->
-  <Alert
-    ref="expired_alert_modal_ref"
-    class_modal="w-[507px]"
-    class_body="py-3"
-    class_footer="flex justify-between items-center"
-  >
-    <template #header>
-      {{ $t('v1.view.main.dashboard.select_page.expire.alert.title') }}
-    </template>
-    <template #body>
-      <div
-        v-html="
-          $t('v1.view.main.dashboard.select_page.expire.alert.description')
-        "
-      />
-    </template>
-    <template #footer>
-      <button
-        @click="expired_alert_modal_ref?.toggleModal()"
-        class="btn-custom bg-slate-100 text-slate-500"
-      >
-        {{ $t('v1.common.close') }}
-      </button>
-      <button
-        @click="$router.push('/dashboard/pricing')"
-        class="btn-custom bg-blue-100 text-blue-500"
-      >
-        {{ $t('v1.view.main.dashboard.select_page.expire.alert.upgrade') }}
-      </button>
-    </template>
-  </Alert>
+  <ExpiredAlert ref="expired_alert_modal_ref" />
 </template>
 <script setup lang="ts">
-import { usePageStore, useCommonStore, useSelectPageStore } from '@/stores'
-import { isActivePage } from '@/service/helper/pricing'
+import { usePageStore, useSelectPageStore } from '@/stores'
+// import { isActivePage } from '@/service/helper/pricing'
 import { set } from 'lodash'
 import { update_page } from '@/service/api/chatbox/n4-service'
 import { useI18n } from 'vue-i18n'
@@ -129,13 +51,12 @@ import { computed, inject, ref } from 'vue'
 import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import Alert from '@/components/Alert.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
+import HidePage from '@/views/Dashboard/SelectPage/PageItem/HidePage.vue'
+import ExpiredAlert from '@/views/Dashboard/SelectPage/PageItem/ExpiredAlert.vue'
 
 import StarIcon from '@/components/Icons/Star.vue'
 import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
-import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
-import MinusIcon from '@/components/Icons/Minus.vue'
 
 import type { CbError } from '@/service/interface/function'
 import type { PageInfo } from '@/service/interface/app/page'
@@ -152,7 +73,6 @@ const $props = withDefaults(
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
-const commonStore = useCommonStore()
 const selectPageStore = useSelectPageStore()
 
 /**hàm sort lại danh sách trang của component cha */
@@ -160,10 +80,8 @@ const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 /**hàm đi đến trang chat */
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
 
-/**modal xác nhận huỷ trang */
-const confirm_unactive_modal_ref = ref<InstanceType<typeof Alert>>()
 /**modal cảnh báo trang đã hết hạn */
-const expired_alert_modal_ref = ref<InstanceType<typeof Alert>>()
+const expired_alert_modal_ref = ref<InstanceType<typeof ExpiredAlert>>()
 /**id trang */
 const page_id = computed(() => $props.page_info?.fb_page_id)
 /**đánh dấu ưu tiên */
@@ -180,7 +98,7 @@ function selectPage() {
 /**thay đổi giá trị lựa chọn page để chat */
 function toggleSelectThisPage() {
   // nếu trang đã hết hạn thì thôi
-  if (!isActivePage($props.page_info)) return
+  // if (!isActivePage($props.page_info)) return
 
   // xoá flag khi page không được chọn
   if (isSelectedThisPage())
@@ -195,13 +113,13 @@ function isSelectedThisPage() {
 }
 /**chỉ chat 1 page này */
 function selectOnePage() {
-  // nếu trang đã hết hạn thì thôi
-  if (!isActivePage($props.page_info)) {
-    // hiện modal cảnh báo trang đã hết hạn
-    expired_alert_modal_ref.value?.toggleModal()
+  // // nếu trang đã hết hạn thì thôi
+  // if (!isActivePage($props.page_info)) {
+  //   // hiện modal cảnh báo trang đã hết hạn
+  //   expired_alert_modal_ref.value?.toggleModal()
 
-    return
-  }
+  //   return
+  // }
 
   // nếu không có id trang thì thôi
   if (!page_id.value) return
@@ -256,52 +174,4 @@ function togglePagePriority() {
     true
   )
 }
-/**huỷ kích hoạt page này | ẩn page */
-function inactivePage() {
-  // tắt modal
-  confirm_unactive_modal_ref.value?.toggleModal()
-
-  // nếu không có id trang thì thôi
-  if (!page_id.value) return
-
-  flow(
-    [
-      // * kích hoạt loading
-      (cb: CbError) => {
-        commonStore.is_loading_full_screen = true
-
-        cb()
-      },
-      // * call api update page
-      (cb: CbError) =>
-        update_page({ page_id: page_id.value, is_active: false }, (e, r) => {
-          if (e) return cb(e)
-
-          cb()
-        }),
-      // * xoá page bị ẩn khỏi danh sách page và danh sách page đang chọn (nếu có)
-      (cb: CbError) => {
-        // xoá dữ liệu trang khỏi danh sách dữ liệu trang đang chọn
-        delete pageStore.active_page_list[page_id.value]
-
-        // xoá id trang khỏi danh sách id trang được chọn
-        delete pageStore.selected_page_id_list[page_id.value]
-
-        // sort lại danh sách trang
-        sortListPage?.()
-
-        cb()
-      },
-    ],
-    e => {
-      // tắt loading
-      commonStore.is_loading_full_screen = false
-    }
-  )
-}
 </script>
-<style scoped lang="scss">
-.btn-custom {
-  @apply text-sm font-medium rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-90;
-}
-</style>

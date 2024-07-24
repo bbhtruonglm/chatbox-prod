@@ -36,13 +36,13 @@ export const preGoToChat = (proceed: Cb) => {
         cb()
       },
       // * kiểm tra các page và user hiện tại có gói hay không
-      (cb: CbError) =>
-        checkPricingValid((e, r) => {
-          // tắt loading
-          if (e) return toggle_loading(false)
+      // (cb: CbError) =>
+      //   checkPricingValid((e, r) => {
+      //     // tắt loading
+      //     if (e) return toggle_loading(false)
 
-          cb()
-        }),
+      //     cb()
+      //   }),
       // * nếu danh sách page chọn thay đổi, thì xoá filter conversation
       (cb: CbError) => {
         // nếu vẫn là các page cũ đã chọn thì bỏ qua
