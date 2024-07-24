@@ -42,7 +42,7 @@ import { map } from 'lodash'
 import { nonAccentVn } from '@/service/helper/format'
 import { useI18n } from 'vue-i18n'
 import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { isActivePage } from '@/service/helper/pricing'
+// import { isActivePage } from '@/service/helper/pricing'
 
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
@@ -125,9 +125,10 @@ function loopPageOfGroup(proceed: (page?: PageInfo) => void) {
     // bỏ qua các trang không thoả mãn
     if (
       // chỉ xử lý các trang trong nhóm
-      page?.page?.type !== $props.filter ||
-      // chỉ xử lý các page còn hạn sử dụng
-      !isActivePage(page?.page)
+      page?.page?.type !== $props.filter 
+      // ||
+      // // chỉ xử lý các page còn hạn sử dụng
+      // !isActivePage(page?.page)
     )
       return
 

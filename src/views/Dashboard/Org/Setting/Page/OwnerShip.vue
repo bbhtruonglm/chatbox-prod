@@ -65,10 +65,15 @@ import { useConnectPageStore, useOrgStore } from '@/stores'
 import { ref } from 'vue'
 import { useCommonStore } from '@/stores'
 import { filter, keyBy, map, mapValues, size } from 'lodash'
-import { get_current_active_page } from '@/service/api/chatbox/n4-service'
+import {
+  get_current_active_page,
+  get_current_active_page_sync,
+  update_page_sync,
+} from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { nonAccentVn } from '@/service/helper/format'
 import { add_os, read_os } from '@/service/api/chatbox/billing'
+import { toastError } from '@/service/helper/alert'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -78,7 +83,6 @@ import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
-import { toastError } from '@/service/helper/alert'
 
 const $emit = defineEmits(['done'])
 
@@ -129,6 +133,9 @@ async function activePage() {
         // nếu trang không được chọn thì bỏ qua
         if (!value || !page_id || !orgStore.selected_org_id) return
 
+        // * call api kích hoạt trang
+        await update_page_sync({ page_id: page_id as string, is_active: true })
+
         // thêm trang vào tổ chức
         await add_os(orgStore.selected_org_id, page_id as string)
       }
@@ -165,13 +172,7 @@ async function getAnotherOrgPage() {
     list_selected_page_id.value = {}
 
     /**toàn bộ các trang của người dùng có quyền truy cập */
-    const LIST_PAGE: PageList = await new Promise((resolve, reject) =>
-      get_current_active_page({}, (e, r) => {
-        if (e) return reject(e)
-
-        resolve(r.page_list)
-      })
-    )
+    const LIST_CURRENT_PAGE = await get_current_active_page_sync({})
 
     /**các trang đã nằm trong tổ chức */
     const LIST_OS = await read_os(orgStore.selected_org_id)
@@ -180,7 +181,7 @@ async function getAnotherOrgPage() {
     const MAP_OS_ID = mapValues(keyBy(LIST_OS, 'page_id'), 'org_id')
 
     // lặp qua toàn bộ danh sách trang của người dùng
-    map(LIST_PAGE, page => {
+    map(LIST_CURRENT_PAGE?.page_list, page => {
       // nếu không có id trang thì thôi
       if (!page?.page?.fb_page_id) return
 

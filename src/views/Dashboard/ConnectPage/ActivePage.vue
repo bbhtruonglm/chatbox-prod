@@ -1,9 +1,9 @@
 <template>
-  <EmptyActive v-if="!size(list_new_page)" />
+  <EmptyActive v-if="!size(list_my_org_page) && !size(list_another_org_page)" />
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_new_page">
+        <template v-for="page of list_my_org_page">
           <PageItem
             @click="selectPage(page?.page?.fb_page_id)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_new_page">
+        <template v-for="page of list_another_org_page">
           <PageItem
             @click="selectPage(page?.page?.fb_page_id)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
@@ -42,7 +42,7 @@
     </div>
     <div class="flex-shrink-0 flex justify-end p-2 border-t">
       <Button
-        @click="activePage"
+        @click="beforeActivePage"
         :class="
           countPageSelect()
             ? 'bg-blue-700 text-white'
@@ -53,40 +53,56 @@
       </Button>
     </div>
   </template>
+  <MoveToOrg
+    :list_another_org_page_id
+    @done="activePage()"
+    ref="move_to_org_ref"
+  />
 </template>
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { useCommonStore, useConnectPageStore } from '@/stores'
-import { filter, map, size } from 'lodash'
+import { useCommonStore, useConnectPageStore, useOrgStore } from '@/stores'
+import { filter, keyBy, keys, map, mapValues, size } from 'lodash'
 import {
-  get_current_active_page,
+  get_current_active_page_sync,
   update_page,
 } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 import { KEY_LOAD_LIST_PAGE_FUNCT } from '@/views/Dashboard/symbol'
+import { nonAccentVn } from '@/service/helper/format'
+import { read_os } from '@/service/api/chatbox/billing'
+import { toastError } from '@/service/helper/alert'
 
 import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
+import MoveToOrg from '@/views/Dashboard/ConnectPage/ActivePage/MoveToOrg.vue'
 
-import type { PageData, PageList } from '@/service/interface/app/page'
-import { nonAccentVn } from '@/service/helper/format'
+import type { PageData } from '@/service/interface/app/page'
+import type { OrgInfo, OwnerShipInfo } from '@/service/interface/app/billing'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
+const orgStore = useOrgStore()
 
 /**ẩn hiện modal kết nối nền tảng */
 const toggleModal = inject(KEY_TOGGLE_MODAL_FUNCT)
 /**lấy danh sách trang đã kích hoạt */
 const loadListPage = inject(KEY_LOAD_LIST_PAGE_FUNCT)
 
-/**danh sách các trang mới */
-const list_new_page = ref<PageData[]>([])
+/**danh sách các trang thuộc tổ chức của tôi */
+const list_my_org_page = ref<PageData[]>([])
 /**danh sách các trang ở tổ chức khác */
-const list_old_page = ref<PageData[]>([])
+const list_another_org_page = ref<PageData[]>([])
 /**danh sách id các page đã chọn */
 const list_selected_page_id = ref<Record<string, boolean>>({})
+/**ref của modal chọn tổ chức cho trang */
+const move_to_org_ref = ref<InstanceType<typeof MoveToOrg>>()
+/**danh sách các trang đã chọn - org id */
+const map_my_os = ref<Record<string, string | undefined>>({})
+/**danh sách các trang đạng chọn mà ngoài tổ chức */
+const list_another_org_page_id = ref<string[]>([])
 
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
@@ -103,6 +119,19 @@ function filterPage(page: PageData) {
     page?.page?.fb_page_id?.includes(SEARCH) ||
     nonAccentVn(page?.page?.name || '')?.includes(SEARCH)
   )
+}
+/**trước khi kích hoạt trang */
+function beforeActivePage() {
+  /**lấy danh sách các trang khác tổ chức */
+  list_another_org_page_id.value = keys(list_selected_page_id.value)?.filter(
+    page_id => !map_my_os.value?.[page_id]
+  )
+
+  // nếu có trang khác tổ chức thì chuyển qua modal chuyển trang vào tổ chức
+  if (list_another_org_page_id.value?.length)
+    move_to_org_ref.value?.toggleModal()
+  // nếu không thì kích hoạt luôn
+  else activePage()
 }
 /**kích hoạt các trang được chọn */
 async function activePage() {
@@ -144,7 +173,10 @@ async function activePage() {
 
     // nạp lại danh sách trang đã được kích hoạt ở UI chọn page
     await loadListPage?.()
-  } catch (e) {}
+  } catch (e) {
+    // thông báo lỗi
+    toastError(e)
+  }
 
   // ẩn loading
   commonStore.is_loading_full_screen = false
@@ -155,30 +187,52 @@ async function getListWattingPage() {
   connectPageStore.is_loading = true
 
   try {
-    // xóa toàn bộ danh sách trang
-    list_new_page.value = []
-    list_old_page.value = []
+    // xóa toàn bộ các danh sách trang đang có để làm mới
+    list_my_org_page.value = []
+    list_another_org_page.value = []
+
+    /**danh sách các trang thuộc các tổ chức của tôi */
+    let list_my_os: OwnerShipInfo[] = []
+
+    // lấy toàn bộ các trang thuộc tổ chức của tôi
+    await eachOfLimit(orgStore.list_org, 1, async (org: OrgInfo, i) => {
+      // nếu không có id tổ chức thì bỏ qua
+      if (!org.org_id) return
+
+      /**các trang đã nằm trong tổ chức */
+      const LIST_OS = await read_os(org.org_id)
+
+      // thêm trang vào danh sách tổng
+      list_my_os = [...list_my_os, ...LIST_OS]
+    })
+
+    /**page_id và org_id */
+    map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
 
     /**toàn bộ các trang của người dùng */
-    const LIST_PAGE: PageList = await new Promise((resolve, reject) =>
-      get_current_active_page({}, (e, r) => {
-        if (e) return reject(e)
-
-        resolve(r.page_list)
-      })
-    )
+    const LIST_CURRENT_PAGE = await get_current_active_page_sync({})
 
     // lặp qua toàn bộ danh sách page của người dùng
-    map(LIST_PAGE, page => {
-      // TODO lọc ra trang đã kích hoạt nhưng ở gói khác
+    map(LIST_CURRENT_PAGE?.page_list, page => {
+      // nếu không có id trang thì thôi
+      if (!page?.page?.fb_page_id) return
 
-      // nếu trang đã được kích hoạt rồi thì bỏ qua
-      if (page.page?.is_active) return
+      // nếu trang đã được kích hoạt ở tổ chức của mình rồi thì bỏ qua (ở tổ chức khác vẫn hiện)
+      if (page.page?.is_active && map_my_os.value?.[page?.page?.fb_page_id])
+        return
 
       // thêm trang chưa kích hoạt vào danh sách
-      list_new_page.value.push(page)
+
+      // trang thuộc tổ chức của tôi
+      if (map_my_os.value?.[page?.page?.fb_page_id])
+        list_my_org_page.value.push(page)
+      // trang không thuộc tổ chức của tôi
+      else list_another_org_page.value.push(page)
     })
-  } catch (e) {}
+  } catch (e) {
+    // thông báo lỗi
+    toastError(e)
+  }
 
   // ẩn loading
   connectPageStore.is_loading = false

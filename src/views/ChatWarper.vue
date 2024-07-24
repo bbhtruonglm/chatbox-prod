@@ -292,15 +292,15 @@ function getPageInfoToChat() {
           cb()
         }),
       // * kiểm tra các page được chọn có thoả mãn điều kiện gói hay không
-      (cb: CbError) =>
-        checkPricingValid((e, r) => {
-          if (e) {
-            toggle_loading(false)
-            return $router.push('/dashboard')
-          }
+      // (cb: CbError) =>
+      //   checkPricingValid((e, r) => {
+      //     if (e) {
+      //       toggle_loading(false)
+      //       return $router.push('/dashboard')
+      //     }
 
-          cb()
-        }, true),
+      //     cb()
+      //   }, true),
       // * khởi tạo kết nối socket lên server
       (cb: CbError) => {
         onSocketFromChatboxServer()

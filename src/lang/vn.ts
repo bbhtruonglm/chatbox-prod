@@ -54,6 +54,7 @@ const source: Language = {
       more: 'Thêm',
       back: 'Quay lại',
       copy: 'Sao chép',
+      continue: 'Tiếp tục',
     },
     view: {
       network: {
@@ -129,12 +130,12 @@ const source: Language = {
             chat_one_page: 'Tắt chế độ gộp trang',
             munti_chat_page: 'Vào chế độ gộp trang',
             chat_now: 'Chat ngay',
-            inactive_page: {
-              title: 'Huỷ kích hoạt trang: {name}',
-              explain:
-                'Trang này sẽ bị bỏ khỏi Doanh nghiệp, gói cước và các nhân viên trên trang sẽ không thể truy cập được.',
+            hide_page: {
+              tooltip: 'Ẩn trang',
+              title: 'Ẩn trang: {name}',
+              explain: 'Trang này sẽ bị ẩn khỏi giao diện.',
               active_guild:
-                'Để kích hoạt lại, bạn có thể kích hoạt ở mục <b>"Kết nối trang"</b>.',
+                'Để hiển thị lại, bạn có thể kích hoạt ở mục <b>"Kết nối trang"</b>.',
             },
             empty_page: {
               title: 'Bạn chưa có trang',
@@ -156,7 +157,7 @@ const source: Language = {
             },
           },
           select_platform: {
-            another_page: 'Các trang ở Tổ chức khác',
+            another_page: 'Trang ngoài phạm vi tổ chức của bạn',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
@@ -204,6 +205,10 @@ const source: Language = {
               success: 'Tạo kết nối Website thành công',
             },
             success: 'Kích hoạt các trang thành công',
+            move_org: {
+              title: 'Thêm trang vào tổ chức',
+              move: 'Chuyển thêm {count} trang về tổ chức của bạn sở hữu'
+            }
           },
           pricing: {
             help: {
@@ -702,7 +707,14 @@ const source: Language = {
                   explain:
                     'Nhân viên này sẽ bị bỏ khỏi Doanh nghiệp, gói cước.',
                 },
-              }
+              },
+              inactive_page: {
+                title: 'Huỷ kích hoạt trang: {name}',
+                explain:
+                  'Trang này sẽ bị bỏ khỏi Doanh nghiệp, gói cước và các nhân viên trên trang sẽ không thể truy cập được.',
+                active_guild:
+                  'Để kích hoạt lại, bạn có thể kích hoạt ở mục <b>"Kết nối trang"</b>.',
+              },
             },
             pay: {
               account: 'Tài khoản',
@@ -770,7 +782,7 @@ const source: Language = {
                 staff: 'Nhâm sự:',
                 discount: 'Theo Năm (-40%)',
                 company: 'Doanh nghiệp',
-                success: 'Thanh toán thành công'
+                success: 'Thanh toán thành công',
               },
               recharge: {
                 wrong_wallet_id: 'Thông tin tài khoản không chính xác',
@@ -826,8 +838,8 @@ const source: Language = {
           },
           org_page: {
             title: 'Thêm trang vào tổ chức',
-            guild: 'Chuyển trang về tổ chức của bạn'
-          }
+            guild: 'Chuyển trang về tổ chức của bạn',
+          },
         },
       },
     },

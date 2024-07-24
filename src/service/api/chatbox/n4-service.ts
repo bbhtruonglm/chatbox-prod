@@ -38,19 +38,30 @@ export const read_me_chatbot_user = (
     uri: `${$env.host.n4_service_v2}/app/chatbot_user/read_me_chatbot_user`,
 }, proceed)
 
+/**dữ liệu của trang hiện tại kích hoạt */
+interface CurrentPageData {
+    /**danh sách page đang kích hoạt */
+    page_list: PageList
+    /**danh sách nhân viên của các page trên */
+    all_staff_list: AllStaffList
+}
 /**đọc thông tin của toàn bộ các page đang được kích hoạt của user hiện tại */
 export const get_current_active_page = (
     body: {
         is_active?: boolean
     },
-    proceed: (e: any, r: {
-        page_list: PageList
-        all_staff_list: AllStaffList
-    }) => void
+    proceed: (e: any, r: CurrentPageData) => void
 ) => chatbox({
     uri: `${$env.host.n4_service_v2}/app/page/get_current_page`,
     body,
 }, proceed)
+/**đọc thông tin của toàn bộ các page đang được kích hoạt của user hiện tại */
+export const get_current_active_page_sync = async (
+    body: { is_active?: boolean }
+): Promise<CurrentPageData> => chatboxSync({
+    uri: `${$env.host.n4_service_v2}/app/page/get_current_page`,
+    body,
+})
 
 /**cập nhật một số dữ liệu của page */
 export const update_page = (
