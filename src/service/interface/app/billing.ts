@@ -3,6 +3,8 @@ import type { PageInfo } from "./page"
 
 /**tổ chức */
 export interface OrgInfo {
+  /**gắn thêm cờ chọn tổ chức */
+  is_selected?: boolean
   /**inject thêm dữ liệu nhân viên nếu cần */
   current_ms?: MemberShipInfo
   /**id của tổ chức */

@@ -68,7 +68,7 @@ import { toastError } from '@/service/helper/alert'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
-import OwnerShip from '@/views/Dashboard/OwnerShip.vue'
+import OwnerShip from '@/views/Dashboard/Org/Setting/Page/OwnerShip.vue'
 import ConfirmInactive from '@/views/Dashboard/Org/Setting/Page/ConfirmInactive.vue'
 
 import StackIcon from '@/components/Icons/Stack.vue'

@@ -54,6 +54,7 @@ const source: Language = {
       more: 'Thêm',
       back: 'Quay lại',
       copy: 'Sao chép',
+      continue: 'Tiếp tục',
     },
     view: {
       network: {
@@ -156,7 +157,7 @@ const source: Language = {
             },
           },
           select_platform: {
-            another_page: 'Các trang ở Tổ chức khác',
+            another_page: 'Trang ngoài phạm vi tổ chức của bạn',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
@@ -204,6 +205,10 @@ const source: Language = {
               success: 'Tạo kết nối Website thành công',
             },
             success: 'Kích hoạt các trang thành công',
+            move_org: {
+              title: 'Thêm trang vào tổ chức',
+              move: 'Chuyển thêm {count} trang về tổ chức của bạn sở hữu'
+            }
           },
           pricing: {
             help: {
