@@ -427,6 +427,15 @@ const source: Language = {
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
               reply_time: 'Phản hồi chậm',
+              header: {
+                note: 'Ghi chú, ghim, đặt lịch',
+                alert: 'Cảnh báo',
+              },
+              cta: {
+                place_order: 'Tạo đơn hàng',
+                create_transaction: 'Tạo giao dịch',
+                schedule_appointment: 'Lập lịch',
+              }
             },
             widget: {
               title: 'Widget',
