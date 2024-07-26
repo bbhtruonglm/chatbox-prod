@@ -48,6 +48,7 @@
             }"
             class="relative flex flex-col w-full"
           >
+            <MessageItem />
             <div
               v-if="
                 ['client', 'activity'].includes(message.message_type) &&
@@ -243,6 +244,7 @@ import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'
 import HeaderChat from '@/views/ChatWarper/Chat/CenterContent/MessageList/HeaderChat.vue'
+import MessageItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem.vue'
 
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 
