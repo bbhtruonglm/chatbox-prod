@@ -1,92 +1,191 @@
 <template>
-  <div class="bg-[#FFF8E1] bg-[#D8F6CB] !bg-white border border-red-500 rounded-lg p-2 gap-2.5 flex flex-col max-w-80">
-    <div class="flex justify-between gap-2">
-      <div class="gap-2.5 flex flex-col">
-        <img
-          src="https://scontent.fmaa10-1.fna.fbcdn.net/v/t1.15752-9/449457830_1822209494934843_1793037365231243235_n.png?_nc_cat=102&ccb=1-7&_nc_sid=fc17b8&_nc_ohc=RUWuFz4eIjAQ7kNvgFbTOZW&_nc_ht=scontent.fmaa10-1.fna&edm=AKVc4UAEAAAA&oh=03_Q7cD1QG3aiQjKhZ_-Ab9a0_9mp1c0mTuHhvWbHjzcteXctt-Tg&oe=66CA850E"
-          class="attachment-size"
-        />
-
-        <img
-          src="https://scontent.fmaa10-1.fna.fbcdn.net/v/t1.15752-9/451794217_458670163713086_3773441309376921976_n.png?_nc_cat=111&ccb=1-7&_nc_sid=fc17b8&_nc_ohc=6oY9dnXM15AQ7kNvgEZcnfm&_nc_ht=scontent.fmaa10-1.fna&edm=AKVc4UAEAAAA&oh=03_Q7cD1QFjWszdNa-jHDFMMjwPCX0JYE5tqX9-B5sPq7DOx4e6Bw&oe=66C98615"
-          class="attachment-size"
-        />
-
-        <video
-          class="attachment-size"
-          controls
-          preload="metadata"
-        >
-          <source
-            src="https://scontent.fmaa10-1.fna.fbcdn.net/v/t42.3356-2/408981581_25271697805754864_7901027721007800365_n.mp4?_nc_cat=110&amp;ccb=1-7&amp;_nc_sid=4f86bc&amp;_nc_ohc=eT0QccSKggIQ7kNvgET1sme&amp;_nc_ht=scontent.fmaa10-1.fna&amp;edm=AKVc4UAEAAAA&amp;oh=03_Q7cD1QEooxP4WFOpMsMh1oAto89mGB2bwHjj88YzAoASzYVupA&amp;oe=66A4F507&amp;dl=1"
-            type="video/mp4"
-          />
-        </video>
-
-        <audio
-          class="w-full"
-          controls
-          preload="metadata"
-        >
-          <source
-            src="https://cdn.fbsbx.com/v/t59.3654-21/357459481_3655858284649883_5075327584949069079_n.mp4/audioclip-1721966486000-42057.mp4?_nc_cat=103&amp;ccb=1-7&amp;_nc_sid=d61c36&amp;_nc_ohc=mSJHXuyjo8EQ7kNvgEcaTyX&amp;_nc_ht=cdn.fbsbx.com&amp;edm=AKVc4UAEAAAA&amp;oh=03_Q7cD1QEHoFPoyHxjkCeiwJqscs7Tz8ckoSYF5vUXVIjcZMtWgg&amp;oe=66A50E3E&amp;dl=1"
-            type="audio/mpeg"
-          />
-        </audio>
-      </div>
-      <button
-        class="flex-shrink-0 bg-slate-200 rounded-lg w-7 h-7 flex items-center justify-center"
-      >
-        <template v-if="true">
-          <ArrowRightIcon class="w-3 h-3 flex-shrink-0" />
-          <span class="font-medium text-sm">A</span>
-        </template>
-        <ArrowDownIcon
-          v-else
-          class="w-4 h-4"
-        />
-      </button>
-    </div>
-
-    <div class="text-sm font-semibold enter-line">Tiêu đề</div>
-
-    <div class="text-sm enter-line">
-      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quae blanditiis
-      sapiente voluptas perferendis voluptates esse consequatur velit debitis
-      aliquam non! Asperiores enim facilis deserunt dolor accusantium nemo
-      assumenda illum dolorem!
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <button
-        class="py-2 flex justify-center items-center gap-1 rounded-lg bg-slate-800 text-yellow-200"
-      >
-        Lập lịch
-        <NewTabIcon class="w-4 h-4" />
-      </button>
-      <button
-        class="py-2 flex justify-center items-center gap-1 rounded-lg bg-slate-600 text-slate-100"
-      >
-        Nút số 1
-      </button>
-      <button
-        class="py-2 flex justify-center items-center gap-1 rounded-lg bg-slate-600 text-slate-100"
-      >
-        Nút số 2
-      </button>
-    </div>
+  <div class="w-fit max-w-96 group relative">
+    <MessageDate
+      :class="{
+        'right-0': message_type !== 'client',
+      }"
+      :time="message_time"
+      :meta="meta"
+    />
+    <ReplyMessage
+      v-if="reply_message"
+      :message="reply_message"
+    />
+    <AttachmentMessage
+      v-if="isSpecialCase()"
+      :message="message"
+      :type="message_type === 'client' ? 'CLIENT' : 'PAGE'"
+    />
+    <SliderWarper
+      v-else
+      :count_element="message_source?.length"
+    >
+      <MessageTemplate
+        v-for="data_source of message_source"
+        :class="addOnClassTemplate()"
+        :data_source
+      />
+    </SliderWarper>
+    <SlowReply
+      v-if="calcIsClientRepSlow(page_id, message_time, message_index)"
+      :now_message="message"
+      :next_message="messageStore.list_message?.[message_index + 1]"
+    />
   </div>
 </template>
 <script setup lang="ts">
-import NewTabIcon from '@/components/Icons/NewTab.vue'
-import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
-import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
+import { computed } from 'vue'
+import { calcIsClientRepSlow } from '@/service/function'
+import { useMessageStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
+
+import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'
+import ReplyMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ReplyMessage.vue'
+import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageDate.vue'
+import MessageTemplate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate.vue'
+import SliderWarper from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/SliderWarper.vue'
+import AttachmentMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage.vue'
+
+import type {
+  ChatbotButton,
+  MessageInfo,
+  MessageTemplateInput,
+} from '@/service/interface/app/message'
+
+const messageStore = useMessageStore()
+const { t: $t } = useI18n()
+
+const $props = withDefaults(
+  defineProps<{
+    /**dữ liệu của tin nhắn */
+    message: MessageInfo
+    /**vị trí của tin nhắn trong mảng */
+    message_index: number
+  }>(),
+  {}
+)
+
+/**tin nhắn này thuộc về dạng nào */
+const message_type = computed(() => $props.message?.message_type)
+/**id trang */
+const page_id = computed(() => $props.message?.fb_page_id)
+/**thời gian tin nhắn được gửi */
+const message_time = computed(
+  () => $props.message?.time || $props.message?.createdAt
+)
+/**tin nhắn được trả lời */
+const reply_message = computed(() => $props.message?.snap_replay_message)
+/**dữ liệu đính kèm của tin nhắn */
+const meta = computed(() => $props.message?.message_metadata)
+/**nội dung văn bản thuần tuý */
+const text = computed(() => $props.message?.message_text)
+/**danh sách file đính kèm */
+const list_attachment = computed(() => $props.message?.message_attachments)
+/**dữ liệu của tin nhắn */
+const message_source = computed<MessageTemplateInput[]>(() => {
+  /**
+   * - chỉ lấy dữ liệu của attr đầu tiên
+   * - nếu có nhiều attr thì xử lý kiểu khác
+   */
+  const SOURCE = list_attachment.value?.[0]
+
+  /**kết quả trả về */
+  let result: MessageTemplateInput[] = []
+
+  // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
+  if (!SOURCE)
+    result.push({ content: text.value || $t('v1.common.unsupport_message') })
+
+  // nếu chỉ có các nút bấm -> chỉ tạo 1 record
+  if (SOURCE?.payload?.buttons)
+    result.push({
+      // nút bấm sẽ kèm theo một nội dung tin nhắn nào đó
+      content: text.value,
+      // map lại dữ liệu nút bấm
+      list_button: formatButton(SOURCE.payload.buttons),
+    })
+
+  // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
+  if (SOURCE?.payload?.elements)
+    result.push(
+      ...SOURCE?.payload?.elements?.map(element => {
+        /**dữ liệu của 1 template */
+        let res: MessageTemplateInput = {}
+
+        // TODO hiện tạm nút AI, sẽ fix sau
+        if ($props.message?.ai?.length) res.is_ai = true
+
+        // tiêu đề
+        res.title = element.title
+        // nội dung văn bản, hoặc url file fb không hiển thị được
+        res.content = element.subtitle || text.value || element.url
+        // danh sách nút bấm
+        if (element?.buttons) res.list_button = formatButton(element?.buttons)
+
+        // hình ảnh của slider
+        if (element.image_url) res.image = { url: element.image_url }
+
+        // video của AI
+        if (element.video_url) res.video = { url: element.video_url }
+        // âm thanh của AI
+        if (element.audio_url) res.audio = { url: element.audio_url }
+        // file của AI
+        if (element.file_url) res.file = { url: element.file_url }
+
+        // trả về dữ liệu
+        return res
+      })
+    )
+
+  // nếu chỉ có url (là file nhưng chưa xử lý AI) -> tạo 1 record
+  if (SOURCE?.payload?.url && !SOURCE?.payload?.elements) {
+    /**dữ liệu của 1 template */
+    let res: MessageTemplateInput = {}
+
+    // hình ảnh
+    if (SOURCE?.type === 'image') res.image = { url: SOURCE.payload.url }
+    // video
+    if (SOURCE?.type === 'video') res.video = { url: SOURCE.payload.url }
+    // âm thanh
+    if (SOURCE?.type === 'audio') res.audio = { url: SOURCE.payload.url }
+    // tập tin khác
+    if (SOURCE?.type === 'file') res.file = { url: SOURCE.payload.url }
+
+    // trả về dữ liệu
+    result.push(res)
+  }
+
+  // trả về mảng rỗng
+  return result
+})
+/**xử lý dữ liệu nút bấm */
+function formatButton(list_raw_button: ChatbotButton[]) {
+  return list_raw_button?.map(button => ({
+    title: button.title,
+    url: button?.url,
+    // TODO thêm type để mở tab mới , hay mở modal, ...
+  }))
+}
+/**tính toán bg, viền cho tin nhắn */
+function addOnClassTemplate() {
+  return {
+    'bg-[#FFF8E1]': message_type.value === 'page',
+    'bg-white': message_type.value === 'client',
+    'bg-[#D8F6CB]': message_type.value === 'note',
+    'border border-red-500': calcIsClientRepSlow(
+      page_id.value,
+      message_time.value,
+      $props.message_index
+    ),
+  }
+}
+
+/**
+ * có phải là trường hợp tin nhắn đặc biệt không
+ * - khi có mảng nhiều file đính kèm
+ * => sẽ hiển thị kiểu khác
+ */
+function isSpecialCase() {
+  return (list_attachment.value?.length || 0) > 1
+}
 </script>
-<style lang="scss" scoped>
-.attachment-size {
-  @apply max-h-40 w-fit;
-}
-.enter-line {
-  @apply break-words whitespace-pre-line;
-}
-</style>

@@ -11,7 +11,6 @@
         current_message?.fb_page_id,
         current_message?.time || current_message?.createdAt,
         current_index,
-        list_message
       ),
     }"
     class="message-box break-words whitespace-pre-line bg-white z-1"

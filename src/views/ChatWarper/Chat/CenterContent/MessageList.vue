@@ -48,8 +48,17 @@
             }"
             class="relative flex flex-col w-full"
           >
-            <MessageItem />
-            <div
+            <MessageItem
+              v-if="
+                ['client', 'activity', 'page', 'note'].includes(
+                  message.message_type
+                ) && !message.ad_id
+              "
+              :message
+              :message_index="index"
+            />
+
+            <!-- <div
               v-if="
                 ['client', 'activity'].includes(message.message_type) &&
                 !message.ad_id
@@ -78,8 +87,7 @@
                   calcIsClientRepSlow(
                     message?.fb_page_id,
                     message?.time || message?.createdAt,
-                    index,
-                    messageStore.list_message
+                    index
                   )
                 "
                 :now_message="message"
@@ -144,7 +152,8 @@
                 :text="message.message_text"
               />
               <UnsupportMessage v-else />
-            </div>
+            </div> -->
+
             <div
               v-else-if="message.message_type === 'system'"
               class="text-center px-20"

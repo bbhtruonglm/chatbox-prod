@@ -36,6 +36,7 @@ export interface MessageInfo {
   replay_mid?: string
   /**nội dung tin nhắn trước đó được reply nếu có */
   snap_replay_message?: MessageInfo
+  /**dữ liệu của AI */
   ai?: {
     /**sdt */
     phone?: string
@@ -50,6 +51,43 @@ export interface MessageInfo {
     /**dữ liệu được chuyển từ text -> CTA */
     cta?: string
   }[]
+}
+
+/**dữ liệu của một mẫu tin nhắn */
+export interface MessageTemplateInput {
+  /**hình ảnh */
+  image?: {
+    /**đường dẫn hình ảnh */
+    url?: string
+  }
+  /**video */
+  video?: {
+    /**đường dẫn video */
+    url?: string
+  }
+  /**audio */
+  audio?: {
+    /**đường dẫn audio */
+    url?: string
+  }
+  /**tập tin khác */
+  file?: {
+    /**đường dẫn tập tin */
+    url?: string
+  }
+  /**tiêu đề */
+  title?: string
+  /**nội dung */
+  content?: string
+  /**danh sáchnút */
+  list_button?: {
+    /**tiêu đề nút */
+    title?: string
+    /**đường dẫn của nút */
+    url?: string
+  }[]
+  /**có xử lý AI thành công */
+  is_ai?: boolean
 }
 
 /**đầu vào của api */
@@ -109,7 +147,7 @@ export interface AttachmentInfo {
   /**thêm index để mapping */
   index?: number
   /**file là dạng gì */
-  type?: 'image' | 'video' | 'audio' | 'template' | 'fallback'
+  type?: 'image' | 'video' | 'audio' | 'file' | 'template' | 'fallback'
   /**tiêu đề */
   title?: string
   /**đường link */
@@ -136,6 +174,12 @@ export interface AttachmentPayload {
   subtitle?: string
   /**link ảnh hiển thị */
   image_url?: string
+  /**link của video - tạo thêm */
+  video_url?: string
+  /**link của audio - tạo thêm */
+  audio_url?: string
+  /**link của file - tạo thêm */
+  file_url?: string
   /**link của cả khối */
   item_url?: string
   /**dữ liệu của nút bấm */
@@ -169,6 +213,8 @@ export interface ChatbotButton {
   title?: string
   /**hành động của nút này */
   payload?: string
+  /**link của nút */
+  url?: string
 }
 
 /**dữ liệu của trả lời nhanh */
