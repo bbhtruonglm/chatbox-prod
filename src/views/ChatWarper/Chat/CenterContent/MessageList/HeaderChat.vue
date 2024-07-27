@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute bg-indigo-50 z-50 rounded-lg py-1 px-3 shadow-sm top-2 left-2 w-[calc(100%_-_22px)] flex items-center gap-3"
+    class="absolute bg-indigo-50 z-10 rounded-lg py-1 px-3 shadow-sm top-2 left-2 w-[calc(100%_-_22px)] flex items-center gap-3"
   >
     <ListIcon class="w-5 h-5 flex-shrink-0" />
     <div class="grid grid-cols-2 gap-3 flex-grow">

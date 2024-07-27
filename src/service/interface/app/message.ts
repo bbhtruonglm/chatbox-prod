@@ -87,7 +87,7 @@ export interface MessageTemplateInput {
 /**dữ liệu của một nút bấm của mẫu tin nhắn */
 export interface MessageTemplateButton {
   /**kiểu của nút này */
-  type?: string
+  type?: ButtonType
   /**tiêu đề nút */
   title?: string
   /**đường dẫn của nút */
@@ -209,10 +209,19 @@ export interface InputGetUrlAttachment {
   page_id: string
 }
 
+/**kiểu của nút */
+export type ButtonType =
+  | 'postback'
+  | 'web_url'
+  | 'phone_number'
+  | 'bbh_place_order'
+  | 'bbh_create_transaction'
+  | 'bbh_schedule_appointment'
+
 /**dữ liệu dạng nút bấm */
 export interface ChatbotButton {
   /**dạng của nút này */
-  type?: 'postback'
+  type?: ButtonType
   /**tiêu đề của nút */
   title?: string
   /**hành động của nút này */

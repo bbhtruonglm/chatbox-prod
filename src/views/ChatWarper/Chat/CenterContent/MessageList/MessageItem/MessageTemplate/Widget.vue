@@ -1,0 +1,47 @@
+<template>
+  <Modal
+    ref="modal_widget_ref"
+    class_modal="w-[400px] h-[630px]"
+    class_body="py-2 flex gap-2"
+  >
+    <template #header>
+      {{ selected_widget?.snap_app?.name }}
+    </template>
+    <template #body>
+      <div class="bg-white rounded-md p-2 flex flex-col relative w-full h-full">
+        <iframe
+          v-if="selected_widget"
+          :id="`widget-${selected_widget?._id}`"
+          class="w-full h-full"
+          :src="selected_widget?.url"
+          frameborder="0"
+        />
+      </div>
+    </template>
+  </Modal>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+import Modal from '@/components/Modal.vue'
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
+
+const $props = withDefaults(
+  defineProps<{
+    /**dữ liệu của widget được chọn */
+    selected_widget?: AppInstalledInfo
+  }>(),
+  {}
+)
+
+/**ref của modal kết nối nền tảng */
+const modal_widget_ref = ref<InstanceType<typeof Modal>>()
+
+/**ẩn hiện modal của component */
+function toggleModal() {
+  modal_widget_ref.value?.toggleModal()
+}
+
+// cung cấp hàm toggle modal cho component cha
+defineExpose({ toggleModal })
+</script>

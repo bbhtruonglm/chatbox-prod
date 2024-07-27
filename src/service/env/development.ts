@@ -16,8 +16,8 @@ const ENV: Env = {
         billing: 'https://dev-api.botbanhang.vn/v1/billing',
         ai: 'https://dev-api.botbanhang.vn/v1/ai',
 
-        n4_service_v1: 'https://service.sellingpage.net',
-        n5_app_v1: 'https://app.sellingpage.net',
+        n4_service_v1: 'https://dev-api.botbanhang.vn/service',
+        n5_app_v1: 'https://dev-api.botbanhang.vn/app',
         n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',
         
@@ -86,7 +86,14 @@ const ENV: Env = {
         redirect_uri: 'https://localhost:8000/dashboard/select-page?connect_page=ZALO_OA',
     },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM', 'ZALO_OA'],
-    img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar'
+    img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar',
+    ai: {
+        widget: {
+            place_order: '66a4b5137dbeac01006e06ad',
+            create_transaction: '66a4b5137dbeac01006e06ad',
+            schedule_appointment: '66a4b51c7dbeac01006e06b2',
+        }
+    }
 }
 
 export default ENV

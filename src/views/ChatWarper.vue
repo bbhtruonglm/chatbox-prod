@@ -393,12 +393,14 @@ function onSocketFromChatboxServer() {
     let socket_data: {
       /**dữ liệu của khách hàng */
       conversation?: ConversationInfo
-      /**dữ liệu tin nhắn */
+      /**dữ liệu tin nhắn mới */
       message?: MessageInfo
       /**dữ liệu nhân viên */
       staff?: StaffSocket
       /**tên sự kiện */
       event?: SocketEvent
+      /**dữ liệu tin nhắn cần cập nhật */
+      update_message?: MessageInfo
     } = {}
 
     // cố gắng giải mã dữ liệu
@@ -408,7 +410,7 @@ function onSocketFromChatboxServer() {
 
     if (!size(socket_data)) return
 
-    let { conversation, message, event } = socket_data
+    let { conversation, message, update_message, event } = socket_data
 
     // gửi thông điệp đến component xử lý danh sách hội thoại
     if (validateConversation(conversation, message))
@@ -425,6 +427,14 @@ function onSocketFromChatboxServer() {
     if (size(message))
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_message', { detail: message })
+      )
+
+    // gửi thông điệp cập nhật tin nhắn đã có
+    if (size(update_message))
+      window.dispatchEvent(
+        new CustomEvent('chatbox_socket_update_message', {
+          detail: update_message,
+        })
       )
 
     // thông báo cho người dùng nếu là tin nhắn của khách hàng gửi cho page

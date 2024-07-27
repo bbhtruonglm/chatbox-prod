@@ -435,6 +435,10 @@ const source: Language = {
                 place_order: 'Tạo đơn hàng',
                 create_transaction: 'Tạo giao dịch',
                 schedule_appointment: 'Lập lịch',
+              },
+              widget: {
+                not_active: 'Không tìm thấy widget',
+                not_active_description: 'Widget chưa được cài đặt, hoặc đã bị huỷ kích hoạt'
               }
             },
             widget: {

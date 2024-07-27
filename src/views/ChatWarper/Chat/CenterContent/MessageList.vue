@@ -314,12 +314,26 @@ const last_client_message_index = computed(() =>
   )
 )
 
-onMounted(() =>
-  window.addEventListener('chatbox_socket_message', onRealtimeHandleMessage)
-)
-onUnmounted(() =>
-  window.removeEventListener('chatbox_socket_message', onRealtimeHandleMessage)
-)
+// lắng nghe sự kiện từ socket khi component được tạo ra
+onMounted(() => {
+  // tin nhắn mới
+  window.addEventListener('chatbox_socket_message', socketNewMessage)
+
+  // cập nhật tin nhắn
+  window.addEventListener('chatbox_socket_update_message', socketUpdatêMssage)
+})
+
+// hủy lắng nghe sự kiện từ socket khi component bị hủy
+onUnmounted(() => {
+  // tin nhắn mới
+  window.removeEventListener('chatbox_socket_message', socketNewMessage)
+
+  // cập nhật tin nhắn
+  window.removeEventListener(
+    'chatbox_socket_update_message',
+    socketUpdatêMssage
+  )
+})
 
 /**kiểm tra xem tin nhắn này có phải là tin nhắn cuối cùng của nhân viên gửi không */
 function isLastPageMessage(message: MessageInfo, index: number) {
@@ -335,8 +349,9 @@ function isLastPageMessage(message: MessageInfo, index: number) {
 function parserStaffName(meta?: string) {
   return meta?.split('__')?.[1] || ''
 }
-/**xử lý socket message */
-function onRealtimeHandleMessage({ detail }: CustomEvent) {
+/**xử lý socket tin nhắn mới */
+function socketNewMessage({ detail }: CustomEvent) {
+  // nếu không có dữ liệu thì thôi
   if (!detail) return
 
   // nếu không phải của khách hàng đang chọn thì chặn
@@ -361,6 +376,24 @@ function onRealtimeHandleMessage({ detail }: CustomEvent) {
     )
 
   scrollToBottomMessage()
+}
+/**xử lý socket cập nhật tin nhắn hiện tại */
+function socketUpdatêMssage({ detail }: CustomEvent) {
+  // nếu không có dữ liệu thì thôi
+  if (!detail) return
+
+  // nếu không phải của khách hàng đang chọn thì chặn
+  if (
+    detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
+    detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
+  )
+    return
+
+  // cập nhật dữ liệu của tin nhắn
+  messageStore.list_message?.forEach(message => {
+    // tìm đến tin nhắn bằng id, sau đó sao chép dữ liệu mới vào object cũ
+    if (message._id === detail._id) Object.assign(message, detail)
+  })
 }
 /**lắng nghe sự kiện khi scroll danh sách tin nhắn */
 function onScrollMessage($event: Event) {
