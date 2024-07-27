@@ -112,8 +112,8 @@ const message_source = computed<MessageTemplateInput[]>(() => {
         /**dữ liệu của 1 template */
         let res: MessageTemplateInput = {}
 
-        // TODO hiện tạm nút AI, sẽ fix sau
-        if ($props.message?.ai?.length) res.is_ai = true
+        // tạm thời chỉ hiện AI với image
+        if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
 
         // tiêu đề
         res.title = element.title
@@ -163,7 +163,7 @@ function formatButton(list_raw_button: ChatbotButton[]) {
   return list_raw_button?.map(button => ({
     title: button.title,
     url: button?.url,
-    // TODO thêm type để mở tab mới , hay mở modal, ...
+    type: button?.type
   }))
 }
 /**tính toán bg, viền cho tin nhắn */

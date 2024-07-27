@@ -49,26 +49,27 @@
       </div>
       <button
         v-if="data_source?.is_ai"
+        @click="is_expanded = !is_expanded"
         class="flex-shrink-0 bg-slate-200 rounded-lg w-7 h-7 flex items-center justify-center"
       >
-        <template v-if="true">
+        <template v-if="!is_expanded">
           <ArrowRightIcon class="w-3 h-3 flex-shrink-0" />
           <span class="font-medium text-sm">A</span>
         </template>
         <ArrowDownIcon
           v-else
-          class="w-4 h-4"
+          class="w-4 h-4 rotate-180"
         />
       </button>
     </div>
     <div
-      v-if="data_source?.title"
+      v-if="data_source?.title && is_expanded"
       class="text-sm font-semibold enter-line"
     >
       {{ data_source?.title }}
     </div>
     <div
-      v-if="data_source?.content"
+      v-if="data_source?.content && is_expanded"
       class="text-sm enter-line"
     >
       {{ data_source?.content }}
@@ -79,17 +80,17 @@
     >
       <template v-for="button of data_source?.list_button">
         <button
-          v-if="button.title"
+          v-if="button.type"
           :class="
-            button.url
+            isAction(button)
               ? 'bg-slate-800 text-yellow-200'
               : 'bg-slate-600 text-slate-100 cursor-not-allowed'
           "
-          class="py-2 flex justify-center items-center gap-1 rounded-lg"
+          class="py-2 px-4 flex justify-center items-center gap-1 rounded-lg"
         >
-          {{ button.title }}
+          {{ genBtnTitle(button) }}
           <NewTabIcon
-            v-if="button.url"
+            v-if="isAction(button)"
             class="w-4 h-4"
           />
         </button>
@@ -98,13 +99,19 @@
   </div>
 </template>
 <script setup lang="ts">
+import { last } from 'lodash'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
 import DocumentIcon from '@/components/Icons/Document.vue'
 
-import type { MessageTemplateInput } from '@/service/interface/app/message'
-import { last } from 'lodash'
+import type {
+  MessageTemplateButton,
+  MessageTemplateInput,
+} from '@/service/interface/app/message'
 
 const $props = withDefaults(
   defineProps<{
@@ -112,6 +119,15 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+const { t: $t } = useI18n()
+
+/**
+ * có hiển thị content không
+ * - nếu có cờ AI thì tự động không hiển thị
+ * - nếu không có AI thì luôn hiển thị
+ */
+const is_expanded = ref(!$props.data_source?.is_ai)
 
 /**kiểm tra xem tin nhắn có đính kèm file không */
 function isHaveFileAttachment() {
@@ -133,6 +149,34 @@ function getFileName(url: string) {
   } catch (e) {
     return ''
   }
+}
+/**tạo ra tiêu đề cho nút */
+function genBtnTitle(button: MessageTemplateButton) {
+  // nếu có title thì trả về title
+  if (button?.title) return button?.title
+
+  // xử lý trường hợp BBH tự thêm hành động nút
+  switch (button?.type) {
+    case 'bbh_place_order':
+      return $t('v1.view.main.dashboard.chat.message.cta.place_order')
+    case 'bbh_create_transaction':
+      return $t('v1.view.main.dashboard.chat.message.cta.create_transaction')
+    case 'bbh_schedule_appointment':
+      return $t('v1.view.main.dashboard.chat.message.cta.schedule_appointment')
+    default:
+      return ''
+  }
+}
+/**kiểm tra xem button có bấm được không */
+function isAction(button: MessageTemplateButton) {
+  // nếu có url thì mở được tab mới
+  if (button.url) return true
+
+  // nếu có prefix bbh thì là AI
+  if (button.type?.includes('bbh_')) return true
+
+  // mặc định không bấm được
+  return false
 }
 </script>
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-hidden bg-white rounded-xl relative">
+  <div class="h-full overflow-hidden rounded-xl relative">
     <div
       @scroll="onScrollMessage"
       id="list-message"

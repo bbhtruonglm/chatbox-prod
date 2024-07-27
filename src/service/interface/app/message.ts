@@ -80,14 +80,18 @@ export interface MessageTemplateInput {
   /**nội dung */
   content?: string
   /**danh sáchnút */
-  list_button?: {
-    /**tiêu đề nút */
-    title?: string
-    /**đường dẫn của nút */
-    url?: string
-  }[]
+  list_button?: MessageTemplateButton[]
   /**có xử lý AI thành công */
   is_ai?: boolean
+}
+/**dữ liệu của một nút bấm của mẫu tin nhắn */
+export interface MessageTemplateButton {
+  /**kiểu của nút này */
+  type?: string
+  /**tiêu đề nút */
+  title?: string
+  /**đường dẫn của nút */
+  url?: string
 }
 
 /**đầu vào của api */
