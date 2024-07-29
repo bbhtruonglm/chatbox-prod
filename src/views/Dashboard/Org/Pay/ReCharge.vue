@@ -1,5 +1,8 @@
 <template>
-  <button class="flex gap-2.5 items-center w-fit">
+  <button
+    @click="$router.back()"
+    class="flex gap-2.5 items-center w-fit"
+  >
     <BackIcon class="w-5 h-5" />
     <span class="text-sm font-medium">
       {{ $t('v1.common.back') }}
@@ -57,14 +60,14 @@
                   "
                   :disabled="PAY_STEP === 'STEP_2'"
                 />
-                <Radio
+                <!-- <Radio
                   v-model="is_issue_invoice"
                   :value="true"
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
                   "
                   :disabled="PAY_STEP === 'STEP_2'"
-                />
+                /> -->
               </div>
               <div
                 v-if="is_issue_invoice"
@@ -228,26 +231,26 @@ const LIST_PAYMENT_METHOD: {
     title: $t('v1.view.main.dashboard.org.pay.recharge.transfer'),
     value: 'TRANSFER',
   },
-  {
-    title: $t('v1.view.main.dashboard.org.pay.recharge.vnpay'),
-    value: 'VNPAY',
-    disabled: true,
-  },
-  {
-    title: $t('v1.view.main.dashboard.org.pay.recharge.zalopay'),
-    value: 'ZALO_PAY',
-    disabled: true,
-  },
-  {
-    title: $t('v1.view.main.dashboard.org.pay.recharge.momo'),
-    value: 'MOMO',
-    disabled: true,
-  },
-  {
-    title: $t('v1.view.main.dashboard.org.pay.recharge.card'),
-    value: 'CARD',
-    disabled: true,
-  },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.pay.recharge.vnpay'),
+  //   value: 'VNPAY',
+  //   disabled: true,
+  // },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.pay.recharge.zalopay'),
+  //   value: 'ZALO_PAY',
+  //   disabled: true,
+  // },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.pay.recharge.momo'),
+  //   value: 'MOMO',
+  //   disabled: true,
+  // },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.pay.recharge.card'),
+  //   value: 'CARD',
+  //   disabled: true,
+  // },
 ]
 /**bước thanh toán */
 const PAY_STEP = ref<'STEP_1' | 'STEP_2'>('STEP_1')

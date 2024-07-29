@@ -30,3 +30,14 @@ export interface GenAnswerInput {
   /**câu chat hiện tại */
   current?: string
 }
+
+/**loại quota */
+export type QuotaType =
+  | 'PAGE'
+  | 'STAFF'
+  | 'FAU'
+  | 'CLIENT'
+  | 'AI_TEXT'
+  | 'AI_IMAGE'
+  | 'AI_SOUND'
+  | 'AI_VIDEO'

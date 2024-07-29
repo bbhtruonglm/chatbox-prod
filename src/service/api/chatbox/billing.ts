@@ -1,4 +1,5 @@
 import { chatboxSync } from '@/service/api/chatbox/common'
+import type { QuotaType } from '@/service/interface/app/ai'
 import type {
   MemberShipInfo,
   OrgInfo,
@@ -127,5 +128,22 @@ export const purchase_package = async (
       org_id,
       wallet_id,
       package_type,
+    },
+  })
+
+/**mua thêm quota */
+export const inc_quota = async (
+  org_id: string,
+  wallet_id: string,
+  quota_type: QuotaType,
+  amount: number
+): Promise<void> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/wallet/inc_quota`,
+    body: {
+      org_id,
+      wallet_id,
+      quota_type,
+      amount,
     },
   })

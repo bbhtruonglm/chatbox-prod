@@ -33,11 +33,11 @@ const LIST_MENU = [
     icon: markRaw(CardIcon),
     path: 'pay',
   },
-  {
-    title: $t('v1.view.main.dashboard.org.menu.app'),
-    icon: markRaw(AiBoldIcon),
-    path: 'app',
-  },
+  // {
+  //   title: $t('v1.view.main.dashboard.org.menu.app'),
+  //   icon: markRaw(AiBoldIcon),
+  //   path: 'app',
+  // },
   // {
   //   title: $t('v1.view.main.dashboard.org.menu.api'),
   //   icon: markRaw(CodeIcon),

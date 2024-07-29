@@ -26,7 +26,9 @@
             <template v-if="orgStore.isFreePack()">
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
-            <template v-else-if="orgStore.isTrialPack() || orgStore.isProPack()">
+            <template
+              v-else-if="orgStore.isTrialPack() || orgStore.isProPack()"
+            >
               1
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
@@ -161,17 +163,27 @@
           v-else
           class="flex gap-3"
         >
-          <button class="custom-btn">
-            {{ $t('v1.view.main.dashboard.org.pay.buy_more_page') }}
+          <button
+            @click="incQuota('PAGE')"
+            class="custom-btn"
+          >
+            {{ $t('v1.view.main.dashboard.org.pay.inc_quota.page') }}
           </button>
-          <button class="custom-btn">
-            {{ $t('v1.view.main.dashboard.org.pay.buy_more_staff') }}
+          <button
+            @click="incQuota('STAFF')"
+            class="custom-btn"
+          >
+            {{ $t('v1.view.main.dashboard.org.pay.inc_quota.staff') }}
           </button>
         </div>
       </div>
     </template>
   </CardItem>
   <UpgradeModal ref="upgrade_modal_ref" />
+  <IncQuota
+    ref="inc_quota_ref"
+    :inc_quota_type
+  />
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
@@ -186,8 +198,11 @@ import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Item from '@/views/Dashboard/Org/Pay/PackInfo/Item.vue'
 import UpgradeModal from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal.vue'
+import IncQuota from '@/views/Dashboard/Org/Pay/PackInfo/IncQuota.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'
+
+import type { QuotaType } from '@/service/interface/app/ai'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
@@ -196,6 +211,10 @@ const { updateOrg } = initRequireData()
 
 /**ref của modal mua gói mới */
 const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
+/**ref của modal mua thêm trang, nhân viên */
+const inc_quota_ref = ref<InstanceType<typeof IncQuota>>()
+/**loại quota muốn tăng */
+const inc_quota_type = ref<QuotaType>()
 
 /**có kích hoạt tự động thanh toán không */
 const org_is_auto_charge = computed({
@@ -211,6 +230,12 @@ const org_is_auto_charge = computed({
   },
 })
 
+/**mở modal mua thêm */
+function incQuota(type: QuotaType) {
+  inc_quota_type.value = type
+
+  inc_quota_ref.value?.toggleModal()
+}
 /**tính thời gian thanh toán tiếp theo */
 function calcNextPay() {
   /**thời gian hết hạn */
