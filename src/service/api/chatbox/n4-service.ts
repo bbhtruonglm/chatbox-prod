@@ -48,7 +48,10 @@ interface CurrentPageData {
 /**đọc thông tin của toàn bộ các page đang được kích hoạt của user hiện tại */
 export const get_current_active_page = (
     body: {
+        /**chỉ tìm các trang đã kích hoạt */
         is_active?: boolean
+        /**chỉ tìm các trang thuộc 1 tổ chức */
+        org_id?: string
     },
     proceed: (e: any, r: CurrentPageData) => void
 ) => chatbox({

@@ -15,7 +15,7 @@ import { flow } from '@/service/helper/async'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
-  KEY_LOAD_LIST_PAGE_FUNCT
+  KEY_LOAD_LIST_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
 import { usePageStore, useStaffStore, useSelectPageStore } from '@/stores'
 import { get_current_active_page } from '@/service/api/chatbox/n4-service'
@@ -40,7 +40,7 @@ function toggleModalConnectPage() {
   connect_page_ref.value?.toggleModal?.()
 }
 /**lấy toàn bộ các page đang được kích hoạt của người dùng */
-function loadListPage() {
+function loadListPage(org_id?: string) {
   flow(
     [
       // * kích hoạt loading
@@ -51,7 +51,7 @@ function loadListPage() {
       },
       // * gọi api lấy danh sách page
       (cb: CbError) =>
-        get_current_active_page({ is_active: true }, (e, r) => {
+        get_current_active_page({ is_active: true, org_id }, (e, r) => {
           if (e) return cb(e)
 
           pageStore.active_page_list = r.page_list

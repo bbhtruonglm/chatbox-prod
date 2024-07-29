@@ -131,6 +131,21 @@ export const purchase_package = async (
     },
   })
 
+/**kích hoạt giảm giá 1 năm */
+export const active_discount = async (
+  org_id: string,
+  wallet_id: string,
+  package_type: OrgPackage
+): Promise<TransactionInfo> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/wallet/active_discount`,
+    body: {
+      org_id,
+      wallet_id,
+      package_type,
+    },
+  })
+
 /**mua thêm quota */
 export const inc_quota = async (
   org_id: string,

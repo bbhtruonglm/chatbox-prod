@@ -52,9 +52,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, provide } from 'vue'
+import { computed, inject, onMounted, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useConnectPageStore, usePageStore, useSelectPageStore } from '@/stores'
+import { useConnectPageStore, useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_LOAD_LIST_PAGE_FUNCT,
@@ -85,6 +85,7 @@ const selectPageStore = useSelectPageStore()
 const $router = useRouter()
 const $route = useRoute()
 const connectPageStore = useConnectPageStore()
+const orgStore = useOrgStore()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
@@ -95,6 +96,12 @@ const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)
 
+// nếu thay đổi tổ chức, thì chọn lại danh sách trang
+watch(() => orgStore.selected_org_id, () => {
+  // load danh sách page
+  loadListPage?.(orgStore.selected_org_id)
+})
+
 onMounted(() => {
   /**
    * load lại info của chatbot user
@@ -104,7 +111,7 @@ onMounted(() => {
   getMeChatbotUser?.()
 
   // load danh sách page
-  loadListPage?.()
+  loadListPage?.(orgStore.selected_org_id)
 
   // kích hoạt zalo nếu phát hiện
   triggerConnectZalo()

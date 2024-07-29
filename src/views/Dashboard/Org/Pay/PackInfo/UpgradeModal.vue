@@ -179,6 +179,7 @@ import { openNewTab } from '@/service/function'
 import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
 import { toast, toastError } from '@/service/helper/alert'
 import {
+  active_discount,
   purchase_package,
   read_wallet,
 } from '@/service/api/chatbox/billing'
@@ -230,6 +231,21 @@ async function activeTrialOrProPack() {
     // nếu không có ví thì thông báo lỗi
     if (!WALLET?.wallet_id)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
+
+    // TODO nếu ví không đủ tiền thì redirect qua trang nạp tiền
+
+    // nếu chọn mua gói pro 1 năm thì kích hoạt giảm giá
+    if (is_full_year.value)
+      try {
+        // thử kích hoạt giảm giá
+        await active_discount(
+          orgStore.selected_org_id,
+          WALLET?.wallet_id,
+          PACKAGE
+        )
+      } catch (e) {
+        // TODO nếu thất bại thì tạm thời không xử lý gì
+      }
 
     // yêu cầu mua gói
     await purchase_package(orgStore.selected_org_id, WALLET?.wallet_id, PACKAGE)
