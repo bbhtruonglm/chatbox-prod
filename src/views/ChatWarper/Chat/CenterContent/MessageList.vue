@@ -13,7 +13,7 @@
           <Loading class="mx-auto" />
         </div>
       </div>
-      <HeaderChat />
+      <!-- <HeaderChat /> -->
       <div
         v-for="(message, index) of messageStore.list_message"
         class="relative"

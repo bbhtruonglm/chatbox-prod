@@ -7,7 +7,7 @@
     class="flex items-end bg-white rounded-3xl py-2 px-4"
   >
     <div class="flex gap-2 items-end flex-grow min-w-0">
-      <AiManager />
+      <!-- <AiManager /> -->
       <AttachmentMenu />
       <Input
         ref="input_chat_ref"
