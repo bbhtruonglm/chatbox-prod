@@ -18,6 +18,9 @@
                 <th class="pr-2.5 fake-border-b sticky-left text-left">
                   {{ $t('v1.view.main.dashboard.org.pay.transaction_id') }}
                 </th>
+                <th class="pr-2.5 fake-border-b whitespace-nowrap text-left">
+                  {{ $t('v1.view.main.dashboard.org.pay.txn_type.title') }}
+                </th>
                 <th class="px-2.5 fake-border-b whitespace-nowrap text-left">
                   {{ $t('v1.common.status') }}
                 </th>
@@ -30,13 +33,20 @@
                 <th class="px-2.5 fake-border-b whitespace-nowrap text-left">
                   {{ $t('v1.view.main.dashboard.org.pay.operator') }}
                 </th>
-                <th class="pl-2.5 fake-border-b"></th>
+                <!-- <th class="pl-2.5 fake-border-b"></th> -->
               </tr>
             </thead>
             <tbody>
               <tr v-for="txn of list_txn">
                 <td class="pr-2.5 py-3 sticky-left text-left">
                   {{ txn.txn_id }}
+                </td>
+                <td class="pr-2.5 whitespace-nowrap text-left">
+                  {{
+                    $t(
+                      `v1.view.main.dashboard.org.pay.txn_type.${txn.txn_type?.toLowerCase()}`
+                    )
+                  }}
                 </td>
                 <td
                   :class="{
@@ -72,11 +82,11 @@
                 <td class="px-2.5 whitespace-nowrap text-left">
                   {{ txn.txn_data?.user_info?.full_name }}
                 </td>
-                <td
+                <!-- <td
                   class="pl-2.5 text-right text-blue-700 cursor-pointer font-medium"
                 >
                   {{ $t('v1.view.main.dashboard.org.pay.view') }}
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>

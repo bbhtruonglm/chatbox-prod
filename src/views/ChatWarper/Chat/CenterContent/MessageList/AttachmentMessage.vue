@@ -3,43 +3,75 @@
     :class="{
       'justify-end': type === 'PAGE',
     }"
-    class="flex flex-wrap relative z-1 gap-2"
+    class="p-2 bg-white rounded-lg flex flex-col gap-2"
   >
-    <template v-for="attachment of horizontal_attachment_list">
-      <div
-        v-if="attachment.type !== 'fallback'"
-        @click="viewAttachment(getFile(attachment.index))"
-        class="cursor-pointer hover:brightness-90"
-      >
-        <ImageAttachment
-          v-if="getTypeFromIndex(attachment.index) === 'image'"
-          :url="getFileUrl(attachment.index)"
-          :class="
-            // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
-            // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
-            // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
-            // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
-            // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
-            horizontal_attachment_list?.length === 1 ? 'h-40' : 'h-20'
-          "
-        />
-        <AnotherAttachment
-          v-else
-          :url="getFileUrl(attachment.index)"
-          :name="getFileName(attachment.index)"
-        />
+    <div class="flex gap-2 justify-between">
+      <div class="flex flex-wrap relative z-1 gap-2">
+        <template v-for="attachment of horizontal_attachment_list">
+          <div
+            v-if="attachment.type !== 'fallback'"
+            @click="viewAttachment(getFile(attachment.index))"
+            class="cursor-pointer hover:brightness-90"
+          >
+            <ImageAttachment
+              v-if="getTypeFromIndex(attachment.index) === 'image'"
+              :url="getFileUrl(attachment.index)"
+              :class="
+                // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
+                // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
+                // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
+                // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
+                // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
+                horizontal_attachment_list?.length === 1 ? 'h-40' : 'h-20'
+              "
+            />
+            <AnotherAttachment
+              v-else
+              :url="getFileUrl(attachment.index)"
+              :name="getFileName(attachment.index)"
+            />
+          </div>
+        </template>
+        <template v-for="attachment of vertical_attachment_list">
+          <VideoAttachment
+            v-if="getTypeFromIndex(attachment.index) === 'video'"
+            :url="getFileUrl(attachment.index)"
+          />
+          <AudioAttachment
+            v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
+            :url="getFileUrl(attachment.index)"
+          />
+        </template>
       </div>
-    </template>
-    <template v-for="attachment of vertical_attachment_list">
-      <VideoAttachment
-        v-if="getTypeFromIndex(attachment.index) === 'video'"
-        :url="getFileUrl(attachment.index)"
-      />
-      <AudioAttachment
-        v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
-        :url="getFileUrl(attachment.index)"
-      />
-    </template>
+      <button
+        v-if="isOnlyAttachment()"
+        @click="is_show_text = !is_show_text"
+        class="flex-shrink-0 bg-slate-200 p-1.5 rounded-lg h-fit flex items-center"
+      >
+        <template v-if="!is_show_text">
+          <ArrowRightIcon class="w-3 h-3" />
+          <span class="font-medium text-sm">A</span>
+        </template>
+        <ArrowDownIcon
+          v-else
+          class="w-4 h-4"
+        />
+      </button>
+    </div>
+    <div
+      v-if="isOnlyAttachment() && is_show_text"
+      class="text-sm h-full truncate-3-line"
+    >
+      {{ message?.ai?.[0]?.ocr }}
+    </div>
+    <button
+      v-if="isOnlyAttachment() && message?.ai?.[0]?.cta"
+      class="text-sm py-2 bg-slate-200 rounded-lg min-w-60"
+    >
+      {{
+        $t(`v1.view.main.dashboard.chat.message.cta.${message?.ai?.[0]?.cta}`)
+      }}
+    </button>
   </div>
 </template>
 <script setup lang="ts">
@@ -53,6 +85,9 @@ import ImageAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/A
 import VideoAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
 import AudioAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AudioAttachment.vue'
 import AnotherAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AnotherAttachment.vue'
+
+import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
+import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
 
 import type {
   AttachmentInfo,
@@ -79,6 +114,8 @@ const SHOW_TYPE: any[] = ['video', 'audio']
 const vertical_attachment_list = ref<AttachmentInfo[]>([])
 /**các tập tin hiển thị dạng dọc */
 const horizontal_attachment_list = ref<AttachmentInfo[]>([])
+/**có hiển thị văn bản ocr không */
+const is_show_text = ref(false)
 
 watch(
   () => $props.message?.message_attachments,
@@ -87,6 +124,10 @@ watch(
 
 onMounted(() => getAttachmentInfo())
 
+/**kiểm tra có phải có nhiều file đính kèm không */
+function isOnlyAttachment() {
+  return size(getAttachmentFromStore()) === 1
+}
 /**lấy link fb của file */
 function getFileUrl(index?: number) {
   // nếu không có index thì không cần xử lý
@@ -137,10 +178,11 @@ function getAttachmentInfo() {
   // hình ảnh của nền tảng khác FB không cần xử lý lấy link mới nhất
   if ($props.message?.platform_type !== 'FB_MESS') {
     // thêm index vào để mapping với dữ liệu
-    let list_att = $props.message?.message_attachments?.map((attr, index) => ({
-      ...attr,
-      index,
-    })) || []
+    let list_att =
+      $props.message?.message_attachments?.map((attr, index) => ({
+        ...attr,
+        index,
+      })) || []
 
     // luôn luôn hiển thị dọc
     horizontal_attachment_list.value = list_att
@@ -207,3 +249,11 @@ function viewAttachment(attachment?: AttachmentInfo) {
   messageStore.select_attachment = attachment
 }
 </script>
+<style scoped lang="scss">
+.truncate-3-line {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+</style>

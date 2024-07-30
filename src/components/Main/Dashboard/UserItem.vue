@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { isActiveUser } from '@/service/helper/pricing'
+// import { isActiveUser } from '@/service/helper/pricing'
 import { useChatbotUserStore } from '@/stores'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'

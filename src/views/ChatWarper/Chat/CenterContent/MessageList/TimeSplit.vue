@@ -1,9 +1,11 @@
 <template>
   <div
     v-if="isShowTimeSplit()"
-    class="text-center text-xs font-medium text-slate-500 w-full p-3"
+    class="text-center text-xs font-medium  text-slate-100 w-full"
   >
+  <span class="bg-slate-600 px-3.5 py-0.5 rounded-full">
     {{ formatNowDate() }}
+  </span>
   </div>
 </template>
 <script setup lang="ts">

@@ -1,4 +1,4 @@
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, usePageStore, useMessageStore } from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
@@ -325,7 +325,6 @@ export function calcIsClientRepSlow(
   page_id?: string,
   time?: string,
   current_index?: number,
-  list_message?: MessageInfo[]
 ) {
   // nếu không có page_id thì thôi
   if (!page_id || !current_index) return false
@@ -339,8 +338,10 @@ export function calcIsClientRepSlow(
   // nếu không bật cảnh báo thì thôi
   if (!ALERT_TIME || ALERT_TIME <= 0) return false
 
+  const messageStore = useMessageStore()
+
   /**tin nhắn tiếp theo */
-  let next_message = list_message?.[current_index + 1]
+  let next_message = messageStore.list_message?.[current_index + 1]
 
   // nếu tin tiếp theo không phải là của page thì thôi
   if (!next_message || next_message?.message_type !== 'page') return false
@@ -386,7 +387,7 @@ export function calcIsPageRepSlow(
   if (!before_date) return false
 
   // tính dựa vào hàm trước
-  return calcIsClientRepSlow(page_id, before_date, BEFORE_INDEX, list_message)
+  return calcIsClientRepSlow(page_id, before_date, BEFORE_INDEX)
 }
 
 /**xử lý chuỗi tin nhắn trước khi hiển thị */

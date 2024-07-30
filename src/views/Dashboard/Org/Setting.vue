@@ -1,5 +1,5 @@
 <template>
-  <General />
+  <!-- <General /> -->
   <Page />
   <Staff />
   <CustomerInfo />

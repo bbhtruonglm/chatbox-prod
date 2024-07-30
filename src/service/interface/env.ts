@@ -57,4 +57,16 @@ export interface Env {
     platform: string[]
     /**host của url link ảnh */
     img_host: string
+    /**AI */
+    ai: {
+        /**các widet trigger từ AI */
+        widget: {
+            /**tạo đơn hàng */
+            place_order: string
+            /**tạo giao dịch */
+            create_transaction: string
+            /**đặt lịch */
+            schedule_appointment: string
+        }
+    }
 }

@@ -207,8 +207,8 @@ const source: Language = {
             success: 'Kích hoạt các trang thành công',
             move_org: {
               title: 'Thêm trang vào tổ chức',
-              move: 'Chuyển thêm {count} trang về tổ chức của bạn sở hữu'
-            }
+              move: 'Chuyển thêm {count} trang về tổ chức của bạn sở hữu',
+            },
           },
           pricing: {
             help: {
@@ -427,6 +427,20 @@ const source: Language = {
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
               reply_time: 'Phản hồi chậm',
+              header: {
+                note: 'Ghi chú, ghim, đặt lịch',
+                alert: 'Cảnh báo',
+              },
+              cta: {
+                place_order: 'Tạo đơn hàng',
+                create_transaction: 'Tạo giao dịch',
+                schedule_appointment: 'Lập lịch',
+              },
+              widget: {
+                not_active: 'Không tìm thấy widget',
+                not_active_description:
+                  'Widget chưa được cài đặt, hoặc đã bị huỷ kích hoạt',
+              },
             },
             widget: {
               title: 'Widget',
@@ -749,6 +763,17 @@ const source: Language = {
               auto_pay: 'Tự động thanh toán',
               guild_2:
                 'Khi lưu lượng sử dụng AI đạt đến giới hạn, hệ thống mặc định ngừng sử dụng. Nếu bật “Tự động thanh toán”, hệ thống sẽ tự động mua thêm lưu lượng và không vượt quá số tiền hiện tại có trong “Số dư tài khoản”. Nếu số dư tài khoản không đủ, hệ thống sẽ dừng các chức năng AI.',
+              inc_quota: {
+                page: 'Mua thêm trang',
+                staff: 'Mua thêm nhân viên',
+                fau: 'Mua thêm FAU',
+                client: 'Mua thêm khách hàng',
+                ai_text: 'Mua thêm AI văn bản',
+                ai_image: 'Mua thêm AI hình ảnh',
+                ai_sound:  'Mua thêm AI âm thanh',
+                ai_video: 'Mua thêm AI video',
+                success: 'Mua thêm giới hạn thành công'
+              },
               buy_more_page: 'Mua thêm trang',
               buy_more_staff: 'Mua thêm nhân viên',
               traffic_usage: 'Lưu lượng sử dụng',
@@ -757,6 +782,12 @@ const source: Language = {
               history_use: 'Lịch sử sử dụng',
               history_use_info: 'Hiển thị các giao dịch trong 12 tháng gần đây',
               transaction_id: 'Mã giao dịch',
+              txn_type: {
+                title: 'Loại giao dịch',
+                deposit: 'Nạp tiền',
+                withdraw: 'Rút tiền',
+                payment: 'Thanh toán',
+              },
               amount: 'Số tiền',
               date: 'Ngày tạo',
               operator: 'Người thao tác',

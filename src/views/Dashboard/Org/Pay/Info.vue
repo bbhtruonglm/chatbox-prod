@@ -1,7 +1,7 @@
 <template>
   <AccountInfo />
   <PackInfo />
-  <Analytic />
+  <!-- <Analytic /> -->
   <History />
 </template>
 <script setup lang="ts">
