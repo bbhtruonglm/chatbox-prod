@@ -516,7 +516,7 @@ const source: Language = {
               send_message_success: 'Gửi tin thành công',
             },
             album: {
-              title: 'Quản lý tập tin',
+              title: 'Album',
               category: {
                 new: 'Mới tải lên',
                 folder: 'Tìm theo thư mục',

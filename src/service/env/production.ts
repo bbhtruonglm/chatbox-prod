@@ -87,9 +87,9 @@ const ENV: Env = {
     img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar',
     ai: {
         widget: {
-            place_order: '',
-            create_transaction: '',
-            schedule_appointment: '',
+            place_order: '664b756ca2be1c03410b12df',
+            create_transaction: '664b756ca2be1c03410b12df',
+            schedule_appointment: '61630617b59a0601ba0a3862',
         }
     }
 }
