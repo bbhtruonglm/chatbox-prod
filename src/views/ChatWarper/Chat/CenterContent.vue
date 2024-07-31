@@ -7,7 +7,7 @@
     <InputChat />
   </div>
   <template>
-    <AttachmentViewModal />
+    <!-- <AttachmentViewModal /> -->
     <StaffReadModal />
   </template>
 </template>
@@ -15,6 +15,6 @@
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
 
-import AttachmentViewModal from '@/views/ChatWarper/Chat/CenterContent/AttachmentViewModal.vue'
+// import AttachmentViewModal from '@/views/ChatWarper/Chat/CenterContent/AttachmentViewModal.vue'
 import StaffReadModal from '@/views/ChatWarper/Chat/CenterContent/StaffReadModal.vue'
 </script>

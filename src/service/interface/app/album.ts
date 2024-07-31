@@ -68,6 +68,8 @@ export interface FolderInfo {
     _id: string
     /**tên thư mục */
     title: string
+    /**gắn cờ chế độ chỉnh sửa */
+    is_edit?: boolean
 }
 /**cập nhật dữ liệu thư mục */
 export interface UpdateFolderInput {
