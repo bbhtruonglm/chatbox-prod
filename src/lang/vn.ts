@@ -423,6 +423,7 @@ const source: Language = {
               attachment: {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
+                ai_handle: 'Nội dung được xử lý bởi AI'
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
@@ -519,11 +520,14 @@ const source: Language = {
               title: 'Album',
               category: {
                 new: 'Mới tải lên',
-                folder: 'Tìm theo thư mục',
+                folder: 'Thư mục',
               },
+              select_all: 'Chọn tất cả (Ctrl + A)',
               select: 'Chọn tập tin',
               name: 'Tên của tập tin/thư mục',
-              create_folder: 'Tạo mới thư mục',
+              create_folder: 'Tạo thư mục',
+              edit_name: 'Đổi tên',
+              folder_new_name: 'Thư mục mới'
             },
           },
           user: {

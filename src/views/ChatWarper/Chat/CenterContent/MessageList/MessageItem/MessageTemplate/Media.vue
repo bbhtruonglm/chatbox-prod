@@ -1,5 +1,8 @@
 <template>
-  <div class="gap-2.5 flex flex-col">
+  <div
+    @click="openMediaDetail"
+    class="gap-2.5 flex flex-col cursor-pointer hover:brightness-90 rounded-md overflow-hidden"
+  >
     <img
       v-if="data_source?.image?.url"
       :src="data_source?.image?.url"
@@ -39,9 +42,16 @@
       </div>
     </div>
   </div>
+  <MediaDetail
+    ref="media_detail_ref"
+    :data_source
+  />
 </template>
 <script setup lang="ts">
+import { ref } from 'vue'
 import { last } from 'lodash'
+
+import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 
 import DocumentIcon from '@/components/Icons/Document.vue'
 
@@ -54,6 +64,9 @@ const $props = withDefaults(
   {}
 )
 
+/**ref của component MediaDetail */
+const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
+
 /**lấy tên của file */
 function getFileName(url: string) {
   try {
@@ -65,6 +78,11 @@ function getFileName(url: string) {
   } catch (e) {
     return ''
   }
+}
+/**mở modal xem chi tiết file */
+function openMediaDetail() {
+  // mở modal xem chi tiết file
+  media_detail_ref.value?.toggleModal()
 }
 </script>
 <style lang="scss" scoped>

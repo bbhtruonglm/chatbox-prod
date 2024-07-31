@@ -73,9 +73,13 @@
       }}
     </button>
   </div>
+  <!-- <MediaDetail
+    ref="media_detail_ref"
+    :data_source
+  /> -->
 </template>
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useMessageStore } from '@/stores'
 import { last, size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
@@ -85,6 +89,7 @@ import ImageAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/A
 import VideoAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
 import AudioAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AudioAttachment.vue'
 import AnotherAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AnotherAttachment.vue'
+import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
@@ -92,6 +97,7 @@ import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
 import type {
   AttachmentInfo,
   MessageInfo,
+  MessageTemplateInput,
 } from '@/service/interface/app/message'
 
 const $props = withDefaults(
@@ -123,6 +129,84 @@ watch(
 )
 
 onMounted(() => getAttachmentInfo())
+
+/**dữ liệu của tin nhắn */
+// const message_source = computed<MessageTemplateInput[]>(() => {
+//   /**
+//    * - chỉ lấy dữ liệu của attr đầu tiên
+//    * - nếu có nhiều attr thì xử lý kiểu khác
+//    */
+//   const SOURCE = $props.message?.message_attachments?.[0]
+
+//   /**kết quả trả về */
+//   let result: MessageTemplateInput[] = []
+
+//   // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
+//   if (!SOURCE)
+//     result.push({ content: text.value || $t('v1.common.unsupport_message') })
+
+//   // nếu chỉ có các nút bấm -> chỉ tạo 1 record
+//   if (SOURCE?.payload?.buttons)
+//     result.push({
+//       // nút bấm sẽ kèm theo một nội dung tin nhắn nào đó
+//       content: text.value,
+//       // map lại dữ liệu nút bấm
+//       list_button: formatButton(SOURCE.payload.buttons),
+//     })
+
+//   // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
+//   if (SOURCE?.payload?.elements)
+//     result.push(
+//       ...SOURCE?.payload?.elements?.map(element => {
+//         /**dữ liệu của 1 template */
+//         let res: MessageTemplateInput = {}
+
+//         // tạm thời chỉ hiện AI với image
+//         if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
+
+//         // tiêu đề
+//         res.title = element.title
+//         // nội dung văn bản, hoặc url file fb không hiển thị được
+//         res.content = element.subtitle || text.value || element.url
+//         // danh sách nút bấm
+//         if (element?.buttons) res.list_button = formatButton(element?.buttons)
+
+//         // hình ảnh của slider
+//         if (element.image_url) res.image = { url: element.image_url }
+
+//         // video của AI
+//         if (element.video_url) res.video = { url: element.video_url }
+//         // âm thanh của AI
+//         if (element.audio_url) res.audio = { url: element.audio_url }
+//         // file của AI
+//         if (element.file_url) res.file = { url: element.file_url }
+
+//         // trả về dữ liệu
+//         return res
+//       })
+//     )
+
+//   // nếu chỉ có url (là file nhưng chưa xử lý AI) -> tạo 1 record
+//   if (SOURCE?.payload?.url && !SOURCE?.payload?.elements) {
+//     /**dữ liệu của 1 template */
+//     let res: MessageTemplateInput = {}
+
+//     // hình ảnh
+//     if (SOURCE?.type === 'image') res.image = { url: SOURCE.payload.url }
+//     // video
+//     if (SOURCE?.type === 'video') res.video = { url: SOURCE.payload.url }
+//     // âm thanh
+//     if (SOURCE?.type === 'audio') res.audio = { url: SOURCE.payload.url }
+//     // tập tin khác
+//     if (SOURCE?.type === 'file') res.file = { url: SOURCE.payload.url }
+
+//     // trả về dữ liệu
+//     result.push(res)
+//   }
+
+//   // trả về mảng rỗng
+//   return result
+// })
 
 /**kiểm tra có phải có nhiều file đính kèm không */
 function isOnlyAttachment() {
