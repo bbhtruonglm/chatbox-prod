@@ -704,6 +704,8 @@ const source: Language = {
                 empty: 'Chưa có dữ liệu',
                 title: 'Thông tin khách hàng',
                 customer_code: 'Mã khách hàng',
+                org_avatar: 'Ảnh đại diện',
+                org_name: 'Tên tổ chức',
                 contract_code: 'Mã hợp đồng',
                 company_name: 'Tên công ty',
                 tax_code: 'Mã số thuế',

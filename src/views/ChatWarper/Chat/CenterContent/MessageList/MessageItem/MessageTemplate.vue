@@ -21,21 +21,26 @@
         </template>
         <ArrowDownIcon
           v-else
-          class="w-4 h-4 rotate-180"
+          class="w-3.5 h-3.5 rotate-180"
         />
       </button>
     </div>
     <div
-      v-if="data_source?.title && is_expanded"
-      class="text-sm font-semibold enter-line"
+      v-if="(data_source?.title || data_source?.content) && is_expanded"
+      class="text-sm"
     >
-      {{ data_source?.title }}
-    </div>
-    <div
-      v-if="data_source?.content && is_expanded"
-      class="text-sm enter-line"
-    >
-      {{ data_source?.content }}
+      <div
+        v-if="data_source?.title"
+        class="font-semibold enter-line"
+      >
+        {{ data_source?.title }}
+      </div>
+      <div
+        v-if="data_source?.content"
+        class="enter-line"
+      >
+        {{ data_source?.content }}
+      </div>
     </div>
     <Action
       v-if="data_source?.list_button?.length"
