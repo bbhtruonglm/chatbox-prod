@@ -27,7 +27,10 @@
       />
     </SliderWarper>
     <SlowReply
-      v-if="calcIsClientRepSlow(page_id, message_time, message_index)"
+      v-if="
+        calcIsClientRepSlow(page_id, message_time, message_index) &&
+        message_type === 'client'
+      "
       :now_message="message"
       :next_message="messageStore.list_message?.[message_index + 1]"
     />
@@ -163,7 +166,7 @@ function formatButton(list_raw_button: ChatbotButton[]) {
   return list_raw_button?.map(button => ({
     title: button.title,
     url: button?.url,
-    type: button?.type
+    type: button?.type,
   }))
 }
 /**tính toán bg, viền cho tin nhắn */
@@ -172,11 +175,12 @@ function addOnClassTemplate() {
     'bg-[#FFF8E1]': message_type.value === 'page',
     'bg-white': message_type.value === 'client',
     'bg-[#D8F6CB]': message_type.value === 'note',
-    'border border-red-500': calcIsClientRepSlow(
-      page_id.value,
-      message_time.value,
-      $props.message_index
-    ),
+    'border border-red-500':
+      calcIsClientRepSlow(
+        page_id.value,
+        message_time.value,
+        $props.message_index
+      ) && message_type.value === 'client',
   }
 }
 

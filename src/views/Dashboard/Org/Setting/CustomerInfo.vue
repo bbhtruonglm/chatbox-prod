@@ -36,17 +36,37 @@
       <div class="grid grid-cols-2 text-sm font-medium gap-2 pr-5">
         <Item
           :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.org_name')
+          "
+          v-model="org_info.org_name"
+          :is_edit
+        />
+        <Item
+          :title="
+            $t('v1.view.main.dashboard.org.setting.customer_info.org_avatar')
+          "
+          v-model="org_info.org_avatar"
+          :is_edit
+        >
+          <img
+            v-if="org_info.org_avatar"
+            :src="org_info.org_avatar"
+            class="w-5 h-5"
+          />
+        </Item>
+        <Item
+          :title="
             $t('v1.view.main.dashboard.org.setting.customer_info.customer_code')
           "
           v-model="org_info.org_customer_code"
-          :is_edit
+          :is_edit="false"
         />
         <Item
           :title="
             $t('v1.view.main.dashboard.org.setting.customer_info.contract_code')
           "
           v-model="org_info.org_contract_code"
-          :is_edit
+          :is_edit="false"
         />
         <Item
           :title="

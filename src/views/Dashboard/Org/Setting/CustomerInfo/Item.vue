@@ -21,6 +21,7 @@
         {{ $t('v1.view.main.dashboard.org.setting.customer_info.empty') }}
       </span>
     </div>
+    <slot />
   </div>
 </template>
 <script setup lang="ts">
