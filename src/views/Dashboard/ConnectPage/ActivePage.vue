@@ -172,7 +172,7 @@ async function activePage() {
     await toggleModal?.()
 
     // nạp lại danh sách trang đã được kích hoạt ở UI chọn page
-    await loadListPage?.()
+    await loadListPage?.(orgStore.selected_org_id)
   } catch (e) {
     // thông báo lỗi
     toastError(e)

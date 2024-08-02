@@ -12,7 +12,10 @@
         <SelectOrg />
         <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay')" />
       </div>
-      <RouterView />
+      <RouterView v-if="orgStore.isAdminOrg()" />
+      <div v-else class="text-sm text-slate-500">
+        {{ $t('v1.view.main.dashboard.org.permision_denied')  }}
+      </div>
     </template>
   </DashboardLayout>
 </template>

@@ -41,6 +41,9 @@ function toggleModalConnectPage() {
 }
 /**lấy toàn bộ các page đang được kích hoạt của người dùng */
 function loadListPage(org_id?: string) {
+  // nếu không có tổ chức thì thôi
+  if (!org_id) return
+  
   flow(
     [
       // * kích hoạt loading

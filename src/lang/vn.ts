@@ -688,6 +688,7 @@ const source: Language = {
             },
           },
           org: {
+            permision_denied: 'Bạn không có quyền quản trị tổ chức này',
             menu: {
               pay: 'Thanh toán',
               app: 'Ứng dụng',

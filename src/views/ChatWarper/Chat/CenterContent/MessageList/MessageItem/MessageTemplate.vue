@@ -1,6 +1,7 @@
 <template>
   <div
-    class="rounded-lg p-2 gap-2.5 flex flex-col max-w-[300px] flex-shrink-0 justify-between"
+  :class="is_fix_size ? 'w-[300px]' : 'max-w-[300px]'"
+    class="rounded-lg p-2 gap-2.5 flex flex-col  flex-shrink-0"
   >
     <div
       v-if="isHaveFileAttachment() || data_source?.is_ai"
@@ -61,7 +62,10 @@ import type { MessageTemplateInput } from '@/service/interface/app/message'
 
 const $props = withDefaults(
   defineProps<{
+    /**dữ liệu tin nhắn đã được định dạng lại */
     data_source?: MessageTemplateInput
+    /**có giữ kích thước không */
+    is_fix_size?: boolean
   }>(),
   {}
 )

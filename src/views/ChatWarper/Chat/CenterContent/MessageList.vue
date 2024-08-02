@@ -219,6 +219,9 @@ const last_client_message_index = computed(() =>
 
 // lắng nghe sự kiện từ socket khi component được tạo ra
 onMounted(() => {
+  // * reset danh sách tin nhắn lúc mới vào
+  messageStore.list_message = []
+
   // tin nhắn mới
   window.addEventListener('chatbox_socket_message', socketNewMessage)
 

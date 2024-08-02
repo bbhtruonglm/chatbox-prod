@@ -9,7 +9,7 @@
             ? 'bg-slate-800 text-yellow-200'
             : 'bg-slate-600 text-slate-100 cursor-not-allowed'
         "
-        class="py-2 px-4 flex justify-center items-center gap-1 rounded-lg"
+        class="py-2 px-4 flex justify-center items-center gap-1 rounded-lg text-sm font-medium"
       >
         {{ genBtnTitle(button) }}
         <NewTabIcon
