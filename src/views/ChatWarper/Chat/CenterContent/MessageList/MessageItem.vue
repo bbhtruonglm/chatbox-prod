@@ -24,6 +24,7 @@
         v-for="data_source of message_source"
         :class="addOnClassTemplate()"
         :data_source
+        :is_fix_size="message_source?.length > 1"
       />
     </SliderWarper>
     <SlowReply
@@ -96,7 +97,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   let result: MessageTemplateInput[] = []
 
   // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
-  if (!SOURCE)
+  if (!SOURCE?.payload)
     result.push({ content: text.value || $t('v1.common.unsupport_message') })
 
   // nếu chỉ có các nút bấm -> chỉ tạo 1 record

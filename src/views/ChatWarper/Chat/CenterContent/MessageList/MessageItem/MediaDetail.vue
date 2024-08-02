@@ -98,6 +98,8 @@ import { openNewTab } from '@/service/function'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
 import Modal from '@/components/Modal.vue'
 
+import DocumentIcon from '@/components/Icons/Document.vue'
+
 import type { MessageTemplateInput } from '@/service/interface/app/message'
 import type { ComponentRef } from '@/service/interface/vue'
 

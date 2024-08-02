@@ -5,7 +5,12 @@
     class_body="py-2 flex gap-2"
   >
     <template #header>
-      {{ selected_widget?.snap_app?.name }}
+      <template v-if="selected_widget?.snap_app?.name">
+        {{ selected_widget?.snap_app?.name }}
+      </template>
+      <template v-else>
+        {{ $t('v1.view.main.dashboard.chat.message.widget.not_active') }}
+      </template>
     </template>
     <template #body>
       <div class="bg-white rounded-md p-2 flex flex-col relative w-full h-full">
@@ -16,6 +21,13 @@
           :src="selected_widget?.url"
           frameborder="0"
         />
+        <div v-else class="text-sm text-center text-slate-500">
+          {{
+            $t(
+              'v1.view.main.dashboard.chat.message.widget.not_active_description'
+            )
+          }}
+        </div>
       </div>
     </template>
   </Modal>

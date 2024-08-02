@@ -389,6 +389,7 @@ async function complete() {
     /**nội dung chat */
     const SOURCE: SourceChat[] = messageStore.list_message
       ?.filter(message => message?.message_text)
+      ?.filter(message => ['page', 'client'].includes(message?.message_type))
       ?.map(message => {
         return {
           type: message.message_type === 'client' ? 'CLIENT' : 'PAGE',
@@ -532,10 +533,10 @@ function onModalShowed(key: string, value: string) {
 function onModalHid(value: string) {
   // nếu gõ gạch ở cuối câu mà chưa mở thì mở modal
   if (!value.endsWith('/')) return
-  
+
   // mở modal
   toggleModal()
-  
+
   // chọn câu đầu tiên nếu có
   setDefaultQuickAnswer()
 }

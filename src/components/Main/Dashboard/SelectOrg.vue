@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
-import { useOrgStore } from '@/stores'
+import { useOrgStore, usePageStore } from '@/stores'
 import { size } from 'lodash'
 
 import Select from '@/components/Select.vue'
@@ -35,11 +35,22 @@ import Option from '@/components/Option.vue'
 import Loading from '@/components/Loading.vue'
 
 const orgStore = useOrgStore()
+const pageStore = usePageStore()
 
 // nạp dữ liệu tổ chức hiện tại khi component được mount
 onMounted(getCurrentOrgInfo)
+
 // nạp dữ liệu tổ chức hiện tại khi load toàn bộ danh sách tổ chức
 watch(() => orgStore.list_org, getCurrentOrgInfo)
+
+// nạp lại dữ liệu tổ chức khi có sự thay đổi tổ chức được chọn
+watch(() => orgStore.selected_org_id, () => {
+  // reset chọn page
+  pageStore.selected_page_id_list = {}
+
+  // nạp lại dữ liệu tổ chức
+  getCurrentOrgInfo()
+})
 
 /**nạp dữ liệu của tổ chức hiện tại được chọn */
 function getCurrentOrgInfo() {
