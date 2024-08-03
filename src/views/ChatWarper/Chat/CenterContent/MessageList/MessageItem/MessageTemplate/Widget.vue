@@ -18,10 +18,13 @@
           v-if="selected_widget"
           :id="`widget-${selected_widget?._id}`"
           class="w-full h-full"
-          :src="selected_widget?.url"
+          :src="genUrl()"
           frameborder="0"
         />
-        <div v-else class="text-sm text-center text-slate-500">
+        <div
+          v-else
+          class="text-sm text-center text-slate-500"
+        >
           {{
             $t(
               'v1.view.main.dashboard.chat.message.widget.not_active_description'
@@ -36,12 +39,16 @@
 import { ref } from 'vue'
 
 import Modal from '@/components/Modal.vue'
+
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { MessageAiData } from '@/service/interface/app/message'
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của widget được chọn */
     selected_widget?: AppInstalledInfo
+    /**dữ liệu của AI nếu có */
+    ai?: MessageAiData
   }>(),
   {}
 )
@@ -49,6 +56,24 @@ const $props = withDefaults(
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
 
+/**tạo ra url của iframe */
+function genUrl() {
+  /**đường dẫn của iframe */
+  let url = $props.selected_widget?.url
+
+  // nếu không có CTA thì thôi
+  if (!$props.ai?.cta) return url
+
+  // xoá bỏ _id của AI
+  delete $props.ai._id
+
+  // thêm các thông tin của AI vào url
+  url += `&${new URLSearchParams(
+    $props.ai as Record<string, string>
+  ).toString()}`
+
+  return url
+}
 /**ẩn hiện modal của component */
 function toggleModal() {
   modal_widget_ref.value?.toggleModal()

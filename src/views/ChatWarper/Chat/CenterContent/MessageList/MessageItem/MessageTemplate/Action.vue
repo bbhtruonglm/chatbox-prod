@@ -22,22 +22,22 @@
   <Widget
     ref="modal_widget_ref"
     :selected_widget
+    :ai="ai"
   />
 </template>
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { openNewTab } from '@/service/function'
-import {
-  getIframeUrl,
-  getPageWidget,
-  getPageCurrentStaff,
-} from '@/service/function'
+import { getPageWidget } from '@/service/function'
 import { useConversationStore } from '@/stores'
 
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Widget.vue'
 
-import type { MessageTemplateButton } from '@/service/interface/app/message'
+import type {
+  MessageAiData,
+  MessageTemplateButton,
+} from '@/service/interface/app/message'
 import { ref } from 'vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
@@ -45,6 +45,8 @@ const $props = withDefaults(
   defineProps<{
     /**Danh sách các nút bấm */
     list_button?: MessageTemplateButton[]
+    /**dữ liệu của AI nếu có */
+    ai?: MessageAiData
   }>(),
   {}
 )

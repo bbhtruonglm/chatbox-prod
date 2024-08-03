@@ -46,6 +46,7 @@
     <Action
       v-if="data_source?.list_button?.length"
       :list_button="data_source?.list_button"
+      :ai="data_source?.ai"
     />
   </div>
 </template>

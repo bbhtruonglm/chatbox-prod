@@ -19,17 +19,11 @@
         type="video/mp4"
       />
     </video>
-    <audio
+    <Audio
       v-if="data_source?.audio?.url"
-      class="w-full min-w-52"
-      controls
-      preload="metadata"
-    >
-      <source
-        :src="data_source?.audio?.url"
-        type="audio/mpeg"
-      />
-    </audio>
+      :src="data_source?.audio?.url"
+      class="min-w-52"
+    />
     <div
       v-if="data_source?.file?.url"
       class="message-box bg-white flex flex-col items-end text-slate-700"
@@ -52,6 +46,7 @@ import { ref } from 'vue'
 import { last } from 'lodash'
 
 import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
+import Audio from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media/Audio.vue'
 
 import DocumentIcon from '@/components/Icons/Document.vue'
 
