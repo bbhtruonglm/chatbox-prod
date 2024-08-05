@@ -37,20 +37,25 @@ export interface MessageInfo {
   /**nội dung tin nhắn trước đó được reply nếu có */
   snap_replay_message?: MessageInfo
   /**dữ liệu của AI */
-  ai?: {
-    /**sdt */
-    phone?: string
-    /**email */
-    email?: string
-    /**địa chỉ */
-    address?: string
-    /**cảm xúc */
-    emotion?: string
-    /**dữ liệu được orc từ media -> text */
-    ocr?: string
-    /**dữ liệu được chuyển từ text -> CTA */
-    cta?: string
-  }[]
+  ai?: MessageAiData[]
+}
+
+/**dữ liệu AI của một phần tử */
+export interface MessageAiData {
+  /**sdt */
+  phone?: string
+  /**email */
+  email?: string
+  /**địa chỉ */
+  address?: string
+  /**cảm xúc */
+  emotion?: string
+  /**dữ liệu được orc từ media -> text */
+  ocr?: string
+  /**dữ liệu được chuyển từ text -> CTA */
+  cta?: string
+  /**id mongo tự tạo */
+  _id?: string
 }
 
 /**dữ liệu của một mẫu tin nhắn */
@@ -83,6 +88,8 @@ export interface MessageTemplateInput {
   list_button?: MessageTemplateButton[]
   /**có xử lý AI thành công */
   is_ai?: boolean
+  /**dữ liệu AI nếu có */
+  ai?: MessageAiData
 }
 /**dữ liệu của một nút bấm của mẫu tin nhắn */
 export interface MessageTemplateButton {

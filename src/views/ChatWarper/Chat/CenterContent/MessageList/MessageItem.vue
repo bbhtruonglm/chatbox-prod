@@ -112,12 +112,15 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
   if (SOURCE?.payload?.elements)
     result.push(
-      ...SOURCE?.payload?.elements?.map(element => {
+      ...SOURCE?.payload?.elements?.map((element, index) => {
         /**dữ liệu của 1 template */
         let res: MessageTemplateInput = {}
 
         // tạm thời chỉ hiện AI với image
         if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
+
+        // thêm dữ liệu AI nếu có
+        if ($props.message?.ai?.[index]) res.ai = $props.message?.ai?.[index]
 
         // tiêu đề
         res.title = element.title
