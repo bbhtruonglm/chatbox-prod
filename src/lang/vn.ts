@@ -117,6 +117,10 @@ const source: Language = {
               setting: 'Thiết lập',
               logout: 'Đăng xuất',
             },
+            noti: {
+              title: 'Thông báo',
+              read_all: 'Đọc tất cả'
+            }
           },
           select_page: {
             all_org: 'Tất cả tổ chức',

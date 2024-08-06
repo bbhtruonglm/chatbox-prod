@@ -1,10 +1,10 @@
 <template>
   <button @click="openMenu">
     <div class="relative w-fit mx-auto">
-      <!-- <Badge
+      <Badge
         :value="2"
         class="absolute z-10 -right-2 -top-1"
-      /> -->
+      />
       <StaffAvatar
         :id="chatbotUserStore.getStaffId()"
         class="w-9 h-9 hover:brightness-90 rounded-full"
@@ -27,21 +27,21 @@
       :icon="BriefCaseIcon"
       :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
     />
-    <!-- <MenuItem
-      @click="redirectMenu('noti')"
+    <MenuItem
+      @click="redirectMenu('org')"
       :icon="UsersIcon"
       :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
     />
     <MenuItem
-      @click="redirectMenu('pricing')"
+      @click="redirectMenu('org/pay')"
       :icon="CheckBadgeIcon"
       :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
     >
-      <Badge
+      <!-- <Badge
         :value="1"
         class="flex-shrink-0"
-      />
-    </MenuItem> -->
+      /> -->
+    </MenuItem>
     <hr class="my-1" />
     <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
     <MenuItem
@@ -49,8 +49,8 @@
       :icon="UserIcon"
       :title="$t('v1.view.main.dashboard.header.menu.user_info')"
     />
-    <!-- <MenuItem
-      @click="redirectMenu('noti')"
+    <MenuItem
+      @click="openNoti"
       :icon="BellIcon"
       :title="$t('v1.view.main.dashboard.header.menu.alert')"
     >
@@ -58,18 +58,19 @@
         :value="2"
         class="flex-shrink-0"
       />
-    </MenuItem> -->
-    <!-- <MenuItem
+    </MenuItem>
+    <MenuItem
       @click="redirectMenu('user')"
       :icon="CogIcon"
       :title="$t('v1.view.main.dashboard.header.menu.setting')"
-    /> -->
+    />
     <MenuItem
       @click="signout"
       :icon="LogOutIcon"
       :title="$t('v1.view.main.dashboard.header.menu.logout')"
     />
   </Dropdown>
+  <Alert ref="modal_alert_ref" />
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore } from '@/stores'
@@ -82,6 +83,7 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import Badge from '@/components/Badge.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
+import Alert from '@/components/User/Alert.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
@@ -108,6 +110,7 @@ const $router = useRouter()
 
 /** Ref của menu dropdown */
 const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
+const modal_alert_ref = ref<InstanceType<typeof Alert>>()
 
 /** Mở menu */
 function openMenu($event: MouseEvent) {
@@ -120,5 +123,13 @@ function redirectMenu(path: string) {
 
   // chuyển đến trang
   $router.push(`/dashboard/${path}`)
+}
+/**mở modal của noti */
+function openNoti() {
+  // tắt dropdown
+  user_menu_ref.value?.toggleDropdown()
+
+  // mở modal
+  modal_alert_ref.value?.toggleModal()
 }
 </script>
