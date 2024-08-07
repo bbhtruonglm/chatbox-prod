@@ -87,6 +87,8 @@ export const useOrgStore = defineStore('org_store', () => {
   saveLocal(selected_org_id, 'selected_org_id')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
+  /**đếm số thông báo */
+  const count_noti = ref()
 
   /** -------------- MUTATION / ACTION -------------- */
   /**có phải là gói miễn phí không */
@@ -115,6 +117,7 @@ export const useOrgStore = defineStore('org_store', () => {
     list_org,
     selected_org_id,
     selected_org_info,
+    count_noti,
 
     isFreePack,
     isTrialPack,

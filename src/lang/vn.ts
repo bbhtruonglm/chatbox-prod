@@ -119,7 +119,8 @@ const source: Language = {
             },
             noti: {
               title: 'Thông báo',
-              read_all: 'Đọc tất cả'
+              read_all: 'Đọc tất cả',
+              not_select: 'Vui lòng chọn thông báo.'
             }
           },
           select_page: {

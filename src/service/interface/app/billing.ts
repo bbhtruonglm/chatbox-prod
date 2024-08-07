@@ -211,3 +211,23 @@ export type PaymentMethod =
  * - thanh toán cho hóa đơn
  */
 export type BillingType = 'DEPOSIT' | 'WITHDRAW' | 'PAYMENT'
+
+
+/** --------------------- NOTI --------------------- */
+/**thông tin của 1 thông báo */
+export interface NotiInfo {
+  /**id của thông báo này */
+  noti_id?: string
+  /**id của tổ chức thực hiện đặt hàng */
+  org_id?: string
+  /**tiêu đề của thông báo */
+  noti_title?: string
+  /**nội dung của thông báo */
+  noti_content?: string
+  /**thông báo này đã được đọc chưa */
+  is_read?: boolean
+  /**thời gian record này được xoá */
+  auto_remove_at?: string
+  /**thời gian thông báo được tạo */
+  createdAt?: string
+}
