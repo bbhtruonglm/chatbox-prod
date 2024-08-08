@@ -21,7 +21,8 @@
             v-for="noti of list_noti"
             @click="selectNoti(noti)"
             :class="{
-              'border-2 border-blue-700': selected_noti_id === noti.noti_id,
+              'border-2 border-blue-700':
+                selected_noti_info.noti_id === noti.noti_id,
               'bg-slate-50': !noti.is_read,
             }"
             class="border rounded-lg py-3 px-4 hover:bg-slate-50"
@@ -112,8 +113,6 @@ const commonStore = useCommonStore()
 const modal_alert_ref = ref<InstanceType<typeof Modal>>()
 /**danh sách các thông báo mới */
 const list_noti = ref<NotiInfo[]>([])
-/**id của thông báo đang chọn */
-const selected_noti_id = ref<string>()
 /**dữ liệu của thông báo đang chọn */
 const selected_noti_info = ref<NotiInfo>({})
 
@@ -188,11 +187,10 @@ async function selectNoti(noti: NotiInfo) {
     if (!noti.is_read) {
       // đánh dấu là đã đọc
       noti.is_read = true
-  
+
       // update backend
       await read_noti(orgStore.selected_org_id, noti.noti_id)
     }
-    
   } catch (e) {
     // tạm thời không xử lý
   }
