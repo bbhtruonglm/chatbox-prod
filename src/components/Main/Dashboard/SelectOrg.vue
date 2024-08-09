@@ -13,6 +13,7 @@
         :class="{
           'bg-slate-100': org?.org_id === orgStore.selected_org_id,
         }"
+        class="px-2"
       >
         {{ org?.org_info?.org_name }}
       </Option>

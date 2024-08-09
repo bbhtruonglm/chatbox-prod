@@ -1,5 +1,5 @@
 <template>
-    <div class="message-box break-words whitespace-pre-line bg-white">
+    <div class="message-box break-words whitespace-pre-line bg-[#FFF8E1]">
         {{ text }}
     </div>
 </template>

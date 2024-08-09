@@ -1,7 +1,7 @@
 <template>
   <div
-  :class="is_fix_size ? 'w-[300px]' : 'max-w-[300px]'"
-    class="rounded-lg p-2 gap-2.5 flex flex-col  flex-shrink-0"
+    :class="is_fix_size ? 'w-[300px]' : 'max-w-[300px]'"
+    class="rounded-lg p-2 gap-2.5 flex flex-col flex-shrink-0"
   >
     <div
       v-if="isHaveFileAttachment() || data_source?.is_ai"
@@ -38,10 +38,13 @@
       </div>
       <div
         v-if="data_source?.content"
+        v-html="
+          message_type === 'client'
+            ? renderText(data_source?.content)
+            : data_source?.content
+        "
         class="enter-line"
-      >
-        {{ data_source?.content }}
-      </div>
+      />
     </div>
     <Action
       v-if="data_source?.list_button?.length"
@@ -59,7 +62,11 @@ import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageIte
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
 
-import type { MessageTemplateInput } from '@/service/interface/app/message'
+import type {
+  MessageInfo,
+  MessageTemplateInput,
+} from '@/service/interface/app/message'
+import { renderText } from '@/service/function'
 
 const $props = withDefaults(
   defineProps<{
@@ -67,6 +74,8 @@ const $props = withDefaults(
     data_source?: MessageTemplateInput
     /**có giữ kích thước không */
     is_fix_size?: boolean
+    /**loại tin nhắn */
+    message_type?: MessageInfo['message_type']
   }>(),
   {}
 )

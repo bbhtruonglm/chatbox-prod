@@ -114,7 +114,7 @@ function privateInbox() {
 defineExpose({ toggleModal })
 </script>
 
-<style>
+<style scoped lang="scss">
 [contenteditable=true]:empty:before{
   content: attr(placeholder);
   pointer-events: none;

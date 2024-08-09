@@ -26,6 +26,7 @@
             </div>
             <div class="p-4 pt-0 flex flex-col gap-2">
               <Cleave
+                v-if="pay_step === 'STEP_1'"
                 v-model="amount"
                 :options="{
                   numeral: true,
@@ -36,6 +37,12 @@
                 }"
                 class="focus:outline-orange-500 py-2 px-3 rounded-md border w-[530px]"
               />
+              <div
+                v-else
+                class="py-2 px-3 rounded-md border w-[530px]"
+              >
+                {{ currency(Number(amount)) }}
+              </div>
               <div class="text-sm text-slate-500">
                 {{
                   $t(
@@ -58,7 +65,7 @@
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.no_invoice')
                   "
-                  :disabled="PAY_STEP === 'STEP_2'"
+                  :disabled="pay_step === 'STEP_2'"
                 />
                 <!-- <Radio
                   v-model="is_issue_invoice"
@@ -66,7 +73,7 @@
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
                   "
-                  :disabled="PAY_STEP === 'STEP_2'"
+                  :disabled="pay_step === 'STEP_2'"
                 /> -->
               </div>
               <div
@@ -153,8 +160,8 @@
               <template v-for="method of LIST_PAYMENT_METHOD">
                 <Radio
                   v-if="
-                    PAY_STEP === 'STEP_1' ||
-                    (PAY_STEP === 'STEP_2' && payment_method === method.value)
+                    pay_step === 'STEP_1' ||
+                    (pay_step === 'STEP_2' && payment_method === method.value)
                   "
                   v-model="payment_method"
                   :value="method.value"
@@ -165,10 +172,11 @@
                   }"
                 />
               </template>
-              <template v-if="PAY_STEP === 'STEP_2'">
+              <template v-if="pay_step === 'STEP_2'">
                 <template v-if="payment_method === 'TRANSFER'">
-                  <TransferInfo />
+                  <TransferInfo :txn_id="txn_info?.txn_id" />
                   <button
+                    v-if="txn_info?.txn_status !== 'SUCCESS'"
                     @click="checkPayment"
                     class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
                   >
@@ -178,11 +186,17 @@
                       )
                     }}
                   </button>
+                  <div
+                    v-else
+                    class="py-2 px-4 rounded-md text-sm font-semibold text-green-600 bg-green-200 hover:brightness-90 w-fit"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
+                  </div>
                 </template>
                 <template v-else> Tính năng đang phát triển! </template>
               </template>
               <button
-                v-if="PAY_STEP === 'STEP_1'"
+                v-if="pay_step === 'STEP_1'"
                 @click="createTxn"
                 class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit"
               >
@@ -196,7 +210,7 @@
   </CardItem>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cleave from 'vue-cleave-component'
 import { useOrgStore } from '@/stores'
@@ -206,7 +220,7 @@ import {
   read_txn,
   read_wallet,
 } from '@/service/api/chatbox/billing'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
@@ -216,10 +230,12 @@ import BackIcon from '@/components/Icons/Back.vue'
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
+import { currency } from '@/service/helper/format'
 
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()
 const $router = useRouter()
+const $route = useRoute()
 
 /**các phương thức thanh toán */
 const LIST_PAYMENT_METHOD: {
@@ -253,8 +269,9 @@ const LIST_PAYMENT_METHOD: {
   // },
 ]
 /**bước thanh toán */
-const PAY_STEP = ref<'STEP_1' | 'STEP_2'>('STEP_1')
-
+const pay_step = ref<'STEP_1' | 'STEP_2'>('STEP_1')
+/**id giao dịch đang chọn để xem */
+const selected_txn_id = ref<string>(String($route.query.txn_id))
 /**số tiền nạp */
 const amount = ref<string>('500000')
 /**có xuất hoá đơn không */
@@ -264,6 +281,46 @@ const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 /**thông tin giao dịch mới tạo */
 const txn_info = ref<TransactionInfo>()
 
+// khởi tạo dữ liệu của giao dịch đã chọn nếu có
+onMounted(initSelectedTxn)
+
+/**khởi tạo dữ liệu của giao dịch đã chọn */
+async function initSelectedTxn() {
+  // nếu không có txn_id thì thôi
+  if (!selected_txn_id.value || !orgStore.selected_org_id) return
+
+  // kích hoạt trạng thái loading
+  orgStore.is_loading = true
+
+  try {
+    // chuyển sang bước 2
+    pay_step.value = 'STEP_2'
+
+    /**kết quả trả về */
+    const RES = await read_txn(orgStore.selected_org_id, selected_txn_id.value)
+
+    // nếu không tìm thấy giao dịch thì thôi
+    if (!RES?.[0]) throw 'NOT_FOUND'
+
+    // lưu thông tin giao dịch
+    txn_info.value = RES?.[0]
+
+    // đánh dấu có xuất hoá đơn hay không
+    is_issue_invoice.value = txn_info.value.txn_is_issue_invoice || false
+
+    // lấy thông tin phương thức thanh toán
+    payment_method.value = txn_info.value.txn_payment_method
+
+    // lấy số tiền
+    amount.value = String(txn_info.value.txn_amount)
+  } catch (e) {
+    // hiển thị thông báo lỗi
+    toastError(e)
+  }
+
+  // kích hoạt trạng thái loading
+  orgStore.is_loading = false
+}
 /**tạo mới giao dịch */
 async function createTxn() {
   // nếu chưa chọn tổ chức nào thì không thực hiện
@@ -300,7 +357,7 @@ async function createTxn() {
     )
 
     // chuyển sang bước 2
-    PAY_STEP.value = 'STEP_2'
+    pay_step.value = 'STEP_2'
   } catch (e) {
     // hiển thị thông báo lỗi
     toastError(e)

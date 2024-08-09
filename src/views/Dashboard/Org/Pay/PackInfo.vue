@@ -250,6 +250,6 @@ function calcNextPay() {
 </script>
 <style scoped lang="scss">
 .custom-btn {
-  @apply py-2 px-4 rounded-md bg-blue-600 text-white hover:brightness-90 w-48;
+  @apply py-2 px-4 rounded-md bg-blue-600 text-white hover:brightness-90 w-48 text-center;
 }
 </style>

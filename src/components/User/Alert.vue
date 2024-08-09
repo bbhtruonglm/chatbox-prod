@@ -69,10 +69,9 @@
             </div>
           </div>
           <div
+            v-html="selected_noti_info.noti_content"
             class="min-h-0 overflow-y-auto text-sm break-words whitespace-pre-line"
-          >
-            {{ selected_noti_info.noti_content }}
-          </div>
+          />
         </div>
       </div>
     </template>
@@ -136,6 +135,9 @@ async function readAllNoti() {
       // update backend
       await read_noti(orgStore.selected_org_id, noti.noti_id)
     })
+
+    // giảm số thông báo chưa đọc
+    orgStore.count_noti = 0
   } catch (e) {
     // thông báo lỗi
     toastError(e)
@@ -190,6 +192,9 @@ async function selectNoti(noti: NotiInfo) {
 
       // update backend
       await read_noti(orgStore.selected_org_id, noti.noti_id)
+
+      // giảm số thông báo chưa đọc
+      orgStore.count_noti -= 1
     }
   } catch (e) {
     // tạm thời không xử lý

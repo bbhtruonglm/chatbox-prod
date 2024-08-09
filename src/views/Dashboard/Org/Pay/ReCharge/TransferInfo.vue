@@ -15,9 +15,32 @@
           <div
             class="border border-green-800 bg-green-50 py-2 px-3 rounded-lg font-semibold w-fit"
           >
-            1919191919191919
+            {{ PAYMENT_INFO.account }}
           </div>
-          <div class="text-blue-700 cursor-copy">
+          <div
+            @click="copyToClipboard(PAYMENT_INFO.account)"
+            class="text-blue-700 cursor-copy"
+          >
+            {{ $t('v1.common.copy') }}
+          </div>
+        </div>
+      </div>
+      <div v-if="txn_id">
+        <div class="text-slate-700">
+          {{
+            $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.content')
+          }}:
+        </div>
+        <div class="flex gap-3 items-center">
+          <div
+            class="border border-green-800 bg-green-50 py-2 px-3 rounded-lg font-semibold w-fit"
+          >
+            {{ txn_id }}
+          </div>
+          <div
+            @click="copyToClipboard(txn_id)"
+            class="text-blue-700 cursor-copy"
+          >
             {{ $t('v1.common.copy') }}
           </div>
         </div>
@@ -31,7 +54,7 @@
         <div
           class="border border-green-800 bg-green-50 py-2 px-3 rounded-lg font-semibold w-fit"
         >
-          CTCP Công nghệ Chatbot Việt Nam
+          {{ PAYMENT_INFO.name }}
         </div>
       </div>
       <div>
@@ -41,7 +64,7 @@
           }}:
         </div>
         <div class="font-medium">
-          TCB - Ngân hàng Kỹ thương Việt Nam - Chi nhánh Hà Thành
+          {{ PAYMENT_INFO.bank }}
         </div>
       </div>
     </div>
@@ -50,7 +73,7 @@
         {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.qr') }}
       </div>
       <img
-        src="@/assets/imgs/demo_qr.png"
+        src="@/assets/imgs/bbh-qr.jpg"
         class="w-44 h-44"
       />
     </div>
@@ -86,3 +109,20 @@
     </ul>
   </div>
 </template>
+<script setup lang="ts">
+import { copyToClipboard } from '@/service/helper/copyWithAlert'
+
+const $props = withDefaults(
+  defineProps<{
+    /**id giao dịch */
+    txn_id?: string
+  }>(),
+  {}
+)
+
+const PAYMENT_INFO = {
+  account: '19036252323010',
+  name: 'CTCP Công nghệ Chatbot Việt Nam',
+  bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
+}
+</script>

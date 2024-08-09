@@ -851,6 +851,7 @@ const source: Language = {
                 transfer_info: {
                   account: 'Số tài khoản thụ hưởng',
                   name: 'Tên tài khoản thụ hưởng',
+                  content: 'Nội dung chuyển khoản',
                   bank: 'Ngân hàng thụ hưởng',
                   qr: 'Hoặc quét mã QR bằng ứng dụng ngân hàng',
                   guild:
