@@ -2,6 +2,7 @@ import { chatboxSync } from '@/service/api/chatbox/common'
 import type { QuotaType } from '@/service/interface/app/ai'
 import type {
   MemberShipInfo,
+  NotiInfo,
   OrgInfo,
   OrgPackage,
   OwnerShipInfo,
@@ -161,4 +162,28 @@ export const inc_quota = async (
       quota_type,
       amount,
     },
+  })
+
+/**đếm thông báo */
+export const read_noti = async (
+  org_id?: string,
+  noti_id?: string
+): Promise<void> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/noti/read_noti`,
+    body: { org_id, noti_id },
+  })
+
+/**đọc thông báo */
+export const get_noti = async (org_id?: string): Promise<NotiInfo[]> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/noti/get_noti`,
+    body: { org_id },
+  })
+
+/**xem thông báo */
+export const count_noti = async (org_id?: string): Promise<number> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/noti/count_noti`,
+    body: { org_id },
   })

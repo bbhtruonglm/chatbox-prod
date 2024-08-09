@@ -428,7 +428,7 @@ function mergePostSelect(): string {
 defineExpose({ filter_popover_ref, clearThisFilter })
 </script>
 
-<style>
+<style scoped lang="scss">
 .post-truncate {
   display: -webkit-box;
   -webkit-line-clamp: 2;

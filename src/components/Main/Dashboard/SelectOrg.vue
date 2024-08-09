@@ -10,6 +10,10 @@
       <Option
         v-for="org of orgStore.list_org"
         :value="org.org_id"
+        :class="{
+          'bg-slate-100': org?.org_id === orgStore.selected_org_id,
+        }"
+        class="px-2"
       >
         {{ org?.org_info?.org_name }}
       </Option>
@@ -44,13 +48,16 @@ onMounted(getCurrentOrgInfo)
 watch(() => orgStore.list_org, getCurrentOrgInfo)
 
 // nạp lại dữ liệu tổ chức khi có sự thay đổi tổ chức được chọn
-watch(() => orgStore.selected_org_id, () => {
-  // reset chọn page
-  pageStore.selected_page_id_list = {}
+watch(
+  () => orgStore.selected_org_id,
+  () => {
+    // reset chọn page
+    pageStore.selected_page_id_list = {}
 
-  // nạp lại dữ liệu tổ chức
-  getCurrentOrgInfo()
-})
+    // nạp lại dữ liệu tổ chức
+    getCurrentOrgInfo()
+  }
+)
 
 /**nạp dữ liệu của tổ chức hiện tại được chọn */
 function getCurrentOrgInfo() {

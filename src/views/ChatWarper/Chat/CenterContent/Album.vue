@@ -629,7 +629,7 @@ function uploadFileFromDevice() {
 
 defineExpose({ toggleAlbum })
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .custom-btn {
   @apply py-2 px-5 flex items-center gap-1 rounded-lg text-white text-sm hover:brightness-90;
 }

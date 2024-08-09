@@ -25,6 +25,7 @@
         :class="addOnClassTemplate()"
         :data_source
         :is_fix_size="message_source?.length > 1"
+        :message_type="message?.message_type"
       />
     </SliderWarper>
     <SlowReply

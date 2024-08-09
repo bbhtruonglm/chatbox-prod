@@ -33,7 +33,7 @@
                 <th class="px-2.5 fake-border-b whitespace-nowrap text-left">
                   {{ $t('v1.view.main.dashboard.org.pay.operator') }}
                 </th>
-                <!-- <th class="pl-2.5 fake-border-b"></th> -->
+                <th class="pl-2.5 fake-border-b"></th>
               </tr>
             </thead>
             <tbody>
@@ -82,11 +82,13 @@
                 <td class="px-2.5 whitespace-nowrap text-left">
                   {{ txn.txn_data?.user_info?.full_name }}
                 </td>
-                <!-- <td
+                <td
+                  v-if="txn.txn_type === 'DEPOSIT'"
+                  @click="detailTxn(txn.txn_id)"
                   class="pl-2.5 text-right text-blue-700 cursor-pointer font-medium"
                 >
                   {{ $t('v1.view.main.dashboard.org.pay.view') }}
-                </td> -->
+                </td>
               </tr>
             </tbody>
           </table>
@@ -102,6 +104,7 @@ import { toastError } from '@/service/helper/alert'
 import { read_txn } from '@/service/api/chatbox/billing'
 import { useOrgStore } from '@/stores'
 import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 
@@ -110,6 +113,7 @@ import QueueIcon from '@/components/Icons/Queue.vue'
 import type { TransactionInfo } from '@/service/interface/app/billing'
 
 const orgStore = useOrgStore()
+const $router = useRouter()
 
 /**danh sách giao dịch */
 const list_txn = ref<TransactionInfo[]>()
@@ -119,6 +123,14 @@ onMounted(readTxn)
 // khi chọn org khác
 watch(() => orgStore.selected_org_id, readTxn)
 
+/**chuyển đến trang chi tiết giao dịch */
+function detailTxn(txn_id?: string) {
+  // nếu không có txn_id thì không chuyển
+  if (!txn_id) return
+
+  // chuyển đến trang chi tiết giao dịch + query txn_id
+  $router.push({ path: '/dashboard/org/pay/recharge', query: { txn_id } })
+}
 /**định dạng thời gian */
 function formatDate(date?: string) {
   // nếu không có thời gian
