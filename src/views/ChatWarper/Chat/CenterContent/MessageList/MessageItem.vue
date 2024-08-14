@@ -84,6 +84,8 @@ const reply_message = computed(() => $props.message?.snap_replay_message)
 const meta = computed(() => $props.message?.message_metadata)
 /**nội dung văn bản thuần tuý */
 const text = computed(() => $props.message?.message_text)
+/**tiêu đề nút bắt đầu */
+const postback_title = computed(() => $props.message?.postback_title)
 /**danh sách file đính kèm */
 const list_attachment = computed(() => $props.message?.message_attachments)
 /**dữ liệu của tin nhắn */
@@ -99,7 +101,10 @@ const message_source = computed<MessageTemplateInput[]>(() => {
 
   // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
   if (!SOURCE?.payload)
-    result.push({ content: text.value || $t('v1.common.unsupport_message') })
+    result.push({
+      content:
+        text.value || postback_title.value || $t('v1.common.unsupport_message'),
+    })
 
   // nếu chỉ có các nút bấm -> chỉ tạo 1 record
   if (SOURCE?.payload?.buttons)
