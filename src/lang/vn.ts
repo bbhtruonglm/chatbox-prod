@@ -766,10 +766,7 @@ const source: Language = {
               minute_month: 'phút / Tháng',
               month: 'tháng',
               next_pay: 'Kỳ thanh toán tiếp theo:',
-              text: 'ký tự',
-              image: 'hình ảnh',
-              minute: 'phút',
-              second: 'giây',
+              token: 'token',
               guild_1:
                 'Cuối mỗi tháng của kỳ thanh toán, hệ thống tự động làm mới lại các chỉ số sử dụng về 0.',
               auto_pay: 'Tự động thanh toán',

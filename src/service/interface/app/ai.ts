@@ -6,6 +6,8 @@ export interface TextTranslateInput {
   from: string
   /**ngôn ngữ đích */
   to: string
+  /**id trang */
+  page_id: string
 }
 
 /**Dữ liệu văn bản đầu ra */
@@ -29,6 +31,8 @@ export interface GenAnswerInput {
   source?: SourceChat[]
   /**câu chat hiện tại */
   current?: string
+  /**id trang */
+  page_id: string
 }
 
 /**loại quota */

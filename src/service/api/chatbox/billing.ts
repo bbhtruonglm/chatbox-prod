@@ -6,6 +6,7 @@ import type {
   OrgInfo,
   OrgPackage,
   OwnerShipInfo,
+  QrCodeInput,
   TransactionInfo,
   WalletInfo,
 } from '@/service/interface/app/billing'
@@ -186,4 +187,11 @@ export const count_noti = async (org_id?: string): Promise<number> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/noti/count_noti`,
     body: { org_id },
+  })
+
+/**tạo nội dung cho mã qr */
+export const qr_code = async (body?: QrCodeInput): Promise<string> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/wallet/qr_code`,
+    body,
   })
