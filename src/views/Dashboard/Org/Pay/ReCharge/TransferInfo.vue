@@ -18,7 +18,7 @@
             {{ PAYMENT_INFO.account }}
           </div>
           <div
-            @click="copyToClipboard(PAYMENT_INFO.account)"
+            @click="copyToClipboard(String(PAYMENT_INFO.account))"
             class="text-blue-700 cursor-copy"
           >
             {{ $t('v1.common.copy') }}
@@ -72,9 +72,11 @@
       <div>
         {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.qr') }}
       </div>
-      <img
-        src="@/assets/imgs/bbh-qr.jpg"
-        class="w-44 h-44"
+      <BankQrCode
+        :bank_bin="PAYMENT_INFO.bank_bin"
+        :consumer_id="PAYMENT_INFO.account"
+        :amount
+        :message="txn_id"
       />
     </div>
   </div>
@@ -112,16 +114,22 @@
 <script setup lang="ts">
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
 
+import BankQrCode from '@/views/Dashboard/Org/Pay/ReCharge/BankQrCode.vue'
+
 const $props = withDefaults(
   defineProps<{
     /**id giao dịch */
     txn_id?: string
+    /**số tiền */
+    amount?: string
   }>(),
   {}
 )
 
+/**Thông tin chuyển khoản */
 const PAYMENT_INFO = {
-  account: '19036252323010',
+  bank_bin: 970407,
+  account: 19036252323010,
   name: 'CTCP Công nghệ Chatbot Việt Nam',
   bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
 }

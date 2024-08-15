@@ -295,7 +295,7 @@ function handleAi(action?: string) {
 /**dịch nội dung */
 async function transalate() {
   // nếu đang loading thì thôi
-  if (messageStore.is_input_run_ai) return
+  if (messageStore.is_input_run_ai || !page_id.value) return
 
   // đánh dấu đang chạy AI
   messageStore.is_input_run_ai = true
@@ -326,7 +326,12 @@ async function transalate() {
     setInputText(text)
 
     // gọi api dịch
-    const RES = await text_translate({ from: 'vn', to: 'en', text })
+    const RES = await text_translate({
+      from: 'vn',
+      to: 'en',
+      text,
+      page_id: page_id.value,
+    })
 
     // nếu không có dữ liệu thì thôi
     if (!RES?.text)
@@ -374,7 +379,12 @@ function setInputText(text: string) {
 /**hoàn thành câu */
 async function complete() {
   // nếu đang loading thì thôi
-  if (messageStore.is_input_run_ai || !messageStore.list_message) return
+  if (
+    messageStore.is_input_run_ai ||
+    !messageStore.list_message ||
+    !page_id.value
+  )
+    return
 
   // đánh dấu đang chạy AI
   messageStore.is_input_run_ai = true
@@ -424,6 +434,7 @@ async function complete() {
     const RES = await gen_answer({
       source: SOURCE,
       current: text,
+      page_id: page_id.value,
     })
 
     // nếu không có dữ liệu thì thôi

@@ -231,3 +231,18 @@ export interface NotiInfo {
   /**thời gian thông báo được tạo */
   createdAt?: string
 }
+
+
+/**đầu vào API tạo mã qr */
+export interface QrCodeInput {
+  /**id của tổ chức */
+  org_id: string
+  /**mã BIN của ngân hàng */
+  bank_bin: number
+  /**số tài khoản người nhận */
+  consumer_id: number
+  /**số tiền chuyển khoản */
+  amount: number
+  /**nội dung chuyển khoản */
+  message: string
+}

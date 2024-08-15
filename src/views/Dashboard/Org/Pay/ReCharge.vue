@@ -174,7 +174,7 @@
               </template>
               <template v-if="pay_step === 'STEP_2'">
                 <template v-if="payment_method === 'TRANSFER'">
-                  <TransferInfo :txn_id="txn_info?.txn_id" />
+                  <TransferInfo :amount :txn_id="txn_info?.txn_id" />
                   <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
                     @click="checkPayment"
@@ -221,6 +221,7 @@ import {
   read_wallet,
 } from '@/service/api/chatbox/billing'
 import { useRoute, useRouter } from 'vue-router'
+import { currency } from '@/service/helper/format'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
@@ -230,7 +231,6 @@ import BackIcon from '@/components/Icons/Back.vue'
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
-import { currency } from '@/service/helper/format'
 
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()
@@ -271,7 +271,7 @@ const LIST_PAYMENT_METHOD: {
 /**bước thanh toán */
 const pay_step = ref<'STEP_1' | 'STEP_2'>('STEP_1')
 /**id giao dịch đang chọn để xem */
-const selected_txn_id = ref<string>(String($route.query.txn_id))
+const selected_txn_id = ref<string>($route.query.txn_id as string)
 /**số tiền nạp */
 const amount = ref<string>('500000')
 /**có xuất hoá đơn không */
