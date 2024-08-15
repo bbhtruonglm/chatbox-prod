@@ -60,7 +60,6 @@
           <Action
             v-if="data_source?.list_button?.length"
             :list_button="data_source?.list_button"
-            class="flex-shrink-0"
           />
         </div>
       </div>
