@@ -30,14 +30,15 @@
             <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
               <template v-for="page of list_new_page">
                 <PageItem
-                  @click="selectPage(page?.page?.fb_page_id)"
                   v-if="page?.page?.fb_page_id && filterPage(page)"
+                  @click="selectPage(page)"
                   v-model:checkbox="
                     list_selected_page_id[page?.page?.fb_page_id]
                   "
                   :checkbox_is_visible="true"
+                  :checkbox_is_disabled="!isPageAdmin(page)"
                   :page_info="page?.page"
-                  class="cursor-pointer"
+                  :class="isPageAdmin(page) ? 'cursor-pointer' : 'grayscale cursor-not-allowed'"
                 >
                 </PageItem>
               </template>
@@ -61,12 +62,15 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { useConnectPageStore, useOrgStore } from '@/stores'
+import {
+  useConnectPageStore,
+  useOrgStore,
+  useCommonStore,
+  useChatbotUserStore,
+} from '@/stores'
 import { ref } from 'vue'
-import { useCommonStore } from '@/stores'
 import { filter, keyBy, map, mapValues, size } from 'lodash'
 import {
-  get_current_active_page,
   get_current_active_page_sync,
   update_page_sync,
 } from '@/service/api/chatbox/n4-service'
@@ -82,13 +86,14 @@ import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 
-import type { PageData, PageList } from '@/service/interface/app/page'
+import type { PageData } from '@/service/interface/app/page'
 
 const $emit = defineEmits(['done'])
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
+const chatbotUserStore = useChatbotUserStore()
 
 /**ref của modal kết nối nền tảng */
 const modal_org_page_ref = ref<InstanceType<typeof Modal>>()
@@ -99,6 +104,10 @@ const list_selected_page_id = ref<Record<string, boolean>>({})
 /**loading */
 const is_loading = ref(false)
 
+/**kiểm tra xem user có phải là admin trang không */
+function isPageAdmin(page: PageData) {
+  return page?.current_staff?.role === 'MANAGE'
+}
 /**ẩn hiện modal của component */
 function toggleModal() {
   modal_org_page_ref.value?.toggleModal()
@@ -188,6 +197,10 @@ async function getAnotherOrgPage() {
       // lọc ra trang đã ở trong tổ chức rồi
       if (MAP_OS_ID[page?.page?.fb_page_id] === orgStore.selected_org_id) return
 
+      // lấy thông tin nhân viên hiện tại của trang
+      page.current_staff =
+        page?.staff_list?.[chatbotUserStore.chatbot_user?.fb_staff_id || '']
+
       // thêm trang chưa kích hoạt vào danh sách
       list_new_page.value.push(page)
     })
@@ -200,8 +213,15 @@ async function getAnotherOrgPage() {
   is_loading.value = false
 }
 /**toggle trang */
-function selectPage(page_id: string) {
-  list_selected_page_id.value[page_id] = !list_selected_page_id.value[page_id]
+function selectPage(page: PageData) {
+  // nếu không phải là admin thì bỏ qua
+  if (!isPageAdmin(page)) return
+
+  /**id của trang */
+  const PAGE_ID = page?.page?.fb_page_id || ''
+
+  // toggle trang
+  list_selected_page_id.value[PAGE_ID] = !list_selected_page_id.value[PAGE_ID]
 }
 /**có cho phép thực hiện hành động không */
 function isAllowAction(): boolean {
