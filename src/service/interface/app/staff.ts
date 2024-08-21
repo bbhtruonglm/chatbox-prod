@@ -12,6 +12,8 @@ export interface StaffInfo {
     offline_time?: string
     /**gắn thêm cờ đã chọn */
     is_selected?: boolean
+    /**quyền quản trị */
+    role?: 'MANAGE' | 'CREATE_CONTENT'
 }
 
 export interface AllStaffList {

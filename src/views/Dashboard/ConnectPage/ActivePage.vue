@@ -5,7 +5,7 @@
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_my_org_page">
           <PageItem
-            @click="selectPage(page?.page?.fb_page_id)"
+            @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
             v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
             :checkbox_is_visible="true"
@@ -29,12 +29,13 @@
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_another_org_page">
           <PageItem
-            @click="selectPage(page?.page?.fb_page_id)"
+            @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
             v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
             :checkbox_is_visible="true"
+            :checkbox_is_disabled="!isPageAdmin(page)"
             :page_info="page?.page"
-            class="cursor-pointer"
+            :class="isPageAdmin(page) ? 'cursor-pointer' : 'grayscale cursor-not-allowed'"
           >
           </PageItem>
         </template>
@@ -61,7 +62,12 @@
 </template>
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { useCommonStore, useConnectPageStore, useOrgStore } from '@/stores'
+import {
+  useCommonStore,
+  useConnectPageStore,
+  useOrgStore,
+  useChatbotUserStore,
+} from '@/stores'
 import { filter, keyBy, keys, map, mapValues, size } from 'lodash'
 import {
   get_current_active_page_sync,
@@ -85,6 +91,7 @@ import type { OrgInfo, OwnerShipInfo } from '@/service/interface/app/billing'
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
+const chatbotUserStore = useChatbotUserStore()
 
 /**ẩn hiện modal kết nối nền tảng */
 const toggleModal = inject(KEY_TOGGLE_MODAL_FUNCT)
@@ -107,6 +114,10 @@ const list_another_org_page_id = ref<string[]>([])
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
 
+/**kiểm tra xem user có phải là admin trang không */
+function isPageAdmin(page: PageData) {
+  return page?.current_staff?.role === 'MANAGE'
+}
 /**hiển thị các page theo tìm kiếm */
 function filterPage(page: PageData) {
   // nếu không có giá trị tìm kiếm thì luôn hiển thị
@@ -221,6 +232,10 @@ async function getListWattingPage() {
       if (page.page?.is_active && map_my_os.value?.[page?.page?.fb_page_id])
         return
 
+      // lấy thông tin nhân viên hiện tại của trang
+      page.current_staff =
+        page?.staff_list?.[chatbotUserStore.chatbot_user?.fb_staff_id || '']
+
       // thêm trang chưa kích hoạt vào danh sách
 
       // trang thuộc tổ chức của tôi
@@ -238,8 +253,14 @@ async function getListWattingPage() {
   connectPageStore.is_loading = false
 }
 /**toggle trang */
-function selectPage(page_id: string) {
-  list_selected_page_id.value[page_id] = !list_selected_page_id.value[page_id]
+function selectPage(page: PageData) {
+  // nếu không phải là admin thì bỏ qua
+  if (!isPageAdmin(page)) return
+
+  /**id của trang */
+  const PAGE_ID = page?.page?.fb_page_id || ''
+
+  list_selected_page_id.value[PAGE_ID] = !list_selected_page_id.value[PAGE_ID]
 }
 /**đếm số trang đang chọn */
 function countPageSelect() {
