@@ -94,7 +94,8 @@ import { computed, ref } from 'vue'
 import { useOrgStore } from '@/stores'
 import { eachOfLimit } from 'async'
 import { add_os } from '@/service/api/chatbox/billing'
-import { toastError } from '@/service/helper/alert'
+import { confirmSync, toastError } from '@/service/helper/alert'
+import { useI18n } from 'vue-i18n'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -104,7 +105,8 @@ import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import StackIcon from '@/components/Icons/Stack.vue'
 
-import type { OrgInfo } from '@/service/interface/app/billing'
+import type { OrgInfo, PageOrgInfoMap } from '@/service/interface/app/billing'
+import type { CurrentPageData } from '@/service/api/chatbox/n4-service'
 
 const $emit = defineEmits(['done'])
 
@@ -112,11 +114,16 @@ const $props = withDefaults(
   defineProps<{
     /**các trang đang chọn ngoài tổ chức */
     list_another_org_page_id?: string[]
+    /**liên kết dữ liệu giữa tổ chức khác và trang */
+    map_another_org_page?: PageOrgInfoMap
+    /**toàn bộ các trang khả thi */
+    list_current_page?: CurrentPageData
   }>(),
   {}
 )
 
 const orgStore = useOrgStore()
+const { t: $t } = useI18n()
 
 /**ref của modal kết nối nền tảng */
 const move_to_org_ref = ref<InstanceType<typeof Modal>>()
@@ -158,6 +165,28 @@ function selectOrg(org: OrgInfo) {
 async function continueMove() {
   // nếu không chọn tổ chức thì không thể tiếp tục
   if (!selected_org_id.value) return
+
+  /**danh sách tên các trang đã có tổ chức */
+  const LIST_NAME = $props.list_another_org_page_id
+    // lọc các trang có tổ chức khác
+    ?.filter(page_id => $props.map_another_org_page?.map_page_org?.[page_id])
+    // lọc tên trang
+    ?.map(page_id => $props.list_current_page?.page_list?.[page_id]?.page?.name)
+
+  // cảnh báo lấy trang của tổ chức khác
+  if (LIST_NAME?.length) {
+    /**xác nhận có chuyển trang không */
+    const IS_ALLOW = await confirmSync(
+      'warning',
+      $t('v1.common.warning'),
+      $t('v1.view.main.dashboard.org_page.warning_move', {
+        page: LIST_NAME?.join(', '),
+      })
+    )
+
+    // nếu không chuyển thì bỏ qua
+    if (!IS_ALLOW) return
+  }
 
   // hiển thị loading
   is_loading.value = true

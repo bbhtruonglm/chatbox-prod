@@ -208,5 +208,5 @@ function openPageInbox() {
     )?.click()
 }
 
-defineExpose({ toggle })
+defineExpose({ toggle, openClientInfo })
 </script>

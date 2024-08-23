@@ -55,6 +55,7 @@ const source: Language = {
       back: 'Quay lại',
       copy: 'Sao chép',
       continue: 'Tiếp tục',
+      warning: 'Cảnh báo'
     },
     view: {
       network: {
@@ -880,6 +881,7 @@ const source: Language = {
           org_page: {
             title: 'Thêm trang vào tổ chức',
             guild: 'Chuyển trang về tổ chức của bạn',
+            warning_move: 'Trang {page} đang thuộc quyền quản lý của một tổ chức khác. Nếu bạn tiếp tục, quyền quản lý các trang này sẽ được chuyển sang tổ chức của bạn, và các thành viên của tổ chức trước đó sẽ mất quyền truy cập. Chủ sở hữu của tổ chức đó sẽ nhận được thông báo về việc tổ chức của bạn đã tiếp quản các trang này'
           },
         },
       },

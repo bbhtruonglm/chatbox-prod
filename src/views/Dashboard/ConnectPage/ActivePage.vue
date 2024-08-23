@@ -35,7 +35,11 @@
             :checkbox_is_visible="true"
             :checkbox_is_disabled="!isPageAdmin(page)"
             :page_info="page?.page"
-            :class="isPageAdmin(page) ? 'cursor-pointer' : 'grayscale cursor-not-allowed'"
+            :class="
+              isPageAdmin(page)
+                ? 'cursor-pointer'
+                : 'grayscale cursor-not-allowed'
+            "
           >
           </PageItem>
         </template>
@@ -56,6 +60,8 @@
   </template>
   <MoveToOrg
     :list_another_org_page_id
+    :list_current_page
+    :map_another_org_page
     @done="activePage()"
     ref="move_to_org_ref"
   />
@@ -72,12 +78,13 @@ import { filter, keyBy, keys, map, mapValues, size } from 'lodash'
 import {
   get_current_active_page_sync,
   update_page,
+  type CurrentPageData,
 } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 import { KEY_LOAD_LIST_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { nonAccentVn } from '@/service/helper/format'
-import { read_os } from '@/service/api/chatbox/billing'
+import { read_os, read_link_org } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 
 import Button from '@/views/Dashboard/ConnectPage/Button.vue'
@@ -86,7 +93,11 @@ import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vu
 import MoveToOrg from '@/views/Dashboard/ConnectPage/ActivePage/MoveToOrg.vue'
 
 import type { PageData } from '@/service/interface/app/page'
-import type { OrgInfo, OwnerShipInfo } from '@/service/interface/app/billing'
+import type {
+  OrgInfo,
+  OwnerShipInfo,
+  PageOrgInfoMap,
+} from '@/service/interface/app/billing'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -110,6 +121,10 @@ const move_to_org_ref = ref<InstanceType<typeof MoveToOrg>>()
 const map_my_os = ref<Record<string, string | undefined>>({})
 /**danh sách các trang đạng chọn mà ngoài tổ chức */
 const list_another_org_page_id = ref<string[]>([])
+/**liên kết dữ liệu giữa tổ chức khác và trang */
+const map_another_org_page = ref<PageOrgInfoMap>()
+/**toàn bộ các trang khả thi */
+const list_current_page = ref<CurrentPageData>()
 
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
@@ -133,10 +148,17 @@ function filterPage(page: PageData) {
 }
 /**trước khi kích hoạt trang */
 function beforeActivePage() {
+  // làm mới danh sách trang khác tổ chức
+  list_another_org_page_id.value = []
+  
   /**lấy danh sách các trang khác tổ chức */
-  list_another_org_page_id.value = keys(list_selected_page_id.value)?.filter(
-    page_id => !map_my_os.value?.[page_id]
-  )
+  map(list_selected_page_id.value, (is_selected, page_id) => {
+    // chỉ lấy trang đang chọn và không phải tổ chức của mình
+    if (!is_selected || map_my_os.value?.[page_id]) return
+
+    // thêm vào danh sách trang khác tổ chức
+    list_another_org_page_id.value.push(page_id)
+  })
 
   // nếu có trang khác tổ chức thì chuyển qua modal chuyển trang vào tổ chức
   if (list_another_org_page_id.value?.length)
@@ -221,10 +243,10 @@ async function getListWattingPage() {
     map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
 
     /**toàn bộ các trang của người dùng */
-    const LIST_CURRENT_PAGE = await get_current_active_page_sync({})
+    list_current_page.value = await get_current_active_page_sync({})
 
     // lặp qua toàn bộ danh sách page của người dùng
-    map(LIST_CURRENT_PAGE?.page_list, page => {
+    map(list_current_page.value?.page_list, page => {
       // nếu không có id trang thì thôi
       if (!page?.page?.fb_page_id) return
 
@@ -244,6 +266,11 @@ async function getListWattingPage() {
       // trang không thuộc tổ chức của tôi
       else list_another_org_page.value.push(page)
     })
+
+    // lấy dữ liệu tổ chức khác
+    map_another_org_page.value = await read_link_org(
+      list_another_org_page.value?.map(page => page?.page?.fb_page_id || '')
+    )
   } catch (e) {
     // thông báo lỗi
     toastError(e)

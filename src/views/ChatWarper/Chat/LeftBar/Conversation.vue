@@ -59,6 +59,7 @@ import type {
   ConversationInfo,
 } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { differenceInHours } from 'date-fns'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
@@ -83,6 +84,8 @@ const is_loading = ref(false)
 const is_done = ref(false)
 /**phân trang kiểu after */
 const after = ref<number[]>()
+/**thời gian component được render */
+const mounted_time = ref<Date>(new Date())
 
 // khi thay đổi giá trị lọc tin nhắn thì load lại dữ liệu
 watch(
@@ -134,20 +137,33 @@ watch(
   }
 )
 
-onMounted(() =>
+// khi component được render
+onMounted(() => {
+  // lắng nghe sự kiện socket
   window.addEventListener(
     'chatbox_socket_conversation',
     onRealtimeUpdateConversation
   )
-)
+
+  // lưu thời gian render hiện tại
+  mounted_time.value = new Date()
+
+  // lắng nghe sự kiện focus vào tab
+  window.addEventListener('focus', autoRefreshPage)
+})
+// khi component bị xoá
 onUnmounted(() => {
   // khi thoát khỏi component này thì xoá dữ liệu hội thoại hiện tại
   conversationStore.conversation_list = {}
 
+  // xoá sự kiện socket
   window.removeEventListener(
     'chatbox_socket_conversation',
     onRealtimeUpdateConversation
   )
+
+  // xoá sự kiện focus vào tab
+  window.removeEventListener('focus', autoRefreshPage)
 })
 
 /**xử lý socket conversation */
@@ -221,7 +237,7 @@ function onRealtimeUpdateConversation({ detail }: CustomEvent) {
  * thành hiện tại
  * - để tránh lỗi user hiện tại nhắn thêm tin, nhưng avatar user đọc tin nhắn
  * vẫn ở các tin trước đó (do giá trị read chỉ được update khi click vào hội
- * thoại, nó chưa được làm mới, socket vẫn trả về giá trị cũ) -> cần set lại 
+ * thoại, nó chưa được làm mới, socket vẫn trả về giá trị cũ) -> cần set lại
  * thủ công
  * => muốn chuẩn hơn, cần fix ở backend, khi user gửi tin nhắn thành công, thì
  * update staff_read của user đó, trước khi socket
@@ -438,6 +454,17 @@ function loadMoreConversation($event: UIEvent) {
     return
 
   getConversation()
+}
+/**
+ * tự động reload lại trang nếu người dùng focus lại tab sau một khoảng thời
+ * gian lớn (VD: 3 tiếng)
+ */
+function autoRefreshPage() {
+  // nếu thời gian focus vào tab dưới 3 tiếng thì thôi
+  if (differenceInHours(new Date(), mounted_time.value) < 3) return
+  
+  // reload lại trang
+  location.reload()
 }
 
 defineExpose({ loadConversationFirstTime })
