@@ -136,6 +136,16 @@ export interface OwnerShipInfo {
   page_id?: string
 }
 
+/**kết quả của API lấy dữ liệu tổ chức của trang */
+export interface PageOrgInfoMap {
+  /**map id trang - id tổ chức */
+  map_page_org: Record<string, string>
+  /**map id tổ chức - id trang */
+  map_org_page: Record<string, Record<string, 1>>
+  /**map id tổ chức - thông tin tổ chức */
+  map_org_info: Record<string, OrgInfo>
+}
+
 /**thông tin của ví */
 export interface WalletInfo {
   /**id của ví */

@@ -6,6 +6,7 @@ import type {
   OrgInfo,
   OrgPackage,
   OwnerShipInfo,
+  PageOrgInfoMap,
   QrCodeInput,
   TransactionInfo,
   WalletInfo,
@@ -53,6 +54,15 @@ export const kick_os = async (
   chatboxSync({
     uri: `${$env.host.billing}/app/owner_ship/kick_page`,
     body: { org_id, page_id },
+  })
+
+/**đọc dữ liệu tổ chức của trang liên quan */
+export const read_link_org = async (
+  page_id: string[]
+): Promise<PageOrgInfoMap> =>
+  chatboxSync({
+    uri: `${$env.host.billing}/app/organization/read_link_org`,
+    body: { page_id },
   })
 
 /**đọc danh sách các thành viên trong tổ chức */

@@ -38,7 +38,11 @@
                   :checkbox_is_visible="true"
                   :checkbox_is_disabled="!isPageAdmin(page)"
                   :page_info="page?.page"
-                  :class="isPageAdmin(page) ? 'cursor-pointer' : 'grayscale cursor-not-allowed'"
+                  :class="
+                    isPageAdmin(page)
+                      ? 'cursor-pointer'
+                      : 'grayscale cursor-not-allowed'
+                  "
                 >
                 </PageItem>
               </template>
@@ -69,15 +73,17 @@ import {
   useChatbotUserStore,
 } from '@/stores'
 import { ref } from 'vue'
-import { filter, keyBy, map, mapValues, size } from 'lodash'
+import { filter, keyBy, keys, map, mapKeys, mapValues, size } from 'lodash'
 import {
   get_current_active_page_sync,
   update_page_sync,
+  type CurrentPageData,
 } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { nonAccentVn } from '@/service/helper/format'
-import { add_os, read_os } from '@/service/api/chatbox/billing'
-import { toastError } from '@/service/helper/alert'
+import { add_os, read_link_org, read_os } from '@/service/api/chatbox/billing'
+import { confirmSync, toastError } from '@/service/helper/alert'
+import { useI18n } from 'vue-i18n'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -87,6 +93,7 @@ import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 
 import type { PageData } from '@/service/interface/app/page'
+import type { PageOrgInfoMap } from '@/service/interface/app/billing'
 
 const $emit = defineEmits(['done'])
 
@@ -94,6 +101,7 @@ const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
+const { t: $t } = useI18n()
 
 /**ref của modal kết nối nền tảng */
 const modal_org_page_ref = ref<InstanceType<typeof Modal>>()
@@ -103,6 +111,10 @@ const list_new_page = ref<PageData[]>([])
 const list_selected_page_id = ref<Record<string, boolean>>({})
 /**loading */
 const is_loading = ref(false)
+/**liên kết dữ liệu giữa tổ chức khác và trang */
+const map_another_org_page = ref<PageOrgInfoMap>()
+/**toàn bộ các trang khả thi */
+const list_current_page = ref<CurrentPageData>()
 
 /**kiểm tra xem user có phải là admin trang không */
 function isPageAdmin(page: PageData) {
@@ -129,6 +141,37 @@ function filterPage(page: PageData) {
 async function activePage() {
   // nếu không có trang nào được chọn thì bỏ qua
   if (!isAllowAction()) return
+
+  /**danh sách các trang được chọn */
+  const SELECTED_PAGE_ID: string[] = []
+
+  map(list_selected_page_id.value, (is_selected, page_id) => {
+    if (!is_selected || !page_id) return
+
+    SELECTED_PAGE_ID.push(page_id)
+  })
+
+  /**danh sách tên các trang đã có tổ chức */
+  const LIST_NAME = SELECTED_PAGE_ID
+    // lọc các trang có tổ chức khác
+    ?.filter(page_id => map_another_org_page.value?.map_page_org?.[page_id])
+    // lọc tên trang
+    ?.map(page_id => list_current_page.value?.page_list?.[page_id]?.page?.name)
+
+  // cảnh báo lấy trang của tổ chức khác
+  if (LIST_NAME?.length) {
+    /**xác nhận có chuyển trang không */
+    const IS_ALLOW = await confirmSync(
+      'warning',
+      $t('v1.common.warning'),
+      $t('v1.view.main.dashboard.org_page.warning_move', {
+        page: LIST_NAME?.join(', '),
+      })
+    )
+
+    // nếu không chuyển thì bỏ qua
+    if (!IS_ALLOW) return
+  }
 
   // hiển thị loading
   commonStore.is_loading_full_screen = true
@@ -181,7 +224,7 @@ async function getAnotherOrgPage() {
     list_selected_page_id.value = {}
 
     /**toàn bộ các trang của người dùng có quyền truy cập */
-    const LIST_CURRENT_PAGE = await get_current_active_page_sync({})
+    list_current_page.value = await get_current_active_page_sync({})
 
     /**các trang đã nằm trong tổ chức */
     const LIST_OS = await read_os(orgStore.selected_org_id)
@@ -190,7 +233,7 @@ async function getAnotherOrgPage() {
     const MAP_OS_ID = mapValues(keyBy(LIST_OS, 'page_id'), 'org_id')
 
     // lặp qua toàn bộ danh sách trang của người dùng
-    map(LIST_CURRENT_PAGE?.page_list, page => {
+    map(list_current_page.value?.page_list, page => {
       // nếu không có id trang thì thôi
       if (!page?.page?.fb_page_id) return
 
@@ -204,6 +247,11 @@ async function getAnotherOrgPage() {
       // thêm trang chưa kích hoạt vào danh sách
       list_new_page.value.push(page)
     })
+
+    // lấy dữ liệu tổ chức khác
+    map_another_org_page.value = await read_link_org(
+      list_new_page.value?.map(page => page?.page?.fb_page_id || '')
+    )
   } catch (e) {
     // thông báo lỗi
     toastError(e)

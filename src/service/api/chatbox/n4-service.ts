@@ -39,7 +39,7 @@ export const read_me_chatbot_user = (
 }, proceed)
 
 /**dữ liệu của trang hiện tại kích hoạt */
-interface CurrentPageData {
+export interface CurrentPageData {
     /**danh sách page đang kích hoạt */
     page_list: PageList
     /**danh sách nhân viên của các page trên */

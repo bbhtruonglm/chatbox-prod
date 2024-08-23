@@ -5,8 +5,9 @@
   >
     <div class="flex items-center gap-2.5 flex-grow min-w-0">
       <ClientAvatar
+        @click="client_menu_ref?.openClientInfo()"
         :conversation="conversationStore.select_conversation"
-        class="w-10 h-10 flex-shrink-0"
+        class="w-10 h-10 flex-shrink-0 cursor-pointer"
       />
       <div class="min-w-0">
         <div
@@ -73,7 +74,6 @@
       </button>
     </div>
   </div>
-
   <Menu ref="client_menu_ref" />
   <ChangeStaff ref="change_staff_ref" />
 </template>
