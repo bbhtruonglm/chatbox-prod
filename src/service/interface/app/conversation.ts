@@ -115,6 +115,10 @@ export interface ConversationInfo {
     is_spam_fb?: boolean
     /**gắn thêm cờ, đánh dấu hội thoại này là chưa đọc */
     is_force_unread?: boolean
+    /**thời gian tạo */
+    createdAt?: string
+    /**thời gian cập nhật */
+    updatedAt?: string
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
