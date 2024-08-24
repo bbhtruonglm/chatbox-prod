@@ -1,4 +1,4 @@
-import { useConversationStore, usePageStore, useMessageStore } from '@/stores'
+import { useConversationStore, usePageStore, useMessageStore, useOrgStore } from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
@@ -304,12 +304,17 @@ export function isActiveFilter(type: string): boolean {
 }
 
 /**
- * đọc dữ liệu của các trang được chọn để chat
+ * - đọc dữ liệu của các trang được chọn để chat
+ * - đọc dữ liệu tổ chức
  * - i18n phải được truyền vào để đọc ngôn ngữ
  */
 export function getSelectedPageInfo($t: ComposerTranslation, proceed: Cb) {
   const pageStore = usePageStore()
 
+  // nạp dữ liệu của tổ chức hiện tại
+  getCurrentOrgInfo()
+
+  // lấy dữ liệu trang muốn chat
   get_page_info_to_chat(keys(pageStore.selected_page_id_list), (e, r) => {
     if (e) return proceed(e)
     if (!r)
@@ -318,6 +323,28 @@ export function getSelectedPageInfo($t: ComposerTranslation, proceed: Cb) {
     pageStore.selected_page_list_info = r
     proceed()
   })
+}
+
+/**nạp dữ liệu của tổ chức hiện tại được chọn */
+export function getCurrentOrgInfo() {
+  const orgStore = useOrgStore()
+
+  // nếu chưa có danh sách tổ chức thì không làm gì cả
+  if (!size(orgStore.list_org)) return
+
+  // tự động chọn tổ chức đầu tiên nếu
+  if (
+    // chưa có tổ chức nào được chọn
+    !orgStore.selected_org_id ||
+    // bị kick ra khỏi tổ chức hiện tại đang chọn
+    !orgStore.list_org?.find(org => org.org_id === orgStore.selected_org_id)
+  )
+    orgStore.selected_org_id = orgStore.list_org?.[0]?.org_id
+
+  // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức
+  orgStore.selected_org_info = orgStore.list_org?.find(
+    org => org.org_id === orgStore.selected_org_id
+  )
 }
 
 /**kiểm tra xem tin nhắn có quá thời gian không */

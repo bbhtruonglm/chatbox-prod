@@ -3,10 +3,7 @@
     <div class="flex flex-col gap-1 overflow-y-auto">
       <div class="flex justify-center">
         <button @click="$router.push('/dashboard/select-page')">
-          <img
-            src="@/assets/icons/bbh-mini.svg"
-            class="w-9"
-          />
+          <AppLogo class="w-9 h-9 rounded-full" />
         </button>
       </div>
       <button
@@ -123,6 +120,7 @@ import {
   resetConversationFilter,
 } from '@/service/function'
 
+import AppLogo from '@/components/AppLogo.vue'
 import Attach from '@/views/ChatWarper/Menu/Attach.vue'
 import User from '@/components/User.vue'
 import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'

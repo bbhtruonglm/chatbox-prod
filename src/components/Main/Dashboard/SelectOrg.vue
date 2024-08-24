@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useOrgStore, usePageStore } from '@/stores'
-import { size } from 'lodash'
+import { getCurrentOrgInfo } from '@/service/function'
 
 import Select from '@/components/Select.vue'
 import Option from '@/components/Option.vue'
@@ -59,23 +59,23 @@ watch(
   }
 )
 
-/**nạp dữ liệu của tổ chức hiện tại được chọn */
-function getCurrentOrgInfo() {
-  // nếu chưa có danh sách tổ chức thì không làm gì cả
-  if (!size(orgStore.list_org)) return
+// /**nạp dữ liệu của tổ chức hiện tại được chọn */
+// function getCurrentOrgInfo() {
+//   // nếu chưa có danh sách tổ chức thì không làm gì cả
+//   if (!size(orgStore.list_org)) return
 
-  // tự động chọn tổ chức đầu tiên nếu
-  if (
-    // chưa có tổ chức nào được chọn
-    !orgStore.selected_org_id ||
-    // bị kick ra khỏi tổ chức hiện tại đang chọn
-    !orgStore.list_org?.find(org => org.org_id === orgStore.selected_org_id)
-  )
-    orgStore.selected_org_id = orgStore.list_org?.[0]?.org_id
+//   // tự động chọn tổ chức đầu tiên nếu
+//   if (
+//     // chưa có tổ chức nào được chọn
+//     !orgStore.selected_org_id ||
+//     // bị kick ra khỏi tổ chức hiện tại đang chọn
+//     !orgStore.list_org?.find(org => org.org_id === orgStore.selected_org_id)
+//   )
+//     orgStore.selected_org_id = orgStore.list_org?.[0]?.org_id
 
-  // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức
-  orgStore.selected_org_info = orgStore.list_org?.find(
-    org => org.org_id === orgStore.selected_org_id
-  )
-}
+//   // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức
+//   orgStore.selected_org_info = orgStore.list_org?.find(
+//     org => org.org_id === orgStore.selected_org_id
+//   )
+// }
 </script>

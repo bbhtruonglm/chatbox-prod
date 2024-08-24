@@ -4,6 +4,7 @@ const source: Language = {
   name: 'Tiếng Việt',
   v1: {
     common: {
+      retion: 'Retion',
       title: 'Bot Bán Hàng',
       loading: 'Đang tải dữ liệu ...',
       cancel: 'Huỷ',

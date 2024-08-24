@@ -2,9 +2,9 @@
   <div class="flex-shrink-0 px-2 gap-1 flex justify-start items-center">
     <div
       v-tooltip.bottom="`v${version}`"
-      class="font-semibold text-2xl"
+      class="font-semibold text-2xl truncate"
     >
-      {{ $t('v1.common.title') }}
+      <AppName />
     </div>
     <Badge
       v-if="count_all_unread"
@@ -30,6 +30,7 @@ import { useConversationStore } from '@/stores'
 import { debounce, sumBy, values } from 'lodash'
 import { useI18n } from 'vue-i18n'
 
+import AppName from '@/components/AppName.vue'
 import Badge from '@/components/Badge.vue'
 
 import SearchIcon from '@/components/Icons/Search.vue'
