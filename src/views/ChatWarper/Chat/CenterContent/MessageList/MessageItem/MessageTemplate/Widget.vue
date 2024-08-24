@@ -56,6 +56,10 @@ const $props = withDefaults(
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
 
+/**chuyển đổi object thành chuỗi query */
+function objToParam(payload: {}) {
+  return new URLSearchParams(payload).toString()
+}
 /**tạo ra url của iframe */
 function genUrl() {
   /**đường dẫn của iframe */
@@ -68,9 +72,7 @@ function genUrl() {
   delete $props.ai._id
 
   // thêm các thông tin của AI vào url
-  url += `&${new URLSearchParams(
-    $props.ai as Record<string, string>
-  ).toString()}`
+  url += `&${objToParam($props.ai)}`
 
   return url
 }

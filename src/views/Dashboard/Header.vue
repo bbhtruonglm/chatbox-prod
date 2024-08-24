@@ -6,12 +6,9 @@
       @click="$router.push('/dashboard/select-page')"
       class="flex gap-3 items-center"
     >
-      <img
-        src="@/assets/icons/bbh-mini.svg"
-        class="w-9 h-11"
-      />
+      <AppLogo class="w-9 h-11" />
       <h2 class="text-2xl font-semibold">
-        {{ $t('v1.common.title') }}
+        <AppName />
       </h2>
     </button>
     <div class="flex gap-7 items-center">
@@ -47,6 +44,8 @@ import { inject } from 'vue'
 
 import User from '@/components/User.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
+import AppName from '@/components/AppName.vue'
+import AppLogo from '@/components/AppLogo.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'

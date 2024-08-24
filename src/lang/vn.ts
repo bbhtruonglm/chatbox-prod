@@ -4,6 +4,8 @@ const source: Language = {
   name: 'Tiếng Việt',
   v1: {
     common: {
+      vn: 'Tiếng Việt',
+      retion: 'Retion',
       title: 'Bot Bán Hàng',
       loading: 'Đang tải dữ liệu ...',
       cancel: 'Huỷ',
@@ -460,11 +462,20 @@ const source: Language = {
               del_staff: 'Nhân viên đã xoá',
             },
             client: {
-              title: 'Xem thông tin',
+              title: 'Thông tin',
               basic: 'Thông tin cơ bản',
-              info: 'Thông tin cá nhân',
-              reload_info: 'Làm mới thông tin khách hàng',
+              info: 'Thông tin',
+              reload_info: 'Quét lại thông tin',
+              require_ext: 'Yêu cầu cài đặt Extension Chrome.',
               reloading_info: 'Đang làm mới thông tin khách hàng',
+              unknown: 'Không xác định',
+              created_at: 'Ngày tạo',
+              updated_at: 'Lần cuối',
+              psid: 'PSID',
+              stop_bot: 'Dừng Chatbot',
+              edit: 'Chỉnh sửa',
+              attribute: 'Thuộc tính',
+              ai_detect: 'AI detect'
             },
             emoji: {
               search: 'Tìm kiếm',
