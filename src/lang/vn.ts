@@ -473,6 +473,7 @@ const source: Language = {
               updated_at: 'Lần cuối',
               psid: 'PSID',
               stop_bot: 'Dừng Chatbot',
+              start_bot: 'Bật Chatbot',
               edit: 'Chỉnh sửa',
               attribute: 'Thuộc tính',
               ai_detect: 'AI detect'
