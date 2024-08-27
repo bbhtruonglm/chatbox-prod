@@ -57,7 +57,7 @@ const source: Language = {
       back: 'Quay lại',
       copy: 'Sao chép',
       continue: 'Tiếp tục',
-      warning: 'Cảnh báo'
+      warning: 'Cảnh báo',
     },
     view: {
       network: {
@@ -123,8 +123,8 @@ const source: Language = {
             noti: {
               title: 'Thông báo',
               read_all: 'Đọc tất cả',
-              not_select: 'Vui lòng chọn thông báo.'
-            }
+              not_select: 'Vui lòng chọn thông báo.',
+            },
           },
           select_page: {
             all_org: 'Tất cả tổ chức',
@@ -431,7 +431,7 @@ const source: Language = {
               attachment: {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
-                ai_handle: 'Nội dung được xử lý bởi AI'
+                ai_handle: 'Nội dung được xử lý bởi AI',
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
@@ -476,7 +476,40 @@ const source: Language = {
               start_bot: 'Bật Chatbot',
               edit: 'Chỉnh sửa',
               attribute: 'Thuộc tính',
-              ai_detect: 'AI detect'
+              attribute_detail: 'Thuộc tính tuỳ biến',
+              system_attribute: 'Thuộc tính hệ thống',
+              add_attr: 'Thêm thuộc tính',
+              ai_detect: 'AI detect',
+              field: {
+                work: 'Nơi làm việc',
+                education: 'Học vấn',
+                current_city: 'Nơi ở hiện tại',
+                hometown: 'Quê quán',
+                relationship: 'Mối quan hệ',
+                birthday: 'Ngày sinh',
+                email: 'Email',
+                website: 'Website',
+                screenname: 'Tên hiển thị',
+                gender: 'Giới tính',
+                pronouns: 'Được gọi là',
+                languages: 'Ngôn ngữ',
+              },
+              ai_menu: {
+                all: 'Tất cả',
+                emotion: 'Cảm xúc',
+                slow_response: 'Trả lời chậm',
+                order: 'Đơn hàng',
+                schedule: 'Lập lịch',
+                call: 'Gọi điện',
+                address: 'Địa chỉ',
+                acronym: 'Viết tắt',
+              },
+              page: 'trang',
+              time: 'Thời gian',
+              type: 'Loại',
+              value: 'Giá trị',
+              message: 'Tin nhắn',
+              convert: 'Chuyển đổi',
             },
             emoji: {
               search: 'Tìm kiếm',
@@ -545,7 +578,7 @@ const source: Language = {
               name: 'Tên của tập tin/thư mục',
               create_folder: 'Tạo thư mục',
               edit_name: 'Đổi tên',
-              folder_new_name: 'Thư mục mới'
+              folder_new_name: 'Thư mục mới',
             },
           },
           user: {
@@ -792,9 +825,9 @@ const source: Language = {
                 client: 'Mua thêm khách hàng',
                 ai_text: 'Mua thêm AI văn bản',
                 ai_image: 'Mua thêm AI hình ảnh',
-                ai_sound:  'Mua thêm AI âm thanh',
+                ai_sound: 'Mua thêm AI âm thanh',
                 ai_video: 'Mua thêm AI video',
-                success: 'Mua thêm giới hạn thành công'
+                success: 'Mua thêm giới hạn thành công',
               },
               buy_more_page: 'Mua thêm trang',
               buy_more_staff: 'Mua thêm nhân viên',
@@ -893,7 +926,8 @@ const source: Language = {
           org_page: {
             title: 'Thêm trang vào tổ chức',
             guild: 'Chuyển trang về tổ chức của bạn',
-            warning_move: 'Trang {page} đang thuộc quyền quản lý của một tổ chức khác. Nếu bạn tiếp tục, quyền quản lý các trang này sẽ được chuyển sang tổ chức của bạn, và các thành viên của tổ chức trước đó sẽ mất quyền truy cập. Chủ sở hữu của tổ chức đó sẽ nhận được thông báo về việc tổ chức của bạn đã tiếp quản các trang này'
+            warning_move:
+              'Trang {page} đang thuộc quyền quản lý của một tổ chức khác. Nếu bạn tiếp tục, quyền quản lý các trang này sẽ được chuyển sang tổ chức của bạn, và các thành viên của tổ chức trước đó sẽ mất quyền truy cập. Chủ sở hữu của tổ chức đó sẽ nhận được thông báo về việc tổ chức của bạn đã tiếp quản các trang này',
           },
         },
       },

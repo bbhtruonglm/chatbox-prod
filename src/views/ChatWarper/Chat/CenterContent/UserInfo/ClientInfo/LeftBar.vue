@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-[263px] bg-white rounded-md flex flex-col p-2 gap-2 overflow-y-auto"
+    class="w-[263px] bg-white rounded-md flex flex-col p-2 gap-2 overflow-y-auto flex-shrink-0"
   >
     <div class="py-2 px-5">
       <ClientAvatar
@@ -105,13 +105,16 @@
       </div>
     </div>
     <button
-      @click="test"
       class="text-blue-700 bg-blue-100 rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
     >
-      <PauseWhiteIcon class="w-4 h-4" />
-      <PlayOutlineIcon class="w-4 h-4" />
-      {{ $t('v1.view.main.dashboard.chat.client.stop_bot') }}
-      {{ $t('v1.view.main.dashboard.chat.client.start_bot') }}
+      <template v-if="true">
+        <PauseWhiteIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.chat.client.stop_bot') }}
+      </template>
+      <template v-else>
+        <PlayOutlineIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.chat.client.start_bot') }}
+      </template>
     </button>
   </div>
 </template>
@@ -132,7 +135,6 @@ import UserSquareIcon from '@/components/Icons/UserSquare.vue'
 import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
 import PauseWhiteIcon from '@/components/Icons/PauseWhite.vue'
 import PlayOutlineIcon from '@/components/Icons/PlayOutline.vue'
-import { ChatbotAppPage } from '@/utils/api/Chatbot'
 
 const conversationStore = useConversationStore()
 
@@ -144,10 +146,4 @@ const gender = computed(
 const page_id = computed(
   () => conversationStore.select_conversation?.fb_page_id
 )
-
-function test() {
-  if (!page_id.value) return
-
-  new ChatbotAppPage(page_id.value).activePage(false)
-}
 </script>
