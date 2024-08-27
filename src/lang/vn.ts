@@ -475,6 +475,8 @@ const source: Language = {
               stop_bot: 'Dừng Chatbot',
               start_bot: 'Bật Chatbot',
               edit: 'Chỉnh sửa',
+              full_name: 'Họ tên',
+              full_name_require: 'Nhập họ tên',
               attribute: 'Thuộc tính',
               attribute_detail: 'Thuộc tính tuỳ biến',
               system_attribute: 'Thuộc tính hệ thống',
@@ -510,6 +512,9 @@ const source: Language = {
               value: 'Giá trị',
               message: 'Tin nhắn',
               convert: 'Chuyển đổi',
+              phone: 'Số điện thoại',
+              email: 'Email',
+              address: 'Địa chỉ',
             },
             emoji: {
               search: 'Tìm kiếm',

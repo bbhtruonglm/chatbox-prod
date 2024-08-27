@@ -50,18 +50,20 @@ import type { ConversationInfo } from '@/service/interface/app/conversation'
 
 const $props = withDefaults(
   defineProps<{
+    /**thông tin cuộc trò chuyện */
     conversation?: ConversationInfo
+    /**kích thước thực tế của hình ảnh */
+    actual_size?: number
   }>(),
-  {}
+  {
+    actual_size: 64,
+  }
 )
 
 const chatbotUserStore = useChatbotUserStore()
 
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
-
-/**kích thước thực tế của hình ảnh */
-const ACTUAL_SIZE = 64
 
 onMounted(() => {
   // tắt hiệu ứng với dạng web
@@ -91,12 +93,12 @@ function removeAnimatePulse() {
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-  return `${$env.img_host}/${$props.conversation?.fb_client_id}?page_id=${$props.conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}&type=${$props.conversation?.platform_type}`
+  return `${$env.img_host}/${$props.conversation?.fb_client_id}?page_id=${$props.conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=${$props.actual_size}&height=${$props.actual_size}&type=${$props.conversation?.platform_type}`
 }
 /**khi ảnh load thất bại thì thay thế ảnh mặc định vào */
 function onImageError($event: Event) {
   const image = $event.target as HTMLImageElement
 
-  image.src = `${$env.img_host}/1111111111?width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}`
+  image.src = `${$env.img_host}/1111111111?width=${$props.actual_size}&height=${$props.actual_size}`
 }
 </script>

@@ -7,7 +7,15 @@
         {{ client_name }}
       </div>
       <button
-        class="text-blue-700 bg-blue-100 rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
+        @click="
+          conversationStore.is_edit_info = !conversationStore.is_edit_info
+        "
+        :class="
+          conversationStore.is_edit_info
+            ? 'text-white bg-blue-700'
+            : 'text-blue-700 bg-blue-100'
+        "
+        class="rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
       >
         {{ $t('v1.view.main.dashboard.chat.client.edit') }}
       </button>

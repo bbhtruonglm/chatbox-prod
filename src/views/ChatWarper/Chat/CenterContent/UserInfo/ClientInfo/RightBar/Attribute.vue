@@ -15,9 +15,9 @@
   <div
     v-for="(value, key) of conversationStore.select_conversation?.client_bio
       ?.fb_info"
-    class="flex items-center text-sm"
+    class="flex items-start text-sm"
   >
-    <div class="w-28 font-semibold ml-5">
+    <div class="w-28 font-semibold ml-5 flex-shrink-0">
       {{ getClientFieldName(key) }}
     </div>
     <div>

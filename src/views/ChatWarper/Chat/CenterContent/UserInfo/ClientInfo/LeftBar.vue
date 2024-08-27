@@ -6,6 +6,7 @@
       <ClientAvatar
         :conversation="conversationStore.select_conversation"
         class="rounded-lg w-52 h-52"
+        :actual_size="200"
       />
     </div>
     <div class="flex flex-col gap-2">

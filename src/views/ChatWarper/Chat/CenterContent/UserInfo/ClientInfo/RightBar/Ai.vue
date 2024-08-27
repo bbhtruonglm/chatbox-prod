@@ -75,7 +75,7 @@
                 {{ dateFormat('2024/08/24', 'hh:mm - dd/MM') }}
               </td>
               <td class="item">Cảm xúc</td>
-              <td class="item">Vui vẻ</td>
+              <td class="item truncate">Vui vẻ</td>
               <td class="item truncate">
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut
                 dolore beatae dolor aperiam porro! Ipsa eaque aliquid sit eos

@@ -39,11 +39,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
         }
     }>({})
 
+    /**có đang bật cờ chỉnh sửa dữ liệu khách hàng không */
+    const is_edit_info = ref<boolean>(false)
+
     return {
         option_filter_page_data,
         select_conversation,
         conversation_list,
         select_widget,
         list_widget_token,
+        is_edit_info,
     }
 })

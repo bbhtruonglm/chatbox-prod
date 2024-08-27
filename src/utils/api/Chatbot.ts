@@ -35,13 +35,13 @@ export class ChatbotAppPage extends ChatbotApp {
   }
 
   /**cập nhật thiết lập của trang */
-  #upsertPage(body: Record<string, any>): Promise<any> {
+  async #upsertPage(body: Record<string, any>): Promise<void> {
     // gọi api cập nhật trang
     return this.post('upsert_page', body)
   }
 
   /**kích hoạt | huỷ kích hoạt chatbot */
-  activePage(value: boolean) {
+  async activePage(value: boolean): Promise<void> {
     // gọi phương thức cập nhật trang
     return this.#upsertPage({ page_is_active: value })
   }
