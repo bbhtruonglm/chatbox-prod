@@ -17,6 +17,8 @@ export interface Env {
         billing: string
         /**quản lý ai */
         ai: string
+        /**quản lý chatbot */
+        chatbot: string
         n8_merge: string
         widget: string
         page_setting_view: string

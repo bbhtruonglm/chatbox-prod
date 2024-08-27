@@ -1,0 +1,150 @@
+<template>
+  <div
+    class="w-[263px] bg-white rounded-md flex flex-col p-2 gap-2 overflow-y-auto flex-shrink-0"
+  >
+    <div class="py-2 px-5">
+      <ClientAvatar
+        :conversation="conversationStore.select_conversation"
+        class="rounded-lg w-52 h-52"
+        :actual_size="200"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <GenderIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          <template v-if="gender">
+            {{ gender }}
+          </template>
+          <template v-else>
+            {{ $t('v1.view.main.dashboard.chat.client.unknown') }}
+          </template>
+        </div>
+      </div>
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <GlobalIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          {{ $t('v1.common.vn') }}
+        </div>
+      </div>
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <LinkIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          {{
+            $t(
+              `v1.common.${conversationStore.select_conversation?.platform_type?.toLowerCase()}`
+            )
+          }}
+        </div>
+      </div>
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <DateWhiteIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          {{ $t('v1.view.main.dashboard.chat.client.created_at') }}:
+          {{
+            dateFormat(
+              conversationStore.select_conversation?.createdAt,
+              'dd/MM/yyyy'
+            )
+          }}
+        </div>
+      </div>
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <ClockWhiteIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          {{ $t('v1.view.main.dashboard.chat.client.updated_at') }}:
+          {{
+            dateFormat(
+              conversationStore.select_conversation?.createdAt,
+              'hh:mm - dd/MM/yyyy'
+            )
+          }}
+        </div>
+      </div>
+      <div class="pl-5 flex items-center">
+        <div class="w-5 flex-shrink-0">
+          <UserSquareIcon class="h-3.5" />
+        </div>
+        <div class="text-sm font-medium">
+          {{ conversationStore.select_conversation?.fb_client_id }}
+          ({{ $t('v1.view.main.dashboard.chat.client.psid') }})
+        </div>
+      </div>
+      <div class="pl-5 flex items-start">
+        <div class="w-5 flex-shrink-0">
+          <TagWhiteIcon class="h-3.5" />
+        </div>
+        <div class="flex gap-1 min-w-0 flex-wrap">
+          <div
+            v-for="label_id of conversationStore.select_conversation?.label_id"
+            :style="{
+              background: getLabelInfo(
+                conversationStore.select_conversation?.fb_page_id,
+                label_id
+              )?.bg_color,
+            }"
+            class="text-xs px-1 text-white rounded"
+          >
+            {{
+              getLabelInfo(
+                conversationStore.select_conversation?.fb_page_id,
+                label_id
+              )?.title
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="text-blue-700 bg-blue-100 rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
+    >
+      <template v-if="true">
+        <PauseWhiteIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.chat.client.stop_bot') }}
+      </template>
+      <template v-else>
+        <PlayOutlineIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.chat.client.start_bot') }}
+      </template>
+    </button>
+  </div>
+</template>
+<script setup lang="ts">
+import { useConversationStore } from '@/stores'
+import { computed } from 'vue'
+import { dateFormat } from '@/service/helper/format'
+import { getLabelInfo } from '@/service/function'
+
+import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
+
+import GenderIcon from '@/components/Icons/Gender.vue'
+import GlobalIcon from '@/components/Icons/Global.vue'
+import LinkIcon from '@/components/Icons/Link.vue'
+import DateWhiteIcon from '@/components/Icons/DateWhite.vue'
+import ClockWhiteIcon from '@/components/Icons/ClockWhite.vue'
+import UserSquareIcon from '@/components/Icons/UserSquare.vue'
+import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
+import PauseWhiteIcon from '@/components/Icons/PauseWhite.vue'
+import PlayOutlineIcon from '@/components/Icons/PlayOutline.vue'
+
+const conversationStore = useConversationStore()
+
+/**giới tính */
+const gender = computed(
+  () => conversationStore.select_conversation?.client_bio?.fb_info?.gender
+)
+/**id trang */
+const page_id = computed(
+  () => conversationStore.select_conversation?.fb_page_id
+)
+</script>
