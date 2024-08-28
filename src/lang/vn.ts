@@ -515,6 +515,13 @@ const source: Language = {
               phone: 'Số điện thoại',
               email: 'Email',
               address: 'Địa chỉ',
+              create_phone: 'Thêm số điện thoại',
+              create_email: 'Thêm email',
+              create_address: 'Thêm địa chỉ',
+              phone_require: 'Nhập số điện thoại',
+              email_require: 'Nhập email',
+              address_require: 'Nhập địa chỉ',
+              confirm_remove_contact: 'Bạn có chắc chắn muốn xoá liên hệ này?',
             },
             emoji: {
               search: 'Tìm kiếm',

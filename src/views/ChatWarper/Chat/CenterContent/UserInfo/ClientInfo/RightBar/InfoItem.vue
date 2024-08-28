@@ -12,6 +12,7 @@
     >
       <input
         v-model="model"
+        @input="$emit('update')"
         :placeholder
         class="py-2 px-3 rounded-md border focus:outline-none w-80"
       />
@@ -30,7 +31,7 @@ import BinIcon from '@/components/Icons/Bin.vue'
 
 const conversationStore = useConversationStore()
 
-const $emit = defineEmits(['remove'])
+const $emit = defineEmits(['remove', 'update'])
 
 const $props = withDefaults(
   defineProps<{

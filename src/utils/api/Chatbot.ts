@@ -46,3 +46,62 @@ export class ChatbotAppPage extends ChatbotApp {
     return this.#upsertPage({ page_is_active: value })
   }
 }
+
+/**dữ liệu của một thuộc tính tuỳ biến */
+export type AttributeValueType = string | number | boolean
+/**dữ liệu của 1 khách hàng */
+export interface ClientInfo {
+  /**id của khách hàng  */
+  client_id?: string
+  // id của trang sở hữu khách hàng này
+  page_id?: string
+  /**khách hàng đến từ nền tảng nào */
+  client_platform_type?: 'FACEBOOK'
+  /**tên khách hàng */
+  client_first_name?: string
+  /**tên khách hàng */
+  client_last_name?: string
+  /**giới tính của khách hàng */
+  client_gender?: 'MALE' | 'FEMALE' | 'OTHER'
+  /**thuộc tính tuỳ biến */
+  client_attribute?: {
+    [index: string]: AttributeValueType
+  }
+  /**danh sách id các chuỗi gắn cho khách này */
+  client_list_sequence_id?: [string]
+  /**gắn cờ dừng chatbot với khách hàng này */
+  client_is_stop?: boolean
+}
+
+/**gọi API module client của chatbot */
+export class ChatbotAppClient extends ChatbotApp {
+  /**id khách hàng */
+  readonly #CLIENT_ID: string
+
+  constructor(page_id: string, client_id: string) {
+    // gọi API module page của chatbot
+    super(page_id, 'client')
+
+    // lưu lại id khách hàng
+    this.#CLIENT_ID = client_id
+  }
+
+  /**đọc đữ liệu khách hàng */
+  public async readClient(): Promise<ClientInfo> {
+    /**dữ liệu từ server */
+    const RES = (await this.post('read_client', {
+      client_id: this.#CLIENT_ID,
+    })) as ClientInfo[]
+
+    // trả về dữ liệu khách hàng
+    return RES?.[0]
+  }
+  /**tắt bật chatbot của người dùng này */
+  public async toggleClient(is_stop: boolean): Promise<void> {
+    // gọi api
+    await this.post('toggle_client', {
+      client_id: this.#CLIENT_ID,
+      is_stop,
+    })
+  }
+}
