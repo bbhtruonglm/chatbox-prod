@@ -106,21 +106,22 @@
       </div>
     </div>
     <button
+      @click="toggleClientChatbot"
       class="text-blue-700 bg-blue-100 rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
     >
-      <template v-if="true">
-        <PauseWhiteIcon class="w-4 h-4" />
-        {{ $t('v1.view.main.dashboard.chat.client.stop_bot') }}
-      </template>
-      <template v-else>
+      <template v-if="conversationStore.chatbot_client?.client_is_stop">
         <PlayOutlineIcon class="w-4 h-4" />
         {{ $t('v1.view.main.dashboard.chat.client.start_bot') }}
+      </template>
+      <template v-else>
+        <PauseWhiteIcon class="w-4 h-4" />
+        {{ $t('v1.view.main.dashboard.chat.client.stop_bot') }}
       </template>
     </button>
   </div>
 </template>
 <script setup lang="ts">
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useCommonStore } from '@/stores'
 import { computed } from 'vue'
 import { dateFormat } from '@/service/helper/format'
 import { getLabelInfo } from '@/service/function'
@@ -136,15 +137,51 @@ import UserSquareIcon from '@/components/Icons/UserSquare.vue'
 import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
 import PauseWhiteIcon from '@/components/Icons/PauseWhite.vue'
 import PlayOutlineIcon from '@/components/Icons/PlayOutline.vue'
+import { toastError } from '@/service/helper/alert'
+import { ChatbotAppClient } from '@/utils/api/Chatbot'
+import { set } from 'lodash'
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 
 /**giới tính */
 const gender = computed(
   () => conversationStore.select_conversation?.client_bio?.fb_info?.gender
 )
-/**id trang */
+/**id của trang */
 const page_id = computed(
   () => conversationStore.select_conversation?.fb_page_id
 )
+/**id của khách hàng */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
+
+/**tắt bật chatbot của khách */
+async function toggleClientChatbot() {
+  // nếu chưa có id của trang hoặc id của khách hàng thì không làm gì cả
+  if (!page_id.value || !client_id.value || commonStore.is_loading_full_screen)
+    return
+
+  // hiển thị loading
+  commonStore.is_loading_full_screen = true
+
+  try {
+    /**cờ trạng thái mới của chatbot */
+    const IS_TOGGLE = !conversationStore.chatbot_client?.client_is_stop
+
+    // gửi yêu cầu thay đổi trạng thái chatbot
+    await new ChatbotAppClient(page_id.value, client_id.value).toggleClient(
+      IS_TOGGLE
+    )
+
+    // cập nhật lại trạng thái chatbot
+    set(conversationStore, 'chatbot_client.client_is_stop', IS_TOGGLE)
+  } catch (e) {
+    toastError(e)
+  }
+
+  // ẩn loading
+  commonStore.is_loading_full_screen = false
+}
 </script>

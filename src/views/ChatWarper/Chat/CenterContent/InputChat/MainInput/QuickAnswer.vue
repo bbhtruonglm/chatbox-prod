@@ -130,6 +130,10 @@ const selected_answer_index = ref(0)
 const page_id = computed(
   () => conversationStore.select_conversation?.fb_page_id
 )
+/**id khách đang được chọn */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
 
 /**có hiển thị nút gửi tin không */
 const isVisibleSendBtn = inject(IS_VISIBLE_SEND_BTN_FUNCT)
@@ -331,6 +335,7 @@ async function transalate() {
       to: 'en',
       text,
       page_id: page_id.value,
+      client_id: client_id.value
     })
 
     // nếu không có dữ liệu thì thôi
@@ -435,6 +440,7 @@ async function complete() {
       source: SOURCE,
       current: text,
       page_id: page_id.value,
+      client_id: client_id.value
     })
 
     // nếu không có dữ liệu thì thôi

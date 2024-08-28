@@ -49,7 +49,7 @@ export const confirm = (
 export const confirmSync = async (
   icon: SweetAlertIcon,
   title: string,
-  text: string
+  text?: string
 ) =>
   Swal.fire({ title, text, icon, showCancelButton: true }).then(
     ({ isConfirmed }: { isConfirmed: boolean }) => isConfirmed

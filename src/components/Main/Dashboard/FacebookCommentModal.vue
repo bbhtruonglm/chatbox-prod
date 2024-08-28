@@ -102,6 +102,7 @@
         </template>
     </Modal>
     <PrivateInboxModal ref="private_inbox_ref" :page_id="conversationStore?.select_conversation?.fb_page_id"
+        :client_id="conversationStore?.select_conversation?.fb_client_id"
         :target_id="target_private_inbox?.target_id" :target_name="target_private_inbox?.target_name" />
 </template>
 

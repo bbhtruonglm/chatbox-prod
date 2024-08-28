@@ -8,6 +8,8 @@ export interface TextTranslateInput {
   to: string
   /**id trang */
   page_id: string
+  /**id khách hàng */
+  client_id?: string
 }
 
 /**Dữ liệu văn bản đầu ra */
@@ -33,6 +35,8 @@ export interface GenAnswerInput {
   current?: string
   /**id trang */
   page_id: string
+  /**id khách hàng */
+  client_id?: string
 }
 
 /**loại quota */

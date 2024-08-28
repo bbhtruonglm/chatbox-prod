@@ -62,6 +62,7 @@ const $props = withDefaults(defineProps<{
     page_id?: string,
     target_id?: string
     target_name?: string
+    client_id?: string
 }>(), {})
 
 // * Use i18n
@@ -90,6 +91,7 @@ function privateInbox() {
     private_inbox(
         { 
             page_id: $props.page_id,
+            client_id: $props.client_id,
             target_id: $props.target_id,
             text
         },
