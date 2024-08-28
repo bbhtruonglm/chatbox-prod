@@ -13,6 +13,7 @@ const ENV: Env = {
         n4_service_v2: 'https://dev-api.botbanhang.vn/v1/n4_service',
         n5_app_v2: 'https://dev-api.botbanhang.vn/v1/n5_app',
         n6_static: 'https://dev-api.botbanhang.vn/v1/n6_static',
+        n9_analytic_v2: 'https://dev-api.botbanhang.vn/v1/n9_analytic_v2',
         billing: 'https://dev-api.botbanhang.vn/v1/billing',
         ai: 'https://dev-api.botbanhang.vn/v1/ai',
         chatbot: 'https://dev-api.botbanhang.vn/v1/chatbot/n3_service',

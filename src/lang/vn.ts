@@ -462,6 +462,7 @@ const source: Language = {
               del_staff: 'Nhân viên đã xoá',
             },
             client: {
+              type_emotion: 'Cảm xúc',
               title: 'Thông tin',
               basic: 'Thông tin cơ bản',
               info: 'Thông tin',
@@ -505,6 +506,8 @@ const source: Language = {
                 call: 'Gọi điện',
                 address: 'Địa chỉ',
                 acronym: 'Viết tắt',
+                transaction: 'Giao dịch',
+                email: 'Email',
               },
               page: 'trang',
               time: 'Thời gian',
