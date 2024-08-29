@@ -86,12 +86,15 @@ export class ChatbotAppClient extends ChatbotApp {
     this.#CLIENT_ID = client_id
   }
 
+  /**thêm id khách hàng mặc định */
+  protected post(path: string, body?: Record<string, any>): Promise<any> {
+    return super.post(path, { client_id: this.#CLIENT_ID, ...body })
+  }
+
   /**đọc đữ liệu khách hàng */
   public async readClient(): Promise<ClientInfo> {
     /**dữ liệu từ server */
-    const RES = (await this.post('read_client', {
-      client_id: this.#CLIENT_ID,
-    })) as ClientInfo[]
+    const RES = (await this.post('read_client')) as ClientInfo[]
 
     // trả về dữ liệu khách hàng
     return RES?.[0]
@@ -99,9 +102,13 @@ export class ChatbotAppClient extends ChatbotApp {
   /**tắt bật chatbot của người dùng này */
   public async toggleClient(is_stop: boolean): Promise<void> {
     // gọi api
-    await this.post('toggle_client', {
-      client_id: this.#CLIENT_ID,
-      is_stop,
-    })
+    await this.post('toggle_client', { is_stop })
+  }
+  /**sửa thuộc tính tuỳ biến của người dùng này */
+  public async editAttribute(
+    list_attribute: Record<string, any>
+  ): Promise<void> {
+    // gọi api
+    await this.post('edit_attribute', { list_attribute })
   }
 }
