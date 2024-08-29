@@ -237,7 +237,7 @@ function getTokenOfWidget(
     ?.map(widget => {
       list_app_installed_id[widget._id] = widget.app_id
     })
-
+  
   create_token_app_installed(
     {
       page_id: PAGE_ID,
@@ -258,7 +258,7 @@ function getTokenOfWidget(
     },
     (e, r: any) => {
       if (e) return
-
+ 
       // nhập dữ liệu token mới
       conversationStore.list_widget_token = {
         new_page_id: PAGE_ID,

@@ -1,12 +1,12 @@
 <template>
   <div class="flex-grow min-h-0 overflow-y-auto flex flex-col gap-2.5">
-    <InfoItem
+    <EditItem
       @update="conversationStore.is_edit_client.client_name = true"
       :title="$t('v1.view.main.dashboard.chat.client.full_name')"
       :placeholder="$t('v1.view.main.dashboard.chat.client.full_name_require')"
       v-model="client_name"
     />
-    <InfoItemGroup
+    <EditItemGroup
       :type="'PHONE'"
       :source="list_contact"
       :title="$t('v1.view.main.dashboard.chat.client.phone')"
@@ -14,7 +14,7 @@
       :placeholder="$t('v1.view.main.dashboard.chat.client.phone_require')"
       is_allow_remove
     />
-    <InfoItemGroup
+    <EditItemGroup
       :type="'EMAIL'"
       :source="list_contact"
       :title="$t('v1.view.main.dashboard.chat.client.email')"
@@ -22,7 +22,7 @@
       :placeholder="$t('v1.view.main.dashboard.chat.client.email_require')"
       is_allow_remove
     />
-    <InfoItemGroup
+    <EditItemGroup
       :type="'ADDRESS'"
       :source="list_contact"
       :title="$t('v1.view.main.dashboard.chat.client.address')"
@@ -30,19 +30,12 @@
       :placeholder="$t('v1.view.main.dashboard.chat.client.address_require')"
       is_allow_remove
     />
-
-    <div
+    <InfoItem
       v-for="(value, key) of conversationStore.select_conversation?.client_bio
         ?.fb_info"
-      class="flex items-start text-sm"
-    >
-      <div class="w-28 font-semibold ml-5 flex-shrink-0">
-        {{ getClientFieldName(key) }}
-      </div>
-      <div>
-        {{ value }}
-      </div>
-    </div>
+      :title="getClientFieldName(key)"
+      :value
+    />
   </div>
   <div class="flex-shrink-0 flex items-center gap-2.5">
     <button
@@ -78,8 +71,9 @@ import { get, keys, map, set, size } from 'lodash'
 import { toastError } from '@/service/helper/alert'
 import { getFbUserInfo } from '@/service/helper/ext'
 
+import EditItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItem.vue'
 import InfoItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/InfoItem.vue'
-import InfoItemGroup from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/InfoItemGroup.vue'
+import EditItemGroup from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItemGroup.vue'
 import Loading from '@/components/Loading.vue'
 
 import InfoIcon from '@/components/Icons/Info.vue'

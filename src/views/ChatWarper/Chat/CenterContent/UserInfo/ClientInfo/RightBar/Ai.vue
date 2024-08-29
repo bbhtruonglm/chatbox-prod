@@ -90,7 +90,15 @@
           </tbody>
         </table>
       </div>
-      <div class="flex-shrink-0 flex items-center gap-5 justify-end p-1">
+      <div
+        class="flex-shrink-0 flex items-center gap-5 justify-end p-1 relative"
+      >
+        <div
+          v-if="is_loading"
+          class="absolute left-1/2 -translate-x-1/2"
+        >
+          <Loading />
+        </div>
         <div class="flex items-center gap-2">
           <LeftSquareIcon
             @click="changePage('PREV')"
@@ -125,15 +133,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import LeftSquareIcon from '@/components/Icons/LeftSquare.vue'
 import { toastError } from '@/service/helper/alert'
 import { dateFormat } from '@/service/helper/format'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { N9AnalyticAppAnalytic, type EventInfo } from '@/utils/api/N9Analytic'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Tab from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/Ai/Tab.vue'
+import Loading from '@/components/Loading.vue'
+
+import LeftSquareIcon from '@/components/Icons/LeftSquare.vue'
 
 /**dữ liệu sự kiện đã xử lý */
 interface HandledEventInfo extends EventInfo {
@@ -171,6 +181,19 @@ const list_event = ref<HandledEventInfo[]>()
 const limit = ref<20 | 30 | 50>(20)
 /**số trang hiện tại */
 const page = ref(1)
+/**có đang load dữ liệu không */
+const is_loading = ref(false)
+
+/**id của page */
+const page_id = computed(
+  () => conversationStore.select_conversation?.fb_page_id
+)
+/**id của client */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
+/**id của org */
+const org_id = computed(() => orgStore.selected_org_id)
 
 // lấy dữ liệu khi component được mount
 onMounted(readEvent)
@@ -187,108 +210,115 @@ function changePage(type: 'NEXT' | 'PREV') {
   if (type === 'NEXT') page.value++
   else if (page.value > 1) page.value--
 }
+/**tính toán sự kiện được lọc */
+function calcFilterEvent() {
+  /**danh sách sự kiện được lọc */
+  let filter_event: string[] = []
+
+  /**các sự kiện cảm xúc */
+  const EMOTION = [
+    'client_emotion_happiness',
+    'client_emotion_sadness',
+    'client_emotion_fear',
+    'client_emotion_anger',
+    'client_emotion_surprise',
+    'client_emotion_disgust',
+    'client_emotion_love',
+    'client_emotion_jealousy',
+    'client_emotion_shame',
+    'client_emotion_pride',
+    'client_emotion_none',
+    'client_positive',
+    'client_negative',
+    'client_neutral',
+  ]
+  /**các sự kiện lịch hẹn */
+  const SCHEDULE = ['schedule_ai_detect']
+  /**các sự kiện đặt hàng */
+  const ORDER = ['order_ai_detect']
+  /**các sự kiện giao dịch */
+  const TRANSACTION = ['transaction_ai_detect']
+  /**các sự kiện gọi điện */
+  const PHONE = ['phone_ai_detect']
+  /**các sự kiện email */
+  const EMAIL = ['email_ai_detect']
+  /**các sự kiện địa chỉ */
+  const ADDRESS = ['address_ai_detect']
+
+  //  tính toán sự kiện được lọc
+  switch (selected_tab.value) {
+    case 'ALL':
+      filter_event = [
+        ...EMOTION,
+        ...SCHEDULE,
+        ...ORDER,
+        ...TRANSACTION,
+        ...PHONE,
+        ...EMAIL,
+        ...ADDRESS,
+      ]
+      break
+    case 'EMOTION':
+      filter_event = EMOTION
+      break
+    case 'SCHEDULE':
+      filter_event = SCHEDULE
+      break
+    case 'ORDER':
+      filter_event = ORDER
+      break
+    case 'TRANSACTION':
+      filter_event = TRANSACTION
+      break
+    case 'PHONE':
+      filter_event = PHONE
+      break
+    case 'EMAIL':
+      filter_event = EMAIL
+      break
+    case 'ADDRESS':
+      filter_event = ADDRESS
+      break
+  }
+
+  // trả về dữ liệu
+  return filter_event
+}
 /**đọc các sự kiện */
 async function readEvent() {
   // kiểm tra xem đã chọn org và conversation chưa
-  if (
-    !orgStore.selected_org_id ||
-    !conversationStore.select_conversation?.fb_page_id ||
-    !conversationStore.select_conversation?.fb_client_id
-  )
-    return
+  if (!org_id.value || !page_id.value || !client_id.value) return
+
+  // bắt đầu load dữ liệu
+  is_loading.value = true
 
   try {
-    /**danh sách sự kiện được lọc */
-    let filter_event: string[] = []
-
-    /**các sự kiện cảm xúc */
-    const EMOTION = [
-      'client_emotion_happiness',
-      'client_emotion_sadness',
-      'client_emotion_fear',
-      'client_emotion_anger',
-      'client_emotion_surprise',
-      'client_emotion_disgust',
-      'client_emotion_love',
-      'client_emotion_jealousy',
-      'client_emotion_shame',
-      'client_emotion_pride',
-      'client_emotion_none',
-      'client_positive',
-      'client_negative',
-      'client_neutral',
-    ]
-    /**các sự kiện lịch hẹn */
-    const SCHEDULE = ['schedule_ai_detect']
-    /**các sự kiện đặt hàng */
-    const ORDER = ['order_ai_detect']
-    /**các sự kiện giao dịch */
-    const TRANSACTION = ['transaction_ai_detect']
-    /**các sự kiện gọi điện */
-    const PHONE = ['phone_ai_detect']
-    /**các sự kiện email */
-    const EMAIL = ['email_ai_detect']
-    /**các sự kiện địa chỉ */
-    const ADDRESS = ['address_ai_detect']
-
-    switch (selected_tab.value) {
-      case 'ALL':
-        filter_event = [
-          ...EMOTION,
-          ...SCHEDULE,
-          ...ORDER,
-          ...TRANSACTION,
-          ...PHONE,
-          ...EMAIL,
-          ...ADDRESS,
-        ]
-        break
-      case 'EMOTION':
-        filter_event = EMOTION
-        break
-      case 'SCHEDULE':
-        filter_event = SCHEDULE
-        break
-      case 'ORDER':
-        filter_event = ORDER
-        break
-      case 'TRANSACTION':
-        filter_event = TRANSACTION
-        break
-      case 'PHONE':
-        filter_event = PHONE
-        break
-      case 'EMAIL':
-        filter_event = EMAIL
-        break
-      case 'ADDRESS':
-        filter_event = ADDRESS
-        break
-    }
-
     /**bỏ qua số bản ghi */
     const SKIP = limit.value * (page.value - 1)
+    /**danh sách sự kiện */
+    const FILTER_EVENT = calcFilterEvent()
 
     // lấy dữ liệu
     const LIST_EVENT = await new N9AnalyticAppAnalytic(
-      orgStore.selected_org_id,
-      conversationStore.select_conversation?.fb_page_id,
-      conversationStore.select_conversation?.fb_client_id
-    ).readEvent(filter_event, SKIP, limit.value)
+      org_id.value,
+      page_id.value,
+      client_id.value
+    ).readEvent(FILTER_EVENT, SKIP, limit.value)
 
     // xử lý dữ liệu
-    list_event.value = LIST_EVENT?.map(event => {
-      return {
-        ...event,
-        type: getType(event?.event),
-        detect: getValue(event?.event),
-        cta: getCta(event?.event),
-      }
-    })
+    list_event.value = LIST_EVENT?.map(event => ({
+      ...event,
+      type: getType(event?.event),
+      detect: getValue(event?.event),
+      cta: getCta(event?.event),
+    }))
   } catch (e) {
     // bắn lỗi
     toastError(e)
   }
+
+  // kết thúc load dữ liệu
+  is_loading.value = false
 }
 /**lấy dữ liệu */
 function getValue(input?: string) {

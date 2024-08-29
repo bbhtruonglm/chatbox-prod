@@ -3,7 +3,7 @@
     v-if="isVisible()"
     class="flex items-start text-sm"
   >
-    <div class="w-28 font-semibold ml-5 flex-shrink-0">
+    <div class="w-28 font-semibold ml-5 flex-shrink-0 truncate">
       {{ title }}
     </div>
     <div class="flex flex-col gap-2.5">
