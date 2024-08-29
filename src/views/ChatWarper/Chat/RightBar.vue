@@ -3,7 +3,7 @@
     class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-3"
   >
     <UserInfo />
-    <template v-for="widget of widget_list">
+    <template v-for="widget of pageStore.widget_list">
       <div
         v-if="!widget.is_hidden"
         :class="{
@@ -45,7 +45,7 @@
 </template>
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 import {
   getIframeUrl,
   getPageWidget,
@@ -61,9 +61,10 @@ import ArrowDown from '@/components/Icons/ArrowDown.vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
 const conversationStore = useConversationStore()
+const pageStore = usePageStore()
 
 /**danh sách widget */
-const widget_list = ref<AppInstalledInfo[]>([])
+// const widget_list = ref<AppInstalledInfo[]>([])
 
 watch(
   () => conversationStore.list_widget_token?.data,
@@ -73,7 +74,7 @@ watch(
 /**ẩn hiện widget */
 function toggleWidget(widget: AppInstalledInfo) {
   // loop danh sách widget để xử lý
-  widget_list.value?.forEach(item => {
+  pageStore.widget_list?.forEach(item => {
     // toggle widget được chọn
     if (widget._id === item._id) item.is_show = !item.is_show
     // ẩn tất cả các widget còn lại
@@ -93,14 +94,20 @@ async function getListWidget() {
     // nếu vẫn trong 1 trang và
     LIST_WIDGET_TOKEN.new_page_id === LIST_WIDGET_TOKEN.old_page_id &&
     // đã có dữ liệu widget rồi
-    widget_list.value?.length
+    pageStore.widget_list?.length
   )
     // loop danh sách widget hiện tại để xử lý
-    return widget_list.value.map(widget => {
-      // nếu widget ở dạng cũ
-      if (!widget.snap_app?.is_post_message) {
+    return pageStore.widget_list.map(widget => {
+      // tạo lại url và trigger reload lại iframe nếu có thể khi
+      if (
+        // widget ở dạng cũ
+        !widget.snap_app?.is_post_message ||
+        // hoặc widget không hiển thị - không sợ bị reload
+        !widget.is_show
+      ) {
         // reload lại iframe từ đầu
         widget.url = getIframeUrl(widget)
+
         return
       }
 
@@ -152,7 +159,7 @@ async function getListWidget() {
   if (temp_list_widget?.[0]) temp_list_widget[0].is_show = true
 
   // render lại danh sách
-  widget_list.value = copy(temp_list_widget)
+  pageStore.widget_list = copy(temp_list_widget)
 }
 /**gửi sự kiện đến iframe được chọn */
 function sendEventToIframe(widget: AppInstalledInfo, payload: any) {

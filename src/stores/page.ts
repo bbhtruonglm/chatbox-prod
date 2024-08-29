@@ -5,6 +5,7 @@ import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageList } from '@/service/interface/app/page'
 import { filter, map, size } from 'lodash'
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
 export const usePageStore = defineStore('page_store', () => {
   /** -------------- STAGE -------------- */
@@ -28,6 +29,9 @@ export const usePageStore = defineStore('page_store', () => {
 
   /**dữ liệu của các page được chọn khi vào trang chat */
   const selected_page_list_info = ref<PageList>({})
+
+  /**danh sách widget */
+  const widget_list = ref<AppInstalledInfo[]>([])
 
   /**--------------- GETTER ------------ */
   /**đếm số trang đang kích hoạt */
@@ -63,6 +67,7 @@ export const usePageStore = defineStore('page_store', () => {
     active_page_list,
     selected_page_id_list,
     selected_page_list_info,
+    widget_list,
 
     countSelectedPage,
     isSelectedPage,

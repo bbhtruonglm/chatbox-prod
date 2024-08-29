@@ -29,7 +29,7 @@
 import { useI18n } from 'vue-i18n'
 import { openNewTab } from '@/service/function'
 import { getPageWidget } from '@/service/function'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, usePageStore } from '@/stores'
 
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Widget.vue'
@@ -53,6 +53,7 @@ const $props = withDefaults(
 
 const { t: $t } = useI18n()
 const conversationStore = useConversationStore()
+const pageStore = usePageStore()
 
 /**ref của modal widget */
 const modal_widget_ref = ref<InstanceType<typeof Widget>>()
@@ -115,9 +116,9 @@ function onClickBtn(button: MessageTemplateButton) {
 /**mở modal widget */
 function openWidgetModal(widget_id: string) {
   // lấy dữ liệu của widget được chọn
-  selected_widget.value = getPageWidget(
-    conversationStore.select_conversation?.fb_page_id
-  )?.find(widget => widget.app_id === widget_id)
+  selected_widget.value = pageStore.widget_list?.find(
+    widget => widget.app_id === widget_id
+  )
 
   // mở modal
   modal_widget_ref.value?.toggleModal()
