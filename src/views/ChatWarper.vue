@@ -258,7 +258,7 @@ function getTokenOfWidget(
     },
     (e, r: any) => {
       if (e) return
- 
+
       // nhập dữ liệu token mới
       conversationStore.list_widget_token = {
         new_page_id: PAGE_ID,

@@ -63,9 +63,6 @@ import type { AppInstalledInfo } from '@/service/interface/app/widget'
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
 
-/**danh sách widget */
-// const widget_list = ref<AppInstalledInfo[]>([])
-
 watch(
   () => conversationStore.list_widget_token?.data,
   () => getListWidget()
@@ -76,7 +73,21 @@ function toggleWidget(widget: AppInstalledInfo) {
   // loop danh sách widget để xử lý
   pageStore.widget_list?.forEach(item => {
     // toggle widget được chọn
-    if (widget._id === item._id) item.is_show = !item.is_show
+    if (widget._id === item._id) {
+      /**widget được toggle là hiển thị hay tắt */
+      const IS_SHOW = !item.is_show
+
+      // tạo lại token cho widget nếu
+      if (
+        // widget bị tắt
+        !IS_SHOW && 
+        // và widget này post message
+        item.snap_app?.is_post_message
+      ) item.url = getIframeUrl(item)
+
+      // gán giá trị hiển thị mới
+      item.is_show = IS_SHOW
+    }
     // ẩn tất cả các widget còn lại
     else item.is_show = false
   })
