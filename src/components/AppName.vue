@@ -1,5 +1,7 @@
 <template>
-  <template v-if="orgStore.selected_org_info?.org_info?.org_name">
+  <template
+    v-if="orgStore.selected_org_info?.org_info?.org_name && !is_only_domain"
+  >
     {{ orgStore.selected_org_info?.org_info?.org_name }}
   </template>
   <template v-else-if="isRetion()">
@@ -11,6 +13,14 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
+
+const $props = withDefaults(
+  defineProps<{
+    /**chỉ hiện theo domain, bỏ qua tổ chức */
+    is_only_domain?: boolean
+  }>(),
+  {}
+)
 
 const orgStore = useOrgStore()
 

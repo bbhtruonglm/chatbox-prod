@@ -1,5 +1,6 @@
 <template>
-  <div class="text-xs pl-5">
+  <div class="h-4" />
+  <div class="text-xs absolute w-max bottom-0">
     {{ $t('v1.view.main.dashboard.chat.message.reply_time') }}:
     <span class="text-red-500">{{ calcDuration() }}</span>
   </div>
