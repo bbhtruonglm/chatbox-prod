@@ -6,9 +6,12 @@
       @click="$router.push('/dashboard/select-page')"
       class="flex gap-3 items-center"
     >
-      <AppLogo class="w-9 h-11" />
+      <AppLogo
+        is_only_domain
+        class="w-11 h-11"
+      />
       <h2 class="text-2xl font-semibold">
-        <AppName />
+        <AppName is_only_domain />
       </h2>
     </button>
     <div class="flex gap-7 items-center">

@@ -1,6 +1,6 @@
 <template>
   <img
-    v-if="orgStore.selected_org_info?.org_info?.org_avatar"
+    v-if="orgStore.selected_org_info?.org_info?.org_avatar && !is_only_domain"
     :src="orgStore.selected_org_info?.org_info?.org_avatar"
   />
   <img
@@ -14,6 +14,14 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
+
+const $props = withDefaults(
+  defineProps<{
+    /**chỉ hiện theo domain, bỏ qua tổ chức */
+    is_only_domain?: boolean
+  }>(),
+  {}
+)
 
 const orgStore = useOrgStore()
 

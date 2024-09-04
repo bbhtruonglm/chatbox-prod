@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { openNewTab } from '@/service/function'
+import { getIframeUrl, openNewTab } from '@/service/function'
 import { getPageWidget } from '@/service/function'
 import { useConversationStore, usePageStore } from '@/stores'
 
@@ -40,6 +40,7 @@ import type {
 } from '@/service/interface/app/message'
 import { ref } from 'vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import { copy } from '@/service/helper/format'
 
 const $props = withDefaults(
   defineProps<{
@@ -116,9 +117,19 @@ function onClickBtn(button: MessageTemplateButton) {
 /**mở modal widget */
 function openWidgetModal(widget_id: string) {
   // lấy dữ liệu của widget được chọn
-  selected_widget.value = pageStore.widget_list?.find(
+  const WIDGET = pageStore.widget_list?.find(
     widget => widget.app_id === widget_id
   )
+
+  // cắt dữ liệu ra ô nhớ mới trong ram
+  selected_widget.value = copy(WIDGET!)
+
+  /**
+   * tạo ra token mới, tránh lỗi widget đang bị mở bên phải + post message, thì
+   * vẫn là token cũ
+   */
+  if (selected_widget.value)
+    selected_widget.value.url = getIframeUrl(selected_widget.value)
 
   // mở modal
   modal_widget_ref.value?.toggleModal()

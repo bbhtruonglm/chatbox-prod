@@ -1,5 +1,10 @@
 <template>
   <div class="w-fit max-w-96 group relative">
+    <Emotion
+      v-if="primary_emotion"
+      :emotion="primary_emotion"
+      :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
+    />
     <MessageDate
       :class="{
         'right-0': message_type !== 'client',
@@ -16,6 +21,7 @@
       :message="message"
       :type="message_type === 'client' ? 'CLIENT' : 'PAGE'"
     />
+
     <SliderWarper
       v-else
       :count_element="message_source?.length"
@@ -50,6 +56,7 @@ import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/Messa
 import MessageTemplate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate.vue'
 import SliderWarper from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/SliderWarper.vue'
 import AttachmentMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage.vue'
+import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Emotion.vue'
 
 import type {
   ChatbotButton,
@@ -88,6 +95,8 @@ const text = computed(() => $props.message?.message_text)
 const postback_title = computed(() => $props.message?.postback_title)
 /**danh sách file đính kèm */
 const list_attachment = computed(() => $props.message?.message_attachments)
+/**cảm xúc chính của tin nhắn */
+const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
 /**dữ liệu của tin nhắn */
 const message_source = computed<MessageTemplateInput[]>(() => {
   /**

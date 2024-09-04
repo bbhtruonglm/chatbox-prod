@@ -426,6 +426,18 @@ const source: Language = {
               },
             },
             message: {
+              emotion_ai: {
+                happiness: 'AI: Vui vẻ',
+                anger: 'AI: Giận dữ',
+                sadness: 'AI: Buồn bã',
+                fear: 'AI: Sợ hãi',
+                surprise: 'AI: Ngạc nhiên',
+                disgust: 'AI: Ghê tởm',
+                love: 'AI: Yêu thương',
+                jealousy: 'AI: Ghen tị',
+                shame: 'AI: Xấu hổ',
+                pride: 'AI: Tự hào',
+              },
               sent: 'đã gửi',
               error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
               attachment: {
