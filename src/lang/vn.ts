@@ -426,6 +426,7 @@ const source: Language = {
               },
             },
             message: {
+              summary: 'Tóm tắt',
               emotion_ai: {
                 happiness: 'AI: Vui vẻ',
                 anger: 'AI: Giận dữ',

@@ -5,15 +5,18 @@
     :class="{
       '-right-2.5': position === 'RIGHT',
       '-left-2.5': position === 'LEFT',
-      'border-green-500 bg-green-100': isPositive(),
-      'border-red-500 bg-red-100': !isPositive(),
+      'border-green-500 bg-green-100': is_positive,
+      'border-red-500 bg-red-100': !is_positive,
     }"
     class="border rounded-full w-6 h-6 flex items-center justify-center text-sm absolute -top-2.5 z-20"
   >
-    {{ ICON?.[emotion] || '' }}
+    {{ Emotion.getIcon(emotion) }}
   </div>
 </template>
 <script setup lang="ts">
+import { Emotion } from '@/utils/helper/emotion'
+import { computed } from 'vue'
+
 const $props = withDefaults(
   defineProps<{
     /**cảm xúc */
@@ -24,26 +27,6 @@ const $props = withDefaults(
   {}
 )
 
-/**icon của cảm xúc */
-const ICON: Record<string, string> = {
-  happiness: '😊',
-  anger: '😡',
-  sadness: '😢',
-  fear: '😱',
-  surprise: '😲',
-  disgust: '🤢',
-  love: '❤️',
-  jealousy: '😒',
-  shame: '😳',
-  pride: '😌',
-}
-
-/**tiêu cực hay tích cực */
-function isPositive(): boolean {
-  /**cảm xúc tích cực */
-  const POSITIVE = ['happiness', 'love', 'pride', 'surprise']
-
-  // kiểm tra cảm xúc có phải là tích cực không
-  return POSITIVE.includes($props.emotion)
-}
+/**cảm xúc có tích cực không */
+const is_positive = computed(() => Emotion.isPositive($props.emotion))
 </script>

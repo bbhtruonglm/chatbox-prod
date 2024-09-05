@@ -4,7 +4,15 @@
       v-tooltip.bottom="`v${version}`"
       class="font-semibold text-2xl truncate"
     >
-      <AppName />
+      <template v-if="orgStore.selected_org_info?.org_info?.org_name">
+        {{ orgStore.selected_org_info?.org_info?.org_name }}
+      </template>
+      <template v-else-if="Domain.isRetion()">
+        {{ $t('v1.common.retion') }}
+      </template>
+      <template v-else>
+        {{ $t('v1.common.title') }}
+      </template>
     </div>
     <Badge
       v-if="count_all_unread"
@@ -26,16 +34,17 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useOrgStore } from '@/stores'
 import { debounce, sumBy, values } from 'lodash'
 import { useI18n } from 'vue-i18n'
+import { Domain } from '@/utils/helper/domain'
 
-import AppName from '@/components/AppName.vue'
 import Badge from '@/components/Badge.vue'
 
 import SearchIcon from '@/components/Icons/Search.vue'
 
 const conversationStore = useConversationStore()
+const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 
 /**phiên bản trong package.json */

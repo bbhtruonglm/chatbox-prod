@@ -3,7 +3,23 @@
     <div class="flex flex-col gap-1 overflow-y-auto">
       <div class="flex justify-center">
         <button @click="$router.push('/dashboard/select-page')">
-          <AppLogo class="w-9 h-9 rounded-full" />
+          <div class="w-9 h-9 rounded-full overflow-hidden">
+            <img
+              v-if="orgStore.selected_org_info?.org_info?.org_avatar"
+              :src="orgStore.selected_org_info?.org_info?.org_avatar"
+              class="w-full h-full"
+            />
+            <img
+              v-else-if="Domain.isRetion()"
+              src="@/assets/imgs/retion.svg"
+              class="w-full h-full"
+            />
+            <img
+              v-else
+              src="@/assets/icons/bbh-mini.svg"
+              class="w-full h-full"
+            />
+          </div>
         </button>
       </div>
       <button
@@ -112,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore, useOrgStore } from '@/stores'
 import {
   isActiveMessageFilter,
   isFilterActive,
@@ -120,7 +136,6 @@ import {
   resetConversationFilter,
 } from '@/service/function'
 
-import AppLogo from '@/components/AppLogo.vue'
 import Attach from '@/views/ChatWarper/Menu/Attach.vue'
 import User from '@/components/User.vue'
 import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'
@@ -143,8 +158,10 @@ import TagNotIcon from '@/components/Icons/TagNot.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
 import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
+import { Domain } from '@/utils/helper/domain'
 
 const conversationStore = useConversationStore()
+const orgStore = useOrgStore()
 
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Attach>>()

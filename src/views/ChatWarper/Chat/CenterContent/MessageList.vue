@@ -424,7 +424,12 @@ function getListMessage(is_scroll?: boolean) {
         setTimeout(() => scrollToBottomMessage(), 500)
       }
 
-      if (e) return toastError(e)
+      if (e) {
+        // gắn cờ đã load hết dữ liệu
+        is_done.value = true
+        
+        return toastError(e)
+      }
     }
   )
 }

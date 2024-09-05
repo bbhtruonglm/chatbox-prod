@@ -56,6 +56,8 @@ export interface MessageAiData {
   cta?: string
   /**id mongo tự tạo */
   _id?: string
+  /**tóm tắt orc */
+  summary?: string
 }
 
 /**dữ liệu của một mẫu tin nhắn */
