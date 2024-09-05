@@ -63,6 +63,8 @@ export interface QueryConversationInput extends FilterConversation {
 
 /**dữ liệu của một khách hàng */
 export interface ConversationInfo {
+    /**cảm xúc cuối cùng */
+    emotion?: string
     /**key cho vitual scroll */
     data_key?: string
     /**gắn cờ đặc biệt để có thể ẩn hội thoại đi */

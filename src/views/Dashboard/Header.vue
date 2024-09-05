@@ -6,13 +6,15 @@
       @click="$router.push('/dashboard/select-page')"
       class="flex gap-3 items-center"
     >
-      <AppLogo
-        is_only_domain
-        class="w-11 h-11"
+      <img
+        v-if="Domain.isRetion()"
+        src="@/assets/imgs/retion-full.svg"
+        class="h-11"
       />
-      <h2 class="text-2xl font-semibold">
-        <AppName is_only_domain />
-      </h2>
+      <img
+        v-else
+        src="@/assets/imgs/bot-full.svg"
+      />
     </button>
     <div class="flex gap-7 items-center">
       <template v-if="isShowSelectPageButton()">
@@ -47,11 +49,10 @@ import { inject } from 'vue'
 
 import User from '@/components/User.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
-import AppName from '@/components/AppName.vue'
-import AppLogo from '@/components/AppLogo.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
+import { Domain } from '@/utils/helper/domain'
 
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()

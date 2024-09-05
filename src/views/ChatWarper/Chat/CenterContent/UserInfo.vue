@@ -20,41 +20,44 @@
         >
           {{ conversationStore.select_conversation?.client_name }}
         </div>
-        <button
-          v-tooltip.bottom="
-            $t('v1.view.main.dashboard.chat.assign_staff.title')
-          "
-          :tooltip-disabled="!is_admin"
-          @click="openAssignStaff"
-          :class="is_admin ? '' : 'cursor-not-allowed'"
-          class="text-xs text-slate-500 flex items-center gap-1 w-full"
-        >
-          <div
-            v-if="conversationStore.select_conversation?.fb_staff_id"
-            class="truncate"
+        <div class="flex items-center gap-2">
+          <button
+            v-tooltip.bottom="
+              $t('v1.view.main.dashboard.chat.assign_staff.title')
+            "
+            :tooltip-disabled="!is_admin"
+            @click="openAssignStaff"
+            :class="is_admin ? '' : 'cursor-not-allowed'"
+            class="text-xs text-slate-500 flex items-center gap-1 min-w-0"
           >
-            {{
-              getStaffInfo(
-                conversationStore.select_conversation?.fb_page_id,
-                conversationStore.select_conversation?.fb_staff_id
-              )?.name
-            }}
-          </div>
-          <div v-else>
-            {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
-          </div>
-          <ArrowDownIcon
-            v-if="is_admin"
-            class="w-2.5 h-2.5 flex-shrink-0"
-          />
-        </button>
+            <div
+              v-if="conversationStore.select_conversation?.fb_staff_id"
+              class="truncate"
+            >
+              {{
+                getStaffInfo(
+                  conversationStore.select_conversation?.fb_page_id,
+                  conversationStore.select_conversation?.fb_staff_id
+                )?.name
+              }}
+            </div>
+            <div v-else>
+              {{ $t('v1.view.main.dashboard.chat.assign_staff.title') }}
+            </div>
+            <ArrowDownIcon
+              v-if="is_admin"
+              class="w-2.5 h-2.5 flex-shrink-0"
+            />
+          </button>
+          <IconInfo />
+        </div>
       </div>
     </div>
     <div class="flex items-center flex-shrink-0 gap-3.5">
       <button
         @click="unreadConversation"
         v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_unread')"
-        class="text-slate-500 border border-slate-500 p-1.5 rounded-full hover:bg-slate-100"
+        class="text-slate-500 border border-slate-500 p-1.5 rounded hover:bg-slate-100"
       >
         <Loading
           v-if="is_loading_unread_conversation"
@@ -68,7 +71,7 @@
       <button
         v-tooltip.bottom="$t('v1.common.more')"
         @click="client_menu_ref?.toggle"
-        class="text-slate-500 border border-slate-500 p-1.5 rounded-full hover:bg-slate-100"
+        class="text-slate-500 border border-slate-500 p-1.5 rounded hover:bg-slate-100"
       >
         <DotIcon class="w-3.5 h-3.5" />
       </button>
@@ -89,6 +92,7 @@ import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import Menu from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Menu.vue'
 import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
+import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vue'
 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'

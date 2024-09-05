@@ -52,9 +52,17 @@
           >
             {{ $t('v1.view.main.dashboard.chat.message.attachment.ai_handle') }}
           </div>
-          <div class="min-h-0 overflow-y-auto">
+          <div class="min-h-0 overflow-y-auto flex flex-col gap-2">
             <div class="text-sm enter-line">
               {{ data_source?.content }}
+            </div>
+            <div
+              v-if="data_source?.ai?.summary"
+              class="text-sm enter-line text-slate-500"
+            >
+              <div>-----</div>
+              {{ $t('v1.view.main.dashboard.chat.message.summary') }}:
+              {{ data_source?.ai?.summary }}
             </div>
           </div>
           <Action
