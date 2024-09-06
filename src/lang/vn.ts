@@ -448,7 +448,7 @@ const source: Language = {
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
-              reply_time: 'Phản hồi chậm',
+              reply_time: 'AI: Phản hồi chậm',
               header: {
                 note: 'Ghi chú, ghim, đặt lịch',
                 alert: 'Cảnh báo',

@@ -2,6 +2,10 @@ import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**AI đánh dấu là tin bị rep chậm */
+  is_ai_slow_reply?: true
+  /**hệ thống đánh dấu tin bị rep chậm */
+  is_system_slow_reply?: true
   /**id bản ghi mongo */
   _id: string
   /**tin nhắn này thuộc loại gì */

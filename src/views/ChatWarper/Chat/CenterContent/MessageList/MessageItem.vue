@@ -35,10 +35,7 @@
       />
     </SliderWarper>
     <SlowReply
-      v-if="
-        calcIsClientRepSlow(page_id, message_time, message_index) &&
-        message_type === 'client'
-      "
+      v-if="is_ai_slow_reply"
       :now_message="message"
       :next_message="messageStore.list_message?.[message_index + 1]"
     />
@@ -46,7 +43,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { calcIsClientRepSlow } from '@/service/function'
 import { useMessageStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 
@@ -97,6 +93,8 @@ const postback_title = computed(() => $props.message?.postback_title)
 const list_attachment = computed(() => $props.message?.message_attachments)
 /**cảm xúc chính của tin nhắn */
 const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
+/**AI đánh dấu tin này bị rep chậm */
+const is_ai_slow_reply = computed(() => $props.message?.is_ai_slow_reply)
 /**dữ liệu của tin nhắn */
 const message_source = computed<MessageTemplateInput[]>(() => {
   /**
@@ -194,12 +192,7 @@ function addOnClassTemplate() {
     'bg-[#FFF8E1]': message_type.value === 'page',
     'bg-white': message_type.value === 'client',
     'bg-[#D8F6CB]': message_type.value === 'note',
-    'border border-red-500':
-      calcIsClientRepSlow(
-        page_id.value,
-        message_time.value,
-        $props.message_index
-      ) && message_type.value === 'client',
+    'border border-red-500': is_ai_slow_reply.value,
   }
 }
 
