@@ -3,15 +3,18 @@ import { Botx } from './Botx'
 import type { BaseQuery } from '../types'
 
 /**gọi API lên server của AI */
-export class Ai extends Botx {
+class Ai extends Botx {
   constructor(path: string) {
     // gọi API lên server của chatbot
     super(`${$env.host.ai}/${path}`)
+
+    // tự động nạp id tổ chức đang chọn
+    this.initSelectedOrgId()
   }
 }
 
 /**gọi API lên module của app */
-export class AiApp extends Ai {
+class AiApp extends Ai {
   /**id trang */
   readonly #PAGE_ID: string
   /**id khách hàng */
@@ -30,6 +33,7 @@ export class AiApp extends Ai {
   /**gọi api post lên AI */
   protected post(path: string, body?: Record<string, any>): Promise<any> {
     return super.post(path, {
+      org_id: this.org_id,
       page_id: this.#PAGE_ID,
       client_id: this.#CLIENT_ID,
       ...body,

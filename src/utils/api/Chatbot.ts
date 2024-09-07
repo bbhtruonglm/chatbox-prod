@@ -1,15 +1,18 @@
 import { Botx } from './Botx'
 
 /**gọi API lên server của chatbot */
-export class Chatbot extends Botx {
+class Chatbot extends Botx {
   constructor(path: string) {
     // gọi API lên server của chatbot
     super(`${$env.host.chatbot}/${path}`)
+
+    // tự động nạp id tổ chức đang chọn
+    this.initSelectedOrgId()
   }
 }
 
 /**gọi API lên module của app */
-export class ChatbotApp extends Chatbot {
+class ChatbotApp extends Chatbot {
   /**id trang */
   readonly #PAGE_ID: string
 
@@ -23,7 +26,11 @@ export class ChatbotApp extends Chatbot {
 
   /**gọi api post lên app chatbot */
   protected post(path: string, body?: Record<string, any>): Promise<any> {
-    return super.post(path, { page_id: this.#PAGE_ID, ...body })
+    return super.post(path, {
+      org_id: this.org_id,
+      page_id: this.#PAGE_ID,
+      ...body,
+    })
   }
 }
 

@@ -2,6 +2,7 @@ import { getItem } from '@/service/helper/localStorage'
 import { request } from '@/service/helper/request'
 
 import type { Cb } from '@/service/interface/function'
+import { useOrgStore } from '@/stores'
 
 /**đầu vào api */
 interface Input {
@@ -19,7 +20,12 @@ interface Input {
  * - fix token cho toàn bộ api gọi lên server chatbox
  * - format lại response trước khi return
  */
-export const chatbox = ({ uri, body, form, qs }: Input, proceed: Cb) =>
+export const chatbox = ({ uri, body, form, qs }: Input, proceed: Cb) => {
+  const orgStore = useOrgStore()
+
+  // thêm org_id vào body nếu có thể
+  body = { ...body, org_id: orgStore.selected_org_id }
+
   request(
     {
       uri,
@@ -41,6 +47,7 @@ export const chatbox = ({ uri, body, form, qs }: Input, proceed: Cb) =>
       proceed(e, r)
     }
   )
+}
 
 /**gọi api dưới dạng async */
 export const chatboxSync = async (input: Input): Promise<any> =>
