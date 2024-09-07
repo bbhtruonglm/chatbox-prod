@@ -3,11 +3,11 @@
     <div class="flex flex-col gap-1 overflow-y-auto">
       <div class="flex justify-center">
         <button @click="$router.push('/dashboard/select-page')">
-          <div class="w-9 h-9 rounded-full overflow-hidden">
+          <div class="w-9 h-9 overflow-hidden">
             <img
               v-if="orgStore.selected_org_info?.org_info?.org_avatar"
               :src="orgStore.selected_org_info?.org_info?.org_avatar"
-              class="w-full h-full"
+              class="w-full h-full rounded-full"
             />
             <img
               v-else-if="Domain.isRetion()"

@@ -192,8 +192,6 @@ const page_id = computed(
 const client_id = computed(
   () => conversationStore.select_conversation?.fb_client_id
 )
-/**id của org */
-const org_id = computed(() => orgStore.selected_org_id)
 
 // lấy dữ liệu khi component được mount
 onMounted(readEvent)
@@ -287,7 +285,7 @@ function calcFilterEvent() {
 /**đọc các sự kiện */
 async function readEvent() {
   // kiểm tra xem đã chọn org và conversation chưa
-  if (!org_id.value || !page_id.value || !client_id.value) return
+  if (!page_id.value || !client_id.value) return
 
   // bắt đầu load dữ liệu
   is_loading.value = true
@@ -300,7 +298,6 @@ async function readEvent() {
 
     // lấy dữ liệu
     const LIST_EVENT = await new N9AnalyticAppAnalytic(
-      org_id.value,
       page_id.value,
       client_id.value
     ).readEvent(FILTER_EVENT, SKIP, limit.value)

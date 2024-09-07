@@ -1,35 +1,34 @@
 import { Botx } from './Botx'
 
 /**gọi API lên server n9 v2 của chatbox */
-export class N9Analytic extends Botx {
+class N9Analytic extends Botx {
   constructor(path: string) {
     // gọi API lên server của chatbox
     super(`${$env.host.n9_analytic_v2}/${path}`)
+
+    // tự động nạp id tổ chức đang chọn
+    this.initSelectedOrgId()
   }
 }
 
 /**gọi API lên module của app */
-export class N9AnalyticApp extends N9Analytic {
-  /**id tổ chức */
-  readonly #ORG_ID: string
+class N9AnalyticApp extends N9Analytic {
   /**id trang */
   readonly #PAGE_ID: string
 
-  constructor(org_id: string, page_id: string, path: string) {
+  constructor(page_id: string, path: string) {
     // gọi API lên module của app
     super(`app/${path}`)
 
     // lưu lại id trang
     this.#PAGE_ID = page_id
-    // lưu lại id tổ chức
-    this.#ORG_ID = org_id
   }
 
   /**gọi api post lên app n9 */
   protected post(path: string, body?: Record<string, any>): Promise<any> {
     return super.post(path, {
+      org_id: [this.org_id],
       page_id: [this.#PAGE_ID],
-      org_id: [this.#ORG_ID],
       ...body,
     })
   }
@@ -63,9 +62,9 @@ export class N9AnalyticAppAnalytic extends N9AnalyticApp {
   /**id khách hàng */
   protected readonly CLIENT_ID?: string
 
-  constructor(org_id: string, page_id: string, client_id?: string) {
+  constructor(page_id: string, client_id?: string) {
     // gọi lớp cha
-    super(org_id, page_id, `analytic`)
+    super(page_id, `analytic`)
 
     // lưu lại id khách hàng
     this.CLIENT_ID = client_id
