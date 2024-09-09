@@ -21,10 +21,10 @@
       class="w-3 h-3 text-lime-500"
     />
     <div
-      v-if="last_emotion"
+      v-if="last_emotion && Emotion.isHighlight(last_emotion)"
       class="text-xs"
     >
-    {{ Emotion.getIcon(last_emotion) }}
+      {{ Emotion.getIcon(last_emotion) }}
     </div>
   </div>
 </template>

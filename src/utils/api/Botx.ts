@@ -1,5 +1,5 @@
 import { getItem } from '@/service/helper/localStorage'
-import { ApiManager } from '../base/Api'
+import { ApiManager } from '@/utils/base/Api'
 import { useOrgStore } from '@/stores'
 
 /**gọi API lên server của botx, tự động nạp token */

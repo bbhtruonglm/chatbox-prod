@@ -1,4 +1,4 @@
-import { Botx } from './Botx'
+import { Botx } from '@/utils/api/Botx'
 
 /**gọi API lên server của chatbot */
 class Chatbot extends Botx {

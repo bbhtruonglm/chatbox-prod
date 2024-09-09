@@ -49,7 +49,6 @@
 import { useMessageStore } from '@/stores'
 import { ref, watch } from 'vue'
 import { size } from 'lodash'
-import { image_to_text } from '@/service/api/chatbox/widget'
 import { getFileName } from '@/service/helper/queryString'
 
 import Modal from '@/components/Modal.vue'
@@ -98,12 +97,12 @@ function imageToText() {
 
     is_loading.value = true
 
-    image_to_text(messageStore.select_attachment?.payload?.url, (e, r) => {
-        is_loading.value = false
+    // image_to_text(messageStore.select_attachment?.payload?.url, (e, r) => {
+    //     is_loading.value = false
 
-        if (e) return toastError(e)
+    //     if (e) return toastError(e)
 
-        text.value = r
-    })
+    //     text.value = r
+    // })
 }
 </script>

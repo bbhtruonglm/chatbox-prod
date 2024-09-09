@@ -9,7 +9,7 @@
       <img
         v-if="Domain.isRetion()"
         src="@/assets/imgs/retion-full.svg"
-        class="h-11"
+        class="h-6"
       />
       <img
         v-else

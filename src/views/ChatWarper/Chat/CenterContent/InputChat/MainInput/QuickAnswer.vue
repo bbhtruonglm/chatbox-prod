@@ -74,7 +74,6 @@
 import { computed, inject, nextTick, ref } from 'vue'
 import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
 import { nonAccentVn } from '@/service/helper/format'
-import { get_quick_answer } from '@/service/api/chatbox/widget'
 import { last, size } from 'lodash'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 import { useI18n } from 'vue-i18n'
@@ -90,6 +89,7 @@ import { getPageInfo, getStaffInfo } from '@/service/function'
 import { toastError } from '@/service/helper/alert'
 import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
 import type { SourceChat } from '@/service/interface/app/ai'
+import { QuickAnswer } from '@/utils/api/Widget'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -190,15 +190,9 @@ async function getQuickAnswer() {
     is_loading.value = true
 
     // gọi api lấy dữ liệu câu trả lời
-    list_answer.value = await new Promise((resolve, reject) =>
-      get_quick_answer(
-        {
-          fb_page_id: page_id.value!,
-          skip: 0,
-          limit: MAX_ANSWER,
-        },
-        (e, r) => (e ? reject(e) : resolve(r))
-      )
+    list_answer.value = await new QuickAnswer(page_id.value).readAnswer(
+      0,
+      MAX_ANSWER
     )
 
     // thêm tính năng AI lên đầu trả lời nhanh
@@ -335,7 +329,7 @@ async function transalate() {
       to: 'en',
       text,
       page_id: page_id.value,
-      client_id: client_id.value
+      client_id: client_id.value,
     })
 
     // nếu không có dữ liệu thì thôi
@@ -440,7 +434,7 @@ async function complete() {
       source: SOURCE,
       current: text,
       page_id: page_id.value,
-      client_id: client_id.value
+      client_id: client_id.value,
     })
 
     // nếu không có dữ liệu thì thôi
