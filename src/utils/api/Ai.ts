@@ -1,6 +1,6 @@
-import { Botx } from './Botx'
+import { Botx } from '@/utils/api/Botx'
 
-import type { BaseQuery } from '../types'
+import type { BaseQuery } from '@/utils/types'
 
 /**gọi API lên server của AI */
 class Ai extends Botx {

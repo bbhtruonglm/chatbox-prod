@@ -1,4 +1,4 @@
-import { Botx } from './Botx'
+import { Botx } from '@/utils/api/Botx'
 
 /**gọi API lên server n4 của chatbox */
 export class N4Serivce extends Botx {

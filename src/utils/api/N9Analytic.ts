@@ -1,4 +1,4 @@
-import { Botx } from './Botx'
+import { Botx } from '@/utils/api/Botx'
 
 /**gọi API lên server n9 v2 của chatbox */
 class N9Analytic extends Botx {
