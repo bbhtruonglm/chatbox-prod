@@ -78,11 +78,12 @@ import { useConnectPageStore, useOrgStore } from '@/stores'
 import { ref } from 'vue'
 import { useCommonStore } from '@/stores'
 import { filter, keyBy, map, mapValues, size } from 'lodash'
-import { get_current_active_page } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { nonAccentVn } from '@/service/helper/format'
 import { add_ms, read_ms } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/Alert'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -93,7 +94,7 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 import Checkbox from '@/components/Checkbox.vue'
 
-import type { AllStaffList, StaffInfo } from '@/service/interface/app/staff'
+import type { StaffInfo } from '@/service/interface/app/staff'
 
 const $emit = defineEmits(['done'])
 
@@ -167,10 +168,10 @@ async function activeStaff() {
 }
 /**lấy danh sách các nhân viên không thuộc tổ chức hiện tại */
 async function getAnotherOrgStaff() {
-  // hiển thị loading
-  is_loading.value = true
-
   try {
+    // hiển thị loading
+    is_loading.value = true
+
     // nếu không có id tổ chức thì thôi
     if (!orgStore.selected_org_id) return
 
@@ -180,13 +181,8 @@ async function getAnotherOrgStaff() {
     list_selected_staff_id.value = {}
 
     /**toàn bộ các nhân viên trong page */
-    const LIST_STAFF: AllStaffList = await new Promise((resolve, reject) =>
-      get_current_active_page({}, (e, r) => {
-        if (e) return reject(e)
-
-        resolve(r.all_staff_list)
-      })
-    )
+    const { all_staff_list: LIST_STAFF } =
+      await new N4SerivceAppPage().getListPage()
 
     /**các staff đã nằm trong tổ chức */
     const LIST_MS = await read_ms(orgStore.selected_org_id)
@@ -207,11 +203,11 @@ async function getAnotherOrgStaff() {
     })
   } catch (e) {
     // thông báo lỗi
-    toastError(e)
+    new Toast().error(e)
+  } finally {
+    // ẩn loading
+    is_loading.value = false
   }
-
-  // ẩn loading
-  is_loading.value = false
 }
 /**toggle nhân viên */
 function selectStaff(staff_id: string) {

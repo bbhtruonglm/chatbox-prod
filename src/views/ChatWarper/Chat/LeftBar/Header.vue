@@ -37,7 +37,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { debounce, sumBy, values } from 'lodash'
 import { useI18n } from 'vue-i18n'
-import { Domain } from '@/utils/helper/domain'
+import { Domain } from '@/utils/helper/Domain'
 
 import Badge from '@/components/Badge.vue'
 

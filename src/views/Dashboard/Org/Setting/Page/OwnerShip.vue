@@ -73,12 +73,8 @@ import {
   useChatbotUserStore,
 } from '@/stores'
 import { ref } from 'vue'
-import { filter, keyBy, keys, map, mapKeys, mapValues, size } from 'lodash'
-import {
-  get_current_active_page_sync,
-  update_page_sync,
-  type CurrentPageData,
-} from '@/service/api/chatbox/n4-service'
+import { filter, keyBy, map, mapValues, size } from 'lodash'
+import { update_page_sync } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { nonAccentVn } from '@/service/helper/format'
 import { add_os, read_link_org, read_os } from '@/service/api/chatbox/billing'
@@ -94,6 +90,11 @@ import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vu
 
 import type { PageData } from '@/service/interface/app/page'
 import type { PageOrgInfoMap } from '@/service/interface/app/billing'
+import {
+  N4SerivceAppPage,
+  type CurrentPageData,
+} from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/Alert'
 
 const $emit = defineEmits(['done'])
 
@@ -211,10 +212,10 @@ async function activePage() {
 }
 /**lấy danh sách các trang không thuộc tổ chức hiện tại */
 async function getAnotherOrgPage() {
-  // hiển thị loading
-  is_loading.value = true
-
   try {
+    // hiển thị loading
+    is_loading.value = true
+
     // nếu không có id tổ chức thì thôi
     if (!orgStore.selected_org_id) return
 
@@ -224,7 +225,7 @@ async function getAnotherOrgPage() {
     list_selected_page_id.value = {}
 
     /**toàn bộ các trang của người dùng có quyền truy cập */
-    list_current_page.value = await get_current_active_page_sync({})
+    list_current_page.value = await new N4SerivceAppPage().getListPage()
 
     /**các trang đã nằm trong tổ chức */
     const LIST_OS = await read_os(orgStore.selected_org_id)
@@ -254,11 +255,11 @@ async function getAnotherOrgPage() {
     )
   } catch (e) {
     // thông báo lỗi
-    toastError(e)
+    new Toast().error(e)
+  } finally {
+    // ẩn loading
+    is_loading.value = false
   }
-
-  // ẩn loading
-  is_loading.value = false
 }
 /**toggle trang */
 function selectPage(page: PageData) {
