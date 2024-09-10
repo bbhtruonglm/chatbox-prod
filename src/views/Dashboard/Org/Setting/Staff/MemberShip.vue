@@ -83,7 +83,7 @@ import { nonAccentVn } from '@/service/helper/format'
 import { add_ms, read_ms } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/alert'
+import { Toast } from '@/utils/helper/Alert'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'

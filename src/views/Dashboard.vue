@@ -22,7 +22,7 @@ import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/alert'
+import { Toast } from '@/utils/helper/Alert'
 
 const pageStore = usePageStore()
 const staffStore = useStaffStore()

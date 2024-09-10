@@ -98,7 +98,7 @@ import {
   N4SerivceAppPage,
   type CurrentPageData,
 } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/alert'
+import { Toast } from '@/utils/helper/Alert'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
