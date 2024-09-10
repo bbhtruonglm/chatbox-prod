@@ -80,7 +80,7 @@ import InfoIcon from '@/components/Icons/Info.vue'
 import ReloadContentIcon from '@/components/Icons/ReloadContent.vue'
 
 import { AiAppContact, AiAppOneContact, type ContactInfo } from '@/utils/api/Ai'
-import { N4SerivceAppOneConversation } from '@/utils/api/N4Serivce'
+import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
 import { eachOfLimit } from 'async'
 
 const conversationStore = useConversationStore()

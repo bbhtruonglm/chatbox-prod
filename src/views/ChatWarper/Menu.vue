@@ -158,7 +158,7 @@ import TagNotIcon from '@/components/Icons/TagNot.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
 import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
-import { Domain } from '@/utils/helper/domain'
+import { Domain } from '@/utils/helper/Domain'
 
 const conversationStore = useConversationStore()
 const orgStore = useOrgStore()

@@ -30,7 +30,7 @@
 </template>
 <script setup lang="ts">
 import { useConversationStore } from '@/stores'
-import { Emotion } from '@/utils/helper/emotion'
+import { Emotion } from '@/utils/helper/Emotion'
 import { computed } from 'vue'
 
 import PhoneIcon from '@/components/Icons/Phone.vue'

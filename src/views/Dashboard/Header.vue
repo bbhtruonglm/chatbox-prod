@@ -52,7 +52,7 @@ import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import { Domain } from '@/utils/helper/domain'
+import { Domain } from '@/utils/helper/Domain'
 
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()

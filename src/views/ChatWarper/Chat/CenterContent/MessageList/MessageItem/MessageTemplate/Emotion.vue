@@ -16,7 +16,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Emotion } from '@/utils/helper/emotion'
+import { Emotion } from '@/utils/helper/Emotion'
 import { computed } from 'vue'
 
 const $props = withDefaults(

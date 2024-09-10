@@ -106,7 +106,8 @@ import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import StackIcon from '@/components/Icons/Stack.vue'
 
 import type { OrgInfo, PageOrgInfoMap } from '@/service/interface/app/billing'
-import type { CurrentPageData } from '@/service/api/chatbox/n4-service'
+import type { CurrentPageData } from '@/utils/api/N4Service/Page'
+
 
 const $emit = defineEmits(['done'])
 

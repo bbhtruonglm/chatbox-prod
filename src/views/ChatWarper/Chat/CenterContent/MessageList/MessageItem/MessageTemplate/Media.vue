@@ -8,6 +8,11 @@
       :src="data_source?.image?.url"
       class="attachment-size"
     />
+    <!-- <img
+      v-if="data_source?.image?.url"
+      :src="data_source?.image?.url"
+      class="attachment-size"
+    /> -->
     <video
       v-if="data_source?.video?.url"
       class="attachment-size"
@@ -78,6 +83,14 @@ function getFileName(url: string) {
 function openMediaDetail() {
   // mở modal xem chi tiết file
   media_detail_ref.value?.toggleModal()
+}
+/**lấy chiều rộng của file */
+function getWidth() {
+
+}
+/**lấy chiều cao của file */
+function getHeight() {
+
 }
 </script>
 <style lang="scss" scoped>

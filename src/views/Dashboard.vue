@@ -11,19 +11,18 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
 import { initRequireData } from '@/views/composable'
-import { flow } from '@/service/helper/async'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
   KEY_LOAD_LIST_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
 import { usePageStore, useStaffStore, useSelectPageStore } from '@/stores'
-import { get_current_active_page } from '@/service/api/chatbox/n4-service'
 
 import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
-import type { CbError } from '@/service/interface/function'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/alert'
 
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
@@ -40,34 +39,29 @@ function toggleModalConnectPage() {
   connect_page_ref.value?.toggleModal?.()
 }
 /**lấy toàn bộ các page đang được kích hoạt của người dùng */
-function loadListPage(org_id?: string) {
-  // nếu không có tổ chức thì thôi
-  if (!org_id) return
-  
-  flow(
-    [
-      // * kích hoạt loading
-      (cb: CbError) => {
-        selectPageStore.is_loading = true
+async function loadListPage(org_id?: string): Promise<void> {
+  try {
+    // nếu không có tổ chức thì thôi
+    if (!org_id) return
 
-        cb()
-      },
-      // * gọi api lấy danh sách page
-      (cb: CbError) =>
-        get_current_active_page({ is_active: true, org_id }, (e, r) => {
-          if (e) return cb(e)
+    // kích hoạt loading
+    selectPageStore.is_loading = true
 
-          pageStore.active_page_list = r.page_list
-          staffStore.staff_list_of_active_page = r.all_staff_list
+    /**danh sách trang của tổ chức đang kích hoạt */
+    const RES = await new N4SerivceAppPage().getOrgActiveListPage(org_id)
 
-          cb()
-        }),
-    ],
-    e => {
-      // tắt loading
-      selectPageStore.is_loading = false
-    }
-  )
+    // lưu lại danh sách trang
+    pageStore.active_page_list = RES?.page_list || {}
+
+    // lưu lại danh sách nhân viên của các trang
+    staffStore.staff_list_of_active_page = RES?.all_staff_list
+  } catch (e) {
+    // nếu có lỗi thì hiển thị thông báo
+    new Toast().error(e)
+  } finally {
+    // tắt loading
+    selectPageStore.is_loading = false
+  }
 }
 
 // cung cấp hàm này cho component con dùng

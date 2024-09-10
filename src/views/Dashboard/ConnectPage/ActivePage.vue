@@ -74,12 +74,8 @@ import {
   useOrgStore,
   useChatbotUserStore,
 } from '@/stores'
-import { filter, keyBy, keys, map, mapValues, size } from 'lodash'
-import {
-  get_current_active_page_sync,
-  update_page,
-  type CurrentPageData,
-} from '@/service/api/chatbox/n4-service'
+import { filter, keyBy, map, mapValues, size } from 'lodash'
+import { update_page } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 import { KEY_LOAD_LIST_PAGE_FUNCT } from '@/views/Dashboard/symbol'
@@ -98,6 +94,11 @@ import type {
   OwnerShipInfo,
   PageOrgInfoMap,
 } from '@/service/interface/app/billing'
+import {
+  N4SerivceAppPage,
+  type CurrentPageData,
+} from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/alert'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -150,7 +151,7 @@ function filterPage(page: PageData) {
 function beforeActivePage() {
   // làm mới danh sách trang khác tổ chức
   list_another_org_page_id.value = []
-  
+
   /**lấy danh sách các trang khác tổ chức */
   map(list_selected_page_id.value, (is_selected, page_id) => {
     // chỉ lấy trang đang chọn và không phải tổ chức của mình
@@ -216,10 +217,10 @@ async function activePage() {
 }
 /**tính toán ra danh sách page mới và page không có quyền truy cập */
 async function getListWattingPage() {
-  // hiển thị loading
-  connectPageStore.is_loading = true
-
   try {
+    // hiển thị loading
+    connectPageStore.is_loading = true
+
     // xóa toàn bộ các danh sách trang đang có để làm mới
     list_my_org_page.value = []
     list_another_org_page.value = []
@@ -243,7 +244,7 @@ async function getListWattingPage() {
     map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
 
     /**toàn bộ các trang của người dùng */
-    list_current_page.value = await get_current_active_page_sync({})
+    list_current_page.value = await new N4SerivceAppPage().getListPage()
 
     // lặp qua toàn bộ danh sách page của người dùng
     map(list_current_page.value?.page_list, page => {
@@ -273,11 +274,11 @@ async function getListWattingPage() {
     )
   } catch (e) {
     // thông báo lỗi
-    toastError(e)
+    new Toast().error(e)
+  } finally {
+    // ẩn loading
+    connectPageStore.is_loading = false
   }
-
-  // ẩn loading
-  connectPageStore.is_loading = false
 }
 /**toggle trang */
 function selectPage(page: PageData) {
