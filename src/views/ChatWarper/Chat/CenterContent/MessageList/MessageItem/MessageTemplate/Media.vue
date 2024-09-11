@@ -3,27 +3,32 @@
     @click="openMediaDetail"
     class="gap-2.5 flex flex-col cursor-pointer hover:brightness-90 rounded-lg overflow-hidden"
   >
-    <img
+    <div
       v-if="data_source?.image?.url"
-      :src="data_source?.image?.url"
-      class="attachment-size"
-    />
-    <!-- <img
-      v-if="data_source?.image?.url"
-      :src="data_source?.image?.url"
-      class="attachment-size"
-    /> -->
-    <video
-      v-if="data_source?.video?.url"
-      class="attachment-size"
-      controls
-      preload="metadata"
+      class="bg-gray-100"
+      :style="initSize()"
     >
-      <source
-        :src="data_source?.video?.url"
-        type="video/mp4"
+      <img
+        :src="data_source?.image?.url"
+        class="w-full h-full object-contain"
       />
-    </video>
+    </div>
+    <div
+      v-if="data_source?.video?.url"
+      class="bg-gray-100"
+      :style="initSize()"
+    >
+      <video
+        class="w-full h-full"
+        controls
+        preload="metadata"
+      >
+        <source
+          :src="data_source?.video?.url"
+          type="video/mp4"
+        />
+      </video>
+    </div>
     <Audio
       v-if="data_source?.audio?.url"
       :src="data_source?.audio?.url"
@@ -49,17 +54,24 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { last } from 'lodash'
+import { FitSize } from '@/utils/helper/Attachment'
 
 import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 import Audio from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media/Audio.vue'
 
 import DocumentIcon from '@/components/Icons/Document.vue'
 
-import type { MessageTemplateInput } from '@/service/interface/app/message'
+import type {
+  AttachmentSize,
+  MessageTemplateInput,
+} from '@/service/interface/app/message'
 
 const $props = withDefaults(
   defineProps<{
+    /**dữ liệu tin nhắn đã được định dạng lại */
     data_source?: MessageTemplateInput
+    /**kích thước của file đính kèm */
+    attachment_size?: AttachmentSize
   }>(),
   {}
 )
@@ -84,17 +96,14 @@ function openMediaDetail() {
   // mở modal xem chi tiết file
   media_detail_ref.value?.toggleModal()
 }
-/**lấy chiều rộng của file */
-function getWidth() {
-
-}
-/**lấy chiều cao của file */
-function getHeight() {
-
+/**tạo ra kích thước cho phần từ trước khi hình ảnh, video được load */
+function initSize() {
+  // tính toán
+  return new FitSize(
+    247,
+    160,
+    $props.attachment_size?.width,
+    $props.attachment_size?.height
+  ).toCss()
 }
 </script>
-<style lang="scss" scoped>
-.attachment-size {
-  @apply max-h-40 w-fit;
-}
-</style>

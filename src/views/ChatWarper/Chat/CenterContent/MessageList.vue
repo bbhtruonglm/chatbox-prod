@@ -54,7 +54,7 @@
                   message.message_type
                 ) && !message.ad_id
               "
-              :message
+              :message="message"
               :message_index="index"
             />
             <div
@@ -155,6 +155,7 @@ import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 import type { DebouncedFunc } from 'lodash'
+import { copy } from '@/service/helper/format'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
@@ -412,13 +413,6 @@ function getListMessage(is_scroll?: boolean) {
 
       // load lần đầu thì tự động cuộn xuống
       if (is_scroll) {
-        /**
-         * chạy logic infinitve loading scroll
-         * lần đầu tiên load tin nhắn, mà phát hiện tin nhắn vẫn còn,
-         * thì load thêm 1 lần tin nhắn nữa, để tránh lỗi scroll không mượt
-         */
-        if (messageStore.list_message.length >= LIMIT) getListMessage()
-
         scrollToBottomMessage()
 
         setTimeout(() => scrollToBottomMessage(), 500)
@@ -427,7 +421,7 @@ function getListMessage(is_scroll?: boolean) {
       if (e) {
         // gắn cờ đã load hết dữ liệu
         is_done.value = true
-        
+
         return toastError(e)
       }
     }

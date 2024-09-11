@@ -10,6 +10,7 @@
       <Media
         v-if="isHaveFileAttachment()"
         :data_source
+        :attachment_size
       />
       <button
         v-if="data_source?.is_ai"
@@ -63,6 +64,7 @@ import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
 
 import type {
+  AttachmentSize,
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
@@ -76,6 +78,8 @@ const $props = withDefaults(
     is_fix_size?: boolean
     /**loại tin nhắn */
     message_type?: MessageInfo['message_type']
+    /**kích thước của file đính kèm */
+    attachment_size?: AttachmentSize
   }>(),
   {}
 )
@@ -87,7 +91,7 @@ const $props = withDefaults(
  */
 const is_expanded = ref(!$props.data_source?.is_ai)
 
-// theo dõi nếu cờ AI
+// theo dõi khi có socket update tin nhắn hiện tại
 watch(
   () => $props.data_source?.is_ai,
   is_ai => {

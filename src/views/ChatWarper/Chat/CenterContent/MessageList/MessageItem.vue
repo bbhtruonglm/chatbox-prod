@@ -26,12 +26,19 @@
       v-else
       :count_element="message_source?.length"
     >
+    <!-- 
+    không được xoá :key, nếu không sẽ lỗi, 
+    do vue 3 for 2 mảng lồng nhau gặp vấn đề về binding
+    sẽ bị binding nhầm data cũ
+    -->
       <MessageTemplate
         v-for="data_source of message_source"
+        :key="message?._id"
         :class="addOnClassTemplate()"
-        :data_source
+        :data_source="data_source"
         :is_fix_size="message_source?.length > 1"
         :message_type="message?.message_type"
+        :attachment_size
       />
     </SliderWarper>
     <SlowReply
@@ -42,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMessageStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 
@@ -75,8 +82,8 @@ const $props = withDefaults(
 
 /**tin nhắn này thuộc về dạng nào */
 const message_type = computed(() => $props.message?.message_type)
-/**id trang */
-const page_id = computed(() => $props.message?.fb_page_id)
+/**kích thước của file đầu tiên */
+const attachment_size = computed(() => $props.message?.attachment_size?.[0])
 /**thời gian tin nhắn được gửi */
 const message_time = computed(
   () => $props.message?.time || $props.message?.createdAt
@@ -95,6 +102,7 @@ const list_attachment = computed(() => $props.message?.message_attachments)
 const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
 /**AI đánh dấu tin này bị rep chậm */
 const is_ai_slow_reply = computed(() => $props.message?.is_ai_slow_reply)
+
 /**dữ liệu của tin nhắn */
 const message_source = computed<MessageTemplateInput[]>(() => {
   /**
@@ -109,6 +117,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
   if (!SOURCE?.payload)
     result.push({
+      is_ai: false,
       content:
         text.value || postback_title.value || $t('v1.common.unsupport_message'),
     })
@@ -116,6 +125,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   // nếu chỉ có các nút bấm -> chỉ tạo 1 record
   if (SOURCE?.payload?.buttons)
     result.push({
+      is_ai: false,
       // nút bấm sẽ kèm theo một nội dung tin nhắn nào đó
       content: text.value,
       // map lại dữ liệu nút bấm
@@ -131,6 +141,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
 
         // tạm thời chỉ hiện AI với image
         if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
+        else res.is_ai = false
 
         // thêm dữ liệu AI nếu có
         if ($props.message?.ai?.[index]) res.ai = $props.message?.ai?.[index]
@@ -162,6 +173,8 @@ const message_source = computed<MessageTemplateInput[]>(() => {
     /**dữ liệu của 1 template */
     let res: MessageTemplateInput = {}
 
+    res.is_ai = false
+
     // hình ảnh
     if (SOURCE?.type === 'image') res.image = { url: SOURCE.payload.url }
     // video
@@ -175,7 +188,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
     result.push(res)
   }
 
-  // trả về mảng rỗng
+  // trả về mảng
   return result
 })
 /**xử lý dữ liệu nút bấm */
