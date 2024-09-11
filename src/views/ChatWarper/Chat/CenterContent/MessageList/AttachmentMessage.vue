@@ -8,7 +8,7 @@
         <template v-for="(attachment, index) of horizontal_attachment_list">
           <div
             @click="viewAttachment(attachment.index, getFile(attachment.index))"
-            class="cursor-pointer hover:brightness-90 rounded-lg bg-gray-100 overflow-hidden"
+            class="cursor-pointer hover:brightness-90 rounded-lg bg-gray-50 overflow-hidden"
             :style="
               initSize(
                 message?.attachment_size?.[index]?.width,
