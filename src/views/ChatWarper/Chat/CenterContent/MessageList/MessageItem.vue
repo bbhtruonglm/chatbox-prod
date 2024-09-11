@@ -26,7 +26,7 @@
       v-else
       :count_element="message_source?.length"
     >
-    <!-- 
+      <!-- 
     không được xoá :key, nếu không sẽ lỗi, 
     do vue 3 for 2 mảng lồng nhau gặp vấn đề về binding
     sẽ bị binding nhầm data cũ
@@ -39,6 +39,7 @@
         :is_fix_size="message_source?.length > 1"
         :message_type="message?.message_type"
         :attachment_size
+        :message
       />
     </SliderWarper>
     <SlowReply
@@ -49,7 +50,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useMessageStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 
@@ -102,7 +103,6 @@ const list_attachment = computed(() => $props.message?.message_attachments)
 const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
 /**AI đánh dấu tin này bị rep chậm */
 const is_ai_slow_reply = computed(() => $props.message?.is_ai_slow_reply)
-
 /**dữ liệu của tin nhắn */
 const message_source = computed<MessageTemplateInput[]>(() => {
   /**
@@ -191,6 +191,7 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   // trả về mảng
   return result
 })
+
 /**xử lý dữ liệu nút bấm */
 function formatButton(list_raw_button: ChatbotButton[]) {
   return list_raw_button?.map(button => ({

@@ -11,6 +11,7 @@
         v-if="isHaveFileAttachment()"
         :data_source
         :attachment_size
+        :message
       />
       <button
         v-if="data_source?.is_ai"
@@ -80,6 +81,8 @@ const $props = withDefaults(
     message_type?: MessageInfo['message_type']
     /**kích thước của file đính kèm */
     attachment_size?: AttachmentSize
+    /**dữ liệu của tin nhắn */
+    message: MessageInfo
   }>(),
   {}
 )
