@@ -1,7 +1,16 @@
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
+ /**kích thước của file */
+export interface AttachmentSize {
+  /**độ rộng */
+  width?: number
+  /**độ cao */
+  height?: number
+}
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**danh sách các kích thước của file */
+  attachment_size?: AttachmentSize[]
   /**AI đánh dấu là tin bị rep chậm */
   is_ai_slow_reply?: true
   /**hệ thống đánh dấu tin bị rep chậm */

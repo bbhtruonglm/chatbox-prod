@@ -1,46 +1,27 @@
 <template>
   <div
-    :class="{
-      'justify-end': type === 'PAGE',
-    }"
+    :class="{ 'justify-end': type === 'PAGE' }"
     class="p-2 bg-white rounded-lg flex flex-col gap-2"
   >
     <div class="flex gap-2 justify-between">
       <div class="flex flex-wrap relative z-1 gap-2">
-        <template v-for="attachment of horizontal_attachment_list">
+        <template v-for="(attachment, index) of horizontal_attachment_list">
           <div
-            v-if="attachment.type !== 'fallback'"
             @click="viewAttachment(attachment.index, getFile(attachment.index))"
-            class="cursor-pointer hover:brightness-90"
+            class="cursor-pointer hover:brightness-90 rounded-lg bg-gray-100 overflow-hidden"
+            :style="
+              initSize(
+                message?.attachment_size?.[index]?.width,
+                message?.attachment_size?.[index]?.height
+              )
+            "
           >
-            <ImageAttachment
-              v-if="getTypeFromIndex(attachment.index) === 'image'"
-              :url="getFileUrl(attachment.index)"
-              :class="
-                // bắt buộc phải fix cứng độ cao nếu không giao diện sẽ bị giật, vì infinity scroll tính sai vị trí
-                // nếu chỉ có 1 ảnh thì tăng độ cao để hiển thị to hơn
-                // nếu có nhiều ảnh thì giảm độ cao để hiển thị được nhiều ảnh cùng lúc hơn
-                // kích thước chiều rộng để auto, tự động co kéo theo chiều ngang
-                // để kích thước chiều rộng auto có thể gây giật với một bộ các ảnh, vì trước khi hình ảnh render thì widget = 1, render xong with dài hơn đẩy hình ảnh xuống, làm tăng chiều dài tổng thể của trang
-                horizontal_attachment_list?.length === 1 ? 'h-40' : 'h-20'
-              "
-            />
-            <AnotherAttachment
-              v-else
-              :url="getFileUrl(attachment.index)"
-              :name="getFileName(attachment.index)"
+            <img
+              v-if="getFileUrl(attachment.index)"
+              :src="getFileUrl(attachment.index)"
+              class="object-contain w-full h-full"
             />
           </div>
-        </template>
-        <template v-for="attachment of vertical_attachment_list">
-          <VideoAttachment
-            v-if="getTypeFromIndex(attachment.index) === 'video'"
-            :url="getFileUrl(attachment.index)"
-          />
-          <AudioAttachment
-            v-else-if="getTypeFromIndex(attachment.index) === 'audio'"
-            :url="getFileUrl(attachment.index)"
-          />
         </template>
       </div>
     </div>
@@ -53,14 +34,10 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useMessageStore } from '@/stores'
-import { last, size } from 'lodash'
+import { size } from 'lodash'
 import { get_url_attachment } from '@/service/api/chatbox/n6-static'
 import { ref } from 'vue'
 
-import ImageAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/ImageAttachment.vue'
-import VideoAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/VideoAttachment.vue'
-import AudioAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AudioAttachment.vue'
-import AnotherAttachment from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage/AnotherAttachment.vue'
 import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 
 import type {
@@ -68,6 +45,7 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
+import { FitSize } from '@/utils/helper/Attachment'
 
 const $props = withDefaults(
   defineProps<{
@@ -108,35 +86,11 @@ function getFileUrl(index?: number) {
 
   return getAttachmentFromStore()?.[index]?.payload?.url
 }
-/**lấy tên của file */
-function getFileName(index?: number) {
-  try {
-    /**đường dẫn của file */
-    const FILE_PATH = getFileUrl(index)
-
-    // nếu không có đường dẫn thì thôi
-    if (!FILE_PATH) return ''
-
-    /**Sử dụng URL API để tách phần pathname */
-    const PATH = new URL(FILE_PATH)?.pathname
-
-    // lấy tên file từ pathname
-    return last(PATH?.split('/'))
-  } catch (e) {
-    return ''
-  }
-}
 /**lấy dữ liệu của file */
 function getFile(index?: number) {
   if (index === undefined) return {}
 
   return getAttachmentFromStore()?.[index]
-}
-/**đọc kiểu của tập tin */
-function getTypeFromIndex(index?: number) {
-  if (index === undefined) return ''
-
-  return getAttachmentFromStore()?.[index]?.type
 }
 /**đọc dữ liệu của tập tin */
 function getAttachmentFromStore() {
@@ -233,13 +187,9 @@ function viewAttachment(index: number = 0, attachment?: AttachmentInfo) {
   // mở modal
   media_detail_ref.value?.toggleModal()
 }
-</script>
-<style scoped lang="scss">
-.truncate-3-line {
-  overflow: hidden;
-  display: -webkit-box;
-  line-clamp: 3;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+/**tạo ra kích thước cho phần từ trước khi hình ảnh, video được load */
+function initSize(width?: number, height?: number) {
+  // tính toán
+  return new FitSize(368, 80, width, height).toCss()
 }
-</style>
+</script>
