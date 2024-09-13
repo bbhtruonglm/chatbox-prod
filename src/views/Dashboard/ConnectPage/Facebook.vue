@@ -17,13 +17,14 @@
   </EmptyPage>
 </template>
 <script setup lang="ts">
-import { sync_facebook_page } from '@/service/api/chatbox/n4-service'
 import { useCommonStore, useConnectPageStore } from '@/stores'
 
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
 import Facebook from '@/components/OAuth/Facebook.vue'
 
 import FacebookIcon from '@/components/Icons/Facebook.vue'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/Alert'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -54,25 +55,21 @@ function genFBSelectPageOption() {
 }
 /**đồng bộ dữ liệu page mới nhất từ fb */
 async function syncFacebookPage(access_token: string, from: string) {
-  // hiển thị loading
-  commonStore.is_loading_full_screen = true
-
   try {
-    // đồng bộ dữ liệu page từ fb
-    await new Promise((resolve, reject) =>
-      sync_facebook_page(access_token, undefined, (e, r) => {
-        if (e) return reject(e)
+    // hiển thị loading
+    commonStore.is_loading_full_screen = true
 
-        resolve(undefined)
-      })
-    )
-    
+    // đồng bộ dữ liệu page từ fb
+    await new N4SerivceAppPage().syncFacebookPage(access_token)
+
     // quay lại page danh sách trang
     connectPageStore.selectMenu('WATTING')
-  } catch (e) {}
-
-
-  // tắt loading
-  commonStore.is_loading_full_screen = false
+  } catch (e) {
+    // hiển thị lỗi
+    new Toast().error(e)
+  } finally {
+    // tắt loading
+    commonStore.is_loading_full_screen = false
+  }
 }
 </script>

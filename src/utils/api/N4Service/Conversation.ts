@@ -1,4 +1,4 @@
-import { N4Serivce } from '../N4Serivce'
+import { N4Serivce } from '@/utils/api/N4Serivce'
 
 /**gọi API module conversation của chatbox */
 export class N4SerivceAppConversation extends N4Serivce {
