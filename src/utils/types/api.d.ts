@@ -1,5 +1,5 @@
 /**query tìm kiếm cơ bản */
-export interface BaseQuery {
+interface BaseQuery {
   /**phân trang */
   skip?: number
   /**phân trang */

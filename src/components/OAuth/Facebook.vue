@@ -18,7 +18,8 @@
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { cross_login_url } from '@/service/constant/botbanhang'
+import { CROSS_LOGIN_URL } from '@/configs/constants/botbanhang'
+// import { cross_login_url } from '@/service/constant/botbanhang'
 
 import Loading from '../Loading.vue'
 
@@ -95,7 +96,7 @@ function genIframeSrc() {
   }
   const FB_OPTION = JSON.stringify(login_option)
 
-  iframe_src.value = `${cross_login_url}?app_id=${
+  iframe_src.value = `${CROSS_LOGIN_URL}?app_id=${
     $props.app_id || APP_ID
   }&option=${$props.option || FB_OPTION}&text=${$props.text || ''}`
 }

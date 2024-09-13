@@ -176,7 +176,8 @@ import { currency } from '@/service/helper/format'
 import { ref } from 'vue'
 import { useOrgStore } from '@/stores'
 import { openNewTab } from '@/service/function'
-import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
+import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
+// import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
 import { toast, toastError } from '@/service/helper/alert'
 import {
   active_discount,

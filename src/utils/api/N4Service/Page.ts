@@ -1,4 +1,4 @@
-import { N4Serivce } from '../N4Serivce'
+import { N4Serivce } from '@/utils/api/N4Serivce'
 
 import type { PageList } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
@@ -29,5 +29,10 @@ export class N4SerivceAppPage extends N4Serivce {
   public async getOrgActiveListPage(org_id: string): Promise<CurrentPageData> {
     // gọi api
     return this.getListPage({ org_id, is_active: true })
+  }
+  /**đồng bộ lại danh sách trang mới nhất của Facebook với hệ thống */
+  public async syncFacebookPage(access_token: string): Promise<void> {
+    // gọi api
+    return this.post('sync_facebook_page', { access_token })
   }
 }

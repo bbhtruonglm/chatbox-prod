@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { usePageStore } from '@/stores'
+import { useOrgStore, usePageStore } from '@/stores'
 import { keys } from 'lodash'
 import { openNewTab } from '@/service/function'
 import { getItem } from '@/service/helper/localStorage'
@@ -83,10 +83,14 @@ import ManyChatIcon from '@/components/Icons/ManyChat.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
 import CogIcon from '@/components/Icons/Cog.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
+import { Domain } from '@/utils/helper/Domain'
+import { Parser } from '@/utils/helper/Parser'
+import { Navigation } from '@/utils/helper/Navigation'
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const $router = useRouter()
+const orgStore = useOrgStore()
 const locale = localStorage.getItem('locale') || 'vn'
 
 /**ref của menu đính kèm */
@@ -104,13 +108,27 @@ function openPageSetting() {
 }
 /**mở thống kê */
 function openAnalytic() {
-  openNewTab(
-    `${$env.host.analytic_view}?token=${getItem(
-      'access_token'
-    )}&fb_page_id=${keys(
-      pageStore.selected_page_id_list
-    ).join()}&locale=${locale}`
-  )
+  /**đường dẫn thống kê */
+  const URI = Domain.isRetion()
+    ? $env.host.analytic.retion
+    : $env.host.analytic.retion
+  /**token */
+  const TOKEN = getItem('access_token')
+  /**id page đang chọn */
+  const SELECTED_PAGE_ID = keys(pageStore.selected_page_id_list).join()
+  /**id tổ chức đang chọn */
+  const SELECTED_ORG_ID = orgStore.selected_org_id
+
+  /**chuỗi query */
+  const QS = Parser.toQueryString({
+    access_token: TOKEN,
+    org_id: SELECTED_ORG_ID,
+    page_id: SELECTED_PAGE_ID,
+    locale: locale,
+  })
+
+  // mở tab mới
+  Navigation.openNewTab(`${URI}?${QS}`)
 }
 /**mở chatbot */
 function openChatbot() {
