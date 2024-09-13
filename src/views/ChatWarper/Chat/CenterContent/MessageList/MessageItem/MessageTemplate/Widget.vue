@@ -37,6 +37,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Parser } from '@/utils/helper/Parser'
 
 import Modal from '@/components/Modal.vue'
 
@@ -56,10 +57,6 @@ const $props = withDefaults(
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
 
-/**chuyển đổi object thành chuỗi query */
-function objToParam(payload: {}) {
-  return new URLSearchParams(payload).toString()
-}
 /**tạo ra url của iframe */
 function genUrl() {
   /**đường dẫn của iframe */
@@ -72,7 +69,7 @@ function genUrl() {
   delete $props.ai._id
 
   // thêm các thông tin của AI vào url
-  url += `&${objToParam($props.ai)}`
+  url += `&${Parser.toQueryString($props.ai)}`
 
   return url
 }

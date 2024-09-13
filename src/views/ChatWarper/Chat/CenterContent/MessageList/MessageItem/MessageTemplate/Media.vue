@@ -132,7 +132,6 @@ function getFbUrl(): string | undefined {
 }
 /**lấy thông tin của file đính kèm */
 function getAttachmentInfo() {
-  console.log('alo')
   // tạm thời chỉ xử lý trường hợp 1 file, vì nhiều file đã được xử lý ở chỗ khác rồi
   if ($props.message?.message_attachments?.length !== 1) return
 
@@ -164,8 +163,6 @@ function getAttachmentInfo() {
 
       // nạp, cache dữ liệu
       messageStore.attachment_list[$props.message?.message_mid!] = r
-
-      console.log('alo', r)
     }
   )
 }

@@ -4,12 +4,11 @@
  * 
  ******************************************************************************/
 
-import type { Env } from '@/service/interface/env'
 import type { IndexedDB } from '@/service/helper/indexedDB'
 
 declare global {
     /**các cài đặt của môi trường */
-    var $env: Env
+    var $env: EnvInfo
     /**NODE_ENV */
     var $node_env: string
     /**đối tượng index db */
