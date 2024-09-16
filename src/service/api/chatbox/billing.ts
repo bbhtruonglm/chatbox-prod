@@ -193,7 +193,7 @@ export const get_noti = async (org_id?: string): Promise<NotiInfo[]> =>
   })
 
 /**xem thông báo */
-export const count_noti = async (org_id?: string): Promise<number> =>
+export const count_noti = async (org_id: string): Promise<number> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/noti/count_noti`,
     body: { org_id },

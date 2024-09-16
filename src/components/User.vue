@@ -125,6 +125,9 @@ watch(() => orgStore.selected_org_id, countNotiCurrentOrg)
 /**đếm số noti của tổ chức đang chọn */
 async function countNotiCurrentOrg() {
   try {
+    // nếu chưa chọn tổ chức thì không làm gì
+    if (!orgStore.selected_org_id) return
+
     // đếm số thông báo
     orgStore.count_noti = await count_noti(orgStore.selected_org_id)
   } catch (e) {
