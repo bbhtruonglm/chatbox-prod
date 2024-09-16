@@ -438,6 +438,7 @@ const source: Language = {
                 jealousy: 'AI: Ghen tị',
                 shame: 'AI: Xấu hổ',
                 pride: 'AI: Tự hào',
+                like: 'AI: Thích'
               },
               sent: 'đã gửi',
               error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
