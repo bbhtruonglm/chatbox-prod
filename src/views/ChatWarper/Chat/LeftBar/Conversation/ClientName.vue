@@ -1,12 +1,12 @@
 <template>
   <div class="flex items-center justify-between gap-3">
     <div class="flex items-center flex-grow gap-1 min-w-0">
-      <template v-if="source?.fb_staff_id">
+      <template v-if="source?.user_id || source?.fb_staff_id">
         <StaffAvatar
           v-tooltip="
             getStaffInfo(source?.fb_page_id, source?.fb_staff_id)?.name
           "
-          :id="source?.fb_staff_id"
+          :id="source?.user_id || source?.fb_staff_id"
           class="rounded-full w-4 h-4 flex-shrink-0"
         />
         <ArrowDown class="-rotate-90 w-2 h-2 text-slate-500 flex-shrink-0" />

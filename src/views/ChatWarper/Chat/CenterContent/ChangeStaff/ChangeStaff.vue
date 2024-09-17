@@ -79,7 +79,10 @@ function getStaffsByPageId() {
   snap_staffs.value = staffs.value
 
   // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
-  fb_staff_id.value = conversationStore.select_conversation?.fb_staff_id || ''
+  fb_staff_id.value =
+    conversationStore.select_conversation?.user_id ||
+    conversationStore.select_conversation?.fb_staff_id ||
+    ''
 
   // * Đưa nhân viên được assign lên đầu danh sách
   pushStaffSelectedToTop()
@@ -89,11 +92,18 @@ function assignConversationtoStaff(staff: StaffInfo) {
   // * Nếu data conversation không tồn tại thì dừng lại
   if (!conversationStore.select_conversation) return
 
+  /** ID nhân viên mới */
+  const NEW_USER_ID = staff.user_id || staff.fb_staff_id
+  /** ID nhân viên cũ */
+  const OLD_USER_ID =
+    conversationStore.select_conversation?.user_id ||
+    conversationStore.select_conversation?.fb_staff_id
+
   // * Nếu nhân viên đã được assign thì không chạy logic nữa
-  if (fb_staff_id.value === staff.fb_staff_id) return
+  if (fb_staff_id.value === NEW_USER_ID) return
 
   // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
-  fb_staff_id.value = staff.fb_staff_id
+  fb_staff_id.value = NEW_USER_ID
 
   // * Đưa nhân viên được assign lên đầu danh sách
   pushStaffSelectedToTop()
@@ -108,8 +118,8 @@ function assignConversationtoStaff(staff: StaffInfo) {
               ?.fb_page_id as string,
             client_id: conversationStore.select_conversation
               ?.fb_client_id as string,
-            new_staff_id: staff.fb_staff_id,
-            old_staff_id: conversationStore.select_conversation?.fb_staff_id,
+            new_staff_id: NEW_USER_ID,
+            old_staff_id: OLD_USER_ID,
           },
           (e, r) => {
             if (e) return cb(e)
@@ -142,13 +152,24 @@ function searchStaff(search_staff_name: string) {
 }
 /** Đưa nhân viên được assign lên đầu danh sách */
 function pushStaffSelectedToTop() {
+  // Nếu không có nhân viên được assign thì dừng lại
+  if (!fb_staff_id.value) return
+
+  /** Danh sách nhân viên mới */
   let new_staff_list: { [index: string]: StaffInfo } = {}
+
+  // Đưa nhân viên được assign lên đầu danh sách
   new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
+
+  // Lọc ra những nhân viên còn lại
   map(staffs.value, item => {
-    if (item && item.fb_staff_id !== fb_staff_id.value) {
-      new_staff_list[item.fb_staff_id] = staffs.value[item.fb_staff_id]
+    // Nếu nhân viên không phải là nhân viên được assign thì đưa vào danh sách mới
+    if (item?.user_id && item?.user_id !== fb_staff_id.value) {
+      new_staff_list[item?.user_id] = staffs.value[item?.user_id]
     }
   })
+
+  // Lưu lại danh sách nhân viên mới
   staffs.value = new_staff_list
 }
 

@@ -20,10 +20,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import { useConversationStore, useMessageStore } from '@/stores'
 import { ref } from 'vue'
 import { getStaffName, getStaffReadDate } from '@/service/function'
+
+import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 

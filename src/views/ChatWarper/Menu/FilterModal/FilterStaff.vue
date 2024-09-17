@@ -124,7 +124,7 @@ function selectStaff(index: number) {
   /**danh sách id nhãn đã chọn */
   let list_id = staff_list.value
     ?.filter(staff => staff.is_selected)
-    ?.map(staff => staff.fb_staff_id)
+    ?.map(staff => staff.user_id || staff.fb_staff_id)
 
   // lưu lại id nhãn đã chọn vào store
   conversationStore.option_filter_page_data.staff_id = size(list_id)

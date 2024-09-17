@@ -1,4 +1,6 @@
 export interface StaffInfo {
+    /**id của user bản mới */
+    user_id?: string
     _id: string
     fb_page_id: string
     fb_staff_id: string

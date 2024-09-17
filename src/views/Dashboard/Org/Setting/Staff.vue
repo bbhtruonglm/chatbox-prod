@@ -28,7 +28,7 @@
           <ActorItem class="cursor-pointer">
             <template #avatar>
               <StaffAvatar
-                :id="staff.staff_id"
+                :id="staff?.user_info?.fb_staff_id"
                 class="w-8 h-8 rounded-oval"
               />
             </template>
