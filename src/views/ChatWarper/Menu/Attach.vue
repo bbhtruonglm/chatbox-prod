@@ -111,7 +111,7 @@ function openAnalytic() {
   /**đường dẫn thống kê */
   const URI = Domain.isRetion()
     ? $env.host.analytic.retion
-    : $env.host.analytic.retion
+    : $env.host.analytic.bbh
   /**token */
   const TOKEN = getItem('access_token')
   /**id page đang chọn */
