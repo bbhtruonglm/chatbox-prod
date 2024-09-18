@@ -26,6 +26,7 @@
           {{ $t('v1.view.main.dashboard.nav.select_platform') }}
         </button>
         <button
+          v-if="size(pageStore.active_page_list)"
           @click="selectPageStore.toggleGroupPageMode()"
           class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
         >
@@ -42,7 +43,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useSelectPageStore } from '@/stores'
+import { usePageStore, useSelectPageStore } from '@/stores'
 import { useRoute } from 'vue-router'
 import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { inject } from 'vue'
@@ -53,8 +54,10 @@ import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 import { Domain } from '@/utils/helper/Domain'
+import { size } from 'lodash'
 
 const selectPageStore = useSelectPageStore()
+const pageStore = usePageStore()
 const $route = useRoute()
 
 /**hàm toggle modal kết nối nền tảng */
@@ -63,10 +66,14 @@ const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 /**có hiển thị các nút của trang chọn page không */
 function isShowSelectPageButton() {
   return (
-    // chỉ hiển thị khi đang ở trang chọn page
+    // đang ở trang chọn page
     $route.path.includes('select-page') &&
-    // chỉ hiển thị khi không ở chế độ chat nhiều page
-    !selectPageStore.is_group_page_mode
+    (
+      // không ở chế độ chat nhiều page
+      !selectPageStore.is_group_page_mode || 
+      // người dùng chưa có trang nào
+      !size(pageStore.active_page_list)
+    )
   )
 }
 </script>

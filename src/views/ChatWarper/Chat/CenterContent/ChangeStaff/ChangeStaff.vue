@@ -13,14 +13,14 @@
     />
     <StaffItem
       @select_staff="assignConversationtoStaff"
-      :staffs="staffs"
+      :staffs
       :select_staff_id="fb_staff_id"
     />
   </Dropdown>
 </template>
 
 <script setup lang="ts">
-import { map } from 'lodash'
+import { find, map, size, sortBy, without } from 'lodash'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePageStore, useConversationStore } from '@/stores'
@@ -43,7 +43,7 @@ const conversationStore = useConversationStore()
 /**ref của dropdown */
 const change_staff_dropdown_ref = ref<ComponentRef>()
 /** Danh sách nhân viên */
-const staffs = ref<{ [index: string]: StaffInfo }>({})
+const staffs = ref<StaffInfo[]>([])
 /** Danh sách nhân viên */
 const snap_staffs = ref<{ [index: string]: StaffInfo }>({})
 /** Nhân viên được phân công phụ trách cuộc hội thoại */
@@ -65,25 +65,32 @@ function onOpenDropdown() {
 }
 /** Lấy ra danh sách user theo page hiện tại đang chọn */
 function getStaffsByPageId() {
-  // * Xóa tên nhân viên đang tìm kiếm
+  // Xóa tên nhân viên đang tìm kiếm
   search_staff_name.value = ''
 
-  // * Lấy ID page hiện tại
-  const curent_page_id: string = $route.query.page_id as string
+  /** ID page hiện tại */
+  const PAGE_ID = conversationStore.select_conversation?.fb_page_id
 
-  // * Lấy ra thông tin page hiện tại từ store
-  const current_page = pageStore.selected_page_list_info[curent_page_id]
+  // Nếu không có page id thì dừng lại
+  if (!PAGE_ID) return
 
-  // * Lưu lại danh sách nhân viên
-  staffs.value = current_page.staff_list || {}
-  snap_staffs.value = staffs.value
+  /**danh sách nhân viên */
+  const STAFFS = pageStore.selected_page_list_info?.[PAGE_ID]?.staff_list
+
+  // Nếu không có nhân viên thì dừng lại
+  if (!STAFFS || !size(STAFFS)) return
+
+  // Lưu lại danh sách nhân viên theo dạng object
+  snap_staffs.value = STAFFS
+
+  // Lưu lại danh sách nhân viên theo dạng mảng
+  staffs.value = map(STAFFS)
 
   // * Lưu lại id nhân viên được phân phụ trách cuộc hội thoại
   fb_staff_id.value =
     conversationStore.select_conversation?.user_id ||
     conversationStore.select_conversation?.fb_staff_id ||
     ''
-
   // * Đưa nhân viên được assign lên đầu danh sách
   pushStaffSelectedToTop()
 }
@@ -138,16 +145,23 @@ function assignConversationtoStaff(staff: StaffInfo) {
     true
   )
 }
-/** Lọc hội thoại theo nhân viên */
-function searchStaff(search_staff_name: string) {
-  if (!search_staff_name) return (staffs.value = snap_staffs.value)
-  staffs.value = {}
-  map(snap_staffs.value, (item: StaffInfo) => {
-    let search_name: string = nonAccentVn(search_staff_name)
-    let staff_name: string = nonAccentVn(item.name)
-    if (staff_name.includes(search_name)) {
-      staffs.value[item.fb_staff_id] = item
-    }
+/**
+ * Lọc hội thoại theo nhân viên 
+ * @param search nội dung tìm kiếm
+ */
+function searchStaff(search: string) {
+  // Nếu không có tên nhân viên thì hiển thị tất cả nhân viên
+  if (!search) return (staffs.value = map(snap_staffs.value))
+
+  // Lọc nhân viên theo tên
+  staffs.value = staffs.value?.filter(staff => {
+    /**nội dung tìm kiếm */
+    const SEARCH: string = nonAccentVn(search)
+    /**tên nhân viên */
+    const NAME: string = nonAccentVn(staff?.name)
+
+    // Nếu tên nhân viên chứa nội dung tìm kiếm thì hiển thị
+    return NAME.includes(SEARCH)
   })
 }
 /** Đưa nhân viên được assign lên đầu danh sách */
@@ -155,22 +169,22 @@ function pushStaffSelectedToTop() {
   // Nếu không có nhân viên được assign thì dừng lại
   if (!fb_staff_id.value) return
 
-  /** Danh sách nhân viên mới */
-  let new_staff_list: { [index: string]: StaffInfo } = {}
+  /**nhân viên đang được assign */
+  const TARGET = staffs.value?.find(findStaff)
 
-  // Đưa nhân viên được assign lên đầu danh sách
-  new_staff_list[fb_staff_id.value] = staffs.value[fb_staff_id.value]
+  // Nếu không có nhân viên được assign thì dừng lại
+  if (!TARGET) return
 
-  // Lọc ra những nhân viên còn lại
-  map(staffs.value, item => {
-    // Nếu nhân viên không phải là nhân viên được assign thì đưa vào danh sách mới
-    if (item?.user_id && item?.user_id !== fb_staff_id.value) {
-      new_staff_list[item?.user_id] = staffs.value[item?.user_id]
-    }
-  })
-
-  // Lưu lại danh sách nhân viên mới
-  staffs.value = new_staff_list
+  // chuyển nhân viên được assign lên đầu danh sách
+  staffs.value = [TARGET, ...staffs.value?.filter(staff => !findStaff(staff))]
+}
+/** Tìm nhân viên */
+function findStaff(staff: StaffInfo) {
+  // tìm theo cả id cũ và id mới
+  return (
+    staff?.user_id === fb_staff_id.value ||
+    staff?.fb_staff_id === fb_staff_id.value
+  )
 }
 
 defineExpose({ toggle })

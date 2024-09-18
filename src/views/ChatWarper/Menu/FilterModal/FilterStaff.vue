@@ -29,7 +29,14 @@
             class="rounded-full w-6 h-6 mr-3"
             :id="staff.fb_staff_id"
           />
-          <p class="text-sm">{{ staff.name }}</p>
+          <p
+            :class="{
+              'line-through': !staff?.user_id,
+            }"
+            class="text-sm"
+          >
+            {{ staff.name }}
+          </p>
         </div>
         <img
           v-if="staff.is_selected"
