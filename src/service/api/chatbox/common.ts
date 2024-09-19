@@ -24,7 +24,7 @@ export const chatbox = ({ uri, body, form, qs }: Input, proceed: Cb) => {
   const orgStore = useOrgStore()
 
   // thêm org_id vào body nếu có thể
-  body = { ...body, org_id: orgStore.selected_org_id }
+  if (!form) body = { ...body, org_id: orgStore.selected_org_id }
 
   request(
     {

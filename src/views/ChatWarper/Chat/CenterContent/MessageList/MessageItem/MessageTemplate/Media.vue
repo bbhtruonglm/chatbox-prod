@@ -9,7 +9,7 @@
       :style="initSize()"
     >
     <img
-    :src="getFbUrl()"
+    :src="getFbUrl() || data_source?.image?.url"
         class="w-full h-full object-contain"
       />
     </div>
@@ -24,7 +24,7 @@
         preload="metadata"
       >
         <source
-          :src="getFbUrl()"
+          :src="getFbUrl() || data_source?.video?.url"
           type="video/mp4"
         />
       </video>
