@@ -243,7 +243,11 @@ async function getAnotherOrgPage() {
 
       // lấy thông tin nhân viên hiện tại của trang
       page.current_staff =
-        page?.staff_list?.[chatbotUserStore.chatbot_user?.fb_staff_id || '']
+        page?.staff_list?.[
+          chatbotUserStore.chatbot_user?.user_id ||
+            chatbotUserStore.chatbot_user?.fb_staff_id ||
+            ''
+        ]
 
       // thêm trang chưa kích hoạt vào danh sách
       list_new_page.value.push(page)

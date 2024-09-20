@@ -1,4 +1,6 @@
 export interface ChatbotUserInfo {
+    /**id của user bản mới */
+    user_id?: string
     /**id của bản ghi */
     _id: string
     /**id của fb */

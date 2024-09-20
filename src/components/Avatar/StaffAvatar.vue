@@ -12,11 +12,14 @@
     </div>
 </template>
 <script setup lang="ts">
+import { usePageStore } from '@/stores';
 import { ref } from 'vue'
 
 const $props = withDefaults(defineProps<{
     id?: string
 }>(), {})
+
+const pageStore = usePageStore()
 
 /**kích thước thực tế */
 const SIZE = 64
@@ -33,10 +36,14 @@ function onImageError($event: Event) {
 
     image.src = `${$env.img_host}/1111111111?width=${SIZE}&height=${SIZE}`
 }
+/**lấy id của fb */
+function getFbAsId() {
+    return pageStore.selected_pages_staffs?.[$props.id || '']?.fb_staff_id || $props.id
+}
 /**tạo url ảnh */
 function loadImageUrl() {
     // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.id}.jpeg`
-    
-    return `${$env.img_host}/${$props.id}?width=${SIZE}&height=${SIZE}`
+
+    return `${$env.img_host}/${getFbAsId()}?width=${SIZE}&height=${SIZE}`
 }
 </script>

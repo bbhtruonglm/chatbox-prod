@@ -63,6 +63,8 @@ export interface QueryConversationInput extends FilterConversation {
 
 /**dữ liệu của một khách hàng */
 export interface ConversationInfo {
+    /**id của nhân viên chăm sóc bản mới */
+    user_id?: string
     /**cảm xúc cuối cùng */
     emotion?: string
     /**key cho vitual scroll */

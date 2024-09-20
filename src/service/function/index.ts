@@ -20,6 +20,7 @@ import type { AppInstalledInfo } from '../interface/app/widget'
 import type { Router } from 'vue-router'
 import type { MessageInfo } from '../interface/app/message'
 import { copyToClipboard } from '../helper/copyWithAlert'
+import { User } from '@/utils/helper/User'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -320,7 +321,12 @@ export function getSelectedPageInfo($t: ComposerTranslation, proceed: Cb) {
     if (!r)
       return proceed($t('v1.view.main.dashboard.chat.error.get_page_info'))
 
+    // lưu dữ liệu trang đã chọn
     pageStore.selected_page_list_info = r
+
+    // lưu dữ liệu nhân viên của các trang đã chọn
+    pageStore.selected_pages_staffs = User.getUsersInfo(r)
+
     proceed()
   })
 }

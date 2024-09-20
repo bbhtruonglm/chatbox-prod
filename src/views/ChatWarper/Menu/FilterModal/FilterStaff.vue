@@ -29,7 +29,14 @@
             class="rounded-full w-6 h-6 mr-3"
             :id="staff.fb_staff_id"
           />
-          <p class="text-sm">{{ staff.name }}</p>
+          <p
+            :class="{
+              'line-through': !staff?.user_id,
+            }"
+            class="text-sm"
+          >
+            {{ staff.name }}
+          </p>
         </div>
         <img
           v-if="staff.is_selected"
@@ -124,7 +131,7 @@ function selectStaff(index: number) {
   /**danh sách id nhãn đã chọn */
   let list_id = staff_list.value
     ?.filter(staff => staff.is_selected)
-    ?.map(staff => staff.fb_staff_id)
+    ?.map(staff => staff.user_id || staff.fb_staff_id)
 
   // lưu lại id nhãn đã chọn vào store
   conversationStore.option_filter_page_data.staff_id = size(list_id)

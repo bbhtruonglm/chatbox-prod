@@ -257,7 +257,11 @@ async function getListWattingPage() {
 
       // lấy thông tin nhân viên hiện tại của trang
       page.current_staff =
-        page?.staff_list?.[chatbotUserStore.chatbot_user?.fb_staff_id || '']
+        page?.staff_list?.[
+          chatbotUserStore.chatbot_user?.user_id ||
+            chatbotUserStore.chatbot_user?.fb_staff_id ||
+            ''
+        ]
 
       // thêm trang chưa kích hoạt vào danh sách
 
