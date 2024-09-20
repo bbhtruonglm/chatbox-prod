@@ -145,13 +145,6 @@ export interface SendMesageInput {
     /**file muốn gửi là loại gì */
     type: FileTypeInfo
   }
-  /**các dạng tin nhắn */
-  type:
-    | 'FACEBOOK_MESSAGE' // tin nhắn dạng inbox
-    | 'FACEBOOK_POST' // tin nhắn dạng trả lời bài post
-    // | 'WHATSAPP'         // tin nhắn nền tảng whatsapp
-    // | 'INSTAGRAM'        // tin nhắn nền tảng instagram
-    | 'INTERNAL_MESSAGE' // tin nhắn dạng nội bộ, không gửi cho khách hàng
 }
 
 /**nội dung của tin nhắn tạm vừa được gửi */

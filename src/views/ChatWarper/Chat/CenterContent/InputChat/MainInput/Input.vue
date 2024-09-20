@@ -23,6 +23,7 @@ import {
   useMessageStore,
   useCommonStore,
   usePageStore,
+  useOrgStore,
 } from '@/stores'
 import { send_message } from '@/service/api/chatbox/n4-service'
 import { map, get, size, uniqueId, remove, partition } from 'lodash'
@@ -31,11 +32,10 @@ import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
-import { upload_temp_file } from '@/service/api/chatbox/n6-static'
+import { upload_file, upload_temp_file } from '@/service/api/chatbox/n6-static'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
-import type { TempSendMessage } from '@/service/interface/app/message'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
 
@@ -47,6 +47,7 @@ const $emit = defineEmits<{
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
+const orgStore = useOrgStore()
 const pageStore = usePageStore()
 const { t: $t } = useI18n()
 
@@ -163,7 +164,6 @@ async function sendText(
           page_id,
           client_id,
           text,
-          type: 'FACEBOOK_MESSAGE',
         },
         (e, r) => {
           // nếu có lỗi thì báo lỗi
@@ -240,8 +240,11 @@ function sendFile(page_id: string, client_id: string) {
         ),
       // * gửi các hình ảnh đã được upload
       (cb: CbError) => {
-        // gửi ngang qua ext
-        if (commonStore.extension_status === 'FOUND') {
+        // gửi ngang qua ext cho riêng luồng FB
+        if (
+          commonStore.extension_status === 'FOUND' &&
+          conversationStore.select_conversation?.platform_type === 'FB_MESS'
+        ) {
           // gắn cờ done
           IMAGE_LIST.forEach(image => {
             image.is_loading = false
@@ -279,7 +282,6 @@ function sendFile(page_id: string, client_id: string) {
                   page_id,
                   client_id,
                   attachment: { url: file.url, type: file.type },
-                  type: 'FACEBOOK_MESSAGE',
                 },
                 (e, r) => {
                   file.is_loading = false
@@ -330,7 +332,6 @@ function sendFile(page_id: string, client_id: string) {
                       page_id,
                       client_id,
                       attachment: { url: url, type: file.type },
-                      type: 'FACEBOOK_MESSAGE',
                     },
                     (e, r) => {
                       if (e) return _cb('DONE')
@@ -390,6 +391,18 @@ function getFileUrl(source: File, proceed: Cb<string>) {
   /**link file */
   let url: string
 
+  /**có phải là gửi luồng web không */
+  const IS_WEB =
+    conversationStore.select_conversation?.platform_type === 'WEBSITE'
+
+  if (IS_WEB) {
+    FORM.append(
+      'page_id',
+      conversationStore.select_conversation?.fb_page_id || ''
+    )
+    FORM.append('org_id', orgStore.selected_org_id || '')
+  }
+
   waterfall(
     [
       // * thêm file để upload
@@ -398,14 +411,28 @@ function getFileUrl(source: File, proceed: Cb<string>) {
 
         cb()
       },
-      // * upload file lên server lấy link
-      (cb: CbError) =>
+      // * upload file lên server lấy link tạm
+      (cb: CbError) => {
+        if (IS_WEB) return cb()
+
         upload_temp_file(FORM, (e, r) => {
           if (e || !r) return cb('DONE')
 
           url = r
           cb()
-        }),
+        })
+      },
+      // * upload file lên server lấy link vĩnh viễn
+      (cb: CbError) => {
+        if (!IS_WEB) return cb()
+
+        upload_file(FORM, (e, r) => {
+          if (e || !r?.url) return cb('DONE')
+
+          url = r?.url
+          cb()
+        })
+      },
     ],
     e => proceed(e, url)
   )
