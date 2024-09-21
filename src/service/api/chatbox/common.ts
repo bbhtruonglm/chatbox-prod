@@ -14,17 +14,23 @@ interface Input {
   form?: boolean
   /**dữ liệu gửi lên dạng query string */
   qs?: any
+  /**không thêm org_id vào api */
+  is_disable_org?: boolean
 }
 
 /**
  * - fix token cho toàn bộ api gọi lên server chatbox
  * - format lại response trước khi return
  */
-export const chatbox = ({ uri, body, form, qs }: Input, proceed: Cb) => {
+export const chatbox = (
+  { uri, body, form, qs, is_disable_org }: Input,
+  proceed: Cb
+) => {
   const orgStore = useOrgStore()
 
   // thêm org_id vào body nếu có thể
-  if (!form) body = { ...body, org_id: orgStore.selected_org_id }
+  if (!form && !is_disable_org)
+    body = { ...body, org_id: orgStore.selected_org_id }
 
   request(
     {

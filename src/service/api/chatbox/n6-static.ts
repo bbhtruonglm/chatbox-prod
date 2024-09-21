@@ -22,6 +22,15 @@ export const upload_temp_file = (
     body,
     form: true
 }, proceed)
+/**upload file lên server vĩnh viễn */
+export const upload_file = (
+    body: FormData,
+    proceed: Cb<{ type?: string, url?: string }>
+) => chatbox({
+    uri: `${$env.host.n6_static}/app/upload/file/upload_file`,
+    body,
+    form: true
+}, proceed)
 
 /**đọc danh sách tập tin */
 export const read_file_album = (

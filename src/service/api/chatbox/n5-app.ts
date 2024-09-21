@@ -12,7 +12,8 @@ export const create_token_app_installed = (
     }>
 ) => chatbox({
     uri: `${$env.host.n5_app_v2}/app/app_installed/create_token_app_installed`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**lấy danh sách widget trên chợ */
@@ -21,7 +22,8 @@ export const get_market_widget = (
     proceed: Cb<AppInfo[]>
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app/read`,
-    body
+    body,
+    is_disable_org: true
 }, (e, r) => proceed(e, r?.app))
 
 /**kiểm tra trang đã cài widget chưa */
@@ -30,7 +32,8 @@ export const check_page_install_widget = (
     proceed: Cb<ListPageIsInstall>
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/read`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**lấy danh sách các widget đã cài đặt và token */
@@ -39,7 +42,8 @@ export const get_installed_widget = (
     proceed: Cb<AppInstalledInfo[]>
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/read`,
-    body
+    body,
+    is_disable_org: true
 }, (e, r) => proceed(e, r?.app_installed))
 
 /**cài đặt widget vào trang */
@@ -48,7 +52,8 @@ export const install_widget = (
     proceed: Cb<ResponseInstallWidget>
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/create`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**xoá ứng dụng khỏi trnag */
@@ -57,7 +62,8 @@ export const uninstall_widget = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/delete`,
-    body: { _id: id }
+    body: { _id: id },
+    is_disable_org: true
 }, proceed)
 
 /**update cài đặt ứng dụng */
@@ -66,7 +72,8 @@ export const update_widget = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app-installed/update`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**tạo mới ứng dụng */
@@ -75,7 +82,8 @@ export const create_widget = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app/create`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**sửa cài đặt ứng dụng */
@@ -84,7 +92,8 @@ export const update_my_widget = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app/update`,
-    body
+    body,
+    is_disable_org: true
 }, proceed)
 
 /**xoá ứng dụng */
@@ -93,5 +102,6 @@ export const delete_my_widget = (
     proceed: Cb
 ) => chatbox({
     uri: `${$env.host.n5_app_v1}/v1/app/app/delete`,
-    body: { _id }
+    body: { _id },
+    is_disable_org: true
 }, proceed)
