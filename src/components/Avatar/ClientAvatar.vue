@@ -35,10 +35,19 @@
       @error="onImageError"
       @load="removeAnimatePulse"
       loading="lazy"
-      v-if="conversation?.platform_type === 'ZALO_OA'"
+      v-if="
+        conversation?.platform_type === 'ZALO_OA' && conversation?.client_avatar
+      "
       :src="conversation?.client_avatar"
       class="w-full h-full"
     />
+    <div
+      v-else
+      :style="{ background: letterToColorCode() }"
+      class="w-full h-full flex justify-center items-center font-semibold text-white"
+    >
+      {{ nameToLetter(conversation?.client_name || '') }}
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -68,6 +77,13 @@ const animate_pulse = ref('animate-pulse')
 onMounted(() => {
   // tắt hiệu ứng với dạng web
   if ($props.conversation?.platform_type === 'WEBSITE') removeAnimatePulse()
+
+  // nếu zalo không có hình ảnh
+  if (
+    $props.conversation?.platform_type === 'ZALO_OA' &&
+    !$props.conversation?.client_avatar
+  )
+    removeAnimatePulse()
 })
 
 /**tạo bg dựa trên chữ cái */

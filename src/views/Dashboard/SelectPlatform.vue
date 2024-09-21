@@ -317,7 +317,7 @@ function genFBSelectPageOption() {
       'pages_read_engagement',
       'publish_pages',
       'read_insights',
-      'instagram_basic',
+      // 'instagram_basic',
       'instagram_manage_comments',
       'instagram_manage_insights',
       'pages_manage_metadata',
