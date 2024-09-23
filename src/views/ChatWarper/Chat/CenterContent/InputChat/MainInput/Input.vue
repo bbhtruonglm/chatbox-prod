@@ -16,7 +16,7 @@
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useConversationStore,
@@ -26,7 +26,7 @@ import {
   useOrgStore,
 } from '@/stores'
 import { send_message } from '@/service/api/chatbox/n4-service'
-import { map, get, size, uniqueId, remove, partition } from 'lodash'
+import { map, get, size, uniqueId, partition } from 'lodash'
 import { srcImageToFile } from '@/service/helper/file'
 import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
@@ -38,6 +38,7 @@ import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
+import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -60,6 +61,19 @@ const facebook_error = ref<{
   code?: number
   message?: string
 }>()
+
+/**id trang */
+const page_id = computed(
+  () => conversationStore.select_conversation?.fb_page_id
+)
+/**id khách */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
+/**loại nền tảng */
+const platform_type = computed(
+  () => conversationStore.select_conversation?.platform_type
+)
 
 /**tính toán xem ô input có dữ liệu không */
 function calcIsTyping($event: Event) {
@@ -113,14 +127,16 @@ function sendMessage() {
   // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
   if (messageStore.is_send_file) return
 
-  // lấy id trang và client để tránh trường hợp đang gửi dở thì chuyển khách khác
-  const PAGE_ID = conversationStore.select_conversation?.fb_page_id as string
-  const CLIENT_ID = conversationStore.select_conversation
-    ?.fb_client_id as string
+  // bắt buộc phải có id của trang và khách
+  if (!page_id.value || !client_id.value) return
 
+  // tránh trường hợp đang gửi, lại chuyển page, nên sẽ giữ cố định id
+  /**id trang */
+  const PAGE_ID = page_id.value
+  /*id khách */
+  const CLIENT_ID = client_id.value
   /**div input */
   const INPUT = input_chat_ref.value as HTMLDivElement
-
   /**nội dung tin nhắn */
   const TEXT = INPUT.innerText.trim()
 
@@ -385,57 +401,34 @@ function handleSendMessageError(error: any) {
   }
 }
 /**upload file lên server để lấy link tạm thời */
-function getFileUrl(source: File, proceed: Cb<string>) {
-  /**dữ liệu upload */
-  const FORM = new FormData()
-  /**link file */
-  let url: string
+async function getFileUrl(source: File, proceed: Cb<string>): Promise<void> {
+  try {
+    // nếu không có id trang thì thôi
+    if (!page_id.value) return
 
-  /**có phải là gửi luồng web không */
-  const IS_WEB =
-    conversationStore.select_conversation?.platform_type === 'WEBSITE'
+    /**loại upload */
+    let type: Uploadtype
 
-  if (IS_WEB) {
-    FORM.append(
-      'page_id',
-      conversationStore.select_conversation?.fb_page_id || ''
+    // loại riêng cho zalo oa file khác hình ảnh
+    if (platform_type.value === 'ZALO_OA' && !source.type?.includes('image'))
+      type = 'ZALO_FILE'
+    // website thì lưu vĩnh viễn
+    else if (platform_type.value === 'WEBSITE') type = 'FULL'
+    // các loại còn lại chỉ lưu tạm thời
+    else type = 'TEMP'
+
+    /**kết quả upload */
+    const RES = await new N6StaticAppUploadFile(page_id.value).uploadTempFile(
+      type,
+      source
     )
-    FORM.append('org_id', orgStore.selected_org_id || '')
+
+    // trả về kết quả upload
+    proceed(null, RES?.url)
+  } catch (e) {
+    // báo lỗi nếu có
+    proceed(e)
   }
-
-  waterfall(
-    [
-      // * thêm file để upload
-      (cb: CbError) => {
-        FORM.append('file', source)
-
-        cb()
-      },
-      // * upload file lên server lấy link tạm
-      (cb: CbError) => {
-        if (IS_WEB) return cb()
-
-        upload_temp_file(FORM, (e, r) => {
-          if (e || !r) return cb('DONE')
-
-          url = r
-          cb()
-        })
-      },
-      // * upload file lên server lấy link vĩnh viễn
-      (cb: CbError) => {
-        if (!IS_WEB) return cb()
-
-        upload_file(FORM, (e, r) => {
-          if (e || !r?.url) return cb('DONE')
-
-          url = r?.url
-          cb()
-        })
-      },
-    ],
-    e => proceed(e, url)
-  )
 }
 
 defineExpose({ input_chat_ref, sendMessage })
