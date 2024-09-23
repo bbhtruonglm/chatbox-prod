@@ -23,7 +23,7 @@
       :title="$t('v1.view.main.dashboard.chat.input.file.image')"
     />
     <MenuItem
-      @click="selectAttachmentFromDevice()"
+      @click="uploadFile()"
       :icon="UploadIcon"
       :title="$t('v1.view.main.dashboard.chat.input.file.file')"
     />
@@ -41,7 +41,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useMessageStore } from '@/stores'
+import { useConversationStore, useMessageStore } from '@/stores'
 import { handleFileLocal } from '@/service/helper/file'
 import { map, get } from 'lodash'
 import { getFbFileType } from '@/service/helper/file'
@@ -58,12 +58,28 @@ import FolderIcon from '@/components/Icons/Folder.vue'
 import type { FileInfo } from '@/service/interface/app/album'
 
 const messageStore = useMessageStore()
+const conversationStore = useConversationStore()
 
 /**ref của dropdown */
 const attachment_ref = ref<InstanceType<typeof Dropdown>>()
 /**ref của quản lý album */
 const album_ref = ref<InstanceType<typeof Album>>()
 
+/**
+ * tải lên tập tin
+ * - nếu là fb, web thì cho tải tất cả các dạng
+ * - nếu là zalo thì chỉ cho tải doc, pdf và docx
+ */
+function uploadFile(): void {
+  /**loại nền tảng */
+  const TYPE = conversationStore.select_conversation?.platform_type
+
+  // nếu là zalo thì chỉ cho tải doc, pdf và docx
+  if (TYPE === 'ZALO_OA') selectAttachmentFromDevice('.doc,.docx,.pdf')
+
+  // nếu là fb, web thì cho tải tất cả các dạng
+  else selectAttachmentFromDevice()
+}
 /**chọn file từ thiết bị để gửi đi */
 function selectAttachmentFromDevice(accept: string = '*') {
   // đang gửi thì không cho chọn lại file để bị lỗi

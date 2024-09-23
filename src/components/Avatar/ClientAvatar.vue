@@ -109,7 +109,7 @@ function removeAnimatePulse() {
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-  return `${$env.img_host}/${$props.conversation?.fb_client_id}?page_id=${$props.conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=${$props.actual_size}&height=${$props.actual_size}&type=${$props.conversation?.platform_type}`
+  return `${$env.img_host}/${$props.conversation?.fb_client_id}?page_id=${$props.conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.user_id || chatbotUserStore.chatbot_user?.fb_staff_id}&width=${$props.actual_size}&height=${$props.actual_size}&type=${$props.conversation?.platform_type}`
 }
 /**khi ảnh load thất bại thì thay thế ảnh mặc định vào */
 function onImageError($event: Event) {
