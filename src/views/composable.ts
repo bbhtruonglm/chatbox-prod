@@ -7,6 +7,7 @@ import { read_org } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 
 import type { CbError } from '@/service/interface/function'
+import { BillingAppOrganization } from '@/utils/api/Billing'
 
 /**load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
@@ -46,7 +47,7 @@ export function initRequireData() {
   async function getAllOrg() {
     try {
       // lấy danh sách các tổ chức
-      orgStore.list_org = await read_org()
+      orgStore.list_org = await new BillingAppOrganization().readOrg()
     } catch (e) {
       // hiển thị thông báo lỗi
       toastError(e)

@@ -32,23 +32,25 @@
             <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
               <template v-for="staff of list_new_staff">
                 <ActorItem
-                  @click="selectStaff(staff?.fb_staff_id)"
+                  @click="selectStaff(staff?.user_id)"
                   v-if="filterStaff(staff)"
                   class="cursor-pointer"
                 >
                   <template #before-avatar>
                     <Checkbox
-                      v-model="list_selected_staff_id[staff?.fb_staff_id]"
+                      v-if="staff?.user_id"
+                      v-model="list_selected_staff_id[staff?.user_id]"
                       class="flex-shrink-0"
                     />
                   </template>
                   <template #avatar>
                     <StaffAvatar
-                      :id="staff.fb_staff_id"
+                      :id="staff?.fb_staff_id"
                       class="w-8 h-8 rounded-oval"
                     />
                   </template>
                   <template #name>
+                    <!-- {{ staff?.user_id }} -->
                     {{ staff?.name }}
                   </template>
                   <template #after-name> </template>
@@ -210,7 +212,9 @@ async function getAnotherOrgStaff() {
   }
 }
 /**toggle nhân viên */
-function selectStaff(staff_id: string) {
+function selectStaff(staff_id?: string) {
+  if (!staff_id) return
+
   list_selected_staff_id.value[staff_id] =
     !list_selected_staff_id.value[staff_id]
 }
