@@ -87,10 +87,13 @@ async function inactivePage() {
     // tắt modal
     confirm_inactive_modal_ref.value?.toggleModal()
 
-    // * call api huỷ kích hoạt trang
-    await update_page_sync({ page_id: PAGE_ID, is_active: false })
+    // call api huỷ kích hoạt trang
+    // api này có thể call lỗi, vì không khớp được id user mới với id cũ
+    try {
+      await update_page_sync({ page_id: PAGE_ID, is_active: false })  
+    } catch (e) {}
 
-    // * call api đá trang ra khỏi tổ chức
+    // call api đá trang ra khỏi tổ chức
     await kick_os(orgStore.selected_org_id, PAGE_ID)
 
     // xoá dữ liệu trang khỏi danh sách dữ liệu trang đang chọn (nếu có)
