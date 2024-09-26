@@ -58,11 +58,11 @@ export const kick_os = async (
 
 /**đọc dữ liệu tổ chức của trang liên quan */
 export const read_link_org = async (
-  page_id: string[]
+  page_ids: string[]
 ): Promise<PageOrgInfoMap> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/organization/read_link_org`,
-    body: { page_id },
+    body: { page_ids },
   })
 
 /**đọc danh sách các thành viên trong tổ chức */
