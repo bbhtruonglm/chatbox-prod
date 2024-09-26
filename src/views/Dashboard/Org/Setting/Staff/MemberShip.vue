@@ -50,7 +50,6 @@
                     />
                   </template>
                   <template #name>
-                    <!-- {{ staff?.user_id }} -->
                     {{ staff?.name }}
                   </template>
                   <template #after-name> </template>
@@ -119,15 +118,23 @@ function toggleModal() {
 }
 /**hiển thị các nhân viên theo tìm kiếm */
 function filterStaff(staff: StaffInfo) {
+  // lọc bỏ các nhân viên cũ không có user_id mới
+  if (!staff?.user_id) return false
+
   // nếu không có giá trị tìm kiếm thì luôn hiển thị
   if (!connectPageStore.search) return true
 
   /**giá trị tìm kiếm đã được xử lý */
   const SEARCH = nonAccentVn(connectPageStore.search)
 
+  /**tên nhân viên đã xử lý */
+  const STAFF_NAME = nonAccentVn(staff?.name || '')
+
+  // lọc theo id hoặc tên nhân viên
   return (
+    staff?.user_id?.includes(SEARCH) ||
     staff?.fb_staff_id?.includes(SEARCH) ||
-    nonAccentVn(staff?.name || '')?.includes(SEARCH)
+    STAFF_NAME?.includes(SEARCH)
   )
 }
 /**thêm các nhân viên được chọn vào tổ chức */
@@ -213,8 +220,10 @@ async function getAnotherOrgStaff() {
 }
 /**toggle nhân viên */
 function selectStaff(staff_id?: string) {
+  // nếu không có id nhân viên thì thôi
   if (!staff_id) return
 
+  // thay đổi cờ select của nhân viên này
   list_selected_staff_id.value[staff_id] =
     !list_selected_staff_id.value[staff_id]
 }
