@@ -202,10 +202,10 @@ async function getAnotherOrgStaff() {
     // lặp qua toàn bộ danh sách trang của người dùng
     map(LIST_STAFF, staff => {
       // nếu không có id nhân viên thì thôi
-      if (!staff.fb_staff_id) return
+      if (!staff.user_id) return
 
       // lọc ra nhân viên đã ở trong tổ chức rồi
-      if (MAP_OS_ID[staff.fb_staff_id] === orgStore.selected_org_id) return
+      if (MAP_OS_ID[staff.user_id] === orgStore.selected_org_id) return
 
       // thêm nhân viên chưa kích hoạt vào danh sách
       list_new_staff.value.push(staff)
