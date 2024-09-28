@@ -391,6 +391,7 @@ const source: Language = {
               title: 'Chọn nhân viên',
             },
             action: {
+              open_url: 'Đi đến liên kết',
               open_facebook: 'Trang cá nhân Fb',
               open_inbox: 'Mở hộp thư Fb',
               mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
