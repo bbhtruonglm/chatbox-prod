@@ -11,7 +11,7 @@
       <Facebook
         :option="genFBSelectPageOption()"
         @access_token="syncFacebookPage"
-        class="h-9"
+        class="h-12"
       />
     </template>
   </EmptyPage>

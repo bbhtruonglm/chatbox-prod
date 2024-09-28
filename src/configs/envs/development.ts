@@ -84,7 +84,7 @@ const ENV: EnvInfo = {
         }
     },
     zalo_oa: {
-        redirect_uri: 'https://localhost:8000/dashboard/select-page?connect_page=ZALO_OA',
+        portal: 'https://chatbox-service-v3.botbanhang.vn/public/callback'
     },
     platform: ['FB_MESS', 'WEBSITE', 'FB_WHATSAPP', 'FB_INSTAGRAM', 'ZALO_OA'],
     img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar',

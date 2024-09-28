@@ -2,6 +2,7 @@ import { N4Serivce } from '@/utils/api/N4Serivce'
 
 import type { PageList } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
+import type { LocationQueryValue } from 'vue-router'
 
 /**dữ liệu của trang hiện tại kích hoạt */
 export interface CurrentPageData {
@@ -34,5 +35,40 @@ export class N4SerivceAppPage extends N4Serivce {
   public async syncFacebookPage(access_token: string): Promise<void> {
     // gọi api
     return this.post('sync_facebook_page', { access_token })
+  }
+  /**tạo ra url cấp quyền của zalo oa */
+  public async zaloOaGetUrlOauth(): Promise<string> {
+    try {
+      /**cổng callback url trung gian */
+      const PORTAL = $env.zalo_oa.portal
+      /**domain hiện tại */
+      const CURRENT_HOST = origin
+      /**path đến ui xử lý */
+      const QUERY_PATH = '/dashboard/select-page?connect_page=ZALO_OA'
+
+      /**callback uri mục tiêu */
+      const FORWOARD = encodeURIComponent(`${CURRENT_HOST}${QUERY_PATH}`)
+
+      /**đường dẫn callback url */
+      const CALLBACK_URL = `${PORTAL}?forward=${FORWOARD}`
+
+      /**đường dẫn cấp quyền của zalo */
+      const RESULT = await this.post('zalo_oa_get_url_oauth', {
+        redirect_uri: CALLBACK_URL,
+      })
+
+      // trả về kết quả
+      return RESULT
+    } catch (e) {
+      // nếu có lỗi thì bắn ra
+      throw e
+    }
+  }
+  /**đồng bộ lại danh sách trang mới nhất của Zalo OA với hệ thống */
+  public async syncZaloOaPage(
+    payload: Record<string, string | LocationQueryValue[] | undefined>
+  ): Promise<void> {
+    // gọi api
+    return this.post('sync_zalo_oa_page', payload)
   }
 }

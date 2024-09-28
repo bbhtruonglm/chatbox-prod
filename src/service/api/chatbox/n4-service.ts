@@ -103,7 +103,7 @@ export const sync_facebook_page = (
 /**tạo ra link oauth của zalo oa */
 export const zalo_oa_get_url_oauth = (proceed: Cb) => chatbox({
     uri: `${$env.host.n4_service_v2}/app/page/zalo_oa_get_url_oauth`,
-    body: { redirect_uri: $env.zalo_oa.redirect_uri, is_debug: true },
+    body: { redirect_uri: $env.zalo_oa.redirect_uri },
 }, proceed)
 /**đầu vào api đồng bộ page zalo */
 interface SyncZaloOAPageInput {
