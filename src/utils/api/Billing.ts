@@ -14,7 +14,7 @@ class Billing extends Botx {
 export class BillingAppOrganization extends Billing {
   constructor() {
     // gọi API lên module billing
-    super(`app/organization/`)
+    super(`app/organization`)
   }
 
   /**

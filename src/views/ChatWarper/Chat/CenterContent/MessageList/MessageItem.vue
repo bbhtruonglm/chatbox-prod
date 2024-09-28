@@ -98,7 +98,7 @@ const text = computed(() => $props.message?.message_text)
 /**tiêu đề nút bắt đầu */
 const postback_title = computed(() => $props.message?.postback_title)
 /**danh sách file đính kèm */
-const list_attachment = computed(() => $props.message?.message_attachments)
+const attachments = computed(() => $props.message?.message_attachments)
 /**cảm xúc chính của tin nhắn */
 const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
 /**AI đánh dấu tin này bị rep chậm */
@@ -107,9 +107,9 @@ const is_ai_slow_reply = computed(() => $props.message?.is_ai_slow_reply)
 const message_source = computed<MessageTemplateInput[]>(() => {
   /**
    * - chỉ lấy dữ liệu của attr đầu tiên
-   * - nếu có nhiều attr thì xử lý kiểu khác
+   * - nếu có nhiều attr thì xử lý kiểu khác (hiện tại chỉ có FB là có list attr là dạng ảnh)
    */
-  const SOURCE = list_attachment.value?.[0]
+  const SOURCE = attachments.value?.[0]
 
   /**kết quả trả về */
   let result: MessageTemplateInput[] = []
@@ -168,11 +168,12 @@ const message_source = computed<MessageTemplateInput[]>(() => {
       })
     )
 
-  // nếu chỉ có url (là file nhưng chưa xử lý AI) -> tạo 1 record
+  // nếu chỉ có url (là file nhưng chưa xử lý AI, link dạng fallback) -> tạo 1 record
   if (SOURCE?.payload?.url && !SOURCE?.payload?.elements) {
     /**dữ liệu của 1 template */
     let res: MessageTemplateInput = {}
 
+    // tính là chưa xử lý AI
     res.is_ai = false
 
     // hình ảnh
@@ -183,6 +184,18 @@ const message_source = computed<MessageTemplateInput[]>(() => {
     if (SOURCE?.type === 'audio') res.audio = { url: SOURCE.payload.url }
     // tập tin khác
     if (SOURCE?.type === 'file') res.file = { url: SOURCE.payload.url }
+    // link
+    if (SOURCE?.type === 'fallback') {
+      res.title = text.value
+      res.content = SOURCE.payload.title
+      res.list_button = [
+        {
+          title: $t('v1.view.main.dashboard.chat.action.open_url'),
+          url: SOURCE.payload.url,
+          type: 'web_url',
+        },
+      ]
+    }
 
     // trả về dữ liệu
     result.push(res)
@@ -216,6 +229,6 @@ function addOnClassTemplate() {
  * => sẽ hiển thị kiểu khác
  */
 function isSpecialCase() {
-  return (list_attachment.value?.length || 0) > 1
+  return (attachments.value?.length || 0) > 1
 }
 </script>
