@@ -165,7 +165,7 @@ const source: Language = {
             },
           },
           select_platform: {
-            another_page: 'Trang ngoài phạm vi tổ chức của bạn',
+            another_page: 'Các trang ở tổ chức khác',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
@@ -955,6 +955,9 @@ const source: Language = {
             },
           },
           org_page: {
+            guid: 'Chọn trang kích hoạt, đồng thời chuyển về Tổ chức của bạn sở hữu.',
+            free_page: 'Các trang chưa thuộc tổ chức quản lý',
+            actived_pages: 'Trang đã kích hoạt',
             reach_quota: 'Bạn đã đạt đến giới hạn trang của tổ chức',
             title: 'Thêm trang vào tổ chức',
             guild: 'Chuyển trang về tổ chức của bạn',
