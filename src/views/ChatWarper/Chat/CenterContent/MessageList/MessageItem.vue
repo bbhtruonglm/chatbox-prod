@@ -11,6 +11,7 @@
       }"
       :time="message_time"
       :meta="meta"
+      :is_edit="message?.is_edit"
     />
     <ReplyMessage
       v-if="reply_message"
@@ -42,6 +43,12 @@
         :message
       />
     </SliderWarper>
+    <div
+      v-if="message?.reaction?.emoji"
+      class="absolute text-xs -bottom-2 -right-1"
+    >
+      {{ message?.reaction?.emoji }}
+    </div>
     <SlowReply
       v-if="is_ai_slow_reply"
       :now_message="message"

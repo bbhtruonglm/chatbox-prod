@@ -85,7 +85,7 @@
                 orgStore.selected_org_info?.org_package?.org_quota_ai_text
               ) || 0
             }}
-            {{ $t('v1.view.main.dashboard.org.pay.token') }}
+            {{ $t('v1.view.main.dashboard.org.pay.text') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_image')">
             <span class="text-green-700">
@@ -101,7 +101,7 @@
                 orgStore.selected_org_info?.org_package?.org_quota_ai_image
               ) || 0
             }}
-            {{ $t('v1.view.main.dashboard.org.pay.token') }}
+            {{ $t('v1.view.main.dashboard.org.pay.image') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_sound')">
             <span class="text-green-700">
@@ -117,7 +117,7 @@
                 orgStore.selected_org_info?.org_package?.org_quota_ai_sound
               ) || 0
             }}
-            {{ $t('v1.view.main.dashboard.org.pay.token') }}
+            {{ $t('v1.view.main.dashboard.org.pay.second') }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.ai_video')">
             <span class="text-green-700">
@@ -133,7 +133,7 @@
                 orgStore.selected_org_info?.org_package?.org_quota_ai_video
               ) || 0
             }}
-            {{ $t('v1.view.main.dashboard.org.pay.token') }}
+            {{ $t('v1.view.main.dashboard.org.pay.second') }}
           </Item>
         </div>
         <div

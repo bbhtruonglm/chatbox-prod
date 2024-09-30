@@ -427,6 +427,7 @@ const source: Language = {
               },
             },
             message: {
+              edited: 'Đã chỉnh sửa',
               summary: 'Tóm tắt',
               emotion_ai: {
                 happiness: 'AI: Vui vẻ',
@@ -837,9 +838,9 @@ const source: Language = {
               business: 'Doanh nghiệp',
               pro: 'Pro',
               unlimited: 'Không giới hạn',
-              text_month: 'ký tự / Tháng',
-              image_month: 'Hình ảnh / Tháng',
-              minute_month: 'phút / Tháng',
+              text: 'ký tự',
+              image: 'Hình ảnh',
+              second: 'giây',
               month: 'tháng',
               next_pay: 'Kỳ thanh toán tiếp theo:',
               token: 'token',
