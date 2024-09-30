@@ -2,32 +2,61 @@
   <EmptyActive v-if="!size(list_my_org_page) && !size(list_another_org_page)" />
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
+      <SplitTitle
+        v-if="list_my_org_page?.length"
+        :title="$t('v1.view.main.dashboard.org_page.actived_pages')"
+      />
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_my_org_page">
           <PageItem
-            @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
-            v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
-            :checkbox_is_visible="true"
+            :checkbox_is_visible="false"
             :page_info="page?.page"
-            class="cursor-pointer"
           >
           </PageItem>
         </template>
       </div>
-      <div class="flex items-center gap-2.5">
-        <div class="flex-grow">
-          <hr />
+      <SplitTitle
+        v-if="list_another_org_page?.length"
+        :title="$t('v1.view.main.dashboard.select_platform.another_page')"
+      />
+      <template v-for="org of map_another_org_page?.map_org_info">
+        <div>
+          <div class="text-sm font-semibold">
+            {{ org?.org_info?.org_name }}:
+          </div>
+          <div class="text-xs text-slate-500">
+            {{ $t('v1.view.main.dashboard.org_page.guid') }}
+          </div>
         </div>
-        <div class="flex-shrink-0 text-xs font-medium text-slate-500">
-          {{ $t('v1.view.main.dashboard.select_platform.another_page') }}
+        <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
+          <template v-for="page of list_another_org_page">
+            <PageItem
+              @click="selectPage(page)"
+              v-if="
+                page?.page?.fb_page_id &&
+                filterPage(page) &&
+                map_another_org_page?.map_org_page?.[org?.org_id!]?.[
+                  page?.page?.fb_page_id
+                ]
+              "
+              v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
+              :checkbox_is_visible="true"
+              :checkbox_is_disabled="!isPageAdmin(page)"
+              :page_info="page?.page"
+              :class="
+                isPageAdmin(page)
+                  ? 'cursor-pointer'
+                  : 'grayscale cursor-not-allowed'
+              "
+            >
+            </PageItem>
+          </template>
         </div>
-        <div class="flex-grow">
-          <hr />
-        </div>
-      </div>
+      </template>
+      <SplitTitle :title="$t('v1.view.main.dashboard.org_page.free_page')" />
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_another_org_page">
+        <template v-for="page of list_free_page">
           <PageItem
             @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
@@ -45,11 +74,36 @@
         </template>
       </div>
     </div>
-    <div class="flex-shrink-0 flex justify-end p-2 border-t">
+    <div
+      :class="countPageSelect() ? 'justify-between' : 'justify-end'"
+      class="flex-shrink-0 flex p-2 border-t"
+    >
+      <div
+        v-if="countPageSelect()"
+        class="text-xs flex gap-2 items-center"
+      >
+        <StackIcon class="w-3.5 h-3.5 flex-shrink-0" />
+        {{ orgStore.selected_org_info?.org_package?.org_current_page }}
+        /
+        {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
+        →
+        <span
+          :class="isOverQuota() ? 'text-red-600' : 'text-green-600'"
+          class="font-bold"
+        >
+          {{ countNewCurrentPage(orgStore.selected_org_info) }}
+          /
+          {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
+        </span>
+        <CheckIcon
+          v-if="!isOverQuota()"
+          class="w-4 text-green-600"
+        />
+      </div>
       <Button
         @click="beforeActivePage"
         :class="
-          countPageSelect()
+          countPageSelect() && !isOverQuota()
             ? 'bg-blue-700 text-white'
             : 'cursor-not-allowed bg-slate-200 text-slate-500'
         "
@@ -58,13 +112,6 @@
       </Button>
     </div>
   </template>
-  <MoveToOrg
-    :list_another_org_page_id
-    :list_current_page
-    :map_another_org_page
-    @done="activePage()"
-    ref="move_to_org_ref"
-  />
 </template>
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
@@ -78,46 +125,50 @@ import { filter, keyBy, map, mapValues, size } from 'lodash'
 import { update_page } from '@/service/api/chatbox/n4-service'
 import { eachOfLimit } from 'async'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
-import { KEY_LOAD_LIST_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { nonAccentVn } from '@/service/helper/format'
-import { read_os, read_link_org } from '@/service/api/chatbox/billing'
-import { toastError } from '@/service/helper/alert'
+import { read_os, read_link_org, add_os } from '@/service/api/chatbox/billing'
+import { confirmSync, toastError } from '@/service/helper/alert'
+import {
+  N4SerivceAppPage,
+  type CurrentPageData,
+} from '@/utils/api/N4Service/Page'
+import { useI18n } from 'vue-i18n'
+import { Toast } from '@/utils/helper/Alert'
 
 import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
-import MoveToOrg from '@/views/Dashboard/ConnectPage/ActivePage/MoveToOrg.vue'
+import SplitTitle from '@/views/Dashboard/ConnectPage/ActivePage/SplitTitle.vue'
 
-import type { PageData } from '@/service/interface/app/page'
+import StackIcon from '@/components/Icons/Stack.vue'
+import CheckIcon from '@/components/Icons/Check.vue'
+
+import type { PageData, PageInfo } from '@/service/interface/app/page'
 import type {
   OrgInfo,
   OwnerShipInfo,
   PageOrgInfoMap,
 } from '@/service/interface/app/billing'
-import {
-  N4SerivceAppPage,
-  type CurrentPageData,
-} from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert'
+
+const $emit = defineEmits(['done'])
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
+const { t: $t } = useI18n()
 
 /**ẩn hiện modal kết nối nền tảng */
 const toggleModal = inject(KEY_TOGGLE_MODAL_FUNCT)
-/**lấy danh sách trang đã kích hoạt */
-const loadListPage = inject(KEY_LOAD_LIST_PAGE_FUNCT)
 
 /**danh sách các trang thuộc tổ chức của tôi */
 const list_my_org_page = ref<PageData[]>([])
 /**danh sách các trang ở tổ chức khác */
 const list_another_org_page = ref<PageData[]>([])
+/**các trang tự do không có tổ chức */
+const list_free_page = ref<PageData[]>([])
 /**danh sách id các page đã chọn */
 const list_selected_page_id = ref<Record<string, boolean>>({})
-/**ref của modal chọn tổ chức cho trang */
-const move_to_org_ref = ref<InstanceType<typeof MoveToOrg>>()
 /**danh sách các trang đã chọn - org id */
 const map_my_os = ref<Record<string, string | undefined>>({})
 /**danh sách các trang đạng chọn mà ngoài tổ chức */
@@ -132,7 +183,20 @@ onMounted(() => getListWattingPage())
 
 /**kiểm tra xem user có phải là admin trang không */
 function isPageAdmin(page: PageData) {
-  return page?.current_staff?.role === 'MANAGE'
+  // nếu không có id tran thì thôi
+  if (!page?.page?.fb_page_id) return
+
+  // nhân viên không có quyền
+  if (
+    // không nằm trong nhóm admin
+    !page?.current_staff?.group_staff?.includes(page?.group_admin_id || '') &&
+    // không phải admin của fb
+    page?.current_staff?.role !== 'MANAGE'
+  )
+    return false
+
+  // nhân viên có quyền
+  return true
 }
 /**hiển thị các page theo tìm kiếm */
 function filterPage(page: PageData) {
@@ -142,40 +206,117 @@ function filterPage(page: PageData) {
   /**giá trị tìm kiếm đã được xử lý */
   const SEARCH = nonAccentVn(connectPageStore.search)
 
+  // tìm theo id hoặc tên trang
   return (
     page?.page?.fb_page_id?.includes(SEARCH) ||
     nonAccentVn(page?.page?.name || '')?.includes(SEARCH)
   )
 }
+/**đếm xem nếu thêm page thì tổng số page mới là bao nhiêu */
+function countNewCurrentPage(org?: OrgInfo) {
+  /**số page hiện tại trong tổ chức */
+  const CURRENT_PAGE = org?.org_package?.org_current_page || 0
+  /**số page mới được chọn để thêm vào tổ chức */
+  const NEW_PAGE = list_another_org_page_id.value?.length || 0
+
+  // trả về tổng
+  return CURRENT_PAGE + NEW_PAGE
+}
+/**kiểm tra xem có bị quá giới hạn trang của tổ chức không */
+function isOverQuota() {
+  /**thông tin của tổ chức đang chọn */
+  const ORG = orgStore.selected_org_info
+  /**giới hạn trang hiện tại */
+  const QUOTA = ORG?.org_package?.org_quota_page || 0
+
+  // số trang mới thêm vượt quá giới hạn
+  return countNewCurrentPage(ORG) > QUOTA
+}
+/**lấy danh sách các trang ngoài tổ chức hiện tại */
+function getAnotherOrgPage() {
+  // lọc ra các id trang ngoài tổ chức hiện tại
+  list_another_org_page_id.value = map(
+    list_selected_page_id.value,
+    (is_selected, page_id) => {
+      // bỏ các trang chưa chọn hoặc đang trong tổ chức
+      if (!is_selected || map_my_os.value?.[page_id]) return
+
+      // lấy id trang ngoài tổ chức
+      return page_id
+    }
+  )?.filter(Boolean) as string[]
+}
 /**trước khi kích hoạt trang */
 function beforeActivePage() {
-  // làm mới danh sách trang khác tổ chức
-  list_another_org_page_id.value = []
+  // nếu đã quá hạn mức thì chặn
+  if (isOverQuota())
+    return new Toast().error($t('v1.view.main.dashboard.org_page.reach_quota'))
 
-  /**lấy danh sách các trang khác tổ chức */
-  map(list_selected_page_id.value, (is_selected, page_id) => {
-    // chỉ lấy trang đang chọn và không phải tổ chức của mình
-    if (!is_selected || map_my_os.value?.[page_id]) return
-
-    // thêm vào danh sách trang khác tổ chức
-    list_another_org_page_id.value.push(page_id)
-  })
-
-  // nếu có trang khác tổ chức thì chuyển qua modal chuyển trang vào tổ chức
-  if (list_another_org_page_id.value?.length)
-    move_to_org_ref.value?.toggleModal()
+  // nếu có trang khác tổ chức thì cảnh báo
+  if (list_another_org_page_id.value?.length) warningTakeControlPage()
   // nếu không thì kích hoạt luôn
   else activePage()
 }
+/**cảnh báo khi người dùng sắp lấy page của tổ chức khác */
+async function warningTakeControlPage() {
+  try {
+    // nếu không chọn tổ chức thì không thể tiếp tục
+    if (!orgStore.selected_org_id) return
+
+    /**danh sách tên các trang đã có tổ chức */
+    const LIST_NAME = list_another_org_page_id.value
+      // lọc các trang có tổ chức khác
+      ?.filter(page_id => map_another_org_page.value?.map_page_org?.[page_id])
+      // lọc tên trang
+      ?.map(
+        page_id => list_current_page.value?.page_list?.[page_id]?.page?.name
+      )
+
+    // cảnh báo lấy trang của tổ chức khác
+    if (LIST_NAME?.length) {
+      /**xác nhận có chuyển trang không */
+      const IS_ALLOW = await confirmSync(
+        'warning',
+        $t('v1.common.warning'),
+        $t('v1.view.main.dashboard.org_page.warning_move', {
+          page: LIST_NAME?.join(', '),
+        })
+      )
+
+      // nếu không chuyển thì bỏ qua
+      if (!IS_ALLOW) return
+    }
+
+    // hiển thị loading
+    commonStore.is_loading_full_screen = true
+
+    // thêm trang các vào tổ chức
+    await eachOfLimit(
+      list_another_org_page_id.value,
+      1,
+      async (page_id, i) =>
+        await add_os(orgStore.selected_org_id!, page_id as string)
+    )
+
+    // kích hoạt trang
+    activePage()
+  } catch (e) {
+    // thông báo lỗi
+    toastError(e)
+  } finally {
+    // ẩn loading
+    commonStore.is_loading_full_screen = false
+  }
+}
 /**kích hoạt các trang được chọn */
 async function activePage() {
-  // nếu không có trang nào được chọn thì bỏ qua
-  if (!countPageSelect()) return
-
-  // hiển thị loading
-  commonStore.is_loading_full_screen = true
-
   try {
+    // nếu không có trang nào được chọn thì bỏ qua
+    if (!countPageSelect()) return
+
+    // hiển thị loading
+    commonStore.is_loading_full_screen = true
+
     // lặp qua từng trang được chọn
     await eachOfLimit(
       list_selected_page_id.value,
@@ -202,18 +343,38 @@ async function activePage() {
     // làm mới danh sách trang được chọn
     list_selected_page_id.value = {}
 
+    // thông báo ra modal là đã xong
+    $emit('done')
+
     // tắt modal kết nối nền tảng
     await toggleModal?.()
-
-    // nạp lại danh sách trang đã được kích hoạt ở UI chọn page
-    await loadListPage?.(orgStore.selected_org_id)
   } catch (e) {
     // thông báo lỗi
     toastError(e)
+  } finally {
+    // ẩn loading
+    commonStore.is_loading_full_screen = false
   }
+}
+/**tạo ra map của tổ chức đạng chọn với các trang của nó */
+async function getMapMyOs() {
+  /**danh sách các trang thuộc các tổ chức của tôi */
+  let list_my_os: OwnerShipInfo[] = []
 
-  // ẩn loading
-  commonStore.is_loading_full_screen = false
+  // lấy toàn bộ các trang thuộc tổ chức của tôi
+  await eachOfLimit(orgStore.list_org, 1, async (org: OrgInfo, i) => {
+    // nếu không có id tổ chức thì bỏ qua
+    if (!org.org_id) return
+
+    /**các trang đã nằm trong tổ chức */
+    const LIST_OS = await read_os(org.org_id)
+
+    // thêm trang vào danh sách tổng
+    list_my_os = [...list_my_os, ...LIST_OS]
+  })
+
+  /**page_id và org_id */
+  map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
 }
 /**tính toán ra danh sách page mới và page không có quyền truy cập */
 async function getListWattingPage() {
@@ -224,36 +385,21 @@ async function getListWattingPage() {
     // xóa toàn bộ các danh sách trang đang có để làm mới
     list_my_org_page.value = []
     list_another_org_page.value = []
+    list_free_page.value = []
 
-    /**danh sách các trang thuộc các tổ chức của tôi */
-    let list_my_os: OwnerShipInfo[] = []
-
-    // lấy toàn bộ các trang thuộc tổ chức của tôi
-    await eachOfLimit(orgStore.list_org, 1, async (org: OrgInfo, i) => {
-      // nếu không có id tổ chức thì bỏ qua
-      if (!org.org_id) return
-
-      /**các trang đã nằm trong tổ chức */
-      const LIST_OS = await read_os(org.org_id)
-
-      // thêm trang vào danh sách tổng
-      list_my_os = [...list_my_os, ...LIST_OS]
-    })
-
-    /**page_id và org_id */
-    map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
+    // tạo ra map giữa id tổ chức đang chọn và id trang
+    await getMapMyOs()
 
     /**toàn bộ các trang của người dùng */
     list_current_page.value = await new N4SerivceAppPage().getListPage()
+
+    /**danh sách các trang không phải trong tổ chức của tôi */
+    let list_not_my_org_page: PageData[] = []
 
     // lặp qua toàn bộ danh sách page của người dùng
     map(list_current_page.value?.page_list, page => {
       // nếu không có id trang thì thôi
       if (!page?.page?.fb_page_id) return
-
-      // nếu trang đã được kích hoạt ở tổ chức của mình rồi thì bỏ qua (ở tổ chức khác vẫn hiện)
-      if (page.page?.is_active && map_my_os.value?.[page?.page?.fb_page_id])
-        return
 
       // lấy thông tin nhân viên hiện tại của trang
       page.current_staff =
@@ -269,13 +415,26 @@ async function getListWattingPage() {
       if (map_my_os.value?.[page?.page?.fb_page_id])
         list_my_org_page.value.push(page)
       // trang không thuộc tổ chức của tôi
-      else list_another_org_page.value.push(page)
+      else list_not_my_org_page.push(page)
     })
 
     // lấy dữ liệu tổ chức khác
     map_another_org_page.value = await read_link_org(
-      list_another_org_page.value?.map(page => page?.page?.fb_page_id || '')
+      list_not_my_org_page?.map(page => page?.page?.fb_page_id || '')
     )
+
+    // lặp qua các trang ngoài tổ chức đang chọn
+    list_not_my_org_page.map(page => {
+      // nếu trang không thuộc tổ chức nào
+      if (
+        !map_another_org_page.value?.map_page_org?.[
+          page?.page?.fb_page_id || ''
+        ]
+      )
+        list_free_page.value.push(page)
+      // nếu trang thuộc tổ chức khác
+      else list_another_org_page.value.push(page)
+    })
   } catch (e) {
     // thông báo lỗi
     new Toast().error(e)
@@ -293,6 +452,9 @@ function selectPage(page: PageData) {
   const PAGE_ID = page?.page?.fb_page_id || ''
 
   list_selected_page_id.value[PAGE_ID] = !list_selected_page_id.value[PAGE_ID]
+
+  // tính toán lại số trang ngoài tổ chức đã được chọn
+  getAnotherOrgPage()
 }
 /**đếm số trang đang chọn */
 function countPageSelect() {

@@ -55,9 +55,9 @@
     :selected_page
     ref="confirm_inactive_modal_ref"
   />
-  <OwnerShip
+  <ConnectPage
     @done="getOs()"
-    ref="owner_ship_ref"
+    ref="connect_page_ref"
   />
 </template>
 <script setup lang="ts">
@@ -68,8 +68,9 @@ import { toastError } from '@/service/helper/alert'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
-import OwnerShip from '@/views/Dashboard/Org/Setting/Page/OwnerShip.vue'
+
 import ConfirmInactive from '@/views/Dashboard/Org/Setting/Page/ConfirmInactive.vue'
+import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import StackIcon from '@/components/Icons/Stack.vue'
 import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
@@ -83,12 +84,12 @@ const orgStore = useOrgStore()
 
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
-/**modal thêm trang vào tổ chức */
-const owner_ship_ref = ref<InstanceType<typeof OwnerShip>>()
 /**page đang được chọn */
 const selected_page = ref<PageInfo>()
 /**danh sách trang trong tổ chức */
 const list_os = ref<OwnerShipInfo[]>()
+/**ref của modal kết nối nền tảng */
+const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
 // nạp dữ liệu trang khi component được mount
 onMounted(getOs)
@@ -151,6 +152,6 @@ function openAddPageModal() {
   if (isReachPageQuota()) return
 
   // mở modal thêm trang
-  owner_ship_ref.value?.toggleModal()
+  connect_page_ref.value?.toggleModal()
 }
 </script>
