@@ -9,8 +9,14 @@
       <span class="font-medium">{{ parserStaffName() }}</span>
       {{ $t('v1.view.main.dashboard.chat.message.sent') }}
     </span>
-    <span v-if="time">
+    <span
+      v-if="time"
+      class="mr-1"
+    >
       {{ format_date(new Date(time), 'HH:mm:ss, dd/MM/yyyy') }}
+    </span>
+    <span v-if="is_edit">
+      ({{ $t('v1.view.main.dashboard.chat.message.edited') }})
     </span>
   </div>
 </template>
@@ -25,6 +31,8 @@ const $props = withDefaults(
     info?: string
     /**dữ liệu đính kèm của tin nhắn */
     meta?: string
+    /**tin nhắn này có phải bị sửa không */
+    is_edit?: boolean
   }>(),
   {}
 )

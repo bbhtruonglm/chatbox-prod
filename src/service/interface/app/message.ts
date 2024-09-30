@@ -9,6 +9,15 @@ export interface AttachmentSize {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**cảm xúc thả tim của tin nhắn */
+  reaction?: {
+    /**loại reaction */
+    reaction?: string
+    /**icon đại diện */
+    emoji?: string
+  }
+  /**tin nhắn này có phải bị sửa không */
+  is_edit?: boolean
   /**danh sách các kích thước của file */
   attachment_size?: AttachmentSize[]
   /**AI đánh dấu là tin bị rep chậm */
