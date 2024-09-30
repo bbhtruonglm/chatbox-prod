@@ -955,6 +955,7 @@ const source: Language = {
             },
           },
           org_page: {
+            reach_quota: 'Bạn đã đạt đến giới hạn trang của tổ chức',
             title: 'Thêm trang vào tổ chức',
             guild: 'Chuyển trang về tổ chức của bạn',
             warning_move:

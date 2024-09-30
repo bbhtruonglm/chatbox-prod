@@ -26,9 +26,7 @@
             <Search />
           </template>
           <template v-else-if="connectPageStore.current_menu === 'WEBSITE'">
-            {{
-              $t('v1.view.main.dashboard.select_platform.website.title')
-            }}
+            {{ $t('v1.view.main.dashboard.select_platform.website.title') }}
           </template>
           <template v-else>
             {{
@@ -40,7 +38,10 @@
             }}
           </template>
         </div>
-        <ActivePage v-if="connectPageStore.current_menu === 'WATTING'" />
+        <ActivePage
+          v-if="connectPageStore.current_menu === 'WATTING'"
+          @done="$emit('done')"
+        />
         <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
         <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
         <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
@@ -67,6 +68,8 @@ import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
 import Search from '@/views/Dashboard/ConnectPage/Search.vue'
+
+const $emit = defineEmits(['done'])
 
 const connectPageStore = useConnectPageStore()
 

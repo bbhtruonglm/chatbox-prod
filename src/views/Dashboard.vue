@@ -5,7 +5,10 @@
       <RouterView />
     </div>
   </div>
-  <ConnectPage ref="connect_page_ref" />
+  <ConnectPage
+    @done="loadListPage?.(orgStore.selected_org_id)"
+    ref="connect_page_ref"
+  />
 </template>
 
 <script setup lang="ts">
@@ -16,7 +19,12 @@ import {
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
   KEY_LOAD_LIST_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
-import { usePageStore, useStaffStore, useSelectPageStore } from '@/stores'
+import {
+  usePageStore,
+  useStaffStore,
+  useSelectPageStore,
+  useOrgStore,
+} from '@/stores'
 
 import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
@@ -27,6 +35,7 @@ import { Toast } from '@/utils/helper/Alert'
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
 const selectPageStore = useSelectPageStore()
+const orgStore = useOrgStore()
 
 // composable
 const { getMeChatbotUser } = initRequireData()
