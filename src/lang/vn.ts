@@ -772,6 +772,8 @@ const source: Language = {
           org: {
             permision_denied: 'Bạn không có quyền quản trị tổ chức này',
             menu: {
+              extend: 'Gia hạn',
+              more: 'Xem chi tiết',
               pay: 'Thanh toán',
               app: 'Ứng dụng',
               api: 'API',

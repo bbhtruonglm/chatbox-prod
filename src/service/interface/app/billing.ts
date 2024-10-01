@@ -226,6 +226,8 @@ export type BillingType = 'DEPOSIT' | 'WITHDRAW' | 'PAYMENT'
 /** --------------------- NOTI --------------------- */
 /**thông tin của 1 thông báo */
 export interface NotiInfo {
+  /**định danh của thông báo này */
+  noti_code?: string
   /**id của thông báo này */
   noti_id?: string
   /**id của tổ chức thực hiện đặt hàng */
