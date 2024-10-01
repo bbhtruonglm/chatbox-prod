@@ -2,6 +2,7 @@
   <DashboardLayout class_content="flex flex-col gap-3 relative">
     <template #menu><Menu /></template>
     <template #content>
+      <HotAlert />
       <div class="flex justify-between flex-shrink-0">
         <Search
           class="w-72"
@@ -66,13 +67,13 @@ import { preGoToChat } from '@/service/function'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
-// import RequirePricing from '@/components/Main/RequirePricing.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Menu from '@/views/Dashboard/SelectPage/Menu.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
+import HotAlert from '@/views/Dashboard/SelectPage/HotAlert.vue'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'

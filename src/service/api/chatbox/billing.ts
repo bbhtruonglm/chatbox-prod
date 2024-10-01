@@ -186,10 +186,14 @@ export const read_noti = async (
   })
 
 /**đọc thông báo */
-export const get_noti = async (org_id?: string): Promise<NotiInfo[]> =>
+export const get_noti = async (
+  org_id?: string,
+  limit?: number,
+  is_read?: {}
+): Promise<NotiInfo[]> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/noti/get_noti`,
-    body: { org_id },
+    body: { org_id, limit, is_read },
   })
 
 /**xem thông báo */

@@ -7,7 +7,7 @@
     </div>
     <div
       :class="class_content"
-      class="w-full h-full"
+      class="w-full h-full min-w-0"
     >
       <slot name="content" />
     </div>
