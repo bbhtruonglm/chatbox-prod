@@ -116,6 +116,8 @@ export interface InputCreateTokenWidget {
         current_staff_name?: string
         /**dữ liệu của các nhãn của hội thoại này */
         label_data?: LabelInfo[]
+        /**id tổ chức hiện tại */
+        org_id?: string
     }
 }
 
