@@ -22,6 +22,7 @@ import {
   useCommonStore,
   useMessageStore,
   useExtensionStore,
+  useOrgStore,
 } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { difference, intersection, keys, map, size } from 'lodash'
@@ -61,6 +62,7 @@ const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
+const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 
 // composable
@@ -254,6 +256,7 @@ function getTokenOfWidget(
         ),
         current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
         current_staff_name: chatbotUserStore.chatbot_user?.full_name,
+        org_id: orgStore.selected_org_id
       },
     },
     (e, r: any) => {
