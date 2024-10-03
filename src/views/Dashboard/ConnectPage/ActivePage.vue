@@ -120,7 +120,7 @@
   </template>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 import {
   useCommonStore,
   useConnectPageStore,
@@ -186,6 +186,15 @@ const list_current_page = ref<CurrentPageData>()
 
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
+
+// khi thay đổi trang đã chọn thì tính toán lại trang ngoài tổ chức
+watch(
+  () => list_selected_page_id.value,
+  () => getAnotherOrgPage(),
+  {
+    deep: true,
+  }
+)
 
 /**kiểm tra xem user có phải là admin trang không */
 function isPageAdmin(page: PageData) {
@@ -460,7 +469,7 @@ function selectPage(page: PageData) {
   list_selected_page_id.value[PAGE_ID] = !list_selected_page_id.value[PAGE_ID]
 
   // tính toán lại số trang ngoài tổ chức đã được chọn
-  getAnotherOrgPage()
+  // getAnotherOrgPage()
 }
 /**đếm số trang đang chọn */
 function countPageSelect() {
