@@ -15,5 +15,8 @@ export const signout = () => {
     $router.push('/oauth')
 
     // reload lại trang để xoá dữ liệu store
-    location.reload()
+    setTimeout(() => {
+        location.reload()
+
+    }, 200)
 }
