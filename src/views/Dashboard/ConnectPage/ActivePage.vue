@@ -1,5 +1,11 @@
 <template>
-  <EmptyActive v-if="!size(list_my_org_page) && !size(list_another_org_page)" />
+  <EmptyActive
+    v-if="
+      !size(list_my_org_page) &&
+      !size(list_another_org_page) &&
+      !size(list_free_page)
+    "
+  />
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
       <SplitTitle
