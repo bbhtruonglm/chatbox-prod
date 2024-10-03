@@ -13,4 +13,7 @@ export const signout = () => {
 
     // chuyển hướng qua trang login
     $router.push('/oauth')
+
+    // reload lại trang để xoá dữ liệu store
+    location.reload()
 }
