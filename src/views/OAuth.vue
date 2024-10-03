@@ -129,6 +129,9 @@ async function openForm() {
       PASSWORD
     )
 
+    // báo lỗi nếu không có token
+    if (!JWT) throw 'Login failed'
+
     // lưu token vào local storage
     setItem('access_token', JWT)
 

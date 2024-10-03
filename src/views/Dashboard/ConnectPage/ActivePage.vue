@@ -106,7 +106,14 @@
           class="w-4 text-green-600"
         />
       </div>
+      <div
+        v-if="orgStore?.selected_org_info?.current_ms?.ms_role !== 'ADMIN'"
+        class="text-xs font-medium text-red-500"
+      >
+        {{ $t('v1.view.main.dashboard.org.permision_denied') }}
+      </div>
       <Button
+        v-else
         @click="beforeActivePage"
         :class="
           countPageSelect() && !isOverQuota()
