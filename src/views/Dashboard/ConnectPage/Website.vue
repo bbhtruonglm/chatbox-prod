@@ -36,6 +36,11 @@
       "
     />
   </div>
+  <InjectScript
+    ref="inject_script_ref"
+    :page_id
+    @done="done"
+  />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -46,8 +51,10 @@ import { isDomain } from '@/service/helper/check'
 import { useI18n } from 'vue-i18n'
 
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
+import InjectScript from '@/views/Dashboard/ConnectPage/Website/InjectScript.vue'
 
 import WebIcon from '@/components/Icons/Web.vue'
+import type { PageInfo } from '@/service/interface/app/page'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -55,22 +62,26 @@ const { t: $t } = useI18n()
 
 /**tên của trang web mới */
 const name = ref<string>()
+/**ref của modal hướng dẫn nhúng script */
+const inject_script_ref = ref<InstanceType<typeof InjectScript>>()
+/**id trang sau khi tạo */
+const page_id = ref<string>()
 
 /**tạo mới page web */
 async function createWebsite() {
-  // nếu chưa nhập tên thì không thực hiện
-  if (!name.value) return
-
-  // hiển thị loading
-  commonStore.is_loading_full_screen = true
-
   try {
+    // nếu chưa nhập tên thì không thực hiện
+    if (!name.value) return
+
+    // hiển thị loading
+    commonStore.is_loading_full_screen = true
+
     // kiểm tra tên trang web có hợp lệ không
     if (!isDomain(name.value))
       throw $t('v1.view.main.dashboard.select_platform.website.wrong_name')
 
     // tạo mới page web
-    await new Promise((resolve, reject) =>
+    const PAGE: PageInfo = await new Promise((resolve, reject) =>
       create_website_page(
         {
           name: name.value!,
@@ -78,21 +89,33 @@ async function createWebsite() {
         (e, r) => {
           if (e) return reject(e)
 
-          resolve(undefined)
+          resolve(r)
         }
       )
     )
 
-    // quay lại page danh sách trang
-    connectPageStore.selectMenu('WATTING')
+    // lưu lại id trang mới được tạo
+    page_id.value = PAGE?.fb_page_id
 
-    // reset lại giá trị
-    name.value = ''
+    // mở modal hướng dẫn nhúng script
+    inject_script_ref.value?.toggleModal()
   } catch (e) {
     toastError(e)
+  } finally {
+    // tắt loading
+    commonStore.is_loading_full_screen = false
   }
+}
+/**sau khi xong */
+function done() {
+  // reset lại giá trị
+  name.value = ''
 
-  // tắt loading
-  commonStore.is_loading_full_screen = false
+  // reset id trang
+  page_id.value = undefined
+
+  // quay lại page danh sách trang
+  connectPageStore.selectMenu('WATTING')
+
 }
 </script>

@@ -6,7 +6,7 @@ const source: Language = {
     common: {
       vn: 'Tiếng Việt',
       retion: 'Retion',
-      title: 'Bot Bán Hàng',
+      title: 'Retion',
       loading: 'Đang tải dữ liệu ...',
       cancel: 'Huỷ',
       ok: 'Xác nhận',
@@ -189,6 +189,12 @@ const source: Language = {
               name: 'Tên hiển thị',
               input: 'Nhập tên (ví dụ tenmien.com)',
               wrong_name: 'Tên website không hợp lệ',
+              example: {
+                title: 'Hướng dẫn cài đặt',
+                guild_1: 'Đặt đoạn code dưới đây vào cuối thẻ <body> </body>',
+                copy: 'Nhấp chuột để sao chép đoạn mã',
+              }
+
             },
             zalo_oa: {
               guild: 'Kết nối Bot Bán Hàng với Zalo OA',

@@ -289,7 +289,12 @@ function getPageInfoToChat() {
       // * đọc dữ liệu trang từ server
       (cb: CbError) =>
         getSelectedPageInfo($t, (e, r) => {
-          if (e) return cb(e)
+          if (e) {
+            // nếu có lỗi thì chuyển về trang dashboard
+            $router.push('/dashboard')
+
+            return cb(e)
+          }
 
           intergrateChatV1()
           cb()

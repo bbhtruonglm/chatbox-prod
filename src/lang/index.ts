@@ -24,13 +24,14 @@ import en from '@/lang/en'
 import th from '@/lang/th'
 
 // dọc dữ liệu lang hiện tại
-export const locale = queryString('locale') || localStorage.getItem('locale') || 'vn'
+export const locale = queryString('locale') || localStorage.getItem('locale') || 'en'
 
 // init i18n
 export const i18n = createI18n({
     legacy: false,
     locale,
-    fallbackLocale: 'vn',
+    // fallbackLocale: 'vn',
+    fallbackLocale: 'en',
     messages: { 
         vn, vi: vn, 
         en, us: en, 
