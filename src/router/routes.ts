@@ -25,9 +25,14 @@ import OrgPayInfo from '@/views/Dashboard/Org/Pay/Info.vue'
 import OrgPayReCharge from '@/views/Dashboard/Org/Pay/ReCharge.vue'
 
 export const routes = [
-  { path: '/', redirect: '/oauth' },
+  { path: '/', component: ChatShort },
+  // { path: '/', redirect: '/oauth' },
+
   { path: '/oauth', component: OAuth },
-  { path: '/chat', component: ChatShort },
+
+  // { path: '/chat', component: ChatShort },
+  { path: '/chat', redirect: '/' },
+
   {
     path: '/dashboard',
     redirect: '/dashboard/select-page',

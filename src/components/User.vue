@@ -22,28 +22,30 @@
     :distance="10"
     class_content="flex flex-col gap-1"
   >
-    <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
-    <MenuItem
-      @click="redirectMenu('org')"
-      :icon="BriefCaseIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
-    />
-    <MenuItem
-      @click="redirectMenu('org')"
-      :icon="UsersIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
-    />
-    <MenuItem
-      @click="redirectMenu('org/pay')"
-      :icon="CheckBadgeIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
-    >
-      <!-- <Badge
+    <template v-if="MS_ROLE === 'ADMIN'">
+      <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
+      <MenuItem
+        @click="redirectMenu('org')"
+        :icon="BriefCaseIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
+      />
+      <MenuItem
+        @click="redirectMenu('org')"
+        :icon="UsersIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
+      />
+      <MenuItem
+        @click="redirectMenu('org/pay')"
+        :icon="CheckBadgeIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
+      >
+        <!-- <Badge
         :value="1"
         class="flex-shrink-0"
       /> -->
-    </MenuItem>
-    <hr class="my-1" />
+      </MenuItem>
+      <hr class="my-1" />
+    </template>
     <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
     <MenuItem
       @click="redirectMenu('user')"
@@ -76,7 +78,7 @@
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { signout } from '@/service/helper/oauth'
 import { useRouter } from 'vue-router'
 
@@ -121,6 +123,9 @@ onMounted(countNotiCurrentOrg)
 
 // khi chọn lại org thì đếm lại số thông báo
 watch(() => orgStore.selected_org_id, countNotiCurrentOrg)
+
+/**quyền của người dùng với tổ chức đang chọn */
+const MS_ROLE = computed(() => orgStore.selected_org_info?.current_ms?.ms_role)
 
 /**đếm số noti của tổ chức đang chọn */
 async function countNotiCurrentOrg() {
