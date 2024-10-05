@@ -7,7 +7,8 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   // base: '/chatv2',
-  base: '/',
+  base: '/chat', // path relative
+  // base: '/', // path absolute 
   plugins: [
     vue(), 
     basicSsl()
