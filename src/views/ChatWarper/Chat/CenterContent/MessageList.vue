@@ -18,6 +18,7 @@
         v-for="(message, index) of messageStore.list_message"
         class="relative"
       >
+        <UnReadAlert :index />
         <TimeSplit
           :before_message="messageStore.list_message?.[index - 1]"
           :now_message="message"
@@ -149,6 +150,7 @@ import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import HeaderChat from '@/views/ChatWarper/Chat/CenterContent/MessageList/HeaderChat.vue'
 import MessageItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem.vue'
+import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnReadAlert.vue'
 
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 

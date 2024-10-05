@@ -2,14 +2,14 @@
   <Modal
     @open_modal="getAnotherOrgStaff"
     ref="modal_member_ship_ref"
-    class_modal="h-[500px]"
+    class_modal="h-3/4"
     class_body="py-2 flex gap-2"
   >
     <template #header>
       {{ $t('v1.view.main.dashboard.org.setting.staff.title') }}
     </template>
     <template #body>
-      <div class="w-[655px] bg-white rounded-md p-2 flex flex-col relative">
+      <div class="w-[784px] bg-white rounded-md p-2 flex flex-col relative">
         <div
           v-if="is_loading"
           class="absolute top-14 left-1/2 -translate-x-1/2"

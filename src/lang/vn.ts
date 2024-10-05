@@ -987,6 +987,11 @@ const source: Language = {
             },
           },
           org_page: {
+            over_quota: {
+              title: 'Có lỗi xảy ra',
+              description: 'Bạn đã đạt đến giới hạn trang của tổ chức, nhấp chuột vào nút dưới đây để xem gói cước',
+              view: 'Xem gói cước',
+            },
             guid: 'Chọn trang kích hoạt, đồng thời chuyển về Tổ chức của bạn sở hữu.',
             free_page: 'Các trang chưa thuộc tổ chức quản lý',
             actived_pages: 'Trang đã kích hoạt',
