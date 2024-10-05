@@ -17,7 +17,8 @@
     "build-only-staging": "vite build --mode staging",
     "build-only-prod": "vite build --mode prod",
     "type-check": "vue-tsc --noEmit",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "zip": "zip -r dist.zip dist"
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",

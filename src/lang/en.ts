@@ -622,6 +622,30 @@ const source: Language = {
             },
           },
           user: {
+            allow_override: 'Allow page settings override',
+            allow_override_description:
+              'Allow users to override the display settings for page conversations',
+            label: 'Label display mode',
+            label_description: 'Set the label display mode for conversations',
+            dot: 'Show color dot only',
+            text: 'Show text',
+            dot_tooltip: 'Show color dot with tooltip',
+            show_page_avatar: 'Show page avatar',
+            show_page_avatar_on: 'Show the page avatar for all conversations',
+            show_page_avatar_off: 'Hide the page avatar for all conversations',
+            chat: 'Conversation settings',
+            translate: 'Translate',
+            translate_description: 'Select the language you want to translate',
+            ui: 'Interface',
+            ui_description: 'Interface mode: Dark, Light, or Auto.',
+            dark: 'Dark',
+            light: 'Light',
+            auto: 'Auto',
+            lang_description: 'Set display language',
+            noti: 'Send notifications',
+            noti_description:
+              'Receive all notifications when there are new messages',
+            general: 'General Settings',
             grant_fb_permission: 'Manually re-grant Facebook permission',
             logout: 'Log Out',
             re_granted_successfully:
@@ -962,6 +986,12 @@ const source: Language = {
             },
           },
           org_page: {
+            over_quota: {
+              title: 'An error occurred',
+              description:
+                'You have reached the page limit of the organization, click the button below to view the available plans',
+              view: 'View plans',
+            },
             guid: 'Select the page to activate, while transferring to your owned Organization.',
             free_page: 'Pages not under management of an organization',
             actived_pages: 'Activated Pages',

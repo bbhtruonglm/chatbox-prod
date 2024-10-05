@@ -38,7 +38,7 @@ function controlPageAvatarVisible() {
     // nếu user đã thiết lập ẩn thì cũng ẩn luôn
     (
       // đang kích hoạt thiết lập cá nhân
-      chatbotUserStore.is_enable_personal_setting &&
+      chatbotUserStore.personal_settings?.is_enable_personal_setting &&
       // thiết lập cá nhân: thiết lập ẩn avatar page
       chatbotUserStore.personal_settings?.is_hide_page_avatar
     )

@@ -80,32 +80,7 @@
         </template>
       </div>
     </div>
-    <div
-      :class="countPageSelect() ? 'justify-between' : 'justify-end'"
-      class="flex-shrink-0 flex p-2 border-t"
-    >
-      <div
-        v-if="countPageSelect()"
-        class="text-xs flex gap-2 items-center"
-      >
-        <StackIcon class="w-3.5 h-3.5 flex-shrink-0" />
-        {{ orgStore.selected_org_info?.org_package?.org_current_page }}
-        /
-        {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
-        →
-        <span
-          :class="isOverQuota() ? 'text-red-600' : 'text-green-600'"
-          class="font-bold"
-        >
-          {{ countNewCurrentPage(orgStore.selected_org_info) }}
-          /
-          {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
-        </span>
-        <CheckIcon
-          v-if="!isOverQuota()"
-          class="w-4 text-green-600"
-        />
-      </div>
+    <div class="flex-shrink-0 flex p-2 border-t justify-end">
       <div
         v-if="orgStore?.selected_org_info?.current_ms?.ms_role !== 'ADMIN'"
         class="text-xs font-medium text-red-500"
@@ -125,6 +100,7 @@
       </Button>
     </div>
   </template>
+  <AlertOverQuota ref="alert_over_quota_ref" />
 </template>
 <script setup lang="ts">
 import { inject, onMounted, ref, watch } from 'vue'
@@ -152,6 +128,7 @@ import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 import SplitTitle from '@/views/Dashboard/ConnectPage/ActivePage/SplitTitle.vue'
+import AlertOverQuota from '@/views/Dashboard/ConnectPage/ActivePage/AlertOverQuota.vue'
 
 import StackIcon from '@/components/Icons/Stack.vue'
 import CheckIcon from '@/components/Icons/Check.vue'
@@ -190,6 +167,8 @@ const list_another_org_page_id = ref<string[]>([])
 const map_another_org_page = ref<PageOrgInfoMap>()
 /**toàn bộ các trang khả thi */
 const list_current_page = ref<CurrentPageData>()
+/**thông báo quá giới hạn trang */
+const alert_over_quota_ref = ref<InstanceType<typeof AlertOverQuota>>()
 
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
@@ -271,8 +250,7 @@ function getAnotherOrgPage() {
 /**trước khi kích hoạt trang */
 function beforeActivePage() {
   // nếu đã quá hạn mức thì chặn
-  if (isOverQuota())
-    return new Toast().error($t('v1.view.main.dashboard.org_page.reach_quota'))
+  if (isOverQuota()) return alert_over_quota_ref.value?.toggleModal()
 
   // nếu có trang khác tổ chức thì cảnh báo
   if (list_another_org_page_id.value?.length) warningTakeControlPage()

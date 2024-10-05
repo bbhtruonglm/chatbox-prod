@@ -48,7 +48,7 @@
     </template>
     <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
     <MenuItem
-      @click="redirectMenu('user')"
+      @click="openUserInfoModal()"
       :icon="UserIcon"
       :title="$t('v1.view.main.dashboard.header.menu.user_info')"
     />
@@ -64,17 +64,13 @@
       />
     </MenuItem>
     <MenuItem
-      @click="redirectMenu('user')"
-      :icon="CogIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.setting')"
-    />
-    <MenuItem
       @click="signout"
       :icon="LogOutIcon"
       :title="$t('v1.view.main.dashboard.header.menu.logout')"
     />
   </Dropdown>
   <Alert ref="modal_alert_ref" />
+  <UserInfo ref="modal_user_info_ref" />
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore, useOrgStore } from '@/stores'
@@ -88,6 +84,7 @@ import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import Badge from '@/components/Badge.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import Alert from '@/components/User/Alert.vue'
+import UserInfo from '@/components/User/UserInfo.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
@@ -116,7 +113,10 @@ const $router = useRouter()
 
 /** Ref của menu dropdown */
 const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
+/** Ref của modal thông báo */
 const modal_alert_ref = ref<InstanceType<typeof Alert>>()
+/** Ref của modal thông tin người dùng */
+const modal_user_info_ref = ref<InstanceType<typeof UserInfo>>()
 
 // đếm số thông báo khi khởi động
 onMounted(countNotiCurrentOrg)
@@ -150,6 +150,14 @@ function redirectMenu(path: string) {
 
   // chuyển đến trang
   $router.push(`/dashboard/${path}`)
+}
+/**mở modal thông tin người dùng */
+function openUserInfoModal() {
+  // tắt menu dropdown
+  user_menu_ref.value?.toggleDropdown()
+
+  // mở modal thông tin người dùng
+  modal_user_info_ref.value?.toggleModal()
 }
 /**mở modal của noti */
 function openNoti() {
