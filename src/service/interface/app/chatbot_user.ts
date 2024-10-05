@@ -1,4 +1,6 @@
 export interface ChatbotUserInfo {
+    /**email đăng nhập */
+    email?: string
     /**id của user bản mới */
     user_id?: string
     /**id của bản ghi */
@@ -24,6 +26,12 @@ export interface ChatbotUserInfo {
     }
 }
 
+/**các cài đặt cá nhân */
 export interface PersonalSettings {
-    [index: string] : boolean | string
+    /**có bật thiết lập cá nhân không */
+    is_enable_personal_setting: boolean
+    /**ẩn avatar của page */
+    is_hide_page_avatar: boolean
+    /**kiểu hiển thị của label */
+    display_label_type: 'ICON_TOOLTIP' | 'FULL' | 'ICON'
 }

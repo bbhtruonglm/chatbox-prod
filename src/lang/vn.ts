@@ -193,8 +193,7 @@ const source: Language = {
                 title: 'Hướng dẫn cài đặt',
                 guild_1: 'Đặt đoạn code dưới đây vào cuối thẻ <body> </body>',
                 copy: 'Nhấp chuột để sao chép đoạn mã',
-              }
-
+              },
             },
             zalo_oa: {
               guild: 'Kết nối Bot Bán Hàng với Zalo OA',
@@ -446,7 +445,7 @@ const source: Language = {
                 jealousy: 'AI: Ghen tị',
                 shame: 'AI: Xấu hổ',
                 pride: 'AI: Tự hào',
-                like: 'AI: Thích'
+                like: 'AI: Thích',
               },
               sent: 'đã gửi',
               error_send_message: 'Có lỗi xảy ra khi gửi tin nhắn này',
@@ -619,6 +618,31 @@ const source: Language = {
             },
           },
           user: {
+            allow_overide: 'Cho phép ghi đè thiết lập trang',
+            allow_overide_description:
+              'Cho phép người dùng ghi đè thiết lập hiển thị hội thoại của trang',
+            label: 'Chế độ hiển thị nhãn',
+            label_description: 'Thiết lập chế độ hiển thị nhãn trên hội thoại',
+            dot: 'Chỉ hiện chấm màu',
+            text: 'Hiện văn bản',
+            dot_tooltip: 'Hiện chấm màu có chú giải',
+            show_page_avatar: 'Hiện ảnh đại diện của trang',
+            show_page_avatar_on:
+              'Hiện toàn bộ ảnh đại diện của trang trên hội thoại',
+            show_page_avatar_off:
+              'Ẩn toàn bộ ảnh đại diện của trang trên hội thoại',
+            chat: 'Thiết lập hội thoại',
+            translate: 'Dịch',
+            translate_description: 'Chọn ngôn ngữ bạn muốn dịch',
+            ui: 'Giao diện',
+            ui_description: 'Chế độ giao diện “Tối”, “Sáng” hoặc “Tự động”.',
+            dark: 'Tối',
+            light: 'Sáng',
+            auto: 'Tự động',
+            lang_description: 'Thiết lập ngữ hiển thị',
+            noti: 'Gửi thông báo',
+            noti_description: 'Nhận tất cả thông báo khi có tin nhắn mới',
+            general: 'Thiết lập chung',
             grant_fb_permission: 'Cấp lại quyền Facebook thủ công',
             logout: 'Đăng xuất',
             re_granted_successfully: 'Cấp lại quyền facebook thành công',

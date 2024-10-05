@@ -77,7 +77,7 @@ const personal_setting = ref<{
 }>(chatbotUserStore.personal_settings)
 /** Có mở chế độ ghi đè setting của page hay không */
 const is_enable_personal_setting = ref<boolean>(
-    chatbotUserStore.is_enable_personal_setting
+    // chatbotUserStore.is_enable_personal_setting
 )
 
 /** Mở modal của pricing detail */
@@ -90,7 +90,7 @@ function savePersonalSetting() {
     setItem('personal_settings', personal_setting.value)
 
     // * Lưu lại giá trị vào store
-    chatbotUserStore.personal_settings = personal_setting.value
+    // chatbotUserStore.personal_settings = personal_setting.value
 
     // * Tắt modal
     toggleModal()
@@ -99,10 +99,10 @@ function savePersonalSetting() {
 function toogleEnablePersonalSetting() {
     if (is_enable_personal_setting.value) {
         setItem('is_enable_personal_setting', 'yes')
-        chatbotUserStore.is_enable_personal_setting = true
+        // chatbotUserStore.is_enable_personal_setting = true
     } else {
         setItem('is_enable_personal_setting', 'no')
-        chatbotUserStore.is_enable_personal_setting = false
+        // chatbotUserStore.is_enable_personal_setting = false
     }
 }
 

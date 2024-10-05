@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveIndexedDB, getIndexedDB } from '@/service/helper/store'
 import { getItem, setItem } from '@/service/helper/localStorage'
+import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type {
   ChatbotUserInfo,
@@ -19,16 +20,15 @@ export const useChatbotUserStore = defineStore('chatbot_user_store', () => {
 
   /** ghi đè lại setting của page */
   const personal_settings = ref<PersonalSettings>(
-    getItem('personal_settings') || {
+    getLocal('personal_settings', {
+      is_enable_personal_setting: false,
       is_hide_page_avatar: false,
       display_label_type: 'ICON_TOOLTIP',
-    }
+    })
   )
 
-  /** Có mở chế độ ghi đè setting của page hay không */
-  const is_enable_personal_setting = ref<boolean>(
-    getItem('is_enable_personal_setting') === 'yes' ? true : false
-  )
+  // lưu dữ liệu xuống local khi có thay đổi
+  saveLocal(personal_settings, 'personal_settings')
 
   // lưu dữ liệu xuống indexed khi có thay đổi
   saveIndexedDB(chatbot_user, 'chatbot_user')
@@ -44,7 +44,6 @@ export const useChatbotUserStore = defineStore('chatbot_user_store', () => {
   return {
     chatbot_user,
     personal_settings,
-    is_enable_personal_setting,
 
     getStaffId,
   }
