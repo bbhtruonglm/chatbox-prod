@@ -97,7 +97,7 @@ const source: Language = {
             noti: 'Thông báo',
             toggle: 'Thu nhỏ',
             select_page: 'Chọn trang',
-            select_platform: 'Kết nối trang',
+            select_platform: 'Kết nối',
             upgrade: 'Quản lý nâng cấp',
             widget: 'Chợ ứng dụng',
             info: 'Hướng dẫn sử dụng',
@@ -132,7 +132,7 @@ const source: Language = {
             setting_org: 'Cài đặt doanh nghiệp',
             cancel_page: 'Huỷ kích hoạt trang',
             group_page: {
-              title: 'Chế độ gộp trang',
+              title: 'Gộp trang',
             },
             select_all_page: 'Chọn tất cả',
             chat_one_page: 'Tắt chế độ gộp trang',
@@ -165,12 +165,14 @@ const source: Language = {
             },
           },
           select_platform: {
+            low_permission: 'Biên tập viên không kích hoạt được trang',
+            waitting: 'Chờ kích hoạt',
             another_page: 'Các trang ở tổ chức khác',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
-            add_page: 'Thêm trang',
-            active_page: 'Kích hoạt trang',
+            add_page: 'Thêm kết nối',
+            active_page: 'Kích hoạt trang và tổ chức',
             empty_invite: 'Không có trang cần kích hoạt',
             accept: 'Xác nhận lời mời',
             denied: 'Từ chối lời mời',
@@ -618,7 +620,7 @@ const source: Language = {
             },
           },
           user: {
-            allow_overide: 'Cho phép ghi đè thiết lập trang',
+            allow_overide: 'Ghi đè thiết lập trang',
             allow_overide_description:
               'Cho phép người dùng ghi đè thiết lập hiển thị hội thoại của trang',
             label: 'Chế độ hiển thị nhãn',

@@ -6,7 +6,11 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // base: '/chatv2',
+  /**
+   * cấu hình cái này để deploy được chatbox vào một app next.js khác
+   * - retion.ai -> app next.js
+   * - retion.ai/chat -> chatbox
+   */
   base: '/chat', // path relative
   // base: '/', // path absolute 
   plugins: [

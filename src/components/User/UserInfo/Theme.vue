@@ -2,7 +2,7 @@
   <select
     v-model="current_theme"
     @change="changeTheme"
-    class="py-2 rounded-md focus:outline-none border px-3 text-sm cursor-pointer"
+    class="py-2 pr-0 rounded-md focus:outline-none border px-3 text-sm cursor-pointer"
   >
     <option
       v-for="(title, key) of SELECT_THEME"
