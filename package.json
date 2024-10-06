@@ -19,6 +19,7 @@
     "type-check": "vue-tsc --noEmit",
     "deploy": "./deploy.sh",
     "zip": "zip -r dist.zip dist"
+    
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
