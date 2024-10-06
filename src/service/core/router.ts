@@ -9,11 +9,13 @@ import { loadMiddleware } from '@/router/middleware'
  * - hash: http://url/#/path
  * - web:  http://url/path
  * dựa theo config của env
+ * 
+ * import.meta.env.BASE_URL: chính là giá trị base của vite.config.ts
  */
 export const router = createRouter({
   history: import.meta.env.VITE_APP_HISTORY === 'web' ?
-    // createWebHistory(import.meta.env.BASE_URL) :
-    createWebHistory('/chat') :
+    createWebHistory(import.meta.env.BASE_URL) :
+    // createWebHistory('/chat') :
     createWebHashHistory(),
   routes
 }) 

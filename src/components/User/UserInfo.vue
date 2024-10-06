@@ -78,7 +78,7 @@
               >
                 <Lang />
               </Item>
-              <Item
+              <!-- <Item
                 :icon="MoonIcon"
                 :title="$t('v1.view.main.dashboard.user.ui')"
                 :description="$t('v1.view.main.dashboard.user.ui_description')"
@@ -93,14 +93,14 @@
                 "
               >
                 <Translate />
-              </Item>
+              </Item> -->
             </div>
             <div class="section">
               <div class="title">
                 {{ $t('v1.view.main.dashboard.user.chat') }}
               </div>
               <Item
-                :icon="UserIcon"
+                :icon="CogBoldIcon"
                 :title="$t('v1.view.main.dashboard.user.allow_overide')"
                 :description="
                   $t('v1.view.main.dashboard.user.allow_overide_description')
@@ -120,7 +120,7 @@
                 "
               >
                 <Item
-                  :icon="BellIcon"
+                  :icon="UserCircleIcon"
                   :title="$t('v1.view.main.dashboard.user.show_page_avatar')"
                   :description="
                     chatbotUserStore.personal_settings.is_hide_page_avatar
@@ -136,7 +136,7 @@
                   />
                 </Item>
                 <Item
-                  :icon="GlobalBoldIcon"
+                  :icon="TagIcon"
                   :title="$t('v1.view.main.dashboard.user.label')"
                   :description="
                     $t('v1.view.main.dashboard.user.label_description')
@@ -146,7 +146,7 @@
                     v-model="
                       chatbotUserStore.personal_settings.display_label_type
                     "
-                    class="py-2 rounded-md focus:outline-none border px-3 text-sm cursor-pointer"
+                    class="py-2 rounded-md focus:outline-none border px-3 text-sm cursor-pointer max-w-44 truncate pr-0"
                   >
                     <option
                       v-for="(title, key) of SELECT_LABEL_TYPE"
@@ -182,6 +182,9 @@ import GlobalBoldIcon from '@/components/Icons/GlobalBold.vue'
 import MoonIcon from '@/components/Icons/Moon.vue'
 import TranslateIcon from '@/components/Icons/Translate.vue'
 import UserIcon from '@/components/Icons/User.vue'
+import CogBoldIcon from '@/components/Icons/CogBold.vue'
+import UserCircleIcon from '@/components/Icons/UserCircle.vue'
+import TagIcon from '@/components/Icons/Tag.vue'
 
 const { t: $t } = useI18n()
 

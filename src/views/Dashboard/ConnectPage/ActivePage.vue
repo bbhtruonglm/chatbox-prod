@@ -8,16 +8,42 @@
   />
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
-      <SplitTitle
+      <!-- <SplitTitle
         v-if="list_my_org_page?.length"
         :title="$t('v1.view.main.dashboard.org_page.actived_pages')"
-      />
+      /> -->
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_my_org_page">
           <PageItem
             v-if="page?.page?.fb_page_id && filterPage(page)"
             :checkbox_is_visible="false"
             :page_info="page?.page"
+            v-tooltip.top="
+              $t('v1.view.main.dashboard.select_platform.low_permission')
+            "
+            :tooltip-disabled="isPageAdmin(page)"
+          >
+          </PageItem>
+        </template>
+      </div>
+      <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
+        <template v-for="page of list_free_page">
+          <PageItem
+            @click="selectPage(page)"
+            v-if="page?.page?.fb_page_id && filterPage(page)"
+            v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
+            :checkbox_is_visible="true"
+            :checkbox_is_disabled="!isPageAdmin(page)"
+            :page_info="page?.page"
+            v-tooltip.top="
+              $t('v1.view.main.dashboard.select_platform.low_permission')
+            "
+            :tooltip-disabled="isPageAdmin(page)"
+            :class="
+              isPageAdmin(page)
+                ? 'cursor-pointer'
+                : 'grayscale cursor-not-allowed'
+            "
           >
           </PageItem>
         </template>
@@ -31,9 +57,9 @@
           <div class="text-sm font-semibold">
             {{ org?.org_info?.org_name }}:
           </div>
-          <div class="text-xs text-slate-500">
+          <!-- <div class="text-xs text-slate-500">
             {{ $t('v1.view.main.dashboard.org_page.guid') }}
-          </div>
+          </div> -->
         </div>
         <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
           <template v-for="page of list_another_org_page">
@@ -50,6 +76,10 @@
               :checkbox_is_visible="true"
               :checkbox_is_disabled="!isPageAdmin(page)"
               :page_info="page?.page"
+              v-tooltip.top="
+                $t('v1.view.main.dashboard.select_platform.low_permission')
+              "
+              :tooltip-disabled="isPageAdmin(page)"
               :class="
                 isPageAdmin(page)
                   ? 'cursor-pointer'
@@ -60,8 +90,8 @@
           </template>
         </div>
       </template>
-      <SplitTitle :title="$t('v1.view.main.dashboard.org_page.free_page')" />
-      <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
+      <!-- <SplitTitle :title="$t('v1.view.main.dashboard.org_page.free_page')" /> -->
+      <!-- <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_free_page">
           <PageItem
             @click="selectPage(page)"
@@ -78,7 +108,7 @@
           >
           </PageItem>
         </template>
-      </div>
+      </div> -->
     </div>
     <div class="flex-shrink-0 flex p-2 border-t justify-end">
       <div
@@ -96,7 +126,7 @@
             : 'cursor-not-allowed bg-slate-200 text-slate-500'
         "
       >
-        {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
+        {{ $t('v1.view.main.dashboard.select_platform.active') }}
       </Button>
     </div>
   </template>

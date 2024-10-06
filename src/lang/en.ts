@@ -622,8 +622,8 @@ const source: Language = {
             },
           },
           user: {
-            allow_override: 'Allow page settings override',
-            allow_override_description:
+            allow_overide: 'Allow page settings override',
+            allow_overide_description:
               'Allow users to override the display settings for page conversations',
             label: 'Label display mode',
             label_description: 'Set the label display mode for conversations',
