@@ -11,7 +11,7 @@ export default defineConfig({
    * - retion.ai -> app next.js
    * - retion.ai/chat -> chatbox
    */
-  base: '/chat', // path relative
+  base: './chat', // path relative
   // base: '/', // path absolute 
   plugins: [
     vue(), 
