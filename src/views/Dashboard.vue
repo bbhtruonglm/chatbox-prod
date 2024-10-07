@@ -24,6 +24,7 @@ import {
   useStaffStore,
   useSelectPageStore,
   useOrgStore,
+  useChatbotUserStore,
 } from '@/stores'
 
 import Header from '@/views/Dashboard/Header.vue'
@@ -31,11 +32,13 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { Toast } from '@/utils/helper/Alert'
+import { mapValues } from 'lodash'
 
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
+const chatbotUserStore = useChatbotUserStore()
 
 // composable
 const { getMeChatbotUser } = initRequireData()
@@ -58,6 +61,16 @@ async function loadListPage(org_id?: string): Promise<void> {
 
     /**danh sách trang của tổ chức đang kích hoạt */
     const RES = await new N4SerivceAppPage().getOrgActiveListPage(org_id)
+
+    // lấy thông tin nhân viên hiện tại của trang
+    mapValues(RES?.page_list, page => {
+      page.current_staff =
+        page?.staff_list?.[
+          chatbotUserStore.chatbot_user?.user_id ||
+            chatbotUserStore.chatbot_user?.fb_staff_id ||
+            ''
+        ]
+    })
 
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}

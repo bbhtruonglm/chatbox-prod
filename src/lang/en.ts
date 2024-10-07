@@ -5,7 +5,7 @@ const source: Language = {
   v1: {
     common: {
       vn: 'Tiếng Việt',
-      retion: 'Region',
+      retion: 'Retion',
       title: 'Retion',
       loading: 'Loading data...',
       cancel: 'Cancel',
@@ -986,6 +986,20 @@ const source: Language = {
             },
           },
           org_page: {
+            take_page: {
+              title: 'Confirm Page Transfer',
+              guild_1: 'Notification about the transfer of page management:',
+              page: 'Page:',
+              guild_2: 'is currently managed by another organization.',
+              action: 'Action:',
+              guild_3:
+                "If you 'Confirm', the page management will be transferred to your organization.",
+              result: 'Result:',
+              guild_4:
+                'Members of the current organization will lose access to this page.',
+              guild_5:
+                'The owner of the current organization will be notified about the management transfer.',
+            },
             over_quota: {
               title: 'An error occurred',
               description:

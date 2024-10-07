@@ -8,20 +8,24 @@
   />
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
-      <!-- <SplitTitle
-        v-if="list_my_org_page?.length"
-        :title="$t('v1.view.main.dashboard.org_page.actived_pages')"
-      /> -->
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
         <template v-for="page of list_my_org_page">
           <PageItem
+            @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
-            :checkbox_is_visible="false"
+            v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
+            :checkbox_is_visible="true"
+            :checkbox_is_disabled="!isPageAdmin(page)"
             :page_info="page?.page"
             v-tooltip.top="
               $t('v1.view.main.dashboard.select_platform.low_permission')
             "
             :tooltip-disabled="isPageAdmin(page)"
+            :class="
+              isPageAdmin(page)
+                ? 'cursor-pointer'
+                : 'grayscale cursor-not-allowed'
+            "
           >
           </PageItem>
         </template>
@@ -57,9 +61,6 @@
           <div class="text-sm font-semibold">
             {{ org?.org_info?.org_name }}:
           </div>
-          <!-- <div class="text-xs text-slate-500">
-            {{ $t('v1.view.main.dashboard.org_page.guid') }}
-          </div> -->
         </div>
         <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
           <template v-for="page of list_another_org_page">
@@ -90,25 +91,6 @@
           </template>
         </div>
       </template>
-      <!-- <SplitTitle :title="$t('v1.view.main.dashboard.org_page.free_page')" /> -->
-      <!-- <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_free_page">
-          <PageItem
-            @click="selectPage(page)"
-            v-if="page?.page?.fb_page_id && filterPage(page)"
-            v-model:checkbox="list_selected_page_id[page?.page?.fb_page_id]"
-            :checkbox_is_visible="true"
-            :checkbox_is_disabled="!isPageAdmin(page)"
-            :page_info="page?.page"
-            :class="
-              isPageAdmin(page)
-                ? 'cursor-pointer'
-                : 'grayscale cursor-not-allowed'
-            "
-          >
-          </PageItem>
-        </template>
-      </div> -->
     </div>
     <div class="flex-shrink-0 flex p-2 border-t justify-end">
       <div
@@ -130,7 +112,15 @@
       </Button>
     </div>
   </template>
-  <AlertOverQuota ref="alert_over_quota_ref" />
+  <AlertOverQuota
+    @done="$emit('close')"
+    ref="alert_over_quota_ref"
+  />
+  <ConfirmTakePage
+    @done="addPageToOrg"
+    ref="confirm_take_page_ref"
+    :another_pages_name
+  />
 </template>
 <script setup lang="ts">
 import { inject, onMounted, ref, watch } from 'vue'
@@ -159,18 +149,17 @@ import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
 import SplitTitle from '@/views/Dashboard/ConnectPage/ActivePage/SplitTitle.vue'
 import AlertOverQuota from '@/views/Dashboard/ConnectPage/ActivePage/AlertOverQuota.vue'
+import ConfirmTakePage from '@/views/Dashboard/ConnectPage/ActivePage/ConfirmTakePage.vue'
 
-import StackIcon from '@/components/Icons/Stack.vue'
-import CheckIcon from '@/components/Icons/Check.vue'
-
-import type { PageData, PageInfo } from '@/service/interface/app/page'
+import type { PageData } from '@/service/interface/app/page'
 import type {
   OrgInfo,
   OwnerShipInfo,
   PageOrgInfoMap,
 } from '@/service/interface/app/billing'
+import { Page } from '@/utils/helper/Page'
 
-const $emit = defineEmits(['done'])
+const $emit = defineEmits(['done', 'close'])
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -199,6 +188,10 @@ const map_another_org_page = ref<PageOrgInfoMap>()
 const list_current_page = ref<CurrentPageData>()
 /**thông báo quá giới hạn trang */
 const alert_over_quota_ref = ref<InstanceType<typeof AlertOverQuota>>()
+/**cảnh báo lấy trang của tổ chức khác */
+const confirm_take_page_ref = ref<InstanceType<typeof ConfirmTakePage>>()
+/**tên của các trang khác tổ chức của mình */
+const another_pages_name = ref<string[]>()
 
 // lấy danh sách page mới
 onMounted(() => getListWattingPage())
@@ -213,21 +206,8 @@ watch(
 )
 
 /**kiểm tra xem user có phải là admin trang không */
-function isPageAdmin(page: PageData) {
-  // nếu không có id tran thì thôi
-  if (!page?.page?.fb_page_id) return
-
-  // nhân viên không có quyền
-  if (
-    // không nằm trong nhóm admin
-    !page?.current_staff?.group_staff?.includes(page?.group_admin_id || '') &&
-    // không phải admin của fb
-    page?.current_staff?.role !== 'MANAGE'
-  )
-    return false
-
-  // nhân viên có quyền
-  return true
+function isPageAdmin(page: PageData): boolean {
+  return Page.isCurrentStaffIsPageAdmin(page)
 }
 /**hiển thị các page theo tìm kiếm */
 function filterPage(page: PageData) {
@@ -284,38 +264,34 @@ function beforeActivePage() {
 
   // nếu có trang khác tổ chức thì cảnh báo
   if (list_another_org_page_id.value?.length) warningTakeControlPage()
-  // nếu không thì kích hoạt luôn
+  // nếu không thì chỉ kích hoạt hiển thị, không cần thêm lại tổ chức nữa
   else activePage()
 }
 /**cảnh báo khi người dùng sắp lấy page của tổ chức khác */
 async function warningTakeControlPage() {
+  // nếu không chọn tổ chức thì không thể tiếp tục
+  if (!orgStore.selected_org_id) return
+
+  /**danh sách tên các trang đã có tổ chức */
+  another_pages_name.value = list_another_org_page_id.value
+    // lọc các trang có tổ chức khác
+    ?.filter(page_id => map_another_org_page.value?.map_page_org?.[page_id])
+    // lọc tên trang
+    ?.map(
+      page_id => list_current_page.value?.page_list?.[page_id]?.page?.name
+    ) as string[]
+
+  // cảnh báo lấy trang của tổ chức khác
+  if (another_pages_name.value?.length)
+    confirm_take_page_ref.value?.toggleModal()
+  // nếu đều là trang vô chủ thì thêm trang vào tổ chức luôn
+  else addPageToOrg()
+}
+/**thêm trang vào tổ chức này */
+async function addPageToOrg() {
   try {
     // nếu không chọn tổ chức thì không thể tiếp tục
     if (!orgStore.selected_org_id) return
-
-    /**danh sách tên các trang đã có tổ chức */
-    const LIST_NAME = list_another_org_page_id.value
-      // lọc các trang có tổ chức khác
-      ?.filter(page_id => map_another_org_page.value?.map_page_org?.[page_id])
-      // lọc tên trang
-      ?.map(
-        page_id => list_current_page.value?.page_list?.[page_id]?.page?.name
-      )
-
-    // cảnh báo lấy trang của tổ chức khác
-    if (LIST_NAME?.length) {
-      /**xác nhận có chuyển trang không */
-      const IS_ALLOW = await confirmSync(
-        'warning',
-        $t('v1.common.warning'),
-        $t('v1.view.main.dashboard.org_page.warning_move', {
-          page: LIST_NAME?.join(', '),
-        })
-      )
-
-      // nếu không chuyển thì bỏ qua
-      if (!IS_ALLOW) return
-    }
 
     // hiển thị loading
     commonStore.is_loading_full_screen = true
@@ -338,6 +314,7 @@ async function warningTakeControlPage() {
     commonStore.is_loading_full_screen = false
   }
 }
+
 /**kích hoạt các trang được chọn */
 async function activePage() {
   try {
@@ -442,8 +419,10 @@ async function getListWattingPage() {
       // thêm trang chưa kích hoạt vào danh sách
 
       // trang thuộc tổ chức của tôi
-      if (map_my_os.value?.[page?.page?.fb_page_id])
-        list_my_org_page.value.push(page)
+      if (map_my_os.value?.[page?.page?.fb_page_id]) {
+        // chỉ lấy trang chưa kích hoạt hiển thị
+        if (!page?.page?.is_active) list_my_org_page.value.push(page)
+      }
       // trang không thuộc tổ chức của tôi
       else list_not_my_org_page.push(page)
     })
@@ -481,10 +460,8 @@ function selectPage(page: PageData) {
   /**id của trang */
   const PAGE_ID = page?.page?.fb_page_id || ''
 
+  // thêm hoặc bỏ trang khỏi danh sách trang đang chọn
   list_selected_page_id.value[PAGE_ID] = !list_selected_page_id.value[PAGE_ID]
-
-  // tính toán lại số trang ngoài tổ chức đã được chọn
-  // getAnotherOrgPage()
 }
 /**đếm số trang đang chọn */
 function countPageSelect() {

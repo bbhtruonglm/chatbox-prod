@@ -10,14 +10,15 @@
       }})
     </template>
     <template #action>
-      <button
-        @click="openAddPageModal"
-        :class="
+      <!-- :class="
           isReachPageQuota()
             ? 'cursor-not-allowed bg-slate-200 text-slate-500'
             : 'bg-blue-600 text-white'
-        "
-        class="py-1 px-4 rounded-md text-sm font-medium"
+        " -->
+      <button
+        @click="openAddPageModal"
+        
+        class="py-1 px-4 rounded-md text-sm font-medium bg-blue-600 text-white"
       >
         {{ $t('v1.common.more') }}
       </button>
@@ -149,7 +150,7 @@ function isReachPageQuota() {
 /**mở modal thêm trang */
 function openAddPageModal() {
   // nếu đã đạt tới giới hạn trang thì thôi
-  if (isReachPageQuota()) return
+  // if (isReachPageQuota()) return
 
   // mở modal thêm trang
   connect_page_ref.value?.toggleModal()

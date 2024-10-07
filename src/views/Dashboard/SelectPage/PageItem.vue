@@ -16,6 +16,7 @@
       <div class="cursor-pointer items-center gap-2.5 flex">
         <!-- chỉ hiện nút xoá page khi hover -->
         <HidePage
+          v-if="isPageAdmin(page)"
           :page_id
           :page_name="page_info?.name"
         />
@@ -59,12 +60,15 @@ import StarIcon from '@/components/Icons/Star.vue'
 import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { PageInfo } from '@/service/interface/app/page'
+import type { PageData, PageInfo } from '@/service/interface/app/page'
+import { Page } from '@/utils/helper/Page'
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
     page_info: PageInfo
+    /**dữ liệu của trang */
+    page: PageData
     /**lọc hiển thị nền tảng */
     filter: string
   }>(),
@@ -87,6 +91,10 @@ const page_id = computed(() => $props.page_info?.fb_page_id)
 /**đánh dấu ưu tiên */
 const is_priority = computed(() => $props.page_info?.is_priority)
 
+/**kiểm tra xem user có phải là admin trang không */
+function isPageAdmin(page: PageData): boolean {
+  return Page.isCurrentStaffIsPageAdmin(page)
+}
 /**click chọn vào 1 trang */
 function selectPage() {
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó

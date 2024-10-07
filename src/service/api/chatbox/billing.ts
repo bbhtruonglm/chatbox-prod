@@ -75,11 +75,12 @@ export const read_ms = async (org_id: string): Promise<MemberShipInfo[]> =>
 /**thêm nhân viên vào tổ chức */
 export const add_ms = async (
   org_id: string,
-  member_id: string
+  member_id: string,
+  ms_role?: string
 ): Promise<OwnerShipInfo[]> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/member_ship/add_member`,
-    body: { org_id, member_id },
+    body: { org_id, member_id, ms_role },
   })
 
 /**xoá nhân viên khỏi tổ chức */
