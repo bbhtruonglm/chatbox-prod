@@ -30,8 +30,8 @@ export const routes = [
 
   { path: '/oauth', component: OAuth },
 
-  { path: '/chat', component: ChatShort },
-  // { path: '/chat', redirect: '/' },
+  // { path: '/chat', component: ChatShort },
+  { path: '/chat', redirect: '/' },
 
   {
     path: '/dashboard',
