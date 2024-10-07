@@ -1015,6 +1015,25 @@ const source: Language = {
             warning_move:
               'The page {page} is currently managed by another organization. If you continue, the management rights of these pages will be transferred to your organization, and members of the previous organization will lose access. The owner of that organization will be notified that your organization has taken over these pages.',
           },
+          org_staff: {
+            admin: 'Administrator',
+            member: 'Member',
+            remove: {
+              title: 'Remove Member',
+              guild_1:
+                'Remove member "<b>{member}</b>" from the organization "<b>{org}</b>"',
+              confirm: 'Confirm removal of member',
+            },
+            add: {
+              title: 'Add Member',
+              guild_1: 'Enter ID or email to add',
+              guild_2:
+                'Members only have permission to chat, view reports on Pages. They do not have permission to add members or configure Pages or Organization settings.',
+              name: 'Member name:',
+              guild_3:
+                'Administrators have full control over the organization.',
+            },
+          },
         },
       },
     },
