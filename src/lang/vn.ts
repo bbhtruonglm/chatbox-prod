@@ -164,7 +164,7 @@ const source: Language = {
               inactive: 'Chưa kích hoạt',
             },
           },
-          select_platform: {
+          select_platform: {            
             low_permission: 'Biên tập viên không kích hoạt được trang',
             waitting: 'Chờ kích hoạt',
             another_page: 'Các trang ở tổ chức khác',
@@ -1014,6 +1014,22 @@ const source: Language = {
             warning_move:
               'Trang {page} đang thuộc quyền quản lý của một tổ chức khác. Nếu bạn tiếp tục, quyền quản lý các trang này sẽ được chuyển sang tổ chức của bạn, và các thành viên của tổ chức trước đó sẽ mất quyền truy cập. Chủ sở hữu của tổ chức đó sẽ nhận được thông báo về việc tổ chức của bạn đã tiếp quản các trang này',
           },
+          org_staff: {
+            admin: 'Quản trị viên',
+            member: 'Thành viên',
+            remove: {
+              title: 'Xoá thành viên',
+              guild_1: 'Xóa thành viên "<b>{member}</b>" ra khỏi tổ chức "<b>{org}</b>"',
+              confirm: 'Xác nhận xoá thành viên',
+            },
+            add: {
+              title: 'Thêm thành viên',
+              guild_1: 'Nhập ID hoặc email để thêm',
+              guild_2: 'Thành viên chỉ có quyền chat, xem báo cáo trên các Trang. Không có quyền thêm thành viên hoặc thiết lập Trang hoặc thiết lập Tổ chức.',
+              name: 'Tên thành viên:',
+              guild_3: 'Quản trị viên có toàn quyền trong tổ chức.'
+            }
+          }
         },
       },
     },

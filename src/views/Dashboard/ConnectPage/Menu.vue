@@ -20,6 +20,7 @@ import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
+import UsersIcon from '@/components/Icons/Users.vue'
 
 import type { Component } from 'vue'
 
@@ -60,6 +61,11 @@ function getPlatform(): PlatformItem[] {
       key: 'WATTING',
       title: $t('v1.view.main.dashboard.select_platform.active_page'),
       icon: markRaw(ClockIcon),
+    },
+    {
+      key: 'MEMBER',
+      title: $t('v1.view.main.dashboard.org.setting.member'),
+      icon: markRaw(UsersIcon),
     },
   ]
 

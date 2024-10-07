@@ -2,20 +2,17 @@
   <Alert
     ref="confirm_inactive_modal_ref"
     class_modal="w-[507px]"
-    class_body="text-zinc-500"
+    class_body="pt-4 text-sm"
     class_footer="flex justify-between items-center"
   >
     <template #header>
-      {{
-        $t('v1.view.main.dashboard.org.setting.staff.inactive.title', {
-          name: selected_staff?.user_info?.full_name,
-        })
-      }}
+      {{ $t('v1.view.main.dashboard.org_staff.remove.confirm') }}
     </template>
     <template #body>
-      <div>
-        {{ $t('v1.view.main.dashboard.org.setting.staff.inactive.explain') }}
-      </div>
+      <div v-html="$t('v1.view.main.dashboard.org_staff.remove.guild_1', {
+        member: selected_staff?.user_info?.full_name,
+        org: orgStore.selected_org_info?.org_info?.org_name
+      })" />
     </template>
     <template #footer>
       <button
@@ -28,7 +25,7 @@
         @click="inactiveStaff"
         class="btn-custom bg-red-100 text-red-500"
       >
-        {{ $t('v1.common.ok') }}
+        {{ $t('v1.common.delete') }}
       </button>
     </template>
   </Alert>

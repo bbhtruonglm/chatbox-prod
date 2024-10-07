@@ -25,6 +25,18 @@
             </div>
             <Search />
           </template>
+          <template v-else-if="connectPageStore.current_menu === 'MEMBER'">
+            <div>
+              {{ $t('v1.view.main.dashboard.org.setting.member') }}
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Search
+                class_input="py-2.5 rounded-lg"
+                :placeholder="$t('v1.common.search')"
+              />
+              <SelectOrg class="border rounded-lg" />
+            </div>
+          </template>
           <template v-else-if="connectPageStore.current_menu === 'WEBSITE'">
             {{ $t('v1.view.main.dashboard.select_platform.website.title') }}
           </template>
@@ -40,6 +52,11 @@
         </div>
         <ActivePage
           v-if="connectPageStore.current_menu === 'WATTING'"
+          @done="$emit('done')"
+          @close="toggleModal"
+        />
+        <Member
+          v-if="connectPageStore.current_menu === 'MEMBER'"
           @done="$emit('done')"
           @close="toggleModal"
         />
@@ -61,10 +78,12 @@ import { provide, ref } from 'vue'
 import { useConnectPageStore } from '@/stores'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 
+import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
 import Menu from '@/views/Dashboard/ConnectPage/Menu.vue'
 import ActivePage from '@/views/Dashboard/ConnectPage/ActivePage.vue'
+import Member from '@/views/Dashboard/ConnectPage/Member.vue'
 import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
