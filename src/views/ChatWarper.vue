@@ -296,7 +296,7 @@ function getPageInfoToChat() {
             return cb(e)
           }
 
-          intergrateChatV1()
+          // intergrateChatV1()
           cb()
         }),
       // * kiểm tra các page được chọn có thoả mãn điều kiện gói hay không

@@ -13,6 +13,7 @@
     "build-staging": "run-p type-check build-only-staging",
     "build-prod": "run-p type-check build-only-prod",
     "build": "run-p type-check build-only-prod",
+    "build-retion": "VITE_BASE_URL=/chat run-s build zip",
     "build-only-dev": "vite build --mode dev",
     "build-only-staging": "vite build --mode staging",
     "build-only-prod": "vite build --mode prod",

@@ -15,7 +15,6 @@ import { loadMiddleware } from '@/router/middleware'
 export const router = createRouter({
   history: import.meta.env.VITE_APP_HISTORY === 'web' ?
     createWebHistory(import.meta.env.BASE_URL) :
-    // createWebHistory('/chat') :
     createWebHashHistory(),
   routes
 }) 

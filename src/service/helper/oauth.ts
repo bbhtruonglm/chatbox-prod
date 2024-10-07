@@ -6,7 +6,7 @@ export const signout = () => {
     $indexed_db.clear(() => {})
 
     // @ts-ignore
-    ldb.clear()
+    // ldb.clear()
 
     // xoá dữ liệu local
     localStorage.clear()
