@@ -17,7 +17,7 @@
           <Loading class="mx-auto" />
         </div>
         <div
-          class="font-semibold p-2 border-b border-slate-200 flex-shrink-0 flex items-center justify-between"
+          class="font-medium p-2 border-b border-slate-200 flex-shrink-0 flex items-center justify-between"
         >
           <template v-if="connectPageStore.current_menu === 'WATTING'">
             <div>
@@ -41,6 +41,7 @@
         <ActivePage
           v-if="connectPageStore.current_menu === 'WATTING'"
           @done="$emit('done')"
+          @close="toggleModal"
         />
         <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
         <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />

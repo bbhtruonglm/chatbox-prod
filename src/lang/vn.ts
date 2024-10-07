@@ -172,7 +172,7 @@ const source: Language = {
             connect_with: 'Kết nối với {platform}',
             empty_page: 'Không tìm thấy trang của bạn?',
             add_page: 'Thêm kết nối',
-            active_page: 'Kích hoạt trang và tổ chức',
+            active_page: 'Kích hoạt trang',
             empty_invite: 'Không có trang cần kích hoạt',
             accept: 'Xác nhận lời mời',
             denied: 'Từ chối lời mời',
@@ -989,6 +989,17 @@ const source: Language = {
             },
           },
           org_page: {
+            take_page: {
+              title: 'Xác nhận chuyển trang',
+              guild_1: 'Thông báo về việc chuyển quyền quản lý trang:',
+              page: 'Trang:',
+              guild_2: 'hiện thuộc quyền quản lý của một tổ chức khác.',
+              action: 'Hành động:',
+              guild_3: 'Nếu bạn "Xác nhận", quyền quản lý trang sẽ được chuyển sang tổ chức của bạn.',
+              result: 'Kết quả:',
+              guild_4: 'Các thành viên trong tổ chức hiện tại sẽ mất quyền truy cập trang này.',
+              guild_5: 'Chủ sở hữu của tổ chức hiện tại sẽ nhận được thông báo về việc chuyển giao quyền quản lý.',
+            },
             over_quota: {
               title: 'Có lỗi xảy ra',
               description: 'Bạn đã đạt đến giới hạn trang của tổ chức, nhấp chuột vào nút dưới đây để xem gói cước',

@@ -27,6 +27,7 @@
           <PageItem
             v-if="page?.page"
             :page_info="page?.page"
+            :page="page"
             :filter="filter"
           />
         </template>
