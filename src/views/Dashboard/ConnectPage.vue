@@ -56,7 +56,7 @@
           @close="toggleModal"
         />
         <Member
-          v-if="connectPageStore.current_menu === 'MEMBER'"
+          v-else-if="connectPageStore.current_menu === 'MEMBER'"
           @done="$emit('done')"
           @close="toggleModal"
         />
