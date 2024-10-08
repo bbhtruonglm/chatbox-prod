@@ -1,15 +1,15 @@
 /**
  * i18n cho vue
- * 
+ *
  * cú pháp:
  * - với <template>*</template>
  * {{ $t('v1.common.ghtk') }}
- * 
+ *
  * - với <script setup>*</script>
  * import { useI18n } from 'vue-i18n'
  * const { t: $t } = useI18n()
  * return $t('v1.common.ghtk')
- * 
+ *
  * - với các file script ngoài vue component
  * import { i18n } from '@/lang'
  * const { t: $t } = i18n.global
@@ -17,24 +17,22 @@
  */
 
 import { createI18n } from 'vue-i18n'
-import { queryString } from '@/service/helper/queryString'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 import vn from '@/lang/vn'
 import en from '@/lang/en'
 import th from '@/lang/th'
 
-// dọc dữ liệu lang hiện tại
-export const locale = queryString('locale') || localStorage.getItem('locale') || 'en'
-
 // init i18n
 export const i18n = createI18n({
-    legacy: false,
-    locale,
-    // fallbackLocale: 'vn',
-    fallbackLocale: 'en',
-    messages: { 
-        vn, vi: vn, 
-        en, us: en, 
-        th 
-    },
+  legacy: false,
+  locale: LocaleSingleton.getInst().get(),
+  fallbackLocale: 'en',
+  messages: {
+    vn,
+    vi: vn,
+    en,
+    us: en,
+    th,
+  },
 })

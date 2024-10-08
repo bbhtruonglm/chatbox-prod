@@ -19,6 +19,7 @@
           v-if="isPageAdmin(page)"
           :page_id
           :page_name="page_info?.name"
+          :selected_page="page_info"
         />
         <div @click.stop="togglePagePriority()">
           <StarIcon

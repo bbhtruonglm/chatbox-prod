@@ -1,4 +1,9 @@
-import { useConversationStore, usePageStore, useMessageStore, useOrgStore } from '@/stores'
+import {
+  useConversationStore,
+  usePageStore,
+  useMessageStore,
+  useOrgStore,
+} from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
 import { checkPricingValid } from '@/service/helper/pricing'
@@ -21,6 +26,7 @@ import type { Router } from 'vue-router'
 import type { MessageInfo } from '../interface/app/message'
 import { copyToClipboard } from '../helper/copyWithAlert'
 import { User } from '@/utils/helper/User'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -208,7 +214,7 @@ export const getIframeUrl = (widget: AppInstalledInfo) => {
   const URL_APP = widget.snap_app.url_app
   const ACCESS_TOKEN = conversationStore.list_widget_token?.data?.[widget._id]
   const CHATBOX_TOKEN = getItem('access_token')
-  const LOCALE = localStorage.getItem('locale') || 'vn'
+  const LOCALE = LocaleSingleton.getInst().get()
   const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id)
 
   return `${URL_APP}?access_token=${ACCESS_TOKEN}&locale=${LOCALE}&chatbox_token=${CHATBOX_TOKEN}&is_page_admin=${IS_PAGE_ADMIN}`
@@ -265,7 +271,7 @@ export function isFilterActive() {
 /**lấy dữ liệu ngôn ngữ hiện tại */
 export function getLocale() {
   // đọc ngôn ngữ hiện tại được lưu từ local storage
-  return localStorage.getItem('locale') || 'vn'
+  return LocaleSingleton.getInst().get()
 }
 
 /**cài đặt id trang và user cho chat */
@@ -357,7 +363,7 @@ export function getCurrentOrgInfo() {
 export function calcIsClientRepSlow(
   page_id?: string,
   time?: string,
-  current_index?: number,
+  current_index?: number
 ) {
   // nếu không có page_id thì thôi
   if (!page_id || !current_index) return false

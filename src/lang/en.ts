@@ -165,6 +165,10 @@ const source: Language = {
             },
           },
           select_platform: {
+            no_access: 'No access',
+            not_admin: 'You are not an administrator of this Organization',
+            low_permission: 'Editors cannot activate the page',
+            waitting: 'Waiting for activation',
             another_page: 'Pages from other organizations',
             search_page: 'Search page or page ID...',
             connect_with: 'Connect with {platform}',

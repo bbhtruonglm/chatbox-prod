@@ -24,7 +24,7 @@ import Facebook from '@/components/OAuth/Facebook.vue'
 
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -66,7 +66,7 @@ async function syncFacebookPage(access_token: string, from: string) {
     connectPageStore.selectMenu('WATTING')
   } catch (e) {
     // hiển thị lỗi
-    new Toast().error(e)
+    ToastSingleton.getInst().error(e)
   } finally {
     // tắt loading
     commonStore.is_loading_full_screen = false

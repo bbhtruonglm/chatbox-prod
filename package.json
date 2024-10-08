@@ -20,13 +20,13 @@
     "type-check": "vue-tsc --noEmit",
     "deploy": "./deploy.sh",
     "zip": "zip -r dist.zip dist"
-    
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.13",
     "date-fns": "2.30.0",
+    "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "pinia": "^2.0.28",
     "postcss": "^8.4.19",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.16",
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.16.18",
     "@vitejs/plugin-basic-ssl": "^1.0.1",

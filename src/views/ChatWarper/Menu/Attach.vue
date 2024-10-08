@@ -86,12 +86,13 @@ import NewTabIcon from '@/components/Icons/NewTab.vue'
 import { Domain } from '@/utils/helper/Domain'
 import { Parser } from '@/utils/helper/Parser'
 import { Navigation } from '@/utils/helper/Navigation'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const $router = useRouter()
 const orgStore = useOrgStore()
-const locale = localStorage.getItem('locale') || 'vn'
+const locale = LocaleSingleton.getInst().get()
 
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Dropdown>>()

@@ -1,6 +1,9 @@
 <template>
+  <LowPermision
+    v-if="orgStore?.selected_org_info?.current_ms?.ms_role !== 'ADMIN'"
+  />
   <EmptyActive
-    v-if="
+    v-else-if="
       !size(list_my_org_page) &&
       !size(list_another_org_page) &&
       !size(list_free_page)
@@ -56,7 +59,7 @@
         v-if="list_another_org_page?.length"
         :title="$t('v1.view.main.dashboard.select_platform.another_page')"
       />
-      <template v-for="org of map_another_org_page?.map_org_info">
+      <div v-for="org of map_another_org_page?.map_org_info">
         <div>
           <div class="text-sm font-semibold">
             {{ org?.org_info?.org_name }}:
@@ -90,17 +93,10 @@
             </PageItem>
           </template>
         </div>
-      </template>
+      </div>
     </div>
     <div class="flex-shrink-0 flex p-2 border-t justify-end">
-      <div
-        v-if="orgStore?.selected_org_info?.current_ms?.ms_role !== 'ADMIN'"
-        class="text-xs font-medium text-red-500"
-      >
-        {{ $t('v1.view.main.dashboard.org.permision_denied') }}
-      </div>
       <Button
-        v-else
         @click="beforeActivePage"
         :class="
           countPageSelect() && !isOverQuota()
@@ -142,11 +138,11 @@ import {
   type CurrentPageData,
 } from '@/utils/api/N4Service/Page'
 import { useI18n } from 'vue-i18n'
-import { Toast } from '@/utils/helper/Alert'
 
 import Button from '@/views/Dashboard/ConnectPage/Button.vue'
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
 import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vue'
+import LowPermision from '@/views/Dashboard/ConnectPage/ActivePage/LowPermision.vue'
 import SplitTitle from '@/views/Dashboard/ConnectPage/ActivePage/SplitTitle.vue'
 import AlertOverQuota from '@/views/Dashboard/ConnectPage/ActivePage/AlertOverQuota.vue'
 import ConfirmTakePage from '@/views/Dashboard/ConnectPage/ActivePage/ConfirmTakePage.vue'
@@ -158,6 +154,7 @@ import type {
   PageOrgInfoMap,
 } from '@/service/interface/app/billing'
 import { Page } from '@/utils/helper/Page'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const $emit = defineEmits(['done', 'close'])
 
@@ -446,7 +443,7 @@ async function getListWattingPage() {
     })
   } catch (e) {
     // thông báo lỗi
-    new Toast().error(e)
+    ToastSingleton.getInst().error(e)
   } finally {
     // ẩn loading
     connectPageStore.is_loading = false

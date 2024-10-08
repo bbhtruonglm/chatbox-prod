@@ -51,11 +51,12 @@ import Swal from 'sweetalert2'
 
 import Language from '@/components/Language.vue'
 import Facebook from '@/components/OAuth/Facebook.vue'
-import { Toast } from '@/utils/helper/Alert'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const $router = useRouter()
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
+const toast = ToastSingleton.getInst()
 
 onMounted(() => isAlreadyLogin())
 
@@ -91,7 +92,7 @@ async function loginChatbox(access_token: string) {
     $router.push('/dashboard')
   } catch (e) {
     // báo lỗi nếu có
-    new Toast().error(e)
+    toast.error(e)
   } finally {
     // tắt loading
     commonStore.is_loading_full_screen = false
@@ -139,7 +140,7 @@ async function openForm() {
     $router.push('/dashboard')
   } catch (e) {
     //
-    new Toast().error(e)
+    toast.error(e)
   } finally {
     // tắt loading
     commonStore.is_loading_full_screen = false
