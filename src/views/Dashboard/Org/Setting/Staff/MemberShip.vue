@@ -84,7 +84,6 @@ import { nonAccentVn } from '@/service/helper/format'
 import { add_ms, read_ms } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert'
 
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -96,6 +95,7 @@ import EmptyActive from '@/views/Dashboard/ConnectPage/ActivePage/EmptyActive.vu
 import Checkbox from '@/components/Checkbox.vue'
 
 import type { StaffInfo } from '@/service/interface/app/staff'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const $emit = defineEmits(['done'])
 
@@ -212,7 +212,7 @@ async function getAnotherOrgStaff() {
     })
   } catch (e) {
     // thông báo lỗi
-    new Toast().error(e)
+    ToastSingleton.getInst().error(e)
   } finally {
     // ẩn loading
     is_loading.value = false

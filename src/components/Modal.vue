@@ -21,7 +21,7 @@
           <div class="flex items-center justify-between px-3">
             <div
               :class="class_header"
-              class="text-lg font-semibold flex-shrink-0"
+              class="text-lg font-medium flex-shrink-0"
             >
               <slot name="header"></slot>
             </div>

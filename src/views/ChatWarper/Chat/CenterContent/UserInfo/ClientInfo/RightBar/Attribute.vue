@@ -75,6 +75,7 @@ import InfoItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 import { mapValues } from 'lodash'
 import { ChatbotAppClient } from '@/utils/api/Chatbot'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
@@ -136,7 +137,7 @@ function openChatbot() {
   if (!$env.host.chatbot_view) return
 
   /**lấy locale */
-  const locale = localStorage.getItem('locale') || 'vn'
+  const locale = LocaleSingleton.getInst().get()
 
   // nếu đang chon nhiều page thì mở chatbot với page đầu tiên
   openNewTab(

@@ -25,7 +25,10 @@
       </div>
     </template>
     <template #description>
-      <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
+      <div
+        @click="clipboard.copy(staff?.staff_id)"
+        class="text-xs text-slate-500 flex-grow truncate min-w-0 cursor-copy"
+      >
         {{ staff?.staff_id }}
       </div>
     </template>
@@ -49,6 +52,7 @@ import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 
 import type { MemberShipInfo } from '@/service/interface/app/billing'
+import { ClipboardSingleton } from '@/utils/helper/Clipboard'
 
 const $emit = defineEmits(['done'])
 
@@ -63,6 +67,7 @@ const $props = withDefaults(
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 const { t: $t } = useI18n()
+const clipboard = ClipboardSingleton.getInst()
 
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()

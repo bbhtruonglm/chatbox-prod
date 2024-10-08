@@ -1,5 +1,9 @@
 <template>
-  <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
+  <LowPermision v-if="!isOrgAdmin()" />
+  <div
+    v-else
+    class="h-full p-2 overflow-y-auto flex flex-col gap-2.5"
+  >
     <div class="text-sm font-medium">
       {{ $t('v1.view.main.dashboard.org_staff.admin') }}
     </div>
@@ -26,14 +30,7 @@
     </div>
   </div>
   <div class="flex-shrink-0 flex p-2 border-t justify-end">
-    <div
-      v-if="!isOrgAdmin()"
-      class="text-xs font-medium text-red-500"
-    >
-      {{ $t('v1.view.main.dashboard.org.permision_denied') }}
-    </div>
     <Button
-      v-else
       @click="add_ref?.toggleModal()"
       class="bg-blue-700 text-white"
     >
@@ -52,6 +49,7 @@ import { nonAccentVn } from '@/service/helper/format'
 import { read_ms } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
 
+import LowPermision from '@/views/Dashboard/ConnectPage/ActivePage/LowPermision.vue'
 import Add from '@/views/Dashboard/ConnectPage/Member/Add.vue'
 import Item from '@/views/Dashboard/ConnectPage/Member/Item.vue'
 import Button from '@/views/Dashboard/ConnectPage/Button.vue'

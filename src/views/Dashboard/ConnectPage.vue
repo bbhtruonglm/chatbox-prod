@@ -23,7 +23,10 @@
             <div>
               {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
             </div>
-            <Search />
+            <div class="flex items-center gap-2.5">
+              <Search class_input="py-2.5 rounded-lg" />
+              <SelectOrg class="border rounded-lg" />
+            </div>
           </template>
           <template v-else-if="connectPageStore.current_menu === 'MEMBER'">
             <div>

@@ -164,9 +164,12 @@ const source: Language = {
               inactive: 'Chưa kích hoạt',
             },
           },
-          select_platform: {            
+          select_platform: {
+            no_access: 'Không có quyền truy cập',
+            not_admin: 'Bạn không phải là quản trị viên của Tổ chức này', 
             low_permission: 'Biên tập viên không kích hoạt được trang',
             waitting: 'Chờ kích hoạt',
+            
             another_page: 'Các trang ở tổ chức khác',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',

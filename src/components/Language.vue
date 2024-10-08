@@ -23,6 +23,7 @@ import enSvg from '@/assets/icons/en.svg'
 import thSvg from '@/assets/icons/th.svg'
 
 import type { ComponentRef } from '@/service/interface/vue'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 const { locale } = useI18n()
 
@@ -63,7 +64,7 @@ function clickOutSide($event: MouseEvent) {
 }
 /**lưu lại lang mới vào local, và reload lại trang */
 function changeLang(key: string) {
-    localStorage.setItem('locale', key)
+    LocaleSingleton.getInst().set(key)
 
     window.location.reload()
 }

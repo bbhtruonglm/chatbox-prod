@@ -13,13 +13,21 @@
       <div class="text-sm font-semibold truncate">{{ noti.noti_title }}</div>
       <div class="text-xs truncate">{{ noti.noti_content }}</div>
     </div>
-    <button
-      @click="getConfig(noti.noti_code).click(noti.noti_id)"
-      :class="getConfig(noti.noti_code).btn"
-      class="item text-white flex-shrink-0 hover:brightness-90"
-    >
-      {{ getConfig(noti.noti_code).btn_title }}
-    </button>
+    <div class="flex-shrink-0">
+      <button
+        @click="getConfig(noti.noti_code).click(noti.noti_id)"
+        :class="getConfig(noti.noti_code).btn"
+        class="item text-white hover:brightness-90"
+      >
+        {{ getConfig(noti.noti_code).btn_title }}
+      </button>
+      <button
+        @click="reaadNoti(noti.noti_id)"
+        class="item text-sm font-medium"
+      >
+        {{ $t('v1.common.close') }}
+      </button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -28,10 +36,10 @@ import { useCommonStore, useOrgStore } from '@/stores'
 import { get_noti, read_noti } from '@/service/api/chatbox/billing'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toast } from '@/utils/helper/Alert'
 import { useRouter } from 'vue-router'
 
 import type { NotiInfo } from '@/service/interface/app/billing'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const orgStore = useOrgStore()
 const commonStore = useCommonStore()
@@ -70,7 +78,7 @@ const SETTINGS: Record<string, ISetting> = {
   /**nạp tiền thành công */
   TOPUP_SUCCESS: {
     bg: 'bg-green-100',
-    border: 'bg-green-200',
+    border: 'border-green-200',
     btn: 'bg-green-500',
     text: 'text-green-700',
     btn_title: $t('v1.common.close'),
@@ -79,7 +87,7 @@ const SETTINGS: Record<string, ISetting> = {
   /**đang chờ thanh toán */
   TOPUP_WAITING: {
     bg: 'bg-orange-100',
-    border: 'bg-orange-200',
+    border: 'border-orange-200',
     btn: 'bg-orange-500',
     text: 'text-orange-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.pay'),
@@ -88,7 +96,7 @@ const SETTINGS: Record<string, ISetting> = {
   /**thanh toán thành công */
   PURCHASE_SUCCESS: {
     bg: 'bg-green-100',
-    border: 'bg-green-200',
+    border: 'border-green-200',
     btn: 'bg-green-500',
     text: 'text-green-700',
     btn_title: $t('v1.common.close'),
@@ -99,7 +107,7 @@ const SETTINGS: Record<string, ISetting> = {
   /**sắp đạt giới hạn AI */
   ALMOST_REACH_QUOTA_AI: {
     bg: 'bg-blue-100',
-    border: 'bg-blue-200',
+    border: 'border-blue-200',
     btn: 'bg-blue-500',
     text: 'text-blue-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.more'),
@@ -108,7 +116,7 @@ const SETTINGS: Record<string, ISetting> = {
   /**sắp hết hạn gói */
   ALMOST_EXPIRED_PACKAGE: {
     bg: 'bg-red-100',
-    border: 'bg-red-200',
+    border: 'border-red-200',
     btn: 'bg-red-500',
     text: 'text-red-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.extend'),
@@ -118,6 +126,8 @@ const SETTINGS: Record<string, ISetting> = {
 
 /**danh sách các thông báo mới */
 const list_noti = ref<NotiInfo[]>([])
+/**loading */
+const is_loading = ref(false)
 
 // đọc danh sách thông báo khi load component
 onMounted(getNoti)
@@ -132,29 +142,45 @@ function getConfig(code?: string): ISetting {
   // trả về thiết lập theo code
   return SETTINGS?.[code] || DEFAULT_SETTING
 }
-/**lấy 4 thông báo mới nhất */
+/**lấy xx thông báo mới nhất */
 async function getNoti() {
   try {
     // nếu không có id tổ chức thì thôi
     if (!orgStore.selected_org_id) return
 
     // ghi đè thống báo cũ nếu có khi lấy dữ liệu
-    list_noti.value = await get_noti(orgStore.selected_org_id, 4, {
-      $exists: false,
-    })
+    list_noti.value = await get_noti(
+      orgStore.selected_org_id,
+      3,
+      {
+        $exists: false,
+      },
+      [
+        'ALMOST_EXPIRED_PACKAGE',
+        'TOPUP_WAITING',
+        'ALMOST_REACH_QUOTA_AI',
+        'CHANGE_PAGE_OWNER',
+      ]
+    )
   } catch (e) {
     // thông báo lỗi
-    new Toast().error(e)
+    ToastSingleton.getInst().error(e)
   }
 }
 /**đọc thông báo */
 async function reaadNoti(noti_id?: string, code?: string) {
   try {
+    // nếu đang loading thì thôi
+    if (is_loading.value) return
+
     // mở loading
-    commonStore.is_loading_full_screen = true
+    is_loading.value = true
 
     // đánh dấu noti là đã đọc
     await read_noti(orgStore.selected_org_id, noti_id)
+
+    // giảm số thông báo
+    orgStore.count_noti--
 
     switch (code) {
       case 'TOPUP_SUCCESS':
@@ -181,7 +207,7 @@ async function reaadNoti(noti_id?: string, code?: string) {
   } catch (e) {
   } finally {
     // tắt loading
-    commonStore.is_loading_full_screen = false
+    is_loading.value = false
   }
 }
 </script>

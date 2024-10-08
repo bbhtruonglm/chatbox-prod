@@ -14,9 +14,9 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useChatbotUserStore, useCommonStore } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert'
 
 import ZaloIcon from '@/components/Icons/Zalo.vue'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const $emit = defineEmits(['done'])
 
@@ -32,6 +32,7 @@ const $route = useRoute()
 const $router = useRouter()
 const chatbotUserStore = useChatbotUserStore()
 const commonStore = useCommonStore()
+const toast = ToastSingleton.getInst()
 
 onMounted(() => afterOauth())
 
@@ -51,7 +52,7 @@ async function oAuthByRedirectZalo() {
     window.location.href = URL
   } catch (e) {
     // báo lỗi nếu phát sinh
-    new Toast().error(e)
+    toast.error(e)
   } finally {
     // tắt loading
     commonStore.is_loading_full_screen = false
@@ -84,7 +85,7 @@ async function afterOauth() {
     $emit('done')
   } catch (e) {
     // báo lỗi nếu phát sinh
-    new Toast().error(e)
+    toast.error(e)
   } finally {
     // tắt loading
     commonStore.is_loading_full_screen = false

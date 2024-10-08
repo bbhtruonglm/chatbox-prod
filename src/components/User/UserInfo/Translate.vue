@@ -46,9 +46,6 @@ const current_locale = computed(() => MAPPING_LANG['en'])
 function changeLang($event: Event) {
   const { value: LANG } = $event.target as HTMLSelectElement
 
-  // lưu lại ngôn ngữ mới vào local
-  // localStorage.setItem('locale', LANG)
-
   // reload lại trang
   window.location.reload()
 }

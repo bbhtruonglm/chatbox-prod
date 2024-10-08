@@ -13,6 +13,7 @@
   </select>
 </template>
 <script setup lang="ts">
+import { LocaleSingleton } from '@/utils/helper/Locale'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -50,7 +51,7 @@ function changeLang($event: Event) {
   const { value: LANG } = $event.target as HTMLSelectElement
 
   // lưu lại ngôn ngữ mới vào local
-  localStorage.setItem('locale', LANG)
+  LocaleSingleton.getInst().set(LANG)
 
   // reload lại trang
   window.location.reload()

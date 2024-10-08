@@ -31,8 +31,8 @@ import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert'
 import { mapValues } from 'lodash'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
@@ -79,7 +79,7 @@ async function loadListPage(org_id?: string): Promise<void> {
     staffStore.staff_list_of_active_page = RES?.all_staff_list
   } catch (e) {
     // nếu có lỗi thì hiển thị thông báo
-    new Toast().error(e)
+    ToastSingleton.getInst().error(e)
   } finally {
     // tắt loading
     selectPageStore.is_loading = false
