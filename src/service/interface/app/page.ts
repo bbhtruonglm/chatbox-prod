@@ -5,6 +5,11 @@ import type { AppInstalledInfo } from './widget'
 export type PageType = 'FB_MESS' | 'ZALO_OA' | 'WEBSITE' | 'FB_WHATSAPP' | 'FB_INSTAGRAM'
 
 export interface PageInfo {
+    /**vị trí quét từ FB */
+    location?: {
+        /**thành phố */
+        city?: string
+    }
     fb_page_id: string
     type: PageType
     name: string
