@@ -64,6 +64,8 @@ export interface MessageInfo {
 
 /**dữ liệu AI của một phần tử */
 export interface MessageAiData {
+  /**thành phố */
+  city?: string
   /**sdt */
   phone?: string
   /**email */
