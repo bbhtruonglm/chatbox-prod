@@ -65,7 +65,7 @@
           {{ $t('v1.view.main.dashboard.chat.client.updated_at') }}:
           {{
             dateFormat(
-              conversationStore.select_conversation?.createdAt,
+              conversationStore.select_conversation?.updatedAt,
               'hh:mm - dd/MM/yyyy'
             )
           }}

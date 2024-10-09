@@ -113,8 +113,10 @@ const search = ref<string>()
 
 // nạp dữ liệu tổ chức hiện tại khi component được mount
 onMounted(getCurrentOrgInfo)
+
 /**lắng nghe sự kiện khi click ra ngoài */
-onMounted(() => document.body.addEventListener('click', clickOutSide))
+onMounted(() => document.body.addEventListener('click', clickOutSide, true))
+
 /**lắng nghe sự kiện khi huỷ component */
 onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 
