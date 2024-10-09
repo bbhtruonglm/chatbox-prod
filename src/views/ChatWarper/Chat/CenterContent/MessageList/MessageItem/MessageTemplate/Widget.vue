@@ -72,33 +72,33 @@ function genUrl() {
   // xoá bỏ _id của AI
   delete $props.ai._id
 
-  // tiêm thêm SDT nếu trong tin nhắn không có
-  if (
-    // AI không có SDT
-    !$props.ai?.phone &&
-    // có SDT trong hội thoại đã tìm được
-    conversationStore.select_conversation?.client_phone
-  )
-    $props.ai.phone = conversationStore.select_conversation?.client_phone
+  // // tiêm thêm SDT nếu trong tin nhắn không có
+  // if (
+  //   // AI không có SDT
+  //   !$props.ai?.phone &&
+  //   // có SDT trong hội thoại đã tìm được
+  //   conversationStore.select_conversation?.client_phone
+  // )
+  //   $props.ai.phone = conversationStore.select_conversation?.client_phone
 
-  /**thành phố của trang được thiết lập */
-  const PAGE_CITY =
-    pageStore.selected_page_list_info?.[
-      conversationStore.select_conversation?.fb_page_id || ''
-    ]?.page?.location?.city
+  // /**thành phố của trang được thiết lập */
+  // const PAGE_CITY =
+  //   pageStore.selected_page_list_info?.[
+  //     conversationStore.select_conversation?.fb_page_id || ''
+  //   ]?.page?.location?.city
 
-    // tiêm thêm thành phố nếu trong tin nhắn không có
-  if (
-    // AI không có thành phố
-    !$props.ai?.city && 
-    // có thành phố trong trang đã tìm được
-    PAGE_CITY
-  ) {
-    // thêm thành phố vào AI
-    $props.ai.city = PAGE_CITY
-    // thêm thành phố vào địa chỉ
-    $props.ai.address += `, ${PAGE_CITY}`
-  }
+  //   // tiêm thêm thành phố nếu trong tin nhắn không có
+  // if (
+  //   // AI không có thành phố
+  //   !$props.ai?.city && 
+  //   // có thành phố trong trang đã tìm được
+  //   PAGE_CITY
+  // ) {
+  //   // thêm thành phố vào AI
+  //   $props.ai.city = PAGE_CITY
+  //   // thêm thành phố vào địa chỉ
+  //   $props.ai.address += `, ${PAGE_CITY}`
+  // }
 
   // thêm các thông tin của AI vào url
   url += `&${Parser.toQueryString($props.ai)}`
