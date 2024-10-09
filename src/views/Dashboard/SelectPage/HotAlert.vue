@@ -68,8 +68,8 @@ const DEFAULT_SETTING = {
   border: 'border-slate-200',
   btn: 'bg-slate-700',
   text: 'text-black',
-  btn_title: $t('v1.common.close'),
-  click: (noti_id?: string) => reaadNoti(noti_id),
+  btn_title: $t('v1.view.main.dashboard.org.menu.more'),
+  click: (noti_id?: string) => reaadNoti(noti_id, 'CHANGE_PAGE_OWNER'),
 }
 /**thiết lập UI của thông báo */
 const SETTINGS: Record<string, ISetting> = {
@@ -183,6 +183,9 @@ async function reaadNoti(noti_id?: string, code?: string) {
     orgStore.count_noti--
 
     switch (code) {
+      case 'CHANGE_PAGE_OWNER':
+        $router.push('/dashboard/org/pay/info')
+        break
       case 'TOPUP_SUCCESS':
         $router.push('/dashboard/org/pay/info')
         break
