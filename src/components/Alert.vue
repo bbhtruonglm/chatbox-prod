@@ -31,10 +31,7 @@
           <div :class="class_body">
             <slot name="body"></slot>
           </div>
-          <div
-            :class="class_footer"
-            class="mt-6"
-          >
+          <div :class="class_footer">
             <slot name="footer"></slot>
           </div>
         </div>

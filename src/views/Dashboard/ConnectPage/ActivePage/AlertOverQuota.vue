@@ -3,7 +3,7 @@
     ref="alert_over_quota_ref"
     class_modal="w-[507px]"
     class_body="text-zinc-500"
-    class_footer="flex justify-between items-center"
+    class_footer="flex justify-between items-center mt-6"
   >
     <template #header>
       {{ $t('v1.view.main.dashboard.org_page.over_quota.title') }}
