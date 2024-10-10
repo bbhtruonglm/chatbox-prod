@@ -10,14 +10,8 @@
       }})
     </template>
     <template #action>
-      <!-- :class="
-          isReachPageQuota()
-            ? 'cursor-not-allowed bg-slate-200 text-slate-500'
-            : 'bg-blue-600 text-white'
-        " -->
       <button
         @click="openAddPageModal"
-        
         class="py-1 px-4 rounded-md text-sm font-medium bg-blue-600 text-white"
       >
         {{ $t('v1.common.more') }}
@@ -140,19 +134,9 @@ async function getOs() {
   // tắt loading
   orgStore.is_loading = false
 }
-/**kiểm tra xem tổ chức đã đạt tới giới hạn trang chưa */
-function isReachPageQuota() {
-  return (
-    (orgStore.selected_org_info?.org_package?.org_current_page || 0) >=
-    (orgStore.selected_org_info?.org_package?.org_quota_page || 0)
-  )
-}
 /**mở modal thêm trang */
 function openAddPageModal() {
-  // nếu đã đạt tới giới hạn trang thì thôi
-  // if (isReachPageQuota()) return
-
   // mở modal thêm trang
-  connect_page_ref.value?.toggleModal()
+  connect_page_ref.value?.toggleModal('PAGE')
 }
 </script>

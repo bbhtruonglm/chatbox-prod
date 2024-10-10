@@ -72,15 +72,11 @@ const clipboard = ClipboardSingleton.getInst()
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 
-/**kiểm tra xem user có phải là admin tổ chức không */
-function isOrgAdmin() {
-  return orgStore?.selected_org_info?.current_ms?.ms_role === 'ADMIN'
-}
 /**có quyền xoá nhân viên không */
 function isAllowRemoveMember(staff: MemberShipInfo) {
   return (
     // phải là admin tổ chức
-    isOrgAdmin() &&
+    orgStore.isAdminOrg() &&
     // không phải là chính mình
     chatbotUserStore.chatbot_user?.user_id !== staff?.staff_id
   )

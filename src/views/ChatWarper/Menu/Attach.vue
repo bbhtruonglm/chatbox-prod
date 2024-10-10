@@ -34,20 +34,22 @@
     >
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
-    <MenuItem
-      @click="openWidget"
-      :icon="SquareIcon"
-      :title="$t('v1.view.main.dashboard.nav.widget')"
-    >
-      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
-    </MenuItem>
-    <MenuItem
-      @click="openPageSetting"
-      :icon="CogIcon"
-      :title="$t('v1.common.setting')"
-    >
-      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
-    </MenuItem>
+    <template v-if="orgStore.isAdminOrg()">
+      <MenuItem
+        @click="openWidget"
+        :icon="SquareIcon"
+        :title="$t('v1.view.main.dashboard.nav.widget')"
+      >
+        <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
+      </MenuItem>
+      <MenuItem
+        @click="openPageSetting"
+        :icon="CogIcon"
+        :title="$t('v1.common.setting')"
+      >
+        <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
+      </MenuItem>
+    </template>
     <!-- 
     <NavItem
       v-if="size(pageStore.selected_page_id_list)"

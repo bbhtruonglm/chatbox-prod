@@ -19,7 +19,7 @@
     <div class="flex gap-7 items-center">
       <template v-if="isShowSelectPageButton()">
         <button
-          @click="toggleModalConnectPage?.()"
+          @click="toggleModalConnectPage?.('PAGE')"
           class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
         >
           <PlusCircleIcon class="w-3 h-3" />

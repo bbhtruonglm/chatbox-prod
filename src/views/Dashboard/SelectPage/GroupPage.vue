@@ -34,7 +34,7 @@
       </div>
     </template>
   </CardItem>
-  <EmptyPage v-else-if="selectPageStore.current_menu === filter" />
+  <EmptyPage v-else-if="selectPageStore.current_menu === filter" :tab />
 </template>
 <script setup lang="ts">
 import { usePageStore, useSelectPageStore } from '@/stores'
@@ -61,6 +61,8 @@ const $props = withDefaults(
     icon: Component
     /**lọc hiển thị nền tảng */
     filter: string
+    /**tab được chọn khi mở modal kết nối page */
+    tab?: string
   }>(),
   {}
 )

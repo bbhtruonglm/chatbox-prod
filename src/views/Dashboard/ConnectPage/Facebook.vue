@@ -63,7 +63,7 @@ async function syncFacebookPage(access_token: string, from: string) {
     await new N4SerivceAppPage().syncFacebookPage(access_token)
 
     // quay lại page danh sách trang
-    connectPageStore.selectMenu('WATTING')
+    connectPageStore.selectMenu('PAGE')
   } catch (e) {
     // hiển thị lỗi
     ToastSingleton.getInst().error(e)

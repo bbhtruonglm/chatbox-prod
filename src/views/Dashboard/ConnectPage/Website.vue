@@ -115,7 +115,7 @@ function done() {
   page_id.value = undefined
 
   // quay lại page danh sách trang
-  connectPageStore.selectMenu('WATTING')
+  connectPageStore.selectMenu('PAGE')
 
 }
 </script>

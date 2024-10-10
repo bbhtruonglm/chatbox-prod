@@ -58,7 +58,7 @@ function getPlatform(): PlatformItem[] {
   /** Menu mặc định */
   const DEFAULT_MENU: PlatformItem[] = [
     {
-      key: 'WATTING',
+      key: 'PAGE',
       title: $t('v1.view.main.dashboard.select_platform.active_page'),
       icon: markRaw(ClockIcon),
     },

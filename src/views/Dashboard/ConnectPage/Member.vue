@@ -1,42 +1,41 @@
 <template>
-  <LowPermision v-if="!isOrgAdmin()" />
-  <div
-    v-else
-    class="h-full p-2 overflow-y-auto flex flex-col gap-2.5"
-  >
-    <div class="text-sm font-medium">
-      {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+  <LowPermision v-if="!orgStore.isAdminOrg()" />
+  <template v-else>
+    <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
+      <div class="text-sm font-medium">
+        {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+      </div>
+      <div class="grid grid-cols-3 gap-x-6 gap-y-2.5">
+        <template v-for="staff of list_ms">
+          <Item
+            @done="readMs"
+            v-if="staff.ms_role === 'ADMIN' && filterStaff(staff)"
+            :staff
+          />
+        </template>
+      </div>
+      <div class="text-sm font-medium">
+        {{ $t('v1.view.main.dashboard.org_staff.member') }}
+      </div>
+      <div class="grid grid-cols-3 gap-x-6 gap-y-2.5">
+        <template v-for="staff of list_ms">
+          <Item
+            @done="readMs"
+            v-if="staff.ms_role === 'STAFF' && filterStaff(staff)"
+            :staff
+          />
+        </template>
+      </div>
     </div>
-    <div class="grid grid-cols-3 gap-x-6 gap-y-2.5">
-      <template v-for="staff of list_ms">
-        <Item
-          @done="readMs"
-          v-if="staff.ms_role === 'ADMIN' && filterStaff(staff)"
-          :staff
-        />
-      </template>
+    <div class="flex-shrink-0 flex p-2 border-t justify-end">
+      <Button
+        @click="add_ref?.toggleModal()"
+        class="bg-blue-700 text-white"
+      >
+        {{ $t('v1.view.main.dashboard.org_staff.add.title') }}
+      </Button>
     </div>
-    <div class="text-sm font-medium">
-      {{ $t('v1.view.main.dashboard.org_staff.member') }}
-    </div>
-    <div class="grid grid-cols-3 gap-x-6 gap-y-2.5">
-      <template v-for="staff of list_ms">
-        <Item
-          @done="readMs"
-          v-if="staff.ms_role === 'STAFF' && filterStaff(staff)"
-          :staff
-        />
-      </template>
-    </div>
-  </div>
-  <div class="flex-shrink-0 flex p-2 border-t justify-end">
-    <Button
-      @click="add_ref?.toggleModal()"
-      class="bg-blue-700 text-white"
-    >
-      {{ $t('v1.view.main.dashboard.org_staff.add.title') }}
-    </Button>
-  </div>
+  </template>
   <Add
     @done="readMs"
     ref="add_ref"
@@ -74,10 +73,6 @@ onMounted(readMs)
 // nạp danh sách nhân viên khi chọn tổ chức khác
 watch(() => orgStore.selected_org_id, readMs)
 
-/**kiểm tra xem user có phải là admin tổ chức không */
-function isOrgAdmin() {
-  return orgStore?.selected_org_info?.current_ms?.ms_role === 'ADMIN'
-}
 /**đọc danh sách thành viên của tổ chức */
 async function readMs() {
   try {

@@ -151,7 +151,7 @@ function filterOrg(org: OrgInfo): boolean {
 function clickOutSide($event: MouseEvent) {
   if (
     select_ref.value == $event.target ||
-    select_ref.value.contains($event.target)
+    select_ref.value?.contains($event.target)
   )
     return
 
