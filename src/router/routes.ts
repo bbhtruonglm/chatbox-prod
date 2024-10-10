@@ -10,7 +10,12 @@ import Dashboard from '@/views/Dashboard.vue'
 import SelectPage from '@/views/Dashboard/SelectPage.vue'
 import SelectPlatform from '@/views/Dashboard/SelectPlatform.vue'
 import Pricing from '@/views/Dashboard/Pricing.vue'
+
 import Widget from '@/views/Dashboard/Widget.vue'
+import AllWidget from '@/views/Dashboard/Widget/AllWidget.vue'
+import InstalledWidget from '@/views/Dashboard/Widget/InstalledWidget.vue'
+import MyWidget from '@/views/Dashboard/Widget/MyWidget.vue'
+
 import Noti from '@/views/Dashboard/Noti.vue'
 import Download from '@/views/Dashboard/Download.vue'
 import User from '@/views/Dashboard/User.vue'
@@ -41,7 +46,16 @@ export const routes = [
       { path: 'select-page', component: SelectPage },
       { path: 'select-platform', component: SelectPlatform },
       { path: 'pricing', component: Pricing },
-      { path: 'widget', component: Widget },
+      {
+        path: 'widget',
+        redirect: '/dashboard/widget/market',
+        component: Widget,
+        children: [
+          { path: 'market', component: AllWidget },
+          { path: 'installed', component: InstalledWidget },
+          { path: 'my-widget', component: MyWidget },
+        ],
+      },
       {
         path: 'org',
         redirect: '/dashboard/org/setting',

@@ -159,6 +159,19 @@ export const useOrgStore = defineStore('org_store', () => {
   }
 })
 
+/**store quản lý widget */
+export const useWidgetStore = defineStore('widget_store', () => {
+  /** -------------- STAGE -------------- */
+  /**có hiện loading không */
+  const is_loading = ref(false)
+
+  /** -------------- MUTATION / ACTION -------------- */
+
+  return {
+    is_loading,
+  }
+})
+
 // /**lớp trừu tượng để khởi tạo store */
 // export class StoreAbstract {
 //   /**store duy nhất */
