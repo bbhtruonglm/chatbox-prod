@@ -111,6 +111,10 @@ export const useOrgStore = defineStore('org_store', () => {
   function isAdminOrg() {
     return selected_org_info.value?.current_ms?.ms_role === 'ADMIN'
   }
+  /**đã kích hoạt gói dùng thử chưa */
+  function hasTrial() {
+    return selected_org_info.value?.org_package?.org_has_trial
+  }
 
   return {
     is_loading,
@@ -124,6 +128,7 @@ export const useOrgStore = defineStore('org_store', () => {
     isProPack,
     isBusinessPack,
     isAdminOrg,
+    hasTrial,
   }
 })
 

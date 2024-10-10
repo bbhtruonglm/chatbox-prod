@@ -15,60 +15,28 @@
       >
         <div
           @click.stop
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white max-w-[95%] h-[550px] flex flex-col shadow-lg p-3 gap-4"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white w-max flex flex-col shadow-lg p-3 gap-4 pb-5"
         >
           <div class="px-3 text-lg font-semibold flex-shrink-0 text-center">
             {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
           </div>
-          <div class="flex gap-3 px-10 h-48">
-            <div class="w-64 item">
-              <div>
-                <div class="tex-xl font-bold">
-                  {{ $t('v1.view.main.dashboard.org.pay.free') }}
-                </div>
-                <ul class="text-sm font-medium list-disc list-inside">
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.price') }}
-                    <span class="font-bold">
-                      {{ $t('v1.view.main.dashboard.org.pay.free') }}
-                    </span>
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.page') }}
-                    <span class="font-bold"> 2 </span>
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.member') }}
-                    <span class="font-bold"> 5 </span>
-                  </li>
-                  <li class="pl-2">
-                    ... ({{
-                      $t('v1.view.main.dashboard.org.pay.upgrade.more')
-                    }})
-                  </li>
-                </ul>
-              </div>
+          <div class="grid grid-cols-3 gap-3 px-10">
+            <div class="item">
+              <Content :content="CONTENTS.FREE" />
               <button
+                v-if="orgStore.isFreePack() || orgStore.isTrialPack()"
                 @click="downgradeFreePack"
-                :class="{
-                  'cursor-not-allowed': orgStore.isFreePack(),
-                }"
-                class="btn bg-green-500"
+                class="btn text-slate-700 bg-slate-200 cursor-not-allowed"
               >
-                <template v-if="orgStore.isFreePack()">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
-                </template>
-                <template v-else>
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.back_free') }}
-                </template>
+                {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
               </button>
             </div>
-            <div class="w-96 item">
-              <div>
-                <div class="flex items-center justify-between">
-                  <div class="tex-xl font-bold">
-                    {{ $t('v1.view.main.dashboard.org.pay.pro') }}
-                  </div>
+            <div class="item">
+              <Content
+                :content="CONTENTS.PRO"
+                :is_full_year
+              >
+                <template #toggle>
                   <Toggle
                     v-model="is_full_year"
                     class_toggle="peer-checked:bg-black"
@@ -79,35 +47,36 @@
                       }}
                     </span>
                   </Toggle>
-                </div>
-                <ul class="text-sm font-medium list-disc list-inside">
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.price') }}
-                    <span class="font-bold">
-                      {{ currency(480000) }}đ / {{ $t('v1.common.month') }}
-                    </span>
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.page') }}
-                    <span class="font-bold"> 5 </span>
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.member') }}
-                    <span class="font-bold"> 20 </span>
-                  </li>
-                  <li class="pl-2">
-                    ... ({{
-                      $t('v1.view.main.dashboard.org.pay.upgrade.more')
-                    }})
-                  </li>
-                </ul>
-              </div>
+                </template>
+                <template #chat_feature>
+                  (<a
+                    class="underline text-blue-700"
+                    href="https://retion.ai"
+                    target="_blank"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
+                  >)
+                </template>
+                <template #ai_feature>
+                  (<a
+                    class="underline text-blue-700"
+                    href="https://retion.ai"
+                    target="_blank"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
+                  >)
+                </template>
+              </Content>
               <button
-                @click="activeTrialOrProPack"
+                v-if="!orgStore.isBusinessPack()"
+                @click="activeTrialOrProPack('PRO')"
                 :class="{
-                  'cursor-not-allowed': orgStore.isProPack(),
+                  'cursor-not-allowed !text-slate-700 bg-slate-200':
+                    orgStore.isProPack(),
+                  'bg-blue-600 text-white': !orgStore.hasTrial(),
+                  'bg-green-600 text-white': orgStore.hasTrial(),
                 }"
-                class="btn bg-blue-600"
+                class="btn"
               >
                 <template
                   v-if="
@@ -125,47 +94,49 @@
                 </template>
               </button>
             </div>
-            <div class="w-64 item">
-              <div>
-                <div class="tex-xl font-bold">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.company') }}
-                </div>
-                <ul class="text-sm font-medium list-disc list-inside">
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.price') }}
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.contact') }}
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.page') }}
-                    <span class="font-bold"> 5 </span>
-                  </li>
-                  <li class="pl-2">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.staff') }}
-                    <span class="font-bold"> 20 </span>
-                  </li>
-                  <li class="pl-2">
-                    ... ({{
-                      $t('v1.view.main.dashboard.org.pay.upgrade.more')
-                    }})
-                  </li>
-                </ul>
-              </div>
+            <div class="item">
+              <Content
+                :content="CONTENTS.COMPANY"
+                :is_full_year
+              >
+                <template #toggle>
+                  <Toggle
+                    v-model="is_full_year"
+                    class_toggle="peer-checked:bg-black"
+                  >
+                    <span class="text-green-600">
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.discount')
+                      }}
+                    </span>
+                  </Toggle>
+                </template>
+              </Content>
               <button
                 :class="{
-                  'cursor-not-allowed': orgStore.isBusinessPack(),
+                  'cursor-not-allowed !text-slate-700 bg-slate-200':
+                    orgStore.isBusinessPack(),
                 }"
-                @click="contactUs"
-                class="btn bg-slate-500"
+                @click="activeTrialOrProPack('BUSINESS')"
+                class="btn text-white bg-green-600"
               >
                 <template v-if="orgStore.isBusinessPack()">
                   {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
                 </template>
                 <template v-else>
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.contact_us') }}
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.business') }}
                 </template>
               </button>
             </div>
           </div>
+          <a
+            href="https://retion.ai"
+            target="_blank"
+            class="text-slate-700 flex items-center gap-1 w-fit mx-auto"
+          >
+            {{ $t('v1.view.main.dashboard.org.pay.upgrade.detail') }}
+            <NewTabIcon class="w-4 h-4" />
+          </a>
         </div>
       </div>
     </Transition>
@@ -187,9 +158,78 @@ import {
 import { useI18n } from 'vue-i18n'
 
 import Toggle from '@/components/Toggle.vue'
+import Content from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal/Content.vue'
+
+import NewTabIcon from '@/components/Icons/NewTab.vue'
+
+import type { IContent } from './UpgradeModal/type'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+/**nội dung của các gói */
+const CONTENTS: Record<string, IContent> = {
+  /**gói miễn phí */
+  FREE: {
+    title: $t('v1.view.main.dashboard.org.pay.free'),
+    price: $t('v1.view.main.dashboard.org.pay.free'),
+    page: '2',
+    member: '5',
+    ai_text: '100.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '100 ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '20 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '1.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    client: '5.000',
+    chat_feature: $t('v1.view.main.dashboard.org.pay.basic'),
+    ai_feature: $t('v1.view.main.dashboard.org.pay.basic'),
+    company_name: $t('v1.view.main.dashboard.org.pay.none'),
+    api_integrate: $t('v1.view.main.dashboard.org.pay.none'),
+    domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
+    support: $t('v1.view.main.dashboard.org.pay.standard'),
+  },
+  /**gói Pro */
+  PRO: {
+    title: $t('v1.view.main.dashboard.org.pay.pro'),
+    price: '480.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount:
+      '<span class="line-through font-normal">480.000</span> <span class="text-green-700">288,000</span> / ' +
+      $t('v1.view.main.dashboard.org.pay.month'),
+    page: '5',
+    member: '10',
+    ai_text: '1.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '1.000 ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '100 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '10.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    client: $t('v1.view.main.dashboard.org.pay.unlimited'),
+    chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
+    ai_feature: $t('v1.view.main.dashboard.org.pay.all'),
+    company_name: $t('v1.view.main.dashboard.org.pay.yes'),
+    api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
+    domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
+    support: $t('v1.view.main.dashboard.org.pay.prioritize'),
+  },
+  /**gói doanh nghiệp */
+  COMPANY: {
+    title: $t('v1.view.main.dashboard.org.pay.business'),
+    price: '1.999.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount:
+      '<span class="line-through font-normal">1.999.000</span> <span class="text-green-700">1,199,400</span> / ' +
+      $t('v1.view.main.dashboard.org.pay.month'),
+    page: '20',
+    member: '30',
+    ai_text: '10.000.000+ ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '10.000+ ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '1.000+ ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '100.000+ ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    client: $t('v1.view.main.dashboard.org.pay.unlimited'),
+    chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
+    ai_feature: $t('v1.view.main.dashboard.org.pay.all'),
+    company_name: $t('v1.view.main.dashboard.org.pay.yes'),
+    api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
+    domain_logo: $t('v1.view.main.dashboard.org.pay.yes'),
+    support: $t('v1.view.main.dashboard.org.pay.high'),
+  },
+}
 
 /**ẩn hiện modal */
 const is_open = ref(false)
@@ -209,9 +249,14 @@ function contactUs() {
   openNewTab(BBH_PAGE_MESS)
 }
 /**kích hoạt gói dùng thử hoặc gói pro */
-async function activeTrialOrProPack() {
+async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
   // nếu chưa chọn org thì không làm gì
   if (!orgStore.selected_org_id || orgStore.is_loading) return
+
+  // nếu đã mua gói thì không làm gì
+  if (orgStore.isProPack() && pack === 'PRO') return
+  // nếu đã mua gói doanh nghiệp thì không làm gì
+  if (orgStore.isBusinessPack() && pack === 'BUSINESS') return
 
   // kích hoạt loading
   orgStore.is_loading = true
@@ -222,9 +267,7 @@ async function activeTrialOrProPack() {
      * - nếu chưa mua bao giờ thì cho dùng thử trước
      * - nếu đã dùng thử rồi thì mua gói pro
      */
-    const PACKAGE = orgStore.selected_org_info?.org_package?.org_has_trial
-      ? 'PRO'
-      : 'TRIAL'
+    const PACKAGE = orgStore.hasTrial() ? pack : 'TRIAL'
 
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
@@ -276,9 +319,9 @@ defineExpose({ toggleModal })
 </script>
 <style scoped lang="scss">
 .item {
-  @apply bg-slate-100 p-2 rounded-lg flex flex-col justify-between;
+  @apply bg-slate-100 p-2 rounded-lg flex flex-col justify-between gap-8;
 }
 .btn {
-  @apply py-2 px-4 rounded-md text-white hover:brightness-90;
+  @apply py-2 px-4 rounded-md hover:brightness-90 text-sm font-semibold;
 }
 </style>

@@ -152,28 +152,26 @@
             {{ $t('v1.view.main.dashboard.org.pay.guild_2') }}
           </div>
         </div>
-        <button
-          v-if="orgStore.isFreePack()"
-          @click="upgrade_modal_ref?.toggleModal()"
-          class="custom-btn"
-        >
-          {{ $t('v1.view.main.dashboard.org.pay.upgrade_pack') }}
-        </button>
-        <div
-          v-else
-          class="flex gap-3"
-        >
+        <div class="flex gap-3">
+          <template v-if="!orgStore.isFreePack()">
+            <button
+              @click="incQuota('PAGE')"
+              class="custom-btn"
+            >
+              {{ $t('v1.view.main.dashboard.org.pay.inc_quota.page') }}
+            </button>
+            <button
+              @click="incQuota('STAFF')"
+              class="custom-btn"
+            >
+              {{ $t('v1.view.main.dashboard.org.pay.inc_quota.staff') }}
+            </button>
+          </template>
           <button
-            @click="incQuota('PAGE')"
+            @click="upgrade_modal_ref?.toggleModal()"
             class="custom-btn"
           >
-            {{ $t('v1.view.main.dashboard.org.pay.inc_quota.page') }}
-          </button>
-          <button
-            @click="incQuota('STAFF')"
-            class="custom-btn"
-          >
-            {{ $t('v1.view.main.dashboard.org.pay.inc_quota.staff') }}
+            {{ $t('v1.view.main.dashboard.org.pay.upgrade_pack') }}
           </button>
         </div>
       </div>
