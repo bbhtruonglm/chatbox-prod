@@ -1,6 +1,6 @@
 import { chatbox } from '@/service/api/chatbox/common'
 
-import type { AppInfo, AppInstalledInfo, InputCheckPageInstallWidget, InputCreateTokenWidget, InputCreateWidget, InputGetInstalledWidget, InputInstallWidget, InputMarketWidget, InputUpdateMyWidget, InputUpdateWidget, ListPageIsInstall, ResponseInstallWidget } from '@/service/interface/app/widget'
+import type { AppInfo, AppInstalledInfo, InputCheckPageInstallWidget, InputCreateTokenWidget, InputCreateWidget, InputGetInstalledWidget, InputInstallWidget, InputMarketWidget, InputUpdateMyWidget, InputUpdateWidget, ListPageIsInstall, ResponseInstallWidget, WidgetCategoryInfo } from '@/service/interface/app/widget'
 import type { Cb } from '@/service/interface/function'
 
 /**đăng nhập bằng token của fb */
@@ -16,6 +16,15 @@ export const create_token_app_installed = (
     is_disable_org: true
 }, proceed)
 
+/**lấy danh sách danh mục widget */
+export const get_market_category = (
+    body: InputMarketWidget,
+    proceed: Cb<WidgetCategoryInfo[]>
+) => chatbox({
+    uri: `${$env.host.n5_app_v1}/v1/app/category/read`,
+    body,
+    is_disable_org: true
+}, (e, r) => proceed(e, r?.category))
 /**lấy danh sách widget trên chợ */
 export const get_market_widget = (
     body: InputMarketWidget,

@@ -667,6 +667,7 @@ const source: Language = {
               'Không có trang nào được chọn hoặc bạn không có đủ quyền truy cập dữ liệu',
           },
           widget: {
+            popular: 'Ứng dụng phổ biến',
             tab: {
               market: 'Chợ ứng dụng',
               installed: 'Đã cài đặt',
@@ -907,6 +908,7 @@ const source: Language = {
                   title: 'Số dư không đủ',
                   description:
                     'Số dư tài khoản của bạn không đủ thanh toán, vui lòng nạp thêm tiền vào tài khoản để thanh toán.',
+                    
                 },
                 package: 'Gói sử dụng:',
                 price_page_month: 'Đơn giá 1 Trang/Tháng:',
