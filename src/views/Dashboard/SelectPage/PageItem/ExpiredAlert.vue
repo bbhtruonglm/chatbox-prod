@@ -3,7 +3,7 @@
     ref="expired_alert_modal_ref"
     class_modal="w-[507px]"
     class_body="py-3"
-    class_footer="flex justify-between items-center"
+    class_footer="flex justify-between items-center mt-6"
   >
     <template #header>
       {{ $t('v1.view.main.dashboard.select_page.expire.alert.title') }}

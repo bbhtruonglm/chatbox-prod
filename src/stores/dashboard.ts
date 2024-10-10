@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
+import { format as date_format, differenceInDays } from 'date-fns'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
 
@@ -115,6 +116,30 @@ export const useOrgStore = defineStore('org_store', () => {
   function hasTrial() {
     return selected_org_info.value?.org_package?.org_has_trial
   }
+  /**tính thời gian thanh toán tiếp theo */
+  function calcNextPay() {
+    /**thời gian hết hạn */
+    const END_DATE = selected_org_info.value?.org_package?.org_end_date
+
+    // nếu không có thời gian hết hạn thì trả về rỗng
+    if (!END_DATE) return ''
+
+    // trả về thời gian thanh toán tiếp theo
+    return date_format(new Date(END_DATE), 'dd/MM/yyyy')
+  }
+  /**tính số ngày còn lại */
+  function calcDayRemaining(): number {
+    // nếu không có thời gian hết hạn thì trả về 0
+    if (!selected_org_info.value?.org_package?.org_end_date) return 0
+
+    /**thời gian hết hạn */
+    const END_DATE = new Date(
+      selected_org_info.value?.org_package?.org_end_date
+    )
+
+    // Tính số ngày giữa hai ngày
+    return differenceInDays(END_DATE, new Date())
+  }
 
   return {
     is_loading,
@@ -129,6 +154,8 @@ export const useOrgStore = defineStore('org_store', () => {
     isBusinessPack,
     isAdminOrg,
     hasTrial,
+    calcNextPay,
+    calcDayRemaining,
   }
 })
 

@@ -33,7 +33,7 @@
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
                 ({{ $t('v1.view.main.dashboard.org.pay.next_pay') }}
-                {{ calcNextPay() }})
+                {{ orgStore.calcNextPay() }})
               </span>
             </template>
           </Item>
@@ -233,17 +233,6 @@ function incQuota(type: QuotaType) {
   inc_quota_type.value = type
 
   inc_quota_ref.value?.toggleModal()
-}
-/**tính thời gian thanh toán tiếp theo */
-function calcNextPay() {
-  /**thời gian hết hạn */
-  const END_DATE = orgStore.selected_org_info?.org_package?.org_end_date
-
-  // nếu không có thời gian hết hạn thì trả về rỗng
-  if (!END_DATE) return ''
-
-  // trả về thời gian thanh toán tiếp theo
-  return date_format(new Date(END_DATE), 'dd/MM/yyyy')
 }
 </script>
 <style scoped lang="scss">

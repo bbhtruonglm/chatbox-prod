@@ -166,10 +166,10 @@ const source: Language = {
           },
           select_platform: {
             no_access: 'Không có quyền truy cập',
-            not_admin: 'Bạn không phải là quản trị viên của Tổ chức này', 
+            not_admin: 'Bạn không phải là quản trị viên của Tổ chức này',
             low_permission: 'Biên tập viên không kích hoạt được trang',
             waitting: 'Chờ kích hoạt',
-            
+
             another_page: 'Các trang ở tổ chức khác',
             search_page: 'Tìm trang hoặc ID trang...',
             connect_with: 'Kết nối với {platform}',
@@ -881,7 +881,7 @@ const source: Language = {
               free: 'Miễn phí',
               none: 'Không',
               prioritize: 'Ưu tiên',
-              standard :'tiêu chuẩn',
+              standard: 'tiêu chuẩn',
               trial: 'Dùng thử (Pro)',
               business: 'Doanh nghiệp',
               pro: 'Pro',
@@ -903,6 +903,26 @@ const source: Language = {
               guild_2:
                 'Khi lưu lượng sử dụng AI đạt đến giới hạn, hệ thống mặc định ngừng sử dụng. Nếu bật “Tự động thanh toán”, hệ thống sẽ tự động mua thêm lưu lượng và không vượt quá số tiền hiện tại có trong “Số dư tài khoản”. Nếu số dư tài khoản không đủ, hệ thống sẽ dừng các chức năng AI.',
               inc_quota: {
+                not_enough_money: {
+                  title: 'Số dư không đủ',
+                  description:
+                    'Số dư tài khoản của bạn không đủ thanh toán, vui lòng nạp thêm tiền vào tài khoản để thanh toán.',
+                },
+                package: 'Gói sử dụng:',
+                price_page_month: 'Đơn giá 1 Trang/Tháng:',
+                price_staff_month: 'Đơn giá 1 Thành viên/Tháng:',
+                price_page_day: 'Đơn giá 1 Trang/Ngày:',
+                price_staff_day: 'Đơn giá 1 Thành viên/Ngày:',
+                end_date: 'Hạn sử dụng:',
+                day_remaining: 'Số ngày còn lại:',
+                amount_page: 'Số Trang cần mua',
+                amount_staff: 'Số Thành viên cần mua',
+                total: 'Số tiền thanh toán:',
+                need_pay: 'Số tiền cần thanh toán:',
+                a_page: 'Trang',
+                a_staff: 'Thành viên',
+                day: 'Ngày',
+                purchase: 'Thanh toán',
                 page: 'Mua thêm trang',
                 staff: 'Mua thêm nhân viên',
                 fau: 'Mua thêm FAU',
@@ -1016,14 +1036,18 @@ const source: Language = {
               page: 'Trang:',
               guild_2: 'hiện thuộc quyền quản lý của một tổ chức khác.',
               action: 'Hành động:',
-              guild_3: 'Nếu bạn "Xác nhận", quyền quản lý trang sẽ được chuyển sang tổ chức của bạn.',
+              guild_3:
+                'Nếu bạn "Xác nhận", quyền quản lý trang sẽ được chuyển sang tổ chức của bạn.',
               result: 'Kết quả:',
-              guild_4: 'Các thành viên trong tổ chức hiện tại sẽ mất quyền truy cập trang này.',
-              guild_5: 'Chủ sở hữu của tổ chức hiện tại sẽ nhận được thông báo về việc chuyển giao quyền quản lý.',
+              guild_4:
+                'Các thành viên trong tổ chức hiện tại sẽ mất quyền truy cập trang này.',
+              guild_5:
+                'Chủ sở hữu của tổ chức hiện tại sẽ nhận được thông báo về việc chuyển giao quyền quản lý.',
             },
             over_quota: {
               title: 'Có lỗi xảy ra',
-              description: 'Bạn đã đạt đến giới hạn trang của tổ chức, nhấp chuột vào nút dưới đây để xem gói cước',
+              description:
+                'Bạn đã đạt đến giới hạn trang của tổ chức, nhấp chuột vào nút dưới đây để xem gói cước',
               view: 'Xem gói cước',
             },
             guid: 'Chọn trang kích hoạt, đồng thời chuyển về Tổ chức của bạn sở hữu.',
@@ -1040,17 +1064,19 @@ const source: Language = {
             member: 'Thành viên',
             remove: {
               title: 'Xoá thành viên',
-              guild_1: 'Xóa thành viên "<b>{member}</b>" ra khỏi tổ chức "<b>{org}</b>"',
+              guild_1:
+                'Xóa thành viên "<b>{member}</b>" ra khỏi tổ chức "<b>{org}</b>"',
               confirm: 'Xác nhận xoá thành viên',
             },
             add: {
               title: 'Thêm thành viên',
               guild_1: 'Nhập ID hoặc email để thêm',
-              guild_2: 'Thành viên chỉ có quyền chat, xem báo cáo trên các Trang. Không có quyền thêm thành viên hoặc thiết lập Trang hoặc thiết lập Tổ chức.',
+              guild_2:
+                'Thành viên chỉ có quyền chat, xem báo cáo trên các Trang. Không có quyền thêm thành viên hoặc thiết lập Trang hoặc thiết lập Tổ chức.',
               name: 'Tên thành viên:',
-              guild_3: 'Quản trị viên có toàn quyền trong tổ chức.'
-            }
-          }
+              guild_3: 'Quản trị viên có toàn quyền trong tổ chức.',
+            },
+          },
         },
       },
     },
