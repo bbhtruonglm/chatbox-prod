@@ -47,8 +47,8 @@ const { getMeChatbotUser } = initRequireData()
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
 /**ẩn hiện modal kết nối nền tảng */
-function toggleModalConnectPage() {
-  connect_page_ref.value?.toggleModal?.()
+function toggleModalConnectPage(key?: string) {
+  connect_page_ref.value?.toggleModal?.(key)
 }
 /**lấy toàn bộ các page đang được kích hoạt của người dùng */
 async function loadListPage(org_id?: string): Promise<void> {

@@ -19,26 +19,11 @@
         <div
           class="font-medium p-2 border-b border-slate-200 flex-shrink-0 flex items-center justify-between"
         >
-          <template v-if="connectPageStore.current_menu === 'WATTING'">
-            <div>
-              {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
-            </div>
-            <div class="flex items-center gap-2.5">
-              <Search class_input="py-2.5 rounded-lg" />
-              <SelectOrg class="border rounded-lg" />
-            </div>
+          <template v-if="connectPageStore.current_menu === 'PAGE'">
+            {{ $t('v1.view.main.dashboard.select_platform.active_page') }}
           </template>
           <template v-else-if="connectPageStore.current_menu === 'MEMBER'">
-            <div>
-              {{ $t('v1.view.main.dashboard.org.setting.member') }}
-            </div>
-            <div class="flex items-center gap-2.5">
-              <Search
-                class_input="py-2.5 rounded-lg"
-                :placeholder="$t('v1.common.search')"
-              />
-              <SelectOrg class="border rounded-lg" />
-            </div>
+            {{ $t('v1.view.main.dashboard.org.setting.member') }}
           </template>
           <template v-else-if="connectPageStore.current_menu === 'WEBSITE'">
             {{ $t('v1.view.main.dashboard.select_platform.website.title') }}
@@ -52,35 +37,53 @@
               })
             }}
           </template>
+          <div class="flex items-center gap-2.5">
+            <Search
+              v-if="
+                ['PAGE', 'MEMBER'].includes(connectPageStore.current_menu)
+              "
+              :placeholder="
+                connectPageStore.current_menu === 'MEMBER'
+                  ? $t('v1.common.search')
+                  : undefined
+              "
+              class_input="py-2.5 rounded-lg"
+            />
+            <SelectOrg class="border rounded-lg" />
+          </div>
         </div>
-        <ActivePage
-          v-if="connectPageStore.current_menu === 'WATTING'"
-          @done="$emit('done')"
-          @close="toggleModal"
-        />
-        <Member
-          v-else-if="connectPageStore.current_menu === 'MEMBER'"
-          @done="$emit('done')"
-          @close="toggleModal"
-        />
-        <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
-        <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
-        <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
-        <div
-          v-else
-          class="p-2"
-        >
-          {{ $t('v1.common.upcoming_feature') }}
-        </div>
+        <LowPermision v-if="!orgStore.isAdminOrg()" />
+        <template v-else>
+          <ActivePage
+            v-if="connectPageStore.current_menu === 'PAGE'"
+            @done="$emit('done')"
+            @close="toggleModal"
+          />
+          <Member
+            v-else-if="connectPageStore.current_menu === 'MEMBER'"
+            @done="$emit('done')"
+            @close="toggleModal"
+          />
+          <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
+          <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
+          <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
+          <div
+            v-else
+            class="p-2"
+          >
+            {{ $t('v1.common.upcoming_feature') }}
+          </div>
+        </template>
       </div>
     </template>
   </Modal>
 </template>
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import { useConnectPageStore } from '@/stores'
+import { useConnectPageStore, useOrgStore } from '@/stores'
 import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 
+import LowPermision from '@/views/Dashboard/ConnectPage/ActivePage/LowPermision.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import Loading from '@/components/Loading.vue'
 import Modal from '@/components/Modal.vue'
@@ -95,12 +98,17 @@ import Search from '@/views/Dashboard/ConnectPage/Search.vue'
 const $emit = defineEmits(['done'])
 
 const connectPageStore = useConnectPageStore()
+const orgStore = useOrgStore()
 
 /**ref của modal kết nối nền tảng */
 const modal_connect_page_ref = ref<InstanceType<typeof Modal>>()
 
 /**ẩn hiện modal của component */
-function toggleModal() {
+function toggleModal(key?: string) {
+  // tự động chọn menu
+  if (key) connectPageStore.selectMenu(key)
+
+  // ẩn hiện modal
   modal_connect_page_ref.value?.toggleModal()
 }
 

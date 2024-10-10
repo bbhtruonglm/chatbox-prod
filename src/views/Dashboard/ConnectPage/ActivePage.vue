@@ -1,7 +1,5 @@
 <template>
-  <LowPermision
-    v-if="orgStore?.selected_org_info?.current_ms?.ms_role !== 'ADMIN'"
-  />
+  <LowPermision v-if="!orgStore.isAdminOrg()" />
   <EmptyActive
     v-else-if="
       !size(list_my_org_page) &&
@@ -191,7 +189,7 @@ const confirm_take_page_ref = ref<InstanceType<typeof ConfirmTakePage>>()
 const another_pages_name = ref<string[]>()
 
 // lấy danh sách page mới
-onMounted(() => getListWattingPage())
+onMounted(() => getListPAGEPage())
 
 // khi thay đổi trang đã chọn thì tính toán lại trang ngoài tổ chức
 watch(
@@ -381,7 +379,7 @@ async function getMapMyOs() {
   map_my_os.value = mapValues(keyBy(list_my_os, 'page_id'), 'org_id')
 }
 /**tính toán ra danh sách page mới và page không có quyền truy cập */
-async function getListWattingPage() {
+async function getListPAGEPage() {
   try {
     // hiển thị loading
     connectPageStore.is_loading = true

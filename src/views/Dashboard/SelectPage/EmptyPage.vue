@@ -13,7 +13,7 @@
       </div>
     </div>
     <button
-      @click="toggleModalConnectPage?.()"
+      @click="toggleModalConnectPage?.(tab)"
       class="text-white bg-blue-600 rounded-md py-2 px-4 gap-2 flex items-center hover:brightness-90"
     >
       <PlusCircleIcon class="w-4 h-4" />
@@ -28,6 +28,14 @@ import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
 import { inject } from 'vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
+
+const $props = withDefaults(
+  defineProps<{
+    /**tab được chọn khi mở modal kết nối page */
+    tab?: string
+  }>(),
+  {}
+)
 
 /**hàm toggle modal kết nối nền tảng */
 const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)

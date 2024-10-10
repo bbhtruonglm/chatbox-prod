@@ -11,13 +11,8 @@
     </template>
     <template #action>
       <button
-        @click="activePage"
-        :class="
-          isReachQuotaStaff()
-            ? 'cursor-not-allowed bg-slate-200 text-slate-500'
-            : 'bg-blue-600 text-white'
-        "
-        class="py-1 px-4 rounded-md text-sm font-medium"
+        @click="activeStaff"
+        class="py-1 px-4 rounded-md text-sm font-medium bg-blue-600 text-white"
       >
         {{ $t('v1.common.more') }}
       </button>
@@ -71,9 +66,9 @@
     :selected_staff
     ref="confirm_inactive_modal_ref"
   />
-  <MemberShip
-    @done="readMs"
-    ref="member_ship_ref"
+  <ConnectPage
+    @done="readMs()"
+    ref="connect_page_ref"
   />
 </template>
 <script setup lang="ts">
@@ -88,8 +83,8 @@ import { remove } from 'lodash'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
-import MemberShip from '@/views/Dashboard/Org/Setting/Staff/MemberShip.vue'
 import ConfirmInactive from '@/views/Dashboard/Org/Setting/Staff/ConfirmInactive.vue'
+import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
@@ -103,10 +98,10 @@ const orgStore = useOrgStore()
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**danh sách thành viên */
 const list_ms = ref<MemberShipInfo[]>()
-/**tham chiếu đến component MemberShip */
-const member_ship_ref = ref<InstanceType<typeof MemberShip>>()
 /**nhân viên đang được chọn */
 const selected_staff = ref<MemberShipInfo>()
+/**ref của modal kết nối nền tảng */
+const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
 // nạp danh sách nhân viên khi component được mount
 onMounted(readMs)
@@ -133,19 +128,9 @@ async function doneInactiveStaff() {
   selected_staff.value = undefined
 }
 /**mở modal thêm nhân viên */
-function activePage() {
-  // nếu đã đạt đến giới hạn nhân viên thì thôi
-  if (isReachQuotaStaff()) return
-
+function activeStaff() {
   // mở modal thêm nhân viên
-  member_ship_ref.value?.toggleModal()
-}
-/**đã đạt đến giới hạn nhân viên chưa */
-function isReachQuotaStaff() {
-  return (
-    (orgStore.selected_org_info?.org_package?.org_current_staff || 0) >=
-    (orgStore.selected_org_info?.org_package?.org_quota_staff || 0)
-  )
+  connect_page_ref.value?.toggleModal('MEMBER')
 }
 /**khoảng thời gian trước đó đến hiện tại là bao nhiêu */
 function timeAgo(date?: string): string {

@@ -17,7 +17,7 @@
     </template>
     <template #button>
       <ZaloOA
-        @done="connectPageStore.selectMenu('WATTING')"
+        @done="connectPageStore.selectMenu('PAGE')"
         :text="$t('v1.view.main.dashboard.select_platform.zalo_oa.title')"
       />
     </template>

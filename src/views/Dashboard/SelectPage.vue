@@ -17,7 +17,7 @@
       >
         <Loading class="mx-auto" />
       </div>
-      <EmptyPage v-if="!pageStore.countActivePage()" />
+      <EmptyPage v-if="!pageStore.countActivePage()" tab="PAGE" />
       <div
         v-else
         :class="{
@@ -29,21 +29,25 @@
           filter="RECENT"
           :icon="ClockIcon"
           :title="$t('v1.common.recent')"
+          tab="PAGE"
         />
         <GroupPage
           filter="FB_MESS"
           :icon="FacebookIcon"
           :title="$t('v1.common.fb_mess')"
+          tab="FB_MESS"
         />
         <GroupPage
           filter="WEBSITE"
           :icon="WebIcon"
           :title="$t('v1.common.website')"
+          tab="WEBSITE"
         />
         <GroupPage
           filter="ZALO_OA"
           :icon="ZaloIcon"
           :title="$t('v1.common.zalo_oa')"
+          tab="ZALO_OA"
         />
         <GroupPageAction />
       </div>
@@ -123,11 +127,8 @@ function triggerConnectZalo() {
   // nếu không có cờ zalo thì thôi
   if ($route.query.connect_page !== 'ZALO_OA') return
 
-  // chuyển trước tab của zalo
-  connectPageStore.selectMenu('ZALO_OA')
-
   // mở modal connect zalo
-  toggleModalConnectPage?.()
+  toggleModalConnectPage?.('ZALO_OA')
 }
 /**chuyển đến trang chat */
 function goToChat() {

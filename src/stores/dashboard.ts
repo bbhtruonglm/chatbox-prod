@@ -51,7 +51,7 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
 export const useConnectPageStore = defineStore('connect_page_store', () => {
   /** -------------- STAGE -------------- */
   /**menu đang chọn */
-  const current_menu = ref<string>('WATTING')
+  const current_menu = ref<string>('PAGE')
   /**có hiện loading không */
   const is_loading = ref(false)
   /**tìm kiếm trang */
@@ -126,3 +126,39 @@ export const useOrgStore = defineStore('org_store', () => {
     isAdminOrg,
   }
 })
+
+// /**lớp trừu tượng để khởi tạo store */
+// export class StoreAbstract {
+//   /**store duy nhất */
+//   static #inst: StoreAbstract
+
+//   // /**sử dụng store */
+//   static use<T extends StoreAbstract>(this: new () => T): T {
+//     // nếu chưa khởi tạo thì khởi tạo
+//     if (!StoreAbstract.#inst) StoreAbstract.#inst = new this()
+
+//     // trả về store duy nhất
+//     return StoreAbstract.#inst.store() as T
+//   }
+
+//   /**khởi tạo store */
+//   store() {
+//     /**tên store bằng tên class */
+//     const STORE_NAME = this.constructor.name
+//     /**dùng chính các thuộc tính và phương thức của class để thiết lập store */
+//     const SETUP = () => this
+
+//     // khởi tạo store
+//     return defineStore(STORE_NAME, SETUP)()
+//   }
+// }
+
+// export class OrgStore extends StoreAbstract {
+//   abc = ref('123')
+
+//   edit = (params: string) => {
+//     this.abc.value = params
+//   }
+// }
+
+// đang bị lỗi kiểu ref khi dùng trực tiếp
