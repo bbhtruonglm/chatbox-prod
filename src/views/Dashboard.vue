@@ -33,6 +33,7 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { mapValues } from 'lodash'
 import { ToastSingleton } from '@/utils/helper/Alert/Toast'
+import { read_os } from '@/service/api/chatbox/billing'
 
 const pageStore = usePageStore()
 const staffStore = useStaffStore()
@@ -63,20 +64,20 @@ async function loadListPage(org_id?: string): Promise<void> {
     const RES = await new N4SerivceAppPage().getOrgActiveListPage(org_id)
 
     // lấy thông tin nhân viên hiện tại của trang
-    mapValues(RES?.page_list, page => {
-      page.current_staff =
-        page?.staff_list?.[
-          chatbotUserStore.chatbot_user?.user_id ||
-            chatbotUserStore.chatbot_user?.fb_staff_id ||
-            ''
-        ]
-    })
+    // mapValues(RES?.page_list, page => {
+    //   page.current_staff =
+    //     page?.staff_list?.[
+    //       chatbotUserStore.chatbot_user?.user_id ||
+    //         chatbotUserStore.chatbot_user?.fb_staff_id ||
+    //         ''
+    //     ]
+    // })
 
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}
 
     // lưu lại danh sách nhân viên của các trang
-    staffStore.staff_list_of_active_page = RES?.all_staff_list
+    // staffStore.staff_list_of_active_page = RES?.all_staff_list
   } catch (e) {
     // nếu có lỗi thì hiển thị thông báo
     ToastSingleton.getInst().error(e)
