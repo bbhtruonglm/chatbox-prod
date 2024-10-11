@@ -2,7 +2,7 @@
   <div class="flex items-center gap-3">
     <div
       v-if="orgStore.list_org?.length"
-      class="w-60 text-slate-700 relative h-full"
+      class="w-full min-w-16 text-slate-700 relative h-full"
       ref="select_ref"
     >
       <div class="absolute right-4 top-1/2 -translate-y-2/4 z-10">

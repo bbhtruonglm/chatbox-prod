@@ -1,24 +1,18 @@
 <template>
   <ActorItem class="cursor-pointer">
     <template #avatar>
-      <object
-        :data="widget.icon"
-        type="image/png"
+      <WidgetAvatar
+        :src="widget.icon"
         class="w-8 h-8 rounded-oval"
-      >
-        <img
-          src="@/assets/imgs/chatbox.svg"
-          class="w-8 h-8 rounded-oval"
-        />
-      </object>
+      />
     </template>
     <template #name>
-      <div class="text-sm font-medium">
+      <div class="text-sm font-medium truncate">
         {{ widget.name }}
       </div>
     </template>
     <template #after-name> 
-
+      <slot />
     </template>
     <template #description>
       <div class="truncate text-xs text-slate-500">
@@ -29,6 +23,7 @@
 </template>
 <script setup lang="ts">
 import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
+import WidgetAvatar from '@/views/Dashboard/Widget/WidgetAvatar.vue'
 
 import type { AppInfo, AppInstalledInfo } from '@/service/interface/app/widget'
 

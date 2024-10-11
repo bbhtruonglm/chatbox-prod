@@ -141,16 +141,16 @@ async function getListWidget() {
   let temp_list_widget = getPageWidget(PAGE_ID) || []
 
   /**các nhóm mà nhân viên này được phép truy cập dữ liệu */
-  const GROUP_STAFF = getPageCurrentStaff(PAGE_ID)?.group_staff
+  // const GROUP_STAFF = getPageCurrentStaff(PAGE_ID)?.group_staff
 
   // lọc lại danh sách widget
-  temp_list_widget = temp_list_widget?.filter(widget => {
-    /**kiểm tra user có quyền xem widget này không */
-    const IS_ACCESSIBLE = intersection(widget.access_group, GROUP_STAFF)?.length
+  // temp_list_widget = temp_list_widget?.filter(widget => {
+  //   /**kiểm tra user có quyền xem widget này không */
+  //   const IS_ACCESSIBLE = intersection(widget.access_group, GROUP_STAFF)?.length
 
-    // chỉ hiển thị widget được kích hoạt và có quyền xem
-    return widget.active_widget && IS_ACCESSIBLE
-  })
+  //   // chỉ hiển thị widget được kích hoạt và có quyền xem
+  //   return widget.active_widget && IS_ACCESSIBLE
+  // })
 
   // thêm dữ liệu cần thiết cho widget sau khi lọc
   temp_list_widget = temp_list_widget?.map(widget => {
