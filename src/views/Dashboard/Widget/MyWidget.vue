@@ -42,7 +42,7 @@
     </div>
     <template>
         <UpsertWidget @reload="getMyWidget()" :widget="selected_widget" ref="upsert_widget_ref" />
-        <InstallWidget ref="install_widget_ref" :widget="selected_widget" />
+        <!-- <InstallWidget ref="install_widget_ref" :widget="selected_widget" /> -->
         <TranferWidget @reload="getMyWidget()" ref="tranfer_widget_ref" :widget="selected_widget" />
     </template>
 </template>
@@ -56,7 +56,7 @@ import { delete_my_widget } from '@/service/api/chatbox/n5-app'
 import UpsertWidget from '@/views/Dashboard/Widget/UpsertWidget.vue'
 import Title from '@/views/Dashboard/Widget/Title.vue'
 import Item from '@/views/Dashboard/Widget/Item.vue'
-import InstallWidget from '@/views/Dashboard/Widget/InstallWidget.vue'
+// import InstallWidget from '@/views/Dashboard/Widget/InstallWidget.vue'
 import TranferWidget from '@/views/Dashboard/Widget/TranferWidget.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'

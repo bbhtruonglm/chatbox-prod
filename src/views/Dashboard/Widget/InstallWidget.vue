@@ -1,116 +1,52 @@
 <template>
-    <Modal ref="install_widget_ref">
-        <template v-slot:header>
-            <div class="flex items-center">
-                <object :data="widget?.icon" type="image/png" class="w-[20px] h-[20px]">
-                    <img src="@/assets/imgs/chatbox.svg" class="w-[20px] h-[20px]" />
-                </object>
-                <div class="ml-1">
-                    {{ widget?.name }}
-                </div>
-            </div>
-        </template>
-        <template v-slot:body>
-            <div class="h-[calc(100vh_-_217px)] overflow-y-auto">
-                <div class="text-sm text-slate-500 whitespace-break-spaces">
-                    {{ widget?.description }}
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5">
-                    <div>
-                        <div class="font-semibold mt-3 text-sm">
-                            {{ $t('v1.view.main.dashboard.nav.info') }}
-                        </div>
-                        <div v-html="widget?.document" class="border p-1 rounded-lg" />
-                    </div>
-                    <div>
-                        <div class="font-semibold mt-3 text-sm">
-                            {{ $t('v1.common.config') }}
-                        </div>
-                        <Title :title="$t('v1.view.main.dashboard.nav.select_page')" />
-                        <SelectPage :selected_page="selected_page" @update_select_page="$event => selected_page = $event" />
-                        <template v-if="selected_page">
-                            <Title :title="$t('v1.view.main.dashboard.widget.role')" />
-                            <div>
-                                <Role :access_role_select="access_role_select"
-                                    @update="$event => access_role_select = $event" />
-                            </div>
-                            <Title :title="$t('v1.view.main.dashboard.widget.position')" />
-                            <div class="mt-1 grid grid-cols-2">
-                                <div @click="position = 'RIGHT'" class="flex items-center cursor-pointer">
-                                    <input v-model="position" value="RIGHT" type="radio"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.position_list.right') }}
-                                    </div>
-                                </div>
-                                <div @click="position = 'BOTTOM'" class="flex items-center cursor-pointer">
-                                    <input v-model="position" value="BOTTOM" type="radio"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.position_list.bottom') }}
-                                    </div>
-                                </div>
-                            </div>
-                            <Title :title="$t('v1.view.main.dashboard.widget.size')" />
-                            <div class="mt-1 grid grid-cols-3">
-                                <div @click="size = 'MINIMUM'" class="flex items-center cursor-pointer">
-                                    <input v-model="size" value="MINIMUM" type="radio"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.size_list.small') }}
-                                    </div>
-                                </div>
-                                <div @click="size = 'MEDIUM'" class="flex items-center cursor-pointer">
-                                    <input v-model="size" value="MEDIUM" type="radio"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.size_list.medium') }}
-                                    </div>
-                                </div>
-                                <div @click="size = 'FULL'" class="flex items-center cursor-pointer">
-                                    <input v-model="size" value="FULL" type="radio"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.size_list.big') }}
-                                    </div>
-                                </div>
-                            </div>
-                            <Title :title="$t('v1.view.main.dashboard.widget.staff_group')" />
-                            <div class="mt-1 grid grid-cols-3 gap-y-2">
-                                <div @click="group_staff.is_select = !group_staff.is_select"
-                                    v-for="group_staff of group_staff_list" class="flex items-center cursor-pointer">
-                                    <input v-model="group_staff.is_select" type="checkbox"
-                                        class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ group_staff.name }}
-                                    </div>
-                                </div>
-                            </div>
-                            <Title :title="$t('v1.view.main.dashboard.widget.special')" />
-                            <div class="mt-1 grid grid-cols-3 gap-y-2">
-                                <div @click="is_hide_pc = !is_hide_pc" class="flex items-center cursor-pointer">
-                                    <input v-model="is_hide_pc" type="checkbox" class="accent-orange-600 w-[20px] h-[20px]">
-                                    <div class="ml-2">
-                                        {{ $t('v1.view.main.dashboard.widget.special_list.hide_pc') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </template>
-        <template v-slot:footer>
-            <div class="grid grid-cols-2 gap-2">
-                <FilterButton @click="toggleModal" type="text-slate-500 hover:text-white hover:bg-slate-500"
-                    :title="$t('v1.common.cancel')" />
-                <FilterButton @click="installWidget"
-                    type="border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500"
-                    :title="$t('v1.common.setting')" />
-            </div>
-        </template>
-    </Modal>
+  <Alert
+    @close_modal="clear"
+    ref="install_widget_ref"
+    class_modal="w-[620px]"
+    class_body="py-3 flex flex-col gap-2.5"
+    class_footer="flex justify-between items-center mt-6"
+  >
+    <template #header>
+      {{ $t('v1.view.main.dashboard.widget.install.title') }}
+    </template>
+    <template v-slot:body>
+      <div class="text-xs font-medium">
+        {{ $t('v1.view.main.dashboard.widget.install.select_page') }}
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <SelectOrg class="border rounded-lg" />
+        <SelectPageOrg
+          v-model="selected_page_id"
+          class="border rounded-lg"
+        />
+      </div>
+      <div
+        v-if="is_page_installed_widget"
+        class="text-sm text-red-500"
+      >
+        {{
+          $t('v1.view.main.dashboard.widget.install.already_installed', {
+            name: getSelectedPageName(),
+          })
+        }}
+      </div>
+    </template>
+    <template v-slot:footer>
+      <button
+        @click="toggleModal()"
+        class="btn-custom bg-slate-100 text-slate-500"
+      >
+        {{ $t('v1.common.close') }}
+      </button>
+      <button
+        @click="installWidget"
+        :class="setCssBtnDone()"
+        class="btn-custom"
+      >
+        {{ $t('v1.view.main.dashboard.widget.install.done') }}
+      </button>
+    </template>
+  </Alert>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -118,136 +54,186 @@ import { useI18n } from 'vue-i18n'
 import { watch } from 'vue'
 import { map, set } from 'lodash'
 import { get_page_group_staff } from '@/service/api/chatbox/n4-service'
-import { check_page_install_widget, install_widget } from '@/service/api/chatbox/n5-app'
+import {
+  check_page_install_widget,
+  install_widget,
+} from '@/service/api/chatbox/n5-app'
 import { openPopup } from '@/service/function'
+import { flow } from '@/service/helper/async'
+import { usePageStore, useWidgetStore } from '@/stores'
+import { useRouter } from 'vue-router'
 
-import Modal from '@/components/Modal.vue'
-import FilterButton from '@/views/ChatWarper/Menu/FilterModal/FilterButton.vue'
-import SelectPage from '@/views/Dashboard/Widget/SelectPage.vue'
-import Title from '@/views/Dashboard/Widget/Title.vue'
-import Role from '@/views/Dashboard/Widget/Role.vue'
+import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
+import SelectPageOrg from '@/components/Main/Dashboard/SelectPageOrg.vue'
+import Alert from '@/components/Alert.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import type { AppInfo, AppInstalledPosition, AppInstalledSize, AccessRoleInfo } from '@/service/interface/app/widget'
 import type { GroupStaffInfo } from '@/service/interface/app/page'
-import type { PageData } from '@/service/interface/app/page'
-import { flow } from '@/service/helper/async'
 import type { CbError } from '@/service/interface/function'
 
-const $emit = defineEmits(['update_this_pricing'])
-
-const $props = withDefaults(defineProps<{
-    /**giá trị widget đang chọn */
-    widget?: AppInfo
-}>(), {})
-
 const $t = useI18n().t
+const widgetStore = useWidgetStore()
+const pageStore = usePageStore()
+const $router = useRouter()
 
-/**các quyền có thể cài đặt */
-const access_role_select = ref<AccessRoleInfo>({})
 /**ref của modal */
 const install_widget_ref = ref<ComponentRef>()
-/**dữ liệu của trang được chọn */
-const selected_page = ref<PageData>()
-/**vị trí hiển thị của app */
-const position = ref<AppInstalledPosition>('RIGHT')
-/**kích cỡ */
-const size = ref<AppInstalledSize>('MEDIUM')
-/**thiết lập ẩn trên máy tính */
-const is_hide_pc = ref(false)
-/**danh sách cac nhóm nhân viên của trang đang chọn */
-const group_staff_list = ref<GroupStaffInfo[]>([])
+/**id của trang được chọn */
+const selected_page_id = ref<string>()
+/**trang đã cài widget chưa */
+const is_page_installed_widget = ref(false)
+/**đã cài xong */
+const is_done = ref(false)
 
-watch(() => $props.widget, () => setDefaultValueSetting())
-watch(() => selected_page.value, () => getGroupStaff())
+// kiểm tra trang đã cài widget chưa khi được chọn
+watch(() => selected_page_id.value, checkPageIsInstalledWidget)
 
+/**dọn dữ liệu khi đóng modal */
+function clear() {
+  // xoá id trang được chọn
+  selected_page_id.value = undefined
+  // xoá cờ trạng thái cài đặt
+  is_page_installed_widget.value = false
+  // xoá cờ đã cài xong
+  is_done.value = false
+}
+/**lấy tên trang được chọn */
+function getSelectedPageName() {
+  // nếu không có trang nào được chọn thì thôi
+  if (!selected_page_id.value) return
+
+  // trả về tên trang được chọn
+  return pageStore.active_page_list?.[selected_page_id.value]?.page?.name
+}
+/**cài đặt css cho button done */
+function setCssBtnDone() {
+  // chưa chọn trang, trang đã cài đặt
+  if (!selected_page_id.value || is_page_installed_widget.value)
+    return 'bg-slate-500 text-slate-100 cursor-not-allowed'
+  // dã cài đặt xong
+  else if (is_done.value) return 'bg-green-100 text-green-600'
+  // có thể cài đặt
+  else return 'bg-blue-700 text-white'
+}
+/**kiểm tra trang đã cài widget chưa */
+async function checkPageIsInstalledWidget() {
+  try {
+    // nếu chưa chọn widget thì bỏ qua
+    if (!widgetStore.selected_widget?._id || !selected_page_id.value) return
+
+    // gọi api kiểm tra
+    check_page_install_widget(
+      {
+        _type: 'check-page-is-installed-app',
+        app_id: widgetStore.selected_widget?._id,
+        list_page: { [selected_page_id.value]: {} },
+      },
+      (e, r) => {
+        // gắn cờ trạng thái cài đặt
+        is_page_installed_widget.value =
+          r?.[selected_page_id.value!]?.is_installed || false
+      }
+    )
+  } catch (e) {}
+}
 /**cài đặt widget */
 function installWidget() {
-    if (!$props.widget?._id || !selected_page.value?.page?.fb_page_id) return
+  // nếu đã cài xong thì tắt modal
+  if (is_done.value) $router.push('/dashboard/widget/installed')
 
-    /**token truyền cho popup để kích hoạt */
-    let access_token: string | undefined
-    flow([
-        // * kiểm tra page đã được cài widget này chưa
-        (cb: CbError) => {
-            /**xử lý trang truyền lên */
-            const TEMP: { [index: string]: {} } = {}
-            TEMP[selected_page.value?.page?.fb_page_id as string] = {}
+  // nếu chưa chọn widget hoặc trang hoặc đã cài đặt thì bỏ qua
+  if (
+    !widgetStore.selected_widget?._id ||
+    !selected_page_id.value ||
+    is_page_installed_widget.value ||
+    is_done.value
+  )
+    return
 
-            check_page_install_widget({
-                _type: 'check-page-is-installed-app',
-                app_id: $props.widget?._id as string,
-                list_page: TEMP
-            }, (e, r) => {
-                if (e) return cb(e)
-                if (
-                    r?.[selected_page.value?.page?.fb_page_id as string]?.is_installed
-                ) return cb($t(`v1.view.main.dashboard.widget.widget_installed`))
+  /**các quyền có thể cài đặt */
+  let access_role_select = {}
+  /**danh sách cac nhóm nhân viên của trang đang chọn */
+  let group_staff_list: GroupStaffInfo[] = []
+  /**token truyền cho popup để kích hoạt */
+  let access_token: string | undefined
 
-                cb()
-            })
-        },
-        // * gọi api cài đặt
-        (cb: CbError) => install_widget({
-            app_id: $props.widget?._id as string,
-            fb_page_id: selected_page.value?.page?.fb_page_id as string,
-            position: position.value,
-            app_installed_size: size.value,
-            access_role_select: access_role_select.value,
-            // access_role_select: mapValues(role_list.value, role => role.value),
-            access_group: group_staff_list.value?.filter(n => n.is_select)?.map(n => n._id),
-            hide_pc: is_hide_pc.value
-        }, (e, r) => {
+  // cài đặt mặc định các quyền mà widget yêu cầu
+  map(widgetStore.selected_widget?.access_role, (is_active, role) => {
+    // bỏ qua id record mongo
+    if (role === '_id') return
+
+    // mapping kích hoạt mặc định
+    set(access_role_select, [role], is_active)
+  })
+
+  flow(
+    [
+      // * gọi api lấy danh sách nhóm nhân viên
+      (cb: CbError) =>
+        get_page_group_staff(
+          {
+            fb_page_id: selected_page_id.value!,
+            skip: 0,
+            limit: 40,
+          },
+          (e, r) => {
+            group_staff_list =
+              r?.map(group_staff => {
+                group_staff.is_select = true
+
+                return group_staff
+              }) || []
+
+            cb()
+          }
+        ),
+      // * gọi api cài đặt
+      (cb: CbError) =>
+        install_widget(
+          {
+            app_id: widgetStore.selected_widget?._id!,
+            fb_page_id: selected_page_id.value!,
+            position: 'RIGHT',
+            app_installed_size: 'MEDIUM',
+            access_role_select: access_role_select,
+            access_group: group_staff_list
+              ?.filter(n => n.is_select)
+              ?.map(n => n._id),
+            hide_pc: false,
+          },
+          (e, r) => {
             if (e) return cb(e)
 
             access_token = r?.access_token
             cb()
-        }),
-        // * done
-        (cb: CbError) => {
-            // tắt modal
-            toggleModal()
+          }
+        ),
+      // * done
+      (cb: CbError) => {
+        // gắn cờ đã cài xong
+        is_done.value = true
 
-            // mở popup
-            openPopup(
-                `${$props.widget?.url_auth}?page_id=${selected_page.value?.page?.fb_page_id}&access_token=${access_token}`
-            )
+        // mở popup
+        openPopup(
+          `${widgetStore.selected_widget?.url_auth}?page_id=${selected_page_id.value}&access_token=${access_token}`
+        )
 
-            cb()
-        },
-    ], undefined, true)
+        cb()
+      },
+    ],
+    undefined,
+    true
+  )
 }
-/**thiết lập các cài đặt mặc định cho widget */
-function setDefaultValueSetting() {
-    // cài đặt mặc định các quyền mà widget yêu cầu
-    map($props.widget?.access_role, (is_active, role) => {
-        // bỏ qua id record mongo
-        if (role === '_id') return
-
-        // mapping kích hoạt mặc định
-        set(access_role_select.value, [role], is_active)
-    })
-}
-/**mở modal của pricing detail */
+/**mở modal */
 function toggleModal() {
-    install_widget_ref.value.toggleModal()
-}
-/**lấy danh sách các nhóm nhân viên của trang */
-function getGroupStaff() {
-    if (!selected_page.value?.page?.fb_page_id) return
-
-    get_page_group_staff({
-        fb_page_id: selected_page.value?.page?.fb_page_id,
-        skip: 0,
-        limit: 40,
-    }, (e, r) => {
-        group_staff_list.value = r?.map(group_staff => {
-            group_staff.is_select = true
-
-            return group_staff
-        }) || []
-    })
+  install_widget_ref.value.toggleModal()
 }
 
 defineExpose({ toggleModal })
 </script>
+<style scoped lang="scss">
+.btn-custom {
+  @apply text-sm font-medium rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-90;
+}
+</style>

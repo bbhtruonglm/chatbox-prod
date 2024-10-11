@@ -113,8 +113,3 @@ function isHaveFileAttachment() {
   )
 }
 </script>
-<style lang="scss" scoped>
-.enter-line {
-  @apply break-words whitespace-pre-line;
-}
-</style>

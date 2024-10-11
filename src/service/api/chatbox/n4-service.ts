@@ -362,7 +362,8 @@ export const get_page_group_staff = (
     proceed: Cb<GroupStaffInfo[]>
 ) => chatbox({
     uri: `${$env.host.n4_service_v1}/v1/app/group-staff/read`,
-    body
+    body,
+    is_disable_org: true
 }, (e, r) => proceed(e, r?.group_staff))
 
 /** Lấy danh sách bài post theo các pages đang chọn */

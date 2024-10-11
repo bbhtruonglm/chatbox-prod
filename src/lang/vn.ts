@@ -129,6 +129,7 @@ const source: Language = {
           select_page: {
             all_org: 'Tất cả tổ chức',
             select_org: 'Chọn tổ chức',
+            select_page: 'Chọn trang',
             setting_org: 'Cài đặt doanh nghiệp',
             cancel_page: 'Huỷ kích hoạt trang',
             group_page: {
@@ -667,6 +668,17 @@ const source: Language = {
               'Không có trang nào được chọn hoặc bạn không có đủ quyền truy cập dữ liệu',
           },
           widget: {
+            install: {
+              already_installed: 'Trang "{name}" đã cài đặt ứng dụng này.',
+              done: 'Hoàn tất cài đặt',
+              title: 'Cài đặt ứng dụng',
+              select_page: 'Chọn trang cài đặt:',
+            },
+            info: {
+              description: 'Mô tả ứng dụng',
+              develop_by: 'Phát triển bởi:',
+              title: 'Thông tin ứng dụng',
+            },
             popular: 'Ứng dụng phổ biến',
             tab: {
               market: 'Chợ ứng dụng',

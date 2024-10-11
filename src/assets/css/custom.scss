@@ -57,3 +57,7 @@
 .link-detect {
   @apply text-blue-500 underline;
 }
+
+.enter-line {
+  @apply break-words whitespace-pre-line;
+}

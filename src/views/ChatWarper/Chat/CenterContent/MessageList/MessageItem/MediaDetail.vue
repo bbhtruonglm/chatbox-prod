@@ -136,9 +136,6 @@ defineExpose({ toggleModal })
 .attachment-size {
   @apply h-full object-contain;
 }
-.enter-line {
-  @apply break-words whitespace-pre-line;
-}
 .custom-btn {
   @apply py-2 px-5 flex items-center gap-1 rounded-lg text-white text-sm hover:brightness-90;
 }

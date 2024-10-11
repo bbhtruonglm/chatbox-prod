@@ -4,6 +4,7 @@ import { saveLocal, getLocal } from '@/service/helper/store'
 import { format as date_format, differenceInDays } from 'date-fns'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
+import type { AppInfo } from '@/service/interface/app/widget'
 
 /**store chọn trang */
 export const useSelectPageStore = defineStore('select_page_store', () => {
@@ -164,11 +165,14 @@ export const useWidgetStore = defineStore('widget_store', () => {
   /** -------------- STAGE -------------- */
   /**có hiện loading không */
   const is_loading = ref(false)
+  /**widget được chọn để cài đặt */
+  const selected_widget = ref<AppInfo>()
 
   /** -------------- MUTATION / ACTION -------------- */
 
   return {
     is_loading,
+    selected_widget,
   }
 })
 

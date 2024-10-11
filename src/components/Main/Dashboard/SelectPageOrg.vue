@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-3">
     <div
-      v-if="orgStore.list_org?.length"
+      v-if="size(pageStore.active_page_list)"
       class="w-full min-w-16 text-slate-700 relative h-full"
       ref="select_ref"
     >
@@ -18,22 +18,22 @@
         @click="showOption"
         class="rounded-lg w-full h-full py-2 px-3 pr-8 bg-white flex items-center text-sm gap-2.5"
       >
-        <Badge
-          v-if="
-            orgStore.selected_org_info?.org_package?.org_package_type !== 'FREE'
-          "
-        />
-        <span
-          v-if="orgStore.selected_org_id"
-          class="w-[inherit] text-left text-ellipsis overflow-hidden whitespace-nowrap"
+        <div
+          v-if="model && getSelectedPageName()"
+          class="w-[inherit] text-left text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-2.5"
         >
-          {{ orgStore.selected_org_info?.org_info?.org_name }}
-        </span>
+          <PageAvatar
+            :page_info="pageStore.active_page_list?.[model]?.page"
+            class="w-5 h-5"
+          />
+          {{ getSelectedPageName() }}
+        </div>
         <span
-          v-else="!orgStore.selected_org_id"
+          v-else="!model"
           class="text-gray-400 text-sm"
-          >{{ $t('v1.view.main.dashboard.select_page.select_org') }}</span
         >
+          {{ $t('v1.view.main.dashboard.select_page.select_page') }}
+        </span>
       </button>
       <div
         v-show="is_show_option"
@@ -43,7 +43,7 @@
           ref="select_input_ref"
           type="text"
           class="rounded-lg w-full pl-8 pr-8 h-9 focus:outline-none text-sm"
-          :placeholder="$t('v1.view.main.dashboard.select_page.select_org')"
+          :placeholder="$t('v1.view.main.dashboard.select_page.select_page')"
           v-model="search"
         />
         <img
@@ -55,28 +55,37 @@
         v-show="is_show_option"
         class="p-2 rounded-lg shadow-lg bg-white mt-1 h-auto max-h-52 overflow-y-auto absolute z-40 w-[-webkit-fill-available] flex flex-col gap-1"
       >
-        <template v-for="org of orgStore.list_org">
+        <template v-for="page of pageStore.active_page_list">
           <div
-            v-if="filterOrg(org)"
-            @click="selectOption(org)"
-            :value="org.org_id"
+            v-if="filterPage(page)"
+            @click="selectOption(page)"
             :class="{
-              'bg-slate-100': org?.org_id === orgStore.selected_org_id,
+              'bg-slate-100': page?.page?.fb_page_id === model,
             }"
-            class="text-sm custom-select-option cursor-pointer break-words whitespace-pre-line hover:bg-slate-100 rounded-md py-1.5 px-2 flex items-center gap-2.5 justify-between"
+            class="text-sm custom-select-option cursor-pointer break-words whitespace-pre-line hover:bg-slate-100 rounded-md py-1.5 px-2 flex items-center gap-2.5"
           >
-            <span>{{ org?.org_info?.org_name }}</span>
-            <Badge v-if="org?.org_package?.org_package_type !== 'FREE'" />
+            <PageAvatar
+              :page_info="page?.page"
+              class="w-8 h-8 flex-shrink-0"
+            />
+            <div class="flex-grow min-w-0">
+              <div class="truncate">
+                {{ page?.page?.name }}
+              </div>
+              <div class="text-xs text-slate-500 truncate">
+                {{ page?.page?.fb_page_id }}
+              </div>
+            </div>
           </div>
         </template>
         <span class="text-gray-400 text-sm">
-          {{ $t('v1.view.main.dashboard.select_page.select_org') }}
+          {{ $t('v1.view.main.dashboard.select_page.select_page') }}
         </span>
       </div>
     </div>
     <div
       v-else
-      class="rounded-lg w-60 h-9 bg-white flex items-center justify-between p-3 text-sm"
+      class="rounded-lg w-full min-w-16 h-9 bg-white flex items-center justify-between p-3 text-sm"
     >
       <div>
         {{ $t('v1.common.loading') }}
@@ -87,20 +96,23 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore } from '@/stores'
-import { getCurrentOrgInfo } from '@/service/function'
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { nonAccentVn } from '@/service/helper/format'
+import { size } from 'lodash'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Loading from '@/components/Loading.vue'
-import Badge from '@/components/Main/Dashboard/SelectOrg/Badge.vue'
 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import type { OrgInfo } from '@/service/interface/app/billing'
+import type { PageData } from '@/service/interface/app/page'
 
-const orgStore = useOrgStore()
+const model = defineModel<string>()
+
 const pageStore = usePageStore()
+const orgStore = useOrgStore()
 
 /**ref tổng của select */
 const select_ref = ref<ComponentRef>()
@@ -111,8 +123,11 @@ const is_show_option = ref<boolean>()
 /**giá trị của tìm kiếm */
 const search = ref<string>()
 
-// nạp dữ liệu tổ chức hiện tại khi component được mount
-onMounted(getCurrentOrgInfo)
+// nạp dữ liệu trang của tổ chức hiện tại khi component được mount
+onMounted(() => {
+  // nếu có dữ liệu trang rồi thì thôi
+  if (!size(pageStore.active_page_list)) getCurrentPageOrgInfo()
+})
 
 /**lắng nghe sự kiện khi click ra ngoài */
 onMounted(() => document.body.addEventListener('click', clickOutSide, true))
@@ -120,31 +135,44 @@ onMounted(() => document.body.addEventListener('click', clickOutSide, true))
 /**lắng nghe sự kiện khi huỷ component */
 onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 
-// nạp dữ liệu tổ chức hiện tại khi load toàn bộ danh sách tổ chức
-watch(() => orgStore.list_org, getCurrentOrgInfo)
-// nạp lại dữ liệu tổ chức khi có sự thay đổi tổ chức được chọn
-watch(
-  () => orgStore.selected_org_id,
-  () => {
-    // reset chọn page
-    pageStore.selected_page_id_list = {}
+// nạp lại dữ liệu trang khi có sự thay đổi tổ chức được chọn
+watch(() => orgStore.selected_org_id, getCurrentPageOrgInfo)
 
-    // nạp lại dữ liệu tổ chức
-    getCurrentOrgInfo()
-  }
-)
+/**lấy tên trang được chọn */
+function getSelectedPageName() {
+  // nếu không có trang nào được chọn thì thôi
+  if (!model.value) return
 
+  // trả về tên trang được chọn
+  return pageStore.active_page_list?.[model.value]?.page?.name
+}
+/**lấy thông tin trang của tổ chức hiện tại */
+async function getCurrentPageOrgInfo() {
+  // nếu không có tổ chức nào được chọn thì không cần nạp dữ liệu
+  if (!orgStore.selected_org_id) return
+
+  // làm mới danh sách trang
+  pageStore.active_page_list = {}
+
+  /**lấy thông tin trang của tổ chức hiện tại */
+  const RES = await new N4SerivceAppPage().getOrgActiveListPage(
+    orgStore.selected_org_id
+  )
+
+  // lưu lại danh sách trang
+  pageStore.active_page_list = RES?.page_list || {}
+}
 /**ẩn hiện org theo tìm kiếm */
-function filterOrg(org: OrgInfo): boolean {
+function filterPage(page: PageData): boolean {
   // nếu không có giá trị tìm kiếm thì hiển thị tất cả
   if (!search.value) return true
 
-  /**tên tổ chức */
-  const NAME = nonAccentVn(org?.org_info?.org_name || '')
+  /**tên trang */
+  const NAME = nonAccentVn(page?.page?.name || '')
   /**nội dung tìm kiếm */
   const SEARCH = nonAccentVn(search.value || '')
 
-  // nếu tên tổ chức chứa nội dung tìm kiếm thì hiển thị
+  // nếu tên trang chứa nội dung tìm kiếm thì hiển thị
   return NAME.includes(SEARCH)
 }
 /**sử lý sự kiện click ra ngoài */
@@ -158,9 +186,9 @@ function clickOutSide($event: MouseEvent) {
   hideOption()
 }
 /**xử lý sự kiện khi click vào một option */
-function selectOption(org: OrgInfo) {
+function selectOption(page: PageData) {
   // gán tổ chức được chọn
-  orgStore.selected_org_id = org?.org_id
+  model.value = page?.page?.fb_page_id
 
   // xoá giá trị tìm kiếm
   search.value = ''

@@ -28,10 +28,7 @@
       </CardItem>
     </div>
   </div>
-  <InstallWidget
-    ref="install_widget_ref"
-    :widget="selected_widget"
-  />
+  <WidgetInfo ref="widget_info_ref" />
 </template>
 
 <script setup lang="ts">
@@ -44,7 +41,7 @@ import {
 import { toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
 
-import InstallWidget from '@/views/Dashboard/Widget/InstallWidget.vue'
+import WidgetInfo from '@/views/Dashboard/Widget/WidgetInfo.vue'
 import Item from '@/views/Dashboard/Widget/Item.vue'
 import Search from '@/views/Dashboard/Widget/Search.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
@@ -70,9 +67,7 @@ const skip = ref(0)
 /**danh sách widget trên chợ */
 const widget_list = ref<AppInfo[]>()
 /**ref của modal cài đặt widget */
-const install_widget_ref = ref<ComponentRef>()
-/**widget được chọn để cài đặt */
-const selected_widget = ref<AppInfo>()
+const widget_info_ref = ref<ComponentRef>()
 /**danh sách danh mục */
 const categories = ref<WidgetCategoryInfo[]>()
 /**giá trị tìm kiếm */
@@ -83,10 +78,10 @@ onMounted(() => getWidget())
 /**mở modal cải đặt widget */
 function openInstallWidget(widget: AppInfo) {
   // gán giá trị cho widget được chọn
-  selected_widget.value = widget
+  widgetStore.selected_widget = widget
 
   // mở modal
-  install_widget_ref.value.toggleModal()
+  widget_info_ref.value.toggleModal()
 }
 /**lấy danh sách widget và danh mục */
 function getWidget() {
