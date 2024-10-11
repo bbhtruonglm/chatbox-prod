@@ -167,12 +167,15 @@ export const useWidgetStore = defineStore('widget_store', () => {
   const is_loading = ref(false)
   /**widget được chọn để cài đặt */
   const selected_widget = ref<AppInfo>()
+  /**id của trang được chọn */
+  const selected_page_id = ref<string>()
 
   /** -------------- MUTATION / ACTION -------------- */
 
   return {
     is_loading,
     selected_widget,
+    selected_page_id,
   }
 })
 

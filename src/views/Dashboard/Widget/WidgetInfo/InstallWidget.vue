@@ -1,5 +1,6 @@
 <template>
   <Alert
+    @open_modal="checkPageIsInstalledWidget"
     @close_modal="clear"
     ref="install_widget_ref"
     class_modal="w-[620px]"
@@ -15,10 +16,7 @@
       </div>
       <div class="grid grid-cols-2 gap-3">
         <SelectOrg class="border rounded-lg" />
-        <SelectPageOrg
-          v-model="selected_page_id"
-          class="border rounded-lg"
-        />
+        <SelectPageOrg class="border rounded-lg" />
       </div>
       <div
         v-if="is_page_installed_widget"
@@ -60,7 +58,7 @@ import {
 } from '@/service/api/chatbox/n5-app'
 import { openPopup } from '@/service/function'
 import { flow } from '@/service/helper/async'
-import { usePageStore, useWidgetStore } from '@/stores'
+import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { useRouter } from 'vue-router'
 
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
@@ -75,23 +73,22 @@ const $t = useI18n().t
 const widgetStore = useWidgetStore()
 const pageStore = usePageStore()
 const $router = useRouter()
+const orgStore = useOrgStore()
 
 /**ref của modal */
 const install_widget_ref = ref<ComponentRef>()
-/**id của trang được chọn */
-const selected_page_id = ref<string>()
 /**trang đã cài widget chưa */
 const is_page_installed_widget = ref(false)
 /**đã cài xong */
 const is_done = ref(false)
 
+// khi chọn nền tảng thì xoá cờ
+watch(() => orgStore.selected_org_id, clear)
 // kiểm tra trang đã cài widget chưa khi được chọn
-watch(() => selected_page_id.value, checkPageIsInstalledWidget)
+watch(() => widgetStore.selected_page_id, checkPageIsInstalledWidget)
 
 /**dọn dữ liệu khi đóng modal */
 function clear() {
-  // xoá id trang được chọn
-  selected_page_id.value = undefined
   // xoá cờ trạng thái cài đặt
   is_page_installed_widget.value = false
   // xoá cờ đã cài xong
@@ -100,15 +97,15 @@ function clear() {
 /**lấy tên trang được chọn */
 function getSelectedPageName() {
   // nếu không có trang nào được chọn thì thôi
-  if (!selected_page_id.value) return
+  if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return pageStore.active_page_list?.[selected_page_id.value]?.page?.name
+  return pageStore.active_page_list?.[widgetStore.selected_page_id]?.page?.name
 }
 /**cài đặt css cho button done */
 function setCssBtnDone() {
   // chưa chọn trang, trang đã cài đặt
-  if (!selected_page_id.value || is_page_installed_widget.value)
+  if (!widgetStore.selected_page_id || is_page_installed_widget.value)
     return 'bg-slate-500 text-slate-100 cursor-not-allowed'
   // dã cài đặt xong
   else if (is_done.value) return 'bg-green-100 text-green-600'
@@ -119,19 +116,20 @@ function setCssBtnDone() {
 async function checkPageIsInstalledWidget() {
   try {
     // nếu chưa chọn widget thì bỏ qua
-    if (!widgetStore.selected_widget?._id || !selected_page_id.value) return
+    if (!widgetStore.selected_widget?._id || !widgetStore.selected_page_id)
+      return
 
     // gọi api kiểm tra
     check_page_install_widget(
       {
         _type: 'check-page-is-installed-app',
         app_id: widgetStore.selected_widget?._id,
-        list_page: { [selected_page_id.value]: {} },
+        list_page: { [widgetStore.selected_page_id]: {} },
       },
       (e, r) => {
         // gắn cờ trạng thái cài đặt
         is_page_installed_widget.value =
-          r?.[selected_page_id.value!]?.is_installed || false
+          r?.[widgetStore.selected_page_id!]?.is_installed || false
       }
     )
   } catch (e) {}
@@ -144,7 +142,7 @@ function installWidget() {
   // nếu chưa chọn widget hoặc trang hoặc đã cài đặt thì bỏ qua
   if (
     !widgetStore.selected_widget?._id ||
-    !selected_page_id.value ||
+    !widgetStore.selected_page_id ||
     is_page_installed_widget.value ||
     is_done.value
   )
@@ -172,7 +170,7 @@ function installWidget() {
       (cb: CbError) =>
         get_page_group_staff(
           {
-            fb_page_id: selected_page_id.value!,
+            fb_page_id: widgetStore.selected_page_id!,
             skip: 0,
             limit: 40,
           },
@@ -192,7 +190,7 @@ function installWidget() {
         install_widget(
           {
             app_id: widgetStore.selected_widget?._id!,
-            fb_page_id: selected_page_id.value!,
+            fb_page_id: widgetStore.selected_page_id!,
             position: 'RIGHT',
             app_installed_size: 'MEDIUM',
             access_role_select: access_role_select,
@@ -215,7 +213,7 @@ function installWidget() {
 
         // mở popup
         openPopup(
-          `${widgetStore.selected_widget?.url_auth}?page_id=${selected_page_id.value}&access_token=${access_token}`
+          `${widgetStore.selected_widget?.url_auth}?page_id=${widgetStore.selected_page_id}&access_token=${access_token}`
         )
 
         cb()

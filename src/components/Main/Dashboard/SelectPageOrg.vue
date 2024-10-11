@@ -19,17 +19,19 @@
         class="rounded-lg w-full h-full py-2 px-3 pr-8 bg-white flex items-center text-sm gap-2.5"
       >
         <div
-          v-if="model && getSelectedPageName()"
+          v-if="widgetStore.selected_page_id && getSelectedPageName()"
           class="w-[inherit] text-left text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-2.5"
         >
           <PageAvatar
-            :page_info="pageStore.active_page_list?.[model]?.page"
+            :page_info="
+              pageStore.active_page_list?.[widgetStore.selected_page_id]?.page
+            "
             class="w-5 h-5"
           />
           {{ getSelectedPageName() }}
         </div>
         <span
-          v-else="!model"
+          v-else="!widgetStore.selected_page_id"
           class="text-gray-400 text-sm"
         >
           {{ $t('v1.view.main.dashboard.select_page.select_page') }}
@@ -60,7 +62,8 @@
             v-if="filterPage(page)"
             @click="selectOption(page)"
             :class="{
-              'bg-slate-100': page?.page?.fb_page_id === model,
+              'bg-slate-100':
+                page?.page?.fb_page_id === widgetStore.selected_page_id,
             }"
             class="text-sm custom-select-option cursor-pointer break-words whitespace-pre-line hover:bg-slate-100 rounded-md py-1.5 px-2 flex items-center gap-2.5"
           >
@@ -95,7 +98,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageStore } from '@/stores'
+import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { nonAccentVn } from '@/service/helper/format'
 import { size } from 'lodash'
@@ -109,10 +112,9 @@ import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { PageData } from '@/service/interface/app/page'
 
-const model = defineModel<string>()
-
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
+const widgetStore = useWidgetStore()
 
 /**ref tổng của select */
 const select_ref = ref<ComponentRef>()
@@ -141,10 +143,10 @@ watch(() => orgStore.selected_org_id, getCurrentPageOrgInfo)
 /**lấy tên trang được chọn */
 function getSelectedPageName() {
   // nếu không có trang nào được chọn thì thôi
-  if (!model.value) return
+  if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return pageStore.active_page_list?.[model.value]?.page?.name
+  return pageStore.active_page_list?.[widgetStore.selected_page_id]?.page?.name
 }
 /**lấy thông tin trang của tổ chức hiện tại */
 async function getCurrentPageOrgInfo() {
@@ -188,7 +190,7 @@ function clickOutSide($event: MouseEvent) {
 /**xử lý sự kiện khi click vào một option */
 function selectOption(page: PageData) {
   // gán tổ chức được chọn
-  model.value = page?.page?.fb_page_id
+  widgetStore.selected_page_id = page?.page?.fb_page_id
 
   // xoá giá trị tìm kiếm
   search.value = ''

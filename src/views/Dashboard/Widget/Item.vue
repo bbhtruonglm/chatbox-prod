@@ -7,11 +7,13 @@
       />
     </template>
     <template #name>
-      <div class="text-sm font-medium">
+      <div class="text-sm font-medium truncate">
         {{ widget.name }}
       </div>
     </template>
-    <template #after-name> </template>
+    <template #after-name> 
+      <slot />
+    </template>
     <template #description>
       <div class="truncate text-xs text-slate-500">
         {{ widget.description }}

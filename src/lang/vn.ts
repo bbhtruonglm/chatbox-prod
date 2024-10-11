@@ -737,12 +737,15 @@ const source: Language = {
             },
             widget_installed: 'Ứng dụng đã được cài đặt trên trang này rồi',
             installed: {
+              delete: 'Xoá ứng dụng',
+              re_connect: 'Kết nối lại',
+              title: 'Ứng dụng đang sử dụng',
               active: 'Ứng dụng đang kích hoạt',
               unactive: 'Ứng dụng đã ngắt kích hoạt',
               link: 'Ứng dụng chờ liên kết',
-              delete_warning: 'Bạn có chắc chắn muốn xoá ứng dụng',
+              delete_warning: 'Xác nhận xoá ứng dụng',
               delete_description:
-                'Ứng dụng sẽ được loại bỏ hoàn toàn khỏi trang',
+                'Xóa ứng dụng "<b>{app}</b>" ra khỏi Trang "<b>{page}</b>"',
               delete_success: 'Đã xoá ứng dụng',
               active_warning:
                 'Bạn có chắc chắn muốn tái kích hoạt ứng dụng này',
@@ -754,9 +757,9 @@ const source: Language = {
               unactive_description:
                 'Ứng dụng sẽ không thể truy cập được các dữ liệu của trang nữa',
               unactive_success: 'Đã huỷ kích hoạt ứng dụng',
-              link_warning: 'Bạn muốn liên kết/tái liên kết ứng dụng với trang',
+              link_warning: 'Xác nhận kết nối lại',
               link_description:
-                'Bạn sẽ được chuyển sang trang kết nối của ứng dụng để tiến hành liên kết, sau khi liên kết thành công, ứng dụng sẽ được kích hoạt tự động',
+                'Bạn sẽ được chuyển sang trang kết nối của ứng dụng để tiến hành liên kết',
             },
             create: {
               title: 'Tạo mới ứng dụng của riêng bạn',
@@ -920,7 +923,6 @@ const source: Language = {
                   title: 'Số dư không đủ',
                   description:
                     'Số dư tài khoản của bạn không đủ thanh toán, vui lòng nạp thêm tiền vào tài khoản để thanh toán.',
-                    
                 },
                 package: 'Gói sử dụng:',
                 price_page_month: 'Đơn giá 1 Trang/Tháng:',

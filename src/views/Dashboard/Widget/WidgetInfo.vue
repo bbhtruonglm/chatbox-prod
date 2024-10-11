@@ -48,7 +48,7 @@ import { useWidgetStore } from '@/stores'
 
 import Modal from '@/components/Modal.vue'
 import WidgetAvatar from '@/views/Dashboard/Widget/WidgetAvatar.vue'
-import InstallWidget from '@/views/Dashboard/Widget/InstallWidget.vue'
+import InstallWidget from '@/views/Dashboard/Widget/WidgetInfo/InstallWidget.vue'
 
 const $t = useI18n().t
 const widgetStore = useWidgetStore()
