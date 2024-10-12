@@ -101,13 +101,23 @@ const attach_ref = ref<InstanceType<typeof Dropdown>>()
 
 /**mở cài đặt trang */
 function openPageSetting() {
-  openNewTab(
-    `${$env.host.page_setting_view}?token=${getItem(
-      'access_token'
-    )}&fb_page_id=${
-      keys(pageStore.selected_page_id_list)?.[0]
-    }&locale=${locale}`
-  )
+  /**lấy ra id đầu tiên trong list các trang đang chọn */
+  const PAGE_ID = keys(pageStore.selected_page_id_list)?.[0]
+
+  /**đường dẫn ui thiết lập trang */
+  const URI = $env.host.page_setting_view
+
+  /**dữ liệu đính kèm url */
+  const QS = Parser.toQueryString({
+    token: getItem('access_token'),
+    fb_page_id: PAGE_ID,
+    page_id: PAGE_ID,
+    locale: locale,
+    org_id: orgStore.selected_org_id,
+  })
+
+  // mở tab mới
+  Navigation.openNewTab(`${URI}?${QS}`)
 }
 /**mở thống kê */
 function openAnalytic() {

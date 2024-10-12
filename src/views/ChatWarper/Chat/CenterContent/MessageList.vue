@@ -18,11 +18,13 @@
         v-for="(message, index) of messageStore.list_message"
         class="relative"
       >
-        <UnReadAlert :index />
-        <TimeSplit
-          :before_message="messageStore.list_message?.[index - 1]"
-          :now_message="message"
-        />
+        <div class="flex flex-col gap-2">
+          <UnReadAlert :index />
+          <TimeSplit
+            :before_message="messageStore.list_message?.[index - 1]"
+            :now_message="message"
+          />
+        </div>
         <div
           :class="{
             'py-2': ['client', 'page', 'note'].includes(message.message_type),
