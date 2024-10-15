@@ -3,11 +3,11 @@ import { flow } from '@/service/helper/async'
 import { useChatbotUserStore, useOrgStore } from '@/stores'
 import { onMounted } from 'vue'
 import { signout } from '@/service/helper/oauth'
-import { read_org } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 
 import type { CbError } from '@/service/interface/function'
 import { BillingAppOrganization } from '@/utils/api/Billing'
+import { getCurrentOrgInfo } from '@/service/function'
 
 /**load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
@@ -48,6 +48,9 @@ export function initRequireData() {
     try {
       // lấy danh sách các tổ chức
       orgStore.list_org = await new BillingAppOrganization().readOrg()
+
+      // tự động lấy thông tin tổ chức hiện tại
+      getCurrentOrgInfo()
     } catch (e) {
       // hiển thị thông báo lỗi
       toastError(e)

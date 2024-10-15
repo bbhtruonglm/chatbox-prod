@@ -10,7 +10,7 @@
   <template v-else>
     <div class="h-full p-2 overflow-y-auto flex flex-col gap-2.5">
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_my_org_page">
+        <template v-for="page of list_free_page">
           <PageItem
             @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
@@ -32,7 +32,7 @@
         </template>
       </div>
       <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <template v-for="page of list_free_page">
+        <template v-for="page of list_my_org_page">
           <PageItem
             @click="selectPage(page)"
             v-if="page?.page?.fb_page_id && filterPage(page)"
@@ -302,8 +302,10 @@ async function addPageToOrg() {
     // kích hoạt trang
     activePage()
   } catch (e) {
+    // nếu quá giới hạn thì thông báo
+    alert_over_quota_ref.value?.toggleModal()
     // thông báo lỗi
-    toastError(e)
+    // toastError(e)
   } finally {
     // ẩn loading
     commonStore.is_loading_full_screen = false
@@ -427,6 +429,9 @@ async function getListPAGEPage() {
       list_not_my_org_page?.map(page => page?.page?.fb_page_id || '')
     )
 
+    /**các trang tự do không có tổ chức */
+    let temp_list_free_page: PageData[] = []
+
     // lặp qua các trang ngoài tổ chức đang chọn
     list_not_my_org_page.map(page => {
       // nếu trang không thuộc tổ chức nào
@@ -435,10 +440,14 @@ async function getListPAGEPage() {
           page?.page?.fb_page_id || ''
         ]
       )
-        list_free_page.value.push(page)
+      temp_list_free_page.push(page)
+        // list_free_page.value.push(page)
       // nếu trang thuộc tổ chức khác
       else list_another_org_page.value.push(page)
     })
+
+    // sắp xếp lại trang tự do, đảo chiều trang mới tạo lên đầu
+    list_free_page.value = temp_list_free_page.reverse()
   } catch (e) {
     // thông báo lỗi
     ToastSingleton.getInst().error(e)
