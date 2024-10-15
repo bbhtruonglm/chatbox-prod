@@ -999,6 +999,13 @@ const source: Language = {
                 amount: 'Số tiền nạp',
                 amount_description:
                   'Số tiền nạp tối thiểu 50.000đ, tối đa 250.000.000đ',
+                voucher: {
+                  title: 'Mã giảm giá, khuyến mãi',
+                  description: 'Nhập mã giảm giá, khuyến mãi',
+                  wrong: 'Mã không hợp lệ, vui lòng kiểm tra lại',
+                  origin_amount: 'Số tiền nạp thực tế:',
+                  amount: 'Số tiền thực nhận:'
+                },
                 invoice: 'Hóa đơn',
                 no_invoice: 'Không xuất hóa đơn',
                 need_invoice: 'Xuất hóa đơn',

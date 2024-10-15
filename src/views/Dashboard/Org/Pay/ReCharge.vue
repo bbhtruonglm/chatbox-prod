@@ -20,39 +20,103 @@
         <div
           class="py-1 px-5 flex flex-col gap-3 rounded-lg border border-gray-200"
         >
-          <div>
-            <div class="p-4 font-medium">
-              {{ $t('v1.view.main.dashboard.org.pay.recharge.amount') }}
-            </div>
-            <div class="p-4 pt-0 flex flex-col gap-2">
-              <Cleave
-                v-if="pay_step === 'STEP_1'"
-                v-model="amount"
-                :options="{
-                  numeral: true,
-                  numeralThousandsGroupStyle: 'thousand',
-                  delimiter: '.',
-                  numeralDecimalMark: ',',
-                  numeralIntegerScale: 9,
-                }"
-                class="focus:outline-orange-500 py-2 px-3 rounded-md border w-[530px]"
-              />
-              <div
-                v-else
-                class="py-2 px-3 rounded-md border w-[530px]"
-              >
-                {{ currency(Number(amount)) }}
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="p-4 font-medium">
+                {{ $t('v1.view.main.dashboard.org.pay.recharge.amount') }}
               </div>
-              <div class="text-sm text-slate-500">
+              <div class="p-4 pt-0 flex flex-col gap-2">
+                <Cleave
+                  v-if="pay_step === 'STEP_1'"
+                  v-model="amount"
+                  :options="{
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand',
+                    delimiter: '.',
+                    numeralDecimalMark: ',',
+                    numeralIntegerScale: 9,
+                  }"
+                  class="focus:outline-orange-500 py-2 px-3 rounded-md border w-full"
+                />
+                <div
+                  v-else
+                  class="py-2 px-3 rounded-md border w-full"
+                >
+                  {{ currency(Number(amount)) }}
+                </div>
+                <div class="text-sm text-slate-500">
+                  {{
+                    $t(
+                      'v1.view.main.dashboard.org.pay.recharge.amount_description'
+                    )
+                  }}
+                </div>
+                <div class="text-sm font-semibold text-green-600">
+                  <template
+                    v-if="amount === String(verify_voucher?.txn_amount)"
+                  >
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
+                      )
+                    }}
+                    {{ currency(verify_voucher?.txn_origin_amount) }}
+                  </template>
+                  <template
+                    v-if="amount === String(verify_voucher?.txn_origin_amount)"
+                  >
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.voucher.amount'
+                      )
+                    }}
+                    {{ currency(verify_voucher?.txn_amount) }}
+                  </template>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="p-4 font-medium">
                 {{
-                  $t(
-                    'v1.view.main.dashboard.org.pay.recharge.amount_description'
-                  )
+                  $t('v1.view.main.dashboard.org.pay.recharge.voucher.title')
                 }}
               </div>
+              <div class="p-4 pt-0 flex flex-col gap-2">
+                <input
+                  v-if="pay_step === 'STEP_1'"
+                  v-model="voucher_code"
+                  @keyup="debounceVerifyVoucher"
+                  class="focus:outline-orange-500 py-2 px-3 rounded-md border w-full"
+                  :placeholder="
+                    $t(
+                      'v1.view.main.dashboard.org.pay.recharge.voucher.description'
+                    )
+                  "
+                />
+                <div
+                  v-else
+                  class="py-2 px-3 rounded-md border w-full"
+                >
+                  {{ voucher_code }}
+                </div>
+                <div
+                  v-if="verify_voucher?.is_verify === false"
+                  class="text-sm text-red-500"
+                >
+                  {{
+                    $t('v1.view.main.dashboard.org.pay.recharge.voucher.wrong')
+                  }}
+                </div>
+                <div
+                  v-else
+                  class="text-sm text-green-600"
+                >
+                  {{ verify_voucher?.voucher_description }}
+                </div>
+              </div>
             </div>
-            <hr />
           </div>
+          <hr />
           <div>
             <div class="p-4 font-medium">
               {{ $t('v1.view.main.dashboard.org.pay.recharge.invoice') }}
@@ -174,7 +238,10 @@
               </template>
               <template v-if="pay_step === 'STEP_2'">
                 <template v-if="payment_method === 'TRANSFER'">
-                  <TransferInfo :amount :txn_id="txn_info?.txn_id" />
+                  <TransferInfo
+                    :amount="calcBankAmount()"
+                    :txn_id="txn_info?.txn_id"
+                  />
                   <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
                     @click="checkPayment"
@@ -231,6 +298,11 @@ import BackIcon from '@/components/Icons/Back.vue'
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
+import {
+  BillingAppVoucher,
+  type ResponseVerifyVoucher,
+} from '@/utils/api/Billing'
+import { debounce, size } from 'lodash'
 
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()
@@ -274,16 +346,33 @@ const pay_step = ref<'STEP_1' | 'STEP_2'>('STEP_1')
 const selected_txn_id = ref<string>($route.query.txn_id as string)
 /**số tiền nạp */
 const amount = ref<string>('500000')
+/**mã giảm giá */
+const voucher_code = ref<string>()
 /**có xuất hoá đơn không */
 const is_issue_invoice = ref<boolean>(false)
 /**phương thức thanh toán đang chọn */
 const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 /**thông tin giao dịch mới tạo */
 const txn_info = ref<TransactionInfo>()
+/**dữ liệu xác thực mã khuyến mại */
+const verify_voucher = ref<ResponseVerifyVoucher>({})
 
 // khởi tạo dữ liệu của giao dịch đã chọn nếu có
 onMounted(initSelectedTxn)
 
+/**tính ra số tiền chính xác cần quét qr */
+function calcBankAmount(): string {
+  // nếu không có mã giảm giá thì thôi
+  if (!size(verify_voucher.value)) return amount.value
+
+  /**số tiền mới */
+  const NEW_AMOUNT = String(verify_voucher.value?.txn_origin_amount)
+
+  // nếu tăng thì giữ nguyên số tiền
+  if (amount.value == NEW_AMOUNT) return amount.value
+  // nếu giảm thì lấy số tiền gốc mới
+  else return NEW_AMOUNT
+}
 /**khởi tạo dữ liệu của giao dịch đã chọn */
 async function initSelectedTxn() {
   // nếu không có txn_id thì thôi
@@ -313,6 +402,9 @@ async function initSelectedTxn() {
 
     // lấy số tiền
     amount.value = String(txn_info.value.txn_amount)
+
+    // lấy mã khuyến mãi
+    voucher_code.value = txn_info.value.txn_voucher_info?.voucher_code
   } catch (e) {
     // hiển thị thông báo lỗi
     toastError(e)
@@ -324,7 +416,12 @@ async function initSelectedTxn() {
 /**tạo mới giao dịch */
 async function createTxn() {
   // nếu chưa chọn tổ chức nào thì không thực hiện
-  if (!orgStore.selected_org_id || orgStore.is_loading) return
+  if (
+    !orgStore.selected_org_id ||
+    orgStore.is_loading ||
+    verify_voucher.value?.is_verify === false
+  )
+    return
 
   // kích hoạt trạng thái loading
   orgStore.is_loading = true
@@ -353,7 +450,8 @@ async function createTxn() {
       WALLET_ID,
       AMOUNT,
       payment_method.value,
-      is_issue_invoice.value
+      is_issue_invoice.value,
+      voucher_code.value
     )
 
     // chuyển sang bước 2
@@ -404,5 +502,32 @@ async function checkPayment() {
 
   // tắt trạng thái loading
   orgStore.is_loading = false
+}
+/**kiểm tra mã giảm giá */
+const debounceVerifyVoucher = debounce(verifyVoucher, 300)
+/**kiểm tra mã giảm giá */
+async function verifyVoucher() {
+  try {
+    // nếu không có mã giảm giá thì thôi
+    if (!voucher_code.value) {
+      // xoá mã thì đánh dấu là hợp lệ
+      verify_voucher.value = {}
+
+      return
+    }
+
+    // kích hoạt trạng thái loading
+    orgStore.is_loading = true
+
+    /**kết quả trả về */
+    verify_voucher.value = await new BillingAppVoucher().verifyVoucher(
+      Number(amount.value),
+      voucher_code.value
+    )
+  } catch (e) {
+  } finally {
+    // tắt trạng thái loading
+    orgStore.is_loading = false
+  }
 }
 </script>

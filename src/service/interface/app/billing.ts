@@ -186,6 +186,13 @@ export interface TransactionInfo {
   txn_description?: string
   /**ngày tạo */
   createdAt?: string
+  /**id của mã khuyển mại được kích hoạt cho giao dịch nạp tiền này */
+  txn_voucher_id?: string
+  /**snap lại dữ liệu của mã khuyến mại tại thời điểm tạo */
+  txn_voucher_info?: {
+    /**tên mã khuyến mại */
+    voucher_code?: string
+  }
 }
 
 /**

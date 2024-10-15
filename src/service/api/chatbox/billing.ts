@@ -116,7 +116,8 @@ export const create_txn = async (
   wallet_id: string,
   txn_amount: number,
   txn_payment_method: TransactionInfo['txn_payment_method'],
-  txn_is_issue_invoice: boolean
+  txn_is_issue_invoice: boolean,
+  voucher_code?: string
 ): Promise<TransactionInfo> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/transaction/create_txn`,
@@ -126,6 +127,7 @@ export const create_txn = async (
       txn_amount,
       txn_payment_method,
       txn_is_issue_invoice,
+      voucher_code,
     },
   })
 
