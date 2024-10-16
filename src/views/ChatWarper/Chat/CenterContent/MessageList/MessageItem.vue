@@ -204,6 +204,9 @@ const message_source = computed<MessageTemplateInput[]>(() => {
       ]
     }
 
+    // trường hợp vừa có ảnh vừa có text
+    if (text.value) res.content = text.value
+
     // trả về dữ liệu
     result.push(res)
   }
