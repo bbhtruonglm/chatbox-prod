@@ -131,6 +131,8 @@ function openWidgetModal(widget_id: string) {
   if (selected_widget.value)
     selected_widget.value.url = getIframeUrl(selected_widget.value)
 
+  console.log('hey man', selected_widget.value?.url)
+
   // mở modal
   modal_widget_ref.value?.toggleModal()
 }
