@@ -172,6 +172,8 @@ export interface TransactionInfo {
   wallet_id?: string
   /**số tiền của giao dịch này */
   txn_amount?: number
+  /**số tiền gốc của giao dịch này */
+  txn_origin_amount?: number
   /**trạng thái của giao dịch */
   txn_status?: TransactionStatus
   /**phương thức thanh toán */
@@ -233,6 +235,11 @@ export type BillingType = 'DEPOSIT' | 'WITHDRAW' | 'PAYMENT'
 /** --------------------- NOTI --------------------- */
 /**thông tin của 1 thông báo */
 export interface NotiInfo {
+  /**dữ liệu đính kèm tuy theo từng type */
+  noti_data?: {
+    /**id của giao dịch */
+    txn_id?: string
+  }
   /**định danh của thông báo này */
   noti_code?: string
   /**id của thông báo này */

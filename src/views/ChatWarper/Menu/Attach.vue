@@ -28,13 +28,21 @@
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
     <MenuItem
+      v-if="orgStore.isAdminOrg()"
+      @click="openPageSetting"
+      :icon="CogIcon"
+      :title="$t('v1.view.main.dashboard.nav.setting')"
+    >
+      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
+    </MenuItem>
+    <MenuItem
       @click="openChatbot"
       :icon="ManyChatIcon"
       :title="$t('v1.view.main.dashboard.nav.bot')"
     >
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
-    <template v-if="orgStore.isAdminOrg()">
+    <!-- <template v-if="orgStore.isAdminOrg()">
       <MenuItem
         @click="openWidget"
         :icon="SquareIcon"
@@ -42,14 +50,7 @@
       >
         <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
       </MenuItem>
-      <MenuItem
-        @click="openPageSetting"
-        :icon="CogIcon"
-        :title="$t('v1.common.setting')"
-      >
-        <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
-      </MenuItem>
-    </template>
+    </template> -->
     <!-- 
     <NavItem
       v-if="size(pageStore.selected_page_id_list)"

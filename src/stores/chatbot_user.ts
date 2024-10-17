@@ -40,11 +40,18 @@ export const useChatbotUserStore = defineStore('chatbot_user_store', () => {
   }
 
   /** ------------ ACTION ----------- */
+  /**có phải là thành viên của bbh không */
+  function isBbhMember(): boolean {
+    return ['ADMIN', 'MEMBER', 'AFFILIATE'].includes(
+      chatbot_user.value?.role || ''
+    )
+  }
 
   return {
     chatbot_user,
     personal_settings,
 
     getStaffId,
+    isBbhMember,
   }
 })

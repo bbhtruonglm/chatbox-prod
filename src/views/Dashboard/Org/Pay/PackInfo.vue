@@ -136,6 +136,14 @@
             {{ $t('v1.view.main.dashboard.org.pay.second') }}
           </Item>
         </div>
+
+        <div
+          v-if="isShowAlertLock()"
+          class="text-sm font-medium text-red-600"
+        >
+          {{ $t('v1.view.main.dashboard.org.pay.lock.title') }}
+          {{ genAlertLock() }}
+        </div>
         <div
           v-if="!orgStore.isFreePack()"
           class="text-slate-500 text-sm font-medium rounded-xl border p-3 flex flex-col gap-2.5"
@@ -227,7 +235,53 @@ const org_is_auto_charge = computed({
     updateOrg()
   },
 })
+/**dữ liệu gói hiện tại của tổ chức */
+const org_package = computed(() => orgStore.selected_org_info?.org_package)
 
+/**tạo cảnh báo tổ chức bị khoá tính năng */
+function genAlertLock(): string {
+  /**các cảnh báo */
+  const ALERTS: string[] = []
+
+  // AI hình ảnh
+  if (org_package.value?.org_is_lock_ai_image)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.ai_image'))
+
+  // AI âm thanh
+  if (org_package.value?.org_is_lock_ai_sound)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.ai_sound'))
+
+  // AI văn bản
+  if (org_package.value?.org_is_lock_ai_text)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.ai_text'))
+
+  // AI video
+  if (org_package.value?.org_is_lock_ai_video)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.ai_video'))
+
+  // khách hàng
+  if (org_package.value?.org_is_lock_client)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.client'))
+
+  // FAU
+  if (org_package.value?.org_is_lock_fau)
+    ALERTS.push($t('v1.view.main.dashboard.org.pay.lock.fau'))
+
+  // trả về chuỗi cảnh báo
+  return ALERTS.join(', ')
+}
+/**có hiển thị cảnh báo tổ chức bị khoá tính năng không */
+function isShowAlertLock() {
+  // hiển thị nếu tổ chức bị khoá 1 trong các tính năng
+  return (
+    org_package.value?.org_is_lock_ai_image ||
+    org_package.value?.org_is_lock_ai_sound ||
+    org_package.value?.org_is_lock_ai_text ||
+    org_package.value?.org_is_lock_ai_video ||
+    org_package.value?.org_is_lock_client ||
+    org_package.value?.org_is_lock_fau
+  )
+}
 /**mở modal mua thêm */
 function incQuota(type: QuotaType) {
   inc_quota_type.value = type
