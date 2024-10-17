@@ -13,8 +13,11 @@
         <ReChargeBtn v-if="$route.path.includes('/dashboard/org/pay')" />
       </div>
       <RouterView v-if="orgStore.isAdminOrg()" />
-      <div v-else class="text-sm text-slate-500">
-        {{ $t('v1.view.main.dashboard.org.permision_denied')  }}
+      <div
+        v-else
+        class="text-sm text-slate-500"
+      >
+        {{ $t('v1.view.main.dashboard.org.permision_denied') }}
       </div>
     </template>
   </DashboardLayout>
@@ -28,6 +31,21 @@ import Menu from '@/views/Dashboard/Org/Menu.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 import Loading from '@/components/Loading.vue'
+import { onBeforeMount, onMounted } from 'vue'
 
 const orgStore = useOrgStore()
+
+onMounted(() => {
+  // @ts-ignore
+  BBH?.init({
+    // kích hoạt id trang chat
+    page_id: 'bf425487afbe403895116dd9b585537b',
+    // thiết lập hiển thị - chưa có logic
+    config: {},
+    // cho phép gỡ lỗi
+    is_debug: true,
+  })
+})
+
+// function 
 </script>
