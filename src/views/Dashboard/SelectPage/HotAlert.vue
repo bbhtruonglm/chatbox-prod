@@ -15,14 +15,14 @@
     </div>
     <div class="flex-shrink-0">
       <button
-        @click="getConfig(noti.noti_code).click(noti.noti_id)"
+        @click="readNoti(noti)"
         :class="getConfig(noti.noti_code).btn"
         class="item text-white hover:brightness-90"
       >
         {{ getConfig(noti.noti_code).btn_title }}
       </button>
       <button
-        @click="reaadNoti(noti.noti_id)"
+        @click="readNoti(noti, true)"
         class="item text-sm font-medium"
       >
         {{ $t('v1.common.close') }}
@@ -32,17 +32,16 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useCommonStore, useOrgStore } from '@/stores'
+import { useOrgStore } from '@/stores'
 import { get_noti, read_noti } from '@/service/api/chatbox/billing'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 import { useRouter } from 'vue-router'
 
 import type { NotiInfo } from '@/service/interface/app/billing'
-import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 
 const orgStore = useOrgStore()
-const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const $router = useRouter()
 
@@ -58,8 +57,6 @@ interface ISetting {
   btn_title: string
   /**màu chữ */
   text: string
-  /**hành động khi click vào nút */
-  click: Function
 }
 
 /**thiết lập mặc định */
@@ -69,7 +66,6 @@ const DEFAULT_SETTING = {
   btn: 'bg-slate-700',
   text: 'text-black',
   btn_title: $t('v1.view.main.dashboard.org.menu.more'),
-  click: (noti_id?: string) => reaadNoti(noti_id, 'CHANGE_PAGE_OWNER'),
 }
 /**thiết lập UI của thông báo */
 const SETTINGS: Record<string, ISetting> = {
@@ -82,7 +78,6 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-green-500',
     text: 'text-green-700',
     btn_title: $t('v1.common.close'),
-    click: (noti_id?: string) => reaadNoti(noti_id, 'TOPUP_SUCCESS'),
   },
   /**đang chờ thanh toán */
   TOPUP_WAITING: {
@@ -91,7 +86,6 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-orange-500',
     text: 'text-orange-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.pay'),
-    click: (noti_id?: string) => reaadNoti(noti_id, 'TOPUP_WAITING'),
   },
   /**thanh toán thành công */
   PURCHASE_SUCCESS: {
@@ -100,7 +94,6 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-green-500',
     text: 'text-green-700',
     btn_title: $t('v1.common.close'),
-    click: (noti_id?: string) => reaadNoti(noti_id, 'PURCHASE_SUCCESS'),
   },
   /**đã đá trang */
   REMOVE_PAGE: DEFAULT_SETTING,
@@ -111,7 +104,6 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-blue-500',
     text: 'text-blue-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.more'),
-    click: (noti_id?: string) => reaadNoti(noti_id, 'ALMOST_REACH_QUOTA_AI'),
   },
   /**sắp hết hạn gói */
   ALMOST_EXPIRED_PACKAGE: {
@@ -120,7 +112,6 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-red-500',
     text: 'text-red-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.extend'),
-    click: (noti_id?: string) => reaadNoti(noti_id, 'ALMOST_EXPIRED_PACKAGE'),
   },
 }
 
@@ -168,7 +159,7 @@ async function getNoti() {
   }
 }
 /**đọc thông báo */
-async function reaadNoti(noti_id?: string, code?: string) {
+async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   try {
     // nếu đang loading thì thôi
     if (is_loading.value) return
@@ -177,36 +168,50 @@ async function reaadNoti(noti_id?: string, code?: string) {
     is_loading.value = true
 
     // đánh dấu noti là đã đọc
-    await read_noti(orgStore.selected_org_id, noti_id)
+    await read_noti(orgStore.selected_org_id, noti?.noti_id)
 
     // giảm số thông báo
     orgStore.count_noti--
 
-    switch (code) {
-      case 'CHANGE_PAGE_OWNER':
-        $router.push('/dashboard/org/pay/info')
-        break
-      case 'TOPUP_SUCCESS':
-        $router.push('/dashboard/org/pay/info')
-        break
-      case 'TOPUP_WAITING':
-        $router.push('/dashboard/org/pay/info')
-        break
-      case 'PURCHASE_SUCCESS':
-        $router.push('/dashboard/org/pay/info')
-        break
-      case 'ALMOST_REACH_QUOTA_AI':
-        $router.push('/dashboard/org/pay/info')
-        break
-      case 'ALMOST_EXPIRED_PACKAGE':
-        $router.push('/dashboard/org/pay/info')
-        break
+    // chỉ đóng không xử lý gì thêm
+    if (is_close) getNoti()
+    // xử lý tuỳ theo type noti
+    else
+      switch (noti?.noti_code) {
+        case 'CHANGE_PAGE_OWNER':
+          $router.push('/dashboard/org/pay/info')
+          break
+        case 'TOPUP_SUCCESS':
+          $router.push({
+            path: '/dashboard/org/pay/recharge',
+            query: {
+              txn_id: noti?.noti_data?.txn_id,
+            },
+          })
+          break
+        case 'TOPUP_WAITING':
+          $router.push({
+            path: '/dashboard/org/pay/recharge',
+            query: {
+              txn_id: noti?.noti_data?.txn_id,
+            },
+          })
+          break
+        case 'PURCHASE_SUCCESS':
+          $router.push('/dashboard/org/pay/info')
+          break
+        case 'ALMOST_REACH_QUOTA_AI':
+          $router.push('/dashboard/org/pay/info')
+          break
+        case 'ALMOST_EXPIRED_PACKAGE':
+          $router.push('/dashboard/org/pay/info')
+          break
 
-      // code không cần xử lý gì thì tắt luôn
-      default:
-        await getNoti()
-        break
-    }
+        // code không cần xử lý gì thì tắt luôn
+        default:
+          await getNoti()
+          break
+      }
   } catch (e) {
   } finally {
     // tắt loading

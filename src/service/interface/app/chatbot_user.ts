@@ -1,4 +1,6 @@
 export interface ChatbotUserInfo {
+    /**vài trò của người dùng trong hệ thống */
+    role?: 'ADMIN' | 'MEMBER' | 'AFFILIATE'
     /**email đăng nhập */
     email?: string
     /**id của user bản mới */

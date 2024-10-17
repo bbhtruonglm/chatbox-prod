@@ -44,6 +44,11 @@
         class="flex-shrink-0"
       /> -->
       </MenuItem>
+      <MenuItem
+        @click="redirectMenu('widget')"
+        :icon="SquareIcon"
+        :title="$t('v1.view.main.dashboard.nav.widget')"
+      />
       <hr class="my-1" />
     </template>
     <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
@@ -63,6 +68,12 @@
         class="flex-shrink-0"
       />
     </MenuItem>
+    <MenuItem
+      v-if="chatbotUserStore.isBbhMember()"
+      @click="openBbhAdminPage()"
+      :icon="ServerSettingIcon"
+      :title="$t('v1.view.main.dashboard.header.menu.admin')"
+    />
     <MenuItem
       @click="signout"
       :icon="LogOutIcon"
@@ -92,10 +103,15 @@ import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
 import UserIcon from '@/components/Icons/User.vue'
 import BellIcon from '@/components/Icons/Bell.vue'
 import CogIcon from '@/components/Icons/Cog.vue'
+import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
 import LogOutIcon from '@/components/Icons/LogOut.vue'
+import SquareIcon from '@/components/Icons/Square.vue'
 
 import type { ModalPosition } from '@/service/interface/vue'
 import { count_noti } from '@/service/api/chatbox/billing'
+import { Navigation } from '@/utils/helper/Navigation'
+import { getItem } from '@/service/helper/localStorage'
+import { LocaleSingleton } from '@/utils/helper/Locale'
 
 const $props = withDefaults(
   defineProps<{
@@ -166,5 +182,15 @@ function openNoti() {
 
   // mở modal
   modal_alert_ref.value?.toggleModal()
+}
+/**mở trang quản trị bbh */
+function openBbhAdminPage() {
+  /**token */
+  const TOKEN = getItem('access_token')
+  const LOCALE = LocaleSingleton.getInst().get()
+  /**đường dẫn */
+  const URI = $env.host.bbh_admin
+  // mở tab mới
+  Navigation.openNewTab(`${URI}?token=${TOKEN}&locale=${LOCALE}`)
 }
 </script>

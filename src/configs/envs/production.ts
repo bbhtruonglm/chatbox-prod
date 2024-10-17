@@ -23,7 +23,8 @@ const ENV: EnvInfo = {
         analytic: {
             retion: 'https://analytic-chatbox-v2.retion.ai/dashboard',
             bbh: 'https://analytic-chatbox-v2.botbanhang.vn/dashboard'
-        }
+        },
+        bbh_admin: 'https://ad.retion.ai'
     },
     facebook: {
         app_id: '1282108599314861',
