@@ -4,6 +4,7 @@
       v-if="primary_emotion"
       :emotion="primary_emotion"
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
+      :message_type="message?.message_type"
     />
     <MessageDate
       :class="{

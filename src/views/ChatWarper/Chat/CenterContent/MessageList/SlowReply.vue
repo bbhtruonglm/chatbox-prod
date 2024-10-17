@@ -1,11 +1,11 @@
 <template>
-  <template v-if="calcDuration()">
-    <div class="h-4" />
-    <div class="text-xs absolute w-max bottom-0">
-      {{ $t('v1.view.main.dashboard.chat.message.reply_time') }}:
-      <span class="text-red-500">{{ calcDuration() }}</span>
-    </div>
-  </template>
+  <!-- <template v-if="calcDuration()">
+  </template> -->
+  <div class="h-4" />
+  <div class="text-xs absolute w-max bottom-0">
+    {{ $t('v1.view.main.dashboard.chat.message.reply_time') }}:
+    <span class="text-red-500">{{ calcDuration() }}</span>
+  </div>
 </template>
 <script setup lang="ts">
 import { formatDistanceStrict } from 'date-fns'
@@ -29,10 +29,13 @@ const $t = useI18n().t
 /**tính khoảng thời gian tin nhắn này của khách chưa được rep */
 function calcDuration() {
   // chỉ hiển thị khi tin tiếp theo là trang trả lời
-  if ($props.next_message?.message_type !== 'page') return undefined
+  // if ($props.next_message?.message_type !== 'page') return undefined
 
   let now_date = $props.now_message.time || $props.now_message.createdAt
-  let next_date = $props.next_message.time || $props.next_message.createdAt
+  let next_date =
+    $props.next_message?.time ||
+    $props.next_message?.createdAt ||
+    new Date().getTime()
 
   // nếu hết tin nhắn rồi thì thôi
   if (!next_date) return undefined

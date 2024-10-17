@@ -47,8 +47,9 @@
                   </div>
                   <div class="text-sm font-medium text-slate-500">
                     {{
-                      chatbotUserStore.chatbot_user?.fb_staff_id ||
-                      chatbotUserStore.chatbot_user?.email
+                      chatbotUserStore.chatbot_user?.email ||
+                      chatbotUserStore.chatbot_user?.user_id ||
+                      chatbotUserStore.chatbot_user?.fb_staff_id
                     }}
                   </div>
                 </div>
