@@ -465,6 +465,7 @@ const source: Language = {
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
               reply_time: 'AI: Phản hồi chậm',
+              reply_time_not_rep: 'AI: Chưa trả lời',
               header: {
                 note: 'Ghi chú, ghim, đặt lịch',
                 alert: 'Cảnh báo',

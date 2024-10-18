@@ -51,8 +51,8 @@
       {{ message?.reaction?.emoji }}
     </div>
     <SlowReply
-      v-if="is_ai_slow_reply"
-      :now_message="message"
+      v-if="CHECK_SLOW_REPLY.isSlowReply()"
+      :duration="CHECK_SLOW_REPLY.getDuration()"
       :next_message="messageStore.list_message?.[message_index + 1]"
     />
   </div>
@@ -61,6 +61,10 @@
 import { computed } from 'vue'
 import { useMessageStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
+import {
+  CheckSlowReply,
+  type ICheckSlowReply,
+} from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/CheckSlowReply'
 
 import SlowReply from '@/views/ChatWarper/Chat/CenterContent/MessageList/SlowReply.vue'
 import ReplyMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/ReplyMessage.vue'
@@ -215,6 +219,17 @@ const message_source = computed<MessageTemplateInput[]>(() => {
   // trả về mảng
   return result
 })
+/**
+ * serivce kiểm tra tin nhắn rep chậm
+ * - phải computed vì data prop có thể bị thay đổi
+ */
+const CHECK_SLOW_REPLY = computed<ICheckSlowReply>(
+  () =>
+    new CheckSlowReply(
+      $props.message,
+      messageStore.list_message?.[$props.message_index + 1]
+    )
+)
 
 /**xử lý dữ liệu nút bấm */
 function formatButton(list_raw_button: ChatbotButton[]) {
@@ -230,7 +245,8 @@ function addOnClassTemplate() {
     'bg-[#FFF8E1]': message_type.value === 'page',
     'bg-white': message_type.value === 'client',
     'bg-[#D8F6CB]': message_type.value === 'note',
-    'border border-red-500': is_ai_slow_reply.value,
+    'border border-red-500': CHECK_SLOW_REPLY.value.isSlowReply(),
+    // 'border border-yellow-500': CHECK_SLOW_REPLY.value.isWarning(),
   }
 }
 
