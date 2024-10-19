@@ -1,32 +1,37 @@
 <template>
   <div
-    v-for="noti of list_noti"
-    :class="
-      getConfig(noti.noti_code).bg + ' ' + getConfig(noti.noti_code).border
-    "
-    class="item gap-1 shadow-lg flex justify-between"
+    v-if="list_noti?.length"
+    class="flex flex-col gap-3"
   >
     <div
-      :class="getConfig(noti.noti_code).text"
-      class="flex flex-col gap-1 min-w-0"
+      v-for="noti of list_noti"
+      :class="
+        getConfig(noti.noti_code).bg + ' ' + getConfig(noti.noti_code).border
+      "
+      class="item gap-1 shadow-lg flex justify-between"
     >
-      <div class="text-sm font-semibold truncate">{{ noti.noti_title }}</div>
-      <div class="text-xs truncate">{{ noti.noti_content }}</div>
-    </div>
-    <div class="flex-shrink-0">
-      <button
-        @click="readNoti(noti)"
-        :class="getConfig(noti.noti_code).btn"
-        class="item text-white hover:brightness-90"
+      <div
+        :class="getConfig(noti.noti_code).text"
+        class="flex flex-col gap-1 min-w-0"
       >
-        {{ getConfig(noti.noti_code).btn_title }}
-      </button>
-      <button
-        @click="readNoti(noti, true)"
-        class="item text-sm font-medium"
-      >
-        {{ $t('v1.common.close') }}
-      </button>
+        <div class="text-sm font-semibold truncate">{{ noti.noti_title }}</div>
+        <div class="text-xs truncate">{{ noti.noti_content }}</div>
+      </div>
+      <div class="flex-shrink-0">
+        <button
+          @click="readNoti(noti)"
+          :class="getConfig(noti.noti_code).btn"
+          class="item text-white hover:brightness-90"
+        >
+          {{ getConfig(noti.noti_code).btn_title }}
+        </button>
+        <button
+          @click="readNoti(noti, true)"
+          class="item text-sm font-medium"
+        >
+          {{ $t('v1.common.close') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -40,6 +45,14 @@ import { ToastSingleton } from '@/utils/helper/Alert/Toast'
 import { useRouter } from 'vue-router'
 
 import type { NotiInfo } from '@/service/interface/app/billing'
+
+const $props = withDefaults(
+  defineProps<{
+    /**các dạng noti muốn hiển thị */
+    codes: string[]
+  }>(),
+  {}
+)
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
@@ -65,6 +78,14 @@ const DEFAULT_SETTING = {
   border: 'border-slate-200',
   btn: 'bg-slate-700',
   text: 'text-black',
+  btn_title: $t('v1.view.main.dashboard.org.menu.more'),
+}
+/**đạt giới hạn, sắp đạt giới hạn, ... */
+const QUOTA_SETTING = {
+  bg: 'bg-blue-100',
+  border: 'border-blue-200',
+  btn: 'bg-blue-500',
+  text: 'text-blue-700',
   btn_title: $t('v1.view.main.dashboard.org.menu.more'),
 }
 /**thiết lập UI của thông báo */
@@ -98,13 +119,9 @@ const SETTINGS: Record<string, ISetting> = {
   /**đã đá trang */
   REMOVE_PAGE: DEFAULT_SETTING,
   /**sắp đạt giới hạn AI */
-  ALMOST_REACH_QUOTA_AI: {
-    bg: 'bg-blue-100',
-    border: 'border-blue-200',
-    btn: 'bg-blue-500',
-    text: 'text-blue-700',
-    btn_title: $t('v1.view.main.dashboard.org.menu.more'),
-  },
+  ALMOST_REACH_QUOTA_AI: QUOTA_SETTING,
+  /**đã đạt giới hạn AI */
+  LOCK_FEATURE: QUOTA_SETTING,
   /**sắp hết hạn gói */
   ALMOST_EXPIRED_PACKAGE: {
     bg: 'bg-red-100',
@@ -143,15 +160,8 @@ async function getNoti() {
     list_noti.value = await get_noti(
       orgStore.selected_org_id,
       3,
-      {
-        $exists: false,
-      },
-      [
-        'ALMOST_EXPIRED_PACKAGE',
-        'TOPUP_WAITING',
-        'ALMOST_REACH_QUOTA_AI',
-        'CHANGE_PAGE_OWNER',
-      ]
+      { $exists: false },
+      $props.codes
     )
   } catch (e) {
     // thông báo lỗi
@@ -204,6 +214,9 @@ async function readNoti(noti?: NotiInfo, is_close?: boolean) {
           $router.push('/dashboard/org/pay/info')
           break
         case 'ALMOST_EXPIRED_PACKAGE':
+          $router.push('/dashboard/org/pay/info')
+          break
+        case 'LOCK_FEATURE':
           $router.push('/dashboard/org/pay/info')
           break
 
