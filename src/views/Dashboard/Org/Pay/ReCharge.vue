@@ -51,7 +51,10 @@
                     )
                   }}
                 </div>
-                <div class="text-sm font-semibold text-green-600">
+                <div
+                  v-if="verify_voucher?.is_verify"
+                  class="text-sm font-semibold text-green-600"
+                >
                   <template
                     v-if="amount === String(verify_voucher?.txn_amount)"
                   >
@@ -97,7 +100,17 @@
                   v-else
                   class="py-2 px-3 rounded-md border w-full"
                 >
-                  {{ voucher_code }}
+                  <span v-if="voucher_code">{{ voucher_code }}</span>
+                  <span
+                    v-else
+                    class="text-slate-500"
+                  >
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.voucher.empty'
+                      )
+                    }}
+                  </span>
                 </div>
                 <div
                   v-if="verify_voucher?.is_verify === false"

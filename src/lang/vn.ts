@@ -1017,6 +1017,7 @@ const source: Language = {
                   wrong: 'Mã không hợp lệ, vui lòng kiểm tra lại',
                   origin_amount: 'Số tiền nạp thực tế:',
                   amount: 'Số tiền thực nhận:',
+                  empty: 'Không có mã giảm giá',
                 },
                 invoice: 'Hóa đơn',
                 no_invoice: 'Không xuất hóa đơn',
