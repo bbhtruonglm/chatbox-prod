@@ -27,7 +27,11 @@
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
             <template
-              v-else-if="orgStore.isTrialPack() || orgStore.isProPack()"
+              v-else-if="
+                orgStore.isTrialPack() ||
+                orgStore.isProPack() ||
+                orgStore.isBusinessPack()
+              "
             >
               1
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
