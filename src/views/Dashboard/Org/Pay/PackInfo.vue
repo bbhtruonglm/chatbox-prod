@@ -33,7 +33,7 @@
                 orgStore.isBusinessPack()
               "
             >
-              1
+              {{ orgStore.selected_org_info?.org_package?.org_months || 1 }}
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
                 ({{ $t('v1.view.main.dashboard.org.pay.next_pay') }}

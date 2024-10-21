@@ -1,5 +1,5 @@
-import type { ChatbotUserInfo } from "./chatbot_user"
-import type { PageInfo } from "./page"
+import type { ChatbotUserInfo } from './chatbot_user'
+import type { PageInfo } from './page'
 
 /**tổ chức */
 export interface OrgInfo {
@@ -51,6 +51,10 @@ export interface OrgInfo {
   }
   /**thông số về gói hiện tại của tổ chức */
   org_package?: {
+    /**số tháng của gói hiện tại */
+    org_months?: number
+    /**đã giảm giá 1 lần rồi */
+    org_has_discounted?: boolean
     /**loại gói của tổ chức */
     org_package_type?: OrgPackage
     /**phần trăm giảm giá khi tổ chức mua gói */
@@ -231,7 +235,6 @@ export type PaymentMethod =
  */
 export type BillingType = 'DEPOSIT' | 'WITHDRAW' | 'PAYMENT'
 
-
 /** --------------------- NOTI --------------------- */
 /**thông tin của 1 thông báo */
 export interface NotiInfo {
@@ -257,7 +260,6 @@ export interface NotiInfo {
   /**thời gian thông báo được tạo */
   createdAt?: string
 }
-
 
 /**đầu vào API tạo mã qr */
 export interface QrCodeInput {

@@ -35,7 +35,7 @@ interface EnvInfo {
       bbh: string
     }
     /**trang quản trị bbh */
-    bbh_admin?: string
+    bbh_admin: string
   }
   /**cài đặt cho riêng facebook */
   facebook: {

@@ -10,7 +10,7 @@
       <li class="pl-2">
         {{ $t('v1.view.main.dashboard.org.pay.upgrade.price') }}
         <span
-          v-if="!is_full_year"
+          v-if="!is_full_year || orgStore.hasDiscount()"
           class="font-bold"
         >
           {{ content?.price }}
@@ -105,7 +105,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useOrgStore } from '@/stores';
 import type { IContent } from './type'
+
+const orgStore = useOrgStore()
 
 const $props = withDefaults(
   defineProps<{

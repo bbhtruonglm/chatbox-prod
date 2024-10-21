@@ -43,7 +43,9 @@
                   >
                     <span class="text-green-600">
                       {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.discount')
+                        $t('v1.view.main.dashboard.org.pay.upgrade.year', {
+                          discount: orgStore.hasDiscount() ? '' : '(-40%)',
+                        })
                       }}
                     </span>
                   </Toggle>
@@ -106,7 +108,9 @@
                   >
                     <span class="text-green-600">
                       {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.discount')
+                        $t('v1.view.main.dashboard.org.pay.upgrade.year', {
+                          discount: orgStore.hasDiscount() ? '' : '(-40%)',
+                        })
                       }}
                     </span>
                   </Toggle>
@@ -264,10 +268,10 @@ async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
   try {
     /**
      * tính toán gói cần mua
-     * - nếu chưa mua bao giờ thì cho dùng thử trước
-     * - nếu đã dùng thử rồi thì mua gói pro
+     * - nếu chưa mua bao giờ mà mua gói PRO, thì cho dùng thử trước
+     * - nếu đã dùng thử rồi thì mua đúng
      */
-    const PACKAGE = orgStore.hasTrial() ? pack : 'TRIAL'
+    const PACKAGE = !orgStore.hasTrial() && pack === 'PRO' ? 'TRIAL' : pack
 
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
@@ -276,23 +280,16 @@ async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
     if (!WALLET?.wallet_id)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
-    // TODO nếu ví không đủ tiền thì redirect qua trang nạp tiền
-
-    // nếu chọn mua gói pro 1 năm thì kích hoạt giảm giá
-    if (is_full_year.value)
-      try {
-        // thử kích hoạt giảm giá
-        await active_discount(
-          orgStore.selected_org_id,
-          WALLET?.wallet_id,
-          PACKAGE
-        )
-      } catch (e) {
-        // TODO nếu thất bại thì tạm thời không xử lý gì
-      }
+    /**số tháng mua */
+    const MONTHS = is_full_year.value ? 12 : 1
 
     // yêu cầu mua gói
-    await purchase_package(orgStore.selected_org_id, WALLET?.wallet_id, PACKAGE)
+    await purchase_package(
+      orgStore.selected_org_id,
+      WALLET?.wallet_id,
+      PACKAGE,
+      MONTHS
+    )
 
     // thông báo mua gói thành công
     toast('success', $t('v1.view.main.dashboard.org.pay.upgrade.success'))

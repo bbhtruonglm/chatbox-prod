@@ -1001,6 +1001,7 @@ const source: Language = {
                 contact: 'Liên hệ',
                 staff: 'Nhâm sự:',
                 discount: 'Theo Năm (-40%)',
+                year: 'Theo Năm {discount}',
                 company: 'Doanh nghiệp',
                 success: 'Thanh toán thành công',
               },
