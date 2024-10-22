@@ -20,7 +20,7 @@ export class Locale implements ILocale {
   /**tên cookie */
   readonly #COOKIE_NAME = 'locale'
   /**locale mặc định */
-  readonly #DEFAULT_LOCALE = 'en'
+  readonly #DEFAULT_LOCALE = 'vn'
 
   public get(): string {
     // đọc giá trị locale từ cookie
