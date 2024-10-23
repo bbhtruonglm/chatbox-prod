@@ -15,5 +15,11 @@ export const setItem = (
 export const getItem = (
     (
         key, prefix = $env.local_storage.prefix
-    ) => JSON.parse(localStorage.getItem(`${prefix}${key}`) as string)
+    ) => {
+        try {
+            return JSON.parse(localStorage.getItem(`${prefix}${key}`) as string)
+        } catch (e) {
+            
+        }
+    }
 ) as (key: string, prefix?: string) => any

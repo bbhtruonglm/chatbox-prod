@@ -8,6 +8,7 @@ import { toastError } from '@/service/helper/alert'
 import type { CbError } from '@/service/interface/function'
 import { BillingAppOrganization } from '@/utils/api/Billing'
 import { getCurrentOrgInfo } from '@/service/function'
+import { getItem } from '@/service/helper/localStorage'
 
 /**load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
@@ -22,6 +23,9 @@ export function initRequireData() {
 
   /**đọc các thông tin của user hiện tại đang đăng nhập */
   function getMeChatbotUser() {
+    // nếu chưa đăng nhập thì thôi
+    if (!getItem('access_token')) return
+
     flow(
       [
         // * call api
@@ -46,6 +50,9 @@ export function initRequireData() {
   /**lấy danh sách các tổ chức của người dùng này */
   async function getAllOrg() {
     try {
+      // nếu chưa đăng nhập thì thôi
+      if (!getItem('access_token')) return
+
       // lấy danh sách các tổ chức
       orgStore.list_org = await new BillingAppOrganization().readOrg()
 
