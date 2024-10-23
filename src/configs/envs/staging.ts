@@ -26,7 +26,7 @@ const ENV: EnvInfo = {
             retion: 'https://analytic-chatbox-v2.retion.ai/dashboard',
             bbh: 'https://analytic-chatbox-v2.botbanhang.vn/dashboard'
         },
-        bbh_admin: 'https://bbh-dashboard.vercel.app'
+        bbh_admin: 'https://bbh-dashboard-xi.vercel.app'
     },
     facebook: {
         app_id: '1282108599314861',

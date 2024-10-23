@@ -2,7 +2,15 @@
   <DashboardLayout class_content="flex flex-col gap-3 relative">
     <template #menu><Menu /></template>
     <template #content>
-      <HotAlert />
+      <HotAlert
+        :codes="[
+          'ALMOST_EXPIRED_PACKAGE',
+          'TOPUP_WAITING',
+          'ALMOST_REACH_QUOTA_AI',
+          'CHANGE_PAGE_OWNER',
+          'LOCK_FEATURE',
+        ]"
+      />
       <div class="flex justify-between flex-shrink-0">
         <Search
           class="w-72"
@@ -17,7 +25,10 @@
       >
         <Loading class="mx-auto" />
       </div>
-      <EmptyPage v-if="!pageStore.countActivePage()" tab="PAGE" />
+      <EmptyPage
+        v-if="!pageStore.countActivePage()"
+        tab="PAGE"
+      />
       <div
         v-else
         :class="{
@@ -59,7 +70,12 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useConnectPageStore, useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import {
+  useConnectPageStore,
+  useOrgStore,
+  usePageStore,
+  useSelectPageStore,
+} from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_LOAD_LIST_PAGE_FUNCT,
@@ -77,7 +93,7 @@ import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
-import HotAlert from '@/views/Dashboard/SelectPage/HotAlert.vue'
+import HotAlert from '@/components/HotAlert.vue'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
@@ -102,10 +118,13 @@ const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 computed(() => selectPageStore.current_menu)
 
 // nếu thay đổi tổ chức, thì chọn lại danh sách trang
-watch(() => orgStore.selected_org_id, () => {
-  // load danh sách page
-  loadListPage?.(orgStore.selected_org_id)
-})
+watch(
+  () => orgStore.selected_org_id,
+  () => {
+    // load danh sách page
+    loadListPage?.(orgStore.selected_org_id)
+  }
+)
 
 onMounted(() => {
   /**

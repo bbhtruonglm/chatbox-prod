@@ -43,7 +43,9 @@
                   >
                     <span class="text-green-600">
                       {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.discount')
+                        $t('v1.view.main.dashboard.org.pay.upgrade.year', {
+                          discount: orgStore.hasDiscount() ? '' : '(-40%)',
+                        })
                       }}
                     </span>
                   </Toggle>
@@ -106,7 +108,9 @@
                   >
                     <span class="text-green-600">
                       {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.discount')
+                        $t('v1.view.main.dashboard.org.pay.upgrade.year', {
+                          discount: orgStore.hasDiscount() ? '' : '(-20%)',
+                        })
                       }}
                     </span>
                   </Toggle>
@@ -194,6 +198,9 @@ const CONTENTS: Record<string, IContent> = {
     price_discount:
       '<span class="line-through font-normal">480.000</span> <span class="text-green-700">288,000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '3.456.000',
+    }),
     page: '5',
     member: '10',
     ai_text: '1.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
@@ -211,16 +218,19 @@ const CONTENTS: Record<string, IContent> = {
   /**gói doanh nghiệp */
   COMPANY: {
     title: $t('v1.view.main.dashboard.org.pay.business'),
-    price: '1.999.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price: '2.600.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
     price_discount:
-      '<span class="line-through font-normal">1.999.000</span> <span class="text-green-700">1,199,400</span> / ' +
+      '<span class="line-through font-normal">2.600.000</span> <span class="text-green-700">2.080.000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '24.960.000',
+    }),
     page: '20',
     member: '30',
-    ai_text: '10.000.000+ ' + $t('v1.view.main.dashboard.org.pay.text'),
-    ai_image: '10.000+ ' + $t('v1.view.main.dashboard.org.pay.image'),
-    ai_sound: '1.000+ ' + $t('v1.view.main.dashboard.org.pay.minute'),
-    fau: '100.000+ ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    ai_text: '10.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '10.000 ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '1.000 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '100.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
     client: $t('v1.view.main.dashboard.org.pay.unlimited'),
     chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
     ai_feature: $t('v1.view.main.dashboard.org.pay.all'),
@@ -264,10 +274,10 @@ async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
   try {
     /**
      * tính toán gói cần mua
-     * - nếu chưa mua bao giờ thì cho dùng thử trước
-     * - nếu đã dùng thử rồi thì mua gói pro
+     * - nếu chưa mua bao giờ mà mua gói PRO, thì cho dùng thử trước
+     * - nếu đã dùng thử rồi thì mua đúng
      */
-    const PACKAGE = orgStore.hasTrial() ? pack : 'TRIAL'
+    const PACKAGE = !orgStore.hasTrial() && pack === 'PRO' ? 'TRIAL' : pack
 
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
@@ -276,23 +286,16 @@ async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
     if (!WALLET?.wallet_id)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
-    // TODO nếu ví không đủ tiền thì redirect qua trang nạp tiền
-
-    // nếu chọn mua gói pro 1 năm thì kích hoạt giảm giá
-    if (is_full_year.value)
-      try {
-        // thử kích hoạt giảm giá
-        await active_discount(
-          orgStore.selected_org_id,
-          WALLET?.wallet_id,
-          PACKAGE
-        )
-      } catch (e) {
-        // TODO nếu thất bại thì tạm thời không xử lý gì
-      }
+    /**số tháng mua */
+    const MONTHS = is_full_year.value ? 12 : 1
 
     // yêu cầu mua gói
-    await purchase_package(orgStore.selected_org_id, WALLET?.wallet_id, PACKAGE)
+    await purchase_package(
+      orgStore.selected_org_id,
+      WALLET?.wallet_id,
+      PACKAGE,
+      MONTHS
+    )
 
     // thông báo mua gói thành công
     toast('success', $t('v1.view.main.dashboard.org.pay.upgrade.success'))

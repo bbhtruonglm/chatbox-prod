@@ -135,7 +135,8 @@ export const create_txn = async (
 export const purchase_package = async (
   org_id: string,
   wallet_id: string,
-  package_type: OrgPackage
+  package_type: OrgPackage,
+  months: number
 ): Promise<TransactionInfo> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/wallet/purchase_package`,
@@ -143,6 +144,7 @@ export const purchase_package = async (
       org_id,
       wallet_id,
       package_type,
+      months
     },
   })
 

@@ -141,6 +141,10 @@ export const useOrgStore = defineStore('org_store', () => {
     // Tính số ngày giữa hai ngày
     return differenceInDays(END_DATE, new Date())
   }
+  /**tổ chức đã giảm giá lần đầu rồi */
+  function hasDiscount() {
+    return selected_org_info.value?.org_package?.org_has_discounted
+  }
 
   return {
     is_loading,
@@ -157,6 +161,7 @@ export const useOrgStore = defineStore('org_store', () => {
     hasTrial,
     calcNextPay,
     calcDayRemaining,
+    hasDiscount,
   }
 })
 

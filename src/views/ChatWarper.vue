@@ -4,6 +4,10 @@
     @drop="onDropFile"
     class="h-full w-full flex relative py-3 px-4 gap-4"
   >
+    <HotAlert
+      :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE']"
+      class="absolute top-3 left-1/2 -translate-x-1/2 w-2/3 z-10"
+    />
     <Menu />
     <LeftBar />
     <CenterContent />
@@ -14,6 +18,7 @@
 import { initRequireData } from '@/views/composable'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { checkPricingValid } from '@/service/helper/pricing'
+import HotAlert from '@/components/HotAlert.vue'
 import { useRouter } from 'vue-router'
 import {
   useChatbotUserStore,
@@ -239,7 +244,7 @@ function getTokenOfWidget(
     ?.map(widget => {
       list_app_installed_id[widget._id] = widget.app_id
     })
-  
+
   create_token_app_installed(
     {
       page_id: PAGE_ID,
@@ -256,7 +261,7 @@ function getTokenOfWidget(
         ),
         current_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
         current_staff_name: chatbotUserStore.chatbot_user?.full_name,
-        org_id: orgStore.selected_org_id
+        org_id: orgStore.selected_org_id,
       },
     },
     (e, r: any) => {
