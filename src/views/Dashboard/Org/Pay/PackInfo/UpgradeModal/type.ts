@@ -8,6 +8,8 @@ export interface IContent {
   price: string
   /**Giá giảm giá liên quan đến nội dung. */
   price_discount?: string
+  /**tương đương 1 năm */
+  price_discount_year?: string
   /**Thông tin trang liên quan đến nội dung. */
   page: string
   /**Số lượng thành viên bao gồm trong nội dung. */

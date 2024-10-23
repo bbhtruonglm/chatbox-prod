@@ -109,7 +109,7 @@
                     <span class="text-green-600">
                       {{
                         $t('v1.view.main.dashboard.org.pay.upgrade.year', {
-                          discount: orgStore.hasDiscount() ? '' : '(-40%)',
+                          discount: orgStore.hasDiscount() ? '' : '(-20%)',
                         })
                       }}
                     </span>
@@ -198,6 +198,9 @@ const CONTENTS: Record<string, IContent> = {
     price_discount:
       '<span class="line-through font-normal">480.000</span> <span class="text-green-700">288,000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '3.456.000',
+    }),
     page: '5',
     member: '10',
     ai_text: '1.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
@@ -215,16 +218,19 @@ const CONTENTS: Record<string, IContent> = {
   /**gói doanh nghiệp */
   COMPANY: {
     title: $t('v1.view.main.dashboard.org.pay.business'),
-    price: '1.999.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price: '2.600.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
     price_discount:
-      '<span class="line-through font-normal">1.999.000</span> <span class="text-green-700">1,199,400</span> / ' +
+      '<span class="line-through font-normal">2.600.000</span> <span class="text-green-700">2.080.000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '24.960.000',
+    }),
     page: '20',
     member: '30',
-    ai_text: '10.000.000+ ' + $t('v1.view.main.dashboard.org.pay.text'),
-    ai_image: '10.000+ ' + $t('v1.view.main.dashboard.org.pay.image'),
-    ai_sound: '1.000+ ' + $t('v1.view.main.dashboard.org.pay.minute'),
-    fau: '100.000+ ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    ai_text: '10.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '10.000 ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '1.000 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '100.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
     client: $t('v1.view.main.dashboard.org.pay.unlimited'),
     chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
     ai_feature: $t('v1.view.main.dashboard.org.pay.all'),

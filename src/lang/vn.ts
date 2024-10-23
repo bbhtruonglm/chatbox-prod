@@ -914,6 +914,8 @@ const source: Language = {
               second: 'giây',
               minute: 'phút',
               month: 'Tháng',
+              avarage_year: 'Tương đương 1 năm: <b>{amount}</b>',
+              year: 'Năm',
               next_pay: 'Kỳ thanh toán tiếp theo:',
               token: 'token',
               lock: {
