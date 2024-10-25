@@ -145,7 +145,7 @@ const BBH = {
 /**Thông tin chuyển khoản của a Tùng */
 const A_TUNG = {
   bank_bin: 970407,
-  account: 19036252323010,
+  account: 91678999999,
   name: 'Nguyễn Đình Tùng',
   bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
 }
