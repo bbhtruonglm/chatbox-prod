@@ -144,14 +144,14 @@
                   "
                   :disabled="pay_step === 'STEP_2'"
                 />
-                <!-- <Radio
+                <Radio
                   v-model="is_issue_invoice"
                   :value="true"
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
                   "
                   :disabled="pay_step === 'STEP_2'"
-                /> -->
+                />
               </div>
               <div
                 v-if="is_issue_invoice"
@@ -165,15 +165,22 @@
                   }}
                 </div>
                 <div class="font-semibold">
-                  {{ orgStore.selected_org_info?.org_info?.org_company_name }}
-                  -
                   {{
-                    $t(
-                      'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
-                    )
+                    orgStore.selected_org_info?.org_info?.org_company_name ||
+                    orgStore.selected_org_info?.org_info?.org_name
                   }}
-                  :
-                  {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
+                  <template
+                    v-if="orgStore.selected_org_info?.org_info?.org_tax_code"
+                  >
+                    -
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
+                      )
+                    }}
+                    :
+                    {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
+                  </template>
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -254,6 +261,15 @@
                   <TransferInfo
                     :amount="calcBankAmount()"
                     :txn_id="txn_info?.txn_id"
+                    :is_issue_invoice
+                    :is_pay_partner="
+                      verify_voucher?.voucher_is_pay_partner ||
+                      txn_info?.txn_voucher_info?.voucher_is_pay_partner
+                    "
+                    :partner_info="
+                      verify_voucher?.voucher_partner_info ||
+                      txn_info?.txn_voucher_info?.voucher_partner_info
+                    "
                   />
                   <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"

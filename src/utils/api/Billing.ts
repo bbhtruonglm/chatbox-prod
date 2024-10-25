@@ -1,6 +1,6 @@
 import { Botx } from '@/utils/api/Botx'
 
-import type { OrgInfo } from '@/service/interface/app/billing'
+import type { OrgInfo, PaymentInfo } from '@/service/interface/app/billing'
 
 /**gọi API lên server của billing */
 class Billing extends Botx {
@@ -45,6 +45,10 @@ export interface ResponseVerifyVoucher {
   txn_origin_amount?: number
   /**mô tả về mã giảm giá */
   voucher_description?: string
+  /**tiền về đối tác */
+  voucher_is_pay_partner?: boolean
+  /**thông tin đối tác */
+  voucher_partner_info?: PaymentInfo
 }
 
 /**gọi API mã khuyến mại */
