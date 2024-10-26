@@ -52,18 +52,26 @@
                   }}
                 </div>
                 <div
-                  v-if="verify_voucher?.is_verify"
+                  v-if="verify_voucher?.is_verify || txn_info?.txn_voucher_id"
                   class="text-sm font-semibold text-green-600"
                 >
                   <template
-                    v-if="amount === String(verify_voucher?.txn_amount)"
+                    v-if="
+                      amount ===
+                      String(verify_voucher?.txn_amount || txn_info?.txn_amount)
+                    "
                   >
                     {{
                       $t(
                         'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
                       )
                     }}
-                    {{ currency(verify_voucher?.txn_origin_amount) }}
+                    {{
+                      currency(
+                        verify_voucher?.txn_origin_amount ||
+                          txn_info?.txn_amount
+                      )
+                    }}
                   </template>
                   <template
                     v-if="amount === String(verify_voucher?.txn_origin_amount)"
@@ -124,7 +132,10 @@
                   v-else
                   class="text-sm text-green-600"
                 >
-                  {{ verify_voucher?.voucher_description }}
+                  {{
+                    verify_voucher?.voucher_description ||
+                    txn_info?.txn_voucher_info?.voucher_description
+                  }}
                 </div>
               </div>
             </div>
@@ -271,7 +282,7 @@
                       txn_info?.txn_voucher_info?.voucher_partner_info
                     "
                   />
-                  <button
+                  <!-- <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
                     @click="checkPayment"
                     class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
@@ -281,13 +292,7 @@
                         'v1.view.main.dashboard.org.pay.recharge.transfer_info.check'
                       )
                     }}
-                  </button>
-                  <div
-                    v-else
-                    class="py-2 px-4 rounded-md text-sm font-semibold text-green-600 bg-green-200 hover:brightness-90 w-fit"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
-                  </div>
+                  </button> -->
                 </template>
                 <template v-else> Tính năng đang phát triển! </template>
               </template>

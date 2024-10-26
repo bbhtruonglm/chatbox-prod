@@ -825,6 +825,8 @@ const source: Language = {
           },
           org: {
             permision_denied: 'Bạn không có quyền quản trị tổ chức này',
+            lock_free_page_over_quota:
+              'Tổ chức đã đạt giới hạn miễn phí, vui lòng nâng cấp gói cước hoặc đợi đến tháng sau',
             menu: {
               extend: 'Gia hạn',
               more: 'Xem chi tiết',
@@ -892,6 +894,7 @@ const source: Language = {
               support: 'Hỗ trợ',
               client: 'Số khách hàng',
               fau: 'Kịch bản kích hoạt',
+              new_client: 'Số khách hàng mới',
               ai_text: 'AI văn bản',
               ai_image: 'AI hình ảnh',
               ai_sound: 'AI âm thanh',
@@ -1042,16 +1045,19 @@ const source: Language = {
                   content: 'Nội dung chuyển khoản',
                   bank: 'Ngân hàng thụ hưởng',
                   qr: 'Hoặc quét mã QR bằng ứng dụng ngân hàng',
-                  guild:
-                    'Sau khi Quý khách thanh toán chuyển khoản, hãy ấn nút <b>"KIỂM TRA THANH TOÁN"</b> bên dưới để hệ thống tự động xác nhận.',
+                  guild_1:
+                    'Sau khi Quý khách đã thanh toán, hệ thống sẽ tự động kích hoạt sau 1-2 phút.',
+                  support: 'Hỗ trợ thanh toán',
+                  guild_2:
+                    'Quý khách có thể liên hệ với Bot Bán Hàng khi thanh toán thành công nhưng hệ thống chưa kích hoạt.',
                   hint: 'Lưu ý',
                   hint_1:
                     'Vui lòng đọc ký hướng dẫn sử dụng Chuyển khoản nhanh tại',
                   hint_2:
-                    'Bot Bán Hàng không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản',
-                  hint_3: 'Vui lòng giữ biên lai để đối chứng khi cần thiết',
+                    'Bot Bán Hàng không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản.',
+                  hint_3: 'Vui lòng giữ biên lai để đối chứng khi cần thiết.',
                   hint_4:
-                    'Quý khách vui lòng không chỉnh sửa số tài khoản và tên tài khoản thụ hưởng được cung cấp',
+                    'Quý khách vui lòng không chỉnh sửa số tài khoản và tên tài khoản thụ hưởng được cung cấp.',
                   here: 'Đây',
                   check: 'Kiểm tra thanh toán',
                 },

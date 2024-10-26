@@ -80,10 +80,21 @@
       />
     </div>
   </div>
-  <div
-    v-html="$t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild')"
-    class="text-slate-700 w-[674px]"
-  />
+  <div class="text-slate-700">
+    <div>
+      {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild_1') }}
+    </div>
+    <div>
+      {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild_2') }}
+    </div>
+  </div>
+  <a
+    :href="BBH_PAGE_MESS"
+    target="_blank"
+    class="text-white bg-blue-600 w-fit py-2 px-4 rounded-md"
+  >
+    {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.support') }}
+  </a>
   <div class="text-sm py-3 px-5 rounded-lg bg-yellow-50 w-[572px]">
     <div class="font-semibold">
       {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.hint') }}:
@@ -112,6 +123,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
 import type { PaymentInfo } from '@/service/interface/app/billing'
 

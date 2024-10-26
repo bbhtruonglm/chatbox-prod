@@ -1,6 +1,13 @@
 <template>
   <div class="h-full overflow-hidden rounded-xl relative">
     <div
+      v-if="isLockPage()"
+      class="text-sm text-red-600 text-center"
+    >
+      {{ $t('v1.view.main.dashboard.org.lock_free_page_over_quota') }}
+    </div>
+    <div
+      v-else
       @scroll="onScrollMessage"
       id="list-message"
       class="pt-14 pb-5 px-4 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-xl"
@@ -130,11 +137,12 @@ import {
   useMessageStore,
   useCommonStore,
   useChatbotUserStore,
+  useOrgStore,
 } from '@/stores'
 import { flow } from '@/service/helper/async'
 import { read_message } from '@/service/api/chatbox/n4-service'
 import { toastError } from '@/service/helper/alert'
-import { scrollToBottomMessage } from '@/service/function'
+import { getPageInfo, scrollToBottomMessage } from '@/service/function'
 import { debounce, findLastIndex, remove, size } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
@@ -170,6 +178,7 @@ const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
+const orgStore = useOrgStore()
 
 /**danh sách tin nhắn hiện tại */
 // const list_message = ref<MessageInfo[]>([])
@@ -238,6 +247,24 @@ onUnmounted(() => {
   )
 })
 
+/**có khoá truy cập của trang này không */
+function isLockPage(): boolean {
+  // chỉ lock với gói free
+  if (!orgStore.isFreePack()) return false
+
+  // nếu tổ chức bị lock thì lock toàn bộ trang
+  if (orgStore.selected_org_info?.org_package?.org_is_lock_client) return true
+
+  // nếu page bị lock từ trước, thì cũng lock
+  if (
+    getPageInfo(conversationStore.select_conversation?.fb_page_id)
+      ?.is_lock_client
+  )
+    return true
+
+  // tổ chức free + page chưa bị lock -> ok
+  return false
+}
 /**kiểm tra xem tin nhắn này có phải là tin nhắn cuối cùng của nhân viên gửi không */
 function isLastPageMessage(message: MessageInfo, index: number) {
   // chỉ tính tin nhắn của trang
