@@ -160,6 +160,16 @@ export interface WalletInfo {
   wallet_balance?: number
 }
 
+/**dữ liệu ví, tiêm thêm một số dữ liệu */
+export interface ICustomWallet extends WalletInfo {
+  /**số dư credit */
+  credit_balance?: number
+  /**tổng số dư */
+  estimate_balance?: number
+  /**tổng chi phí */
+  extra_cost?: number
+}
+
 /**Thông tin chuyển khoản */
 export interface PaymentInfo {
   /**Mã ngân hàng */

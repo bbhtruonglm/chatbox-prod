@@ -17,7 +17,7 @@
           {{ orgStore.selected_org_info?.org_info?.org_name }}
         </div>
         <div class="text-2xl font-bold">
-          {{ currency(wallet_info?.wallet_balance) || 0 }}
+          {{ currency(wallet_info?.estimate_balance) || 0 }}
         </div>
       </div>
     </template>
@@ -33,13 +33,13 @@ import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
-import type { WalletInfo } from '@/service/interface/app/billing'
+import type { ICustomWallet } from '@/service/interface/app/billing'
 import { toastError } from '@/service/helper/alert'
 
 const orgStore = useOrgStore()
 
 /** Thông tin ví */
-const wallet_info = ref<WalletInfo>()
+const wallet_info = ref<ICustomWallet>()
 
 // đọc dữ liệu ví khi component được tạo
 onMounted(readWallet)
