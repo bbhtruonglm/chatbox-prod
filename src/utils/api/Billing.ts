@@ -1,6 +1,10 @@
 import { Botx } from '@/utils/api/Botx'
 
-import type { OrgInfo, PaymentInfo } from '@/service/interface/app/billing'
+import type {
+  OrgInfo,
+  PaymentInfo,
+  TransactionInfo,
+} from '@/service/interface/app/billing'
 
 /**gọi API lên server của billing */
 class Billing extends Botx {
@@ -75,5 +79,38 @@ export class BillingAppVoucher extends Billing {
     voucher_code: string
   ): Promise<ResponseVerifyVoucher> {
     return this.post('verify_voucher', { voucher_code, txn_amount })
+  }
+}
+
+/**gọi API giao dịch */
+export class BillingAppTxn extends Billing {
+  constructor() {
+    // gọi API lên module billing
+    super(`app/transaction`)
+
+    // tự động nạp id tổ chức đang chọn
+    this.initSelectedOrgId()
+  }
+
+  /**gọi api post */
+  protected post(path: string, body?: Record<string, any>): Promise<any> {
+    return super.post(path, {
+      org_id: this.org_id,
+      ...body,
+    })
+  }
+
+  /**
+   * kiểm tra giao dịch đã thành công chưa
+   * @param txn_id id giao dịch
+   * @param txn_amount số tiền giao dịch
+   * @param txn_currency loại tiền
+   */
+  public async checkTxn(
+    txn_id: string,
+    txn_amount: number,
+    txn_currency?: string
+  ): Promise<TransactionInfo | undefined> {
+    return this.post('check_txn', { txn_id, txn_amount, txn_currency })
   }
 }

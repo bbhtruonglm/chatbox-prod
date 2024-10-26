@@ -173,6 +173,8 @@ export interface PaymentInfo {
 }
 /**thông tin giao dịch */
 export interface TransactionInfo {
+  /**loại tiền */
+  txn_currency?: string
   /**id của giao dịch */
   txn_id?: string
   /**tổ chức thực hiện giao dịch này */

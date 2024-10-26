@@ -311,7 +311,7 @@
   </CardItem>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cleave from 'vue-cleave-component'
 import { useOrgStore } from '@/stores'
@@ -333,6 +333,7 @@ import WalletIcon from '@/components/Icons/Wallet.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
 import {
+  BillingAppTxn,
   BillingAppVoucher,
   type ResponseVerifyVoucher,
 } from '@/utils/api/Billing'
@@ -390,10 +391,56 @@ const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 const txn_info = ref<TransactionInfo>()
 /**dữ liệu xác thực mã khuyến mại */
 const verify_voucher = ref<ResponseVerifyVoucher>({})
+/**id của time out check giao dịch */
+const check_txn_timeout_id = ref<number>()
 
 // khởi tạo dữ liệu của giao dịch đã chọn nếu có
 onMounted(initSelectedTxn)
 
+// kiểm tra giao dịch đã thành công chưa
+watch(() => txn_info.value?.txn_id, checkTxnSuccess)
+// xoá time out check giao dịch
+onUnmounted(() => clearInterval(check_txn_timeout_id.value))
+
+/**kiẻm tra xem giao dich đã thành công chưa */
+function checkTxnSuccess() {
+  // chỉ kiểm tra giao dịch mới tạo
+  if (txn_info.value?.txn_status !== 'PENDING') return
+
+  /**bước nhảy */
+  const TIMER = 1000 * 20 // 20s 1 lần
+
+  // kiểm tra giao dịch liên tục, sau 20s sẽ chạy lần đầu tiên
+  check_txn_timeout_id.value = setInterval(async () => {
+    try {
+      // nếu không có id giao dịch thì dừng
+      if (!txn_info.value?.txn_id || !txn_info.value?.txn_amount) throw 'NO_TXN'
+
+      /**thời gian tạo giao dịch */
+      const CREATED_AT = new Date(txn_info.value?.createdAt || 0).getTime()
+      /**thời gian kiểm tra tối đa */
+      const MAX_CHECK_TIME = 1000 * 60 * 30 // 30 phút
+
+      // nếu quá thời gian kiểm tra thì dừng
+      if (Date.now() - CREATED_AT > MAX_CHECK_TIME) throw 'MAX_CHECK_TIME'
+
+      /**dữ liệu giao dịch */
+      const TXN = await new BillingAppTxn().checkTxn(
+        txn_info.value?.txn_id,
+        txn_info.value?.txn_amount,
+        txn_info.value?.txn_currency
+      )
+
+      // nếu không có giao dịch thì check lại sau
+      if (!TXN) return
+
+      // cập nhật thông tin giao dịch
+      txn_info.value = TXN
+    } catch (e) {
+      clearInterval(check_txn_timeout_id.value)
+    }
+  }, TIMER)
+}
 /**tính ra số tiền chính xác cần quét qr */
 function calcBankAmount(): string {
   // nếu không có mã giảm giá thì thôi
