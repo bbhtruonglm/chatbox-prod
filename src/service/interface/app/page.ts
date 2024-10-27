@@ -36,6 +36,8 @@ export interface PageInfo {
     display_label_type?: 'ICON' | 'ICON_TOOLTIP' | 'FULL'
     /**id của page gốc được kết nối */
     page_id?: string
+    /**trang có bị khoá tính năng khách hàng (không cho xem tin nhắn) không */
+    is_lock_client?: boolean
 }
 
 export interface PageData {

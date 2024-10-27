@@ -160,8 +160,31 @@ export interface WalletInfo {
   wallet_balance?: number
 }
 
+/**dữ liệu ví, tiêm thêm một số dữ liệu */
+export interface ICustomWallet extends WalletInfo {
+  /**số dư credit */
+  credit_balance?: number
+  /**tổng số dư */
+  estimate_balance?: number
+  /**tổng chi phí */
+  extra_cost?: number
+}
+
+/**Thông tin chuyển khoản */
+export interface PaymentInfo {
+  /**Mã ngân hàng */
+  bank_bin: number
+  /**Số tài khoản */
+  account: number
+  /**Tên chủ tài khoản */
+  name: string
+  /**Tên ngân hàng */
+  bank: string
+}
 /**thông tin giao dịch */
 export interface TransactionInfo {
+  /**loại tiền */
+  txn_currency?: string
   /**id của giao dịch */
   txn_id?: string
   /**tổ chức thực hiện giao dịch này */
@@ -195,10 +218,71 @@ export interface TransactionInfo {
   /**id của mã khuyển mại được kích hoạt cho giao dịch nạp tiền này */
   txn_voucher_id?: string
   /**snap lại dữ liệu của mã khuyến mại tại thời điểm tạo */
-  txn_voucher_info?: {
-    /**tên mã khuyến mại */
-    voucher_code?: string
-  }
+  txn_voucher_info?: IVoucher
+}
+/**dữ liệu đính kèm nếu mã theo phạm vi nhân viên */
+export interface IStaffInfo {
+  /**id doanh nghiệp */
+  bm_id?: string
+  /**id chi nhánh */
+  bu_id?: string
+}
+/**giao diện dữ liệu mã giảm giá */
+export interface IVoucher {
+  /**tiền khi nạp mà có voucher này sẽ về stk của đổi tác */
+  voucher_is_pay_partner?: boolean
+  /**thông tin tài khoản của đối tác này */
+  voucher_partner_info?: PaymentInfo
+  /**id của voucher này */
+  voucher_id?: string
+  /**phạm vi của mã này với khách hàng */
+  client_id?: string
+  /**phạm vi của mã này với nhân viên, đối tác */
+  staff_id?: string
+  /**id của đối tác mà id nhân viên đại diện */
+  affiliate_id?: string
+  /**dữ liệu đính kèm nếu mã theo phạm vi nhân viên */
+  voucher_staff_info?: IStaffInfo
+  /**phạm vi của mã này với quốc gia */
+  voucher_country?: string
+  /**phạm vi của mã này với domain */
+  voucher_domain?: string
+  /**ngày bắt đầu áp dụng mã */
+  voucher_start_date?: Date
+  /**ngày kết thúc áp dụng mã */
+  voucher_end_date?: Date
+  /**số tiền thấp nhất để có thể áp dung mã này */
+  voucher_min_amount?: number
+  /**số tiền cao nhất để có thể áp dung mã này */
+  voucher_max_amount?: number
+  /**tên mã giảm giá */
+  voucher_code?: string
+  /**mô tả về mã giảm giá */
+  voucher_description?: string
+  /**đơn vị tiền tệ */
+  voucher_currency?: string
+  /**mã có kích hoạt không */
+  voucher_is_active?: boolean
+  /**số lần áp dụng mã trên 1 khách hàng */
+  voucher_max_use_per_client?: number
+  /**giá trị của mã này */
+  voucher_value?: number
+  /**loại mã khuyến mại */
+  voucher_type?: 'PERCENT' | 'AMOUNT'
+  /**tác dụng của mã này là tăng hay giảm */
+  voucher_effect?: 'INCREASE' | 'DECREASE'
+  /**
+   * số thời gian mã có hiệu lực tính từ lúc người dùng tạo tài khoản mới
+   * tính theo milisecond
+   * @example 1000 * 60 * 60 * 24 * 3 = 3 ngày
+   */
+  voucher_max_time?: number
+  /**thời gian tối đa mà credit được tạo từ voucher này có thể sử dụng */
+  voucher_credit_max_time?: number
+  /**tổng số mã tối đa có thể sử dụng */
+  voucher_max_use?: number
+  /**số lần mã này đã được dùng */
+  voucher_current_use?: number
 }
 
 /**

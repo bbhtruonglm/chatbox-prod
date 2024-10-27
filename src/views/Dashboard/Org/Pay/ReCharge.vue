@@ -52,18 +52,26 @@
                   }}
                 </div>
                 <div
-                  v-if="verify_voucher?.is_verify"
+                  v-if="verify_voucher?.is_verify || txn_info?.txn_voucher_id"
                   class="text-sm font-semibold text-green-600"
                 >
                   <template
-                    v-if="amount === String(verify_voucher?.txn_amount)"
+                    v-if="
+                      amount ===
+                      String(verify_voucher?.txn_amount || txn_info?.txn_amount)
+                    "
                   >
                     {{
                       $t(
                         'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
                       )
                     }}
-                    {{ currency(verify_voucher?.txn_origin_amount) }}
+                    {{
+                      currency(
+                        verify_voucher?.txn_origin_amount ||
+                          txn_info?.txn_amount
+                      )
+                    }}
                   </template>
                   <template
                     v-if="amount === String(verify_voucher?.txn_origin_amount)"
@@ -124,7 +132,10 @@
                   v-else
                   class="text-sm text-green-600"
                 >
-                  {{ verify_voucher?.voucher_description }}
+                  {{
+                    verify_voucher?.voucher_description ||
+                    txn_info?.txn_voucher_info?.voucher_description
+                  }}
                 </div>
               </div>
             </div>
@@ -144,14 +155,14 @@
                   "
                   :disabled="pay_step === 'STEP_2'"
                 />
-                <!-- <Radio
+                <Radio
                   v-model="is_issue_invoice"
                   :value="true"
                   :title="
                     $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
                   "
                   :disabled="pay_step === 'STEP_2'"
-                /> -->
+                />
               </div>
               <div
                 v-if="is_issue_invoice"
@@ -165,15 +176,22 @@
                   }}
                 </div>
                 <div class="font-semibold">
-                  {{ orgStore.selected_org_info?.org_info?.org_company_name }}
-                  -
                   {{
-                    $t(
-                      'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
-                    )
+                    orgStore.selected_org_info?.org_info?.org_company_name ||
+                    orgStore.selected_org_info?.org_info?.org_name
                   }}
-                  :
-                  {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
+                  <template
+                    v-if="orgStore.selected_org_info?.org_info?.org_tax_code"
+                  >
+                    -
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
+                      )
+                    }}
+                    :
+                    {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
+                  </template>
                 </div>
                 <div class="flex">
                   <div class="w-32">
@@ -254,8 +272,17 @@
                   <TransferInfo
                     :amount="calcBankAmount()"
                     :txn_id="txn_info?.txn_id"
+                    :is_issue_invoice
+                    :is_pay_partner="
+                      verify_voucher?.voucher_is_pay_partner ||
+                      txn_info?.txn_voucher_info?.voucher_is_pay_partner
+                    "
+                    :partner_info="
+                      verify_voucher?.voucher_partner_info ||
+                      txn_info?.txn_voucher_info?.voucher_partner_info
+                    "
                   />
-                  <button
+                  <!-- <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
                     @click="checkPayment"
                     class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
@@ -265,13 +292,7 @@
                         'v1.view.main.dashboard.org.pay.recharge.transfer_info.check'
                       )
                     }}
-                  </button>
-                  <div
-                    v-else
-                    class="py-2 px-4 rounded-md text-sm font-semibold text-green-600 bg-green-200 hover:brightness-90 w-fit"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
-                  </div>
+                  </button> -->
                 </template>
                 <template v-else> Tính năng đang phát triển! </template>
               </template>
@@ -290,7 +311,7 @@
   </CardItem>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cleave from 'vue-cleave-component'
 import { useOrgStore } from '@/stores'
@@ -312,6 +333,7 @@ import WalletIcon from '@/components/Icons/Wallet.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
 import {
+  BillingAppTxn,
   BillingAppVoucher,
   type ResponseVerifyVoucher,
 } from '@/utils/api/Billing'
@@ -369,10 +391,56 @@ const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 const txn_info = ref<TransactionInfo>()
 /**dữ liệu xác thực mã khuyến mại */
 const verify_voucher = ref<ResponseVerifyVoucher>({})
+/**id của time out check giao dịch */
+const check_txn_timeout_id = ref<number>()
 
 // khởi tạo dữ liệu của giao dịch đã chọn nếu có
 onMounted(initSelectedTxn)
 
+// kiểm tra giao dịch đã thành công chưa
+watch(() => txn_info.value?.txn_id, checkTxnSuccess)
+// xoá time out check giao dịch
+onUnmounted(() => clearInterval(check_txn_timeout_id.value))
+
+/**kiẻm tra xem giao dich đã thành công chưa */
+function checkTxnSuccess() {
+  // chỉ kiểm tra giao dịch mới tạo
+  if (txn_info.value?.txn_status !== 'PENDING') return
+
+  /**bước nhảy */
+  const TIMER = 1000 * 20 // 20s 1 lần
+
+  // kiểm tra giao dịch liên tục, sau 20s sẽ chạy lần đầu tiên
+  check_txn_timeout_id.value = setInterval(async () => {
+    try {
+      // nếu không có id giao dịch thì dừng
+      if (!txn_info.value?.txn_id || !txn_info.value?.txn_amount) throw 'NO_TXN'
+
+      /**thời gian tạo giao dịch */
+      const CREATED_AT = new Date(txn_info.value?.createdAt || 0).getTime()
+      /**thời gian kiểm tra tối đa */
+      const MAX_CHECK_TIME = 1000 * 60 * 30 // 30 phút
+
+      // nếu quá thời gian kiểm tra thì dừng
+      if (Date.now() - CREATED_AT > MAX_CHECK_TIME) throw 'MAX_CHECK_TIME'
+
+      /**dữ liệu giao dịch */
+      const TXN = await new BillingAppTxn().checkTxn(
+        txn_info.value?.txn_id,
+        txn_info.value?.txn_amount,
+        txn_info.value?.txn_currency
+      )
+
+      // nếu không có giao dịch thì check lại sau
+      if (!TXN) return
+
+      // cập nhật thông tin giao dịch
+      txn_info.value = TXN
+    } catch (e) {
+      clearInterval(check_txn_timeout_id.value)
+    }
+  }, TIMER)
+}
 /**tính ra số tiền chính xác cần quét qr */
 function calcBankAmount(): string {
   // nếu không có mã giảm giá thì thôi

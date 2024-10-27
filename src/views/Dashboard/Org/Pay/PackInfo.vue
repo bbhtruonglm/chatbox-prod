@@ -59,6 +59,24 @@
             /
             {{ orgStore.selected_org_info?.org_package?.org_quota_staff || 0 }}
           </Item>
+          <Item
+            v-if="orgStore.isFreePack()"
+            :title="$t('v1.view.main.dashboard.org.pay.new_client')"
+          >
+            <span class="text-green-700">
+              {{
+                currency(
+                  orgStore.selected_org_info?.org_package?.org_current_client
+                ) || 0
+              }}
+            </span>
+            /
+            {{
+              currency(
+                orgStore.selected_org_info?.org_package?.org_quota_client
+              ) || 0
+            }}
+          </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.fau')">
             <span class="text-green-700">
               {{
