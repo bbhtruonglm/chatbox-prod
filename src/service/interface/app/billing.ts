@@ -183,6 +183,8 @@ export interface PaymentInfo {
 }
 /**thông tin giao dịch */
 export interface TransactionInfo {
+  /**tiền khuyến mại được tặng thêm */
+  txn_credit_amount?: number
   /**loại tiền */
   txn_currency?: string
   /**id của giao dịch */

@@ -42,7 +42,11 @@
                   v-else
                   class="py-2 px-3 rounded-md border w-full"
                 >
-                  {{ currency(Number(amount)) }}
+                  {{
+                    currency(
+                      Number(amount) + +(txn_info?.txn_credit_amount || 0)
+                    )
+                  }}
                 </div>
                 <div class="text-sm text-slate-500">
                   {{
@@ -244,6 +248,26 @@
                   </div>
                 </div>
               </div>
+              <ul
+                v-if="is_issue_invoice"
+                class="list-disc list-inside text-xs text-slate-500"
+              >
+                <li class="pl-4 -indent-4">
+                  {{
+                    $t(
+                      'v1.view.main.dashboard.org.setting.customer_info.guild_1'
+                    )
+                  }}
+                </li>
+                <li class="pl-4 -indent-4">
+                  {{
+                    $t(
+                      'v1.view.main.dashboard.org.setting.customer_info.guild_2'
+                    )
+                  }}
+                  hotro@botbanhang.vn
+                </li>
+              </ul>
             </div>
             <hr />
           </div>

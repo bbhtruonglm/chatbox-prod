@@ -17,7 +17,7 @@
           {{ orgStore.selected_org_info?.org_info?.org_name }}
         </div>
         <div class="text-2xl font-bold">
-          {{ currency(wallet_info?.estimate_balance) || 0 }}
+          {{ currency(Math.ceil(wallet_info?.estimate_balance || 0)) || 0 }}
         </div>
       </div>
     </template>

@@ -161,6 +161,12 @@ const A_TUNG = {
   name: 'Nguyễn Đình Tùng',
   bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
 }
+const A_TUNG_TIMO = {
+  bank_bin: 963388,
+  account: 9021103769279,
+  name: 'Nguyễn Đình Tùng',
+  bank: 'Ngân hàng số Timo by Ban Viet Bank (Timo by Ban Viet Bank)',
+}
 
 /**Thông tin chuyển khoản */
 const payment_info = ref<PaymentInfo>()
@@ -181,6 +187,7 @@ watch(
 /**Tính toán thông tin chuyển khoản */
 function calcPaymentInfo(): PaymentInfo {
   // nếu không có mã, hoặc mã không bật chế độ đối tác, thì chuyển về cty
+  // if (!$props?.is_pay_partner) return A_TUNG_TIMO
   if (!$props?.is_pay_partner) return BBH
 
   // nếu xuất hoá đơn thì vẫn chuyển về cty

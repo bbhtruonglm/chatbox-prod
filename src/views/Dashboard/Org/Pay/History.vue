@@ -71,10 +71,19 @@
                   }"
                   class="px-2.5 whitespace-nowrap text-right"
                 >
-                  <span v-if="txn.txn_type !== 'DEPOSIT'">-</span>
-                  <span v-else>+</span>
-                  {{ currency(txn.txn_amount) || 0 }}
-                  đ
+                  <div>
+                    <span v-if="txn.txn_type !== 'DEPOSIT'">-</span>
+                    <span v-else>+</span>
+                    {{ currency(txn.txn_amount) || 0 }}
+                    {{ txn?.txn_currency }}
+                  </div>
+                  <div
+                    v-if="txn?.txn_credit_amount"
+                    class="text-xs"
+                  >
+                    + {{ currency(txn?.txn_credit_amount) || 0 }}
+                    {{ txn?.txn_currency }}
+                  </div>
                 </td>
                 <td class="px-2.5 whitespace-nowrap text-left">
                   {{ formatDate(txn.createdAt) }}
