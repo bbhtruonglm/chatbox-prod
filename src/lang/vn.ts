@@ -985,9 +985,9 @@ const source: Language = {
               operator: 'Người thao tác',
               view: 'Xem',
               status_list: {
-                SUCCESS: 'Đã thanh toán',
-                PENDING: 'Chờ thanh toán',
-                FAILED: 'Thanh toán thất bại',
+                SUCCESS: 'Thành công',
+                PENDING: 'Đang chờ',
+                FAILED: 'Thất bại',
               },
               upgrade: {
                 not_enough_money: 'Số dư tài khoản không đủ',

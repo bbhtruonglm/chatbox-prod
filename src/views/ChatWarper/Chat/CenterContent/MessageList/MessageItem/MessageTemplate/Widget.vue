@@ -1,7 +1,7 @@
 <template>
   <Modal
     ref="modal_widget_ref"
-    class_modal="w-[400px] h-[630px]"
+    class_modal="w-[432px] h-[630px]"
     class_body="py-2 flex gap-2"
   >
     <template #header>

@@ -25,11 +25,11 @@
         </template>
       </div>
     </div>
+    <MediaDetail
+      ref="media_detail_ref"
+      :data_source
+    />
   </div>
-  <MediaDetail
-    ref="media_detail_ref"
-    :data_source
-  />
 </template>
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'

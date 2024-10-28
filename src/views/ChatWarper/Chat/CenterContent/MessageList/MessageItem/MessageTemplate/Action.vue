@@ -90,7 +90,9 @@ function isAction(button: MessageTemplateButton) {
   return false
 }
 /**xử lý khi click vào nút bấm */
-function onClickBtn(button: MessageTemplateButton) {
+function onClickBtn(button?: MessageTemplateButton) {
+  if (!button) return
+
   // nếu không phải hành động thì không làm gì cả
   if (!isAction(button)) return
 
@@ -121,8 +123,10 @@ function openWidgetModal(widget_id: string) {
     widget => widget.app_id === widget_id
   )
 
+  if (!WIDGET) return
+
   // cắt dữ liệu ra ô nhớ mới trong ram
-  selected_widget.value = copy(WIDGET!)
+  selected_widget.value = copy(WIDGET)
 
   /**
    * tạo ra token mới, tránh lỗi widget đang bị mở bên phải + post message, thì

@@ -109,7 +109,7 @@
           :is_edit
         />
       </div>
-      <ul class="list-disc list-inside text-xs text-slate-500">
+      <ul class="list-disc list-inside text-xs text-slate-500 pl-2.5">
         <li class="pl-4 -indent-4">
           {{ $t('v1.view.main.dashboard.org.setting.customer_info.guild_1') }}
         </li>
