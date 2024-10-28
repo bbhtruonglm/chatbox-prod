@@ -180,6 +180,8 @@ export interface PaymentInfo {
   name: string
   /**Tên ngân hàng */
   bank: string
+  /**định danh ngân hàng từ BE */
+  code: string
 }
 /**thông tin giao dịch */
 export interface TransactionInfo {

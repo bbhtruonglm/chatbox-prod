@@ -89,12 +89,19 @@
     </div>
   </div>
   <a
+    v-if="txn_info?.txn_status === 'PENDING'"
     :href="BBH_PAGE_MESS"
     target="_blank"
     class="text-white bg-blue-600 w-fit py-2 px-4 rounded-md"
   >
     {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.support') }}
   </a>
+  <div
+    v-else
+    class="text-green-600 bg-green-100 w-fit py-2 px-4 rounded-md"
+  >
+    {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
+  </div>
   <div class="text-sm py-3 px-5 rounded-lg bg-yellow-50 w-[572px]">
     <div class="font-semibold">
       {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.hint') }}:
@@ -125,16 +132,21 @@
 <script setup lang="ts">
 import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
-import type { PaymentInfo } from '@/service/interface/app/billing'
-
+import { BillingAppTxn } from '@/utils/api/Billing'
 import BankQrCode from '@/views/Dashboard/Org/Pay/ReCharge/BankQrCode.vue'
+import type {
+  PaymentInfo,
+  TransactionInfo,
+} from '@/service/interface/app/billing'
 import { size } from 'lodash'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
     /**id giao dịch */
     txn_id?: string
+    /**dữ liệu giao dịch */
+    // txn_info?: TransactionInfo
     /**số tiền */
     amount?: string
     /**có xuất hóa đơn không */
@@ -147,12 +159,15 @@ const $props = withDefaults(
   {}
 )
 
+const txn_info = defineModel<TransactionInfo>()
+
 /**Thông tin chuyển khoản của cty */
 const BBH = {
   bank_bin: 970407,
   account: 19036252323010,
   name: 'CTCP Công nghệ Chatbot Việt Nam',
   bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
+  code: 'BBH_TCB',
 }
 /**Thông tin chuyển khoản của a Tùng */
 const A_TUNG = {
@@ -160,43 +175,94 @@ const A_TUNG = {
   account: 91678999999,
   name: 'Nguyễn Đình Tùng',
   bank: 'Ngân hàng TMCP Kỹ thương Việt Nam(Techcombank) CN Hà thành',
+  code: 'TUNG_TCB',
 }
 const A_TUNG_TIMO = {
   bank_bin: 963388,
   account: 9021103769279,
   name: 'Nguyễn Đình Tùng',
   bank: 'Ngân hàng số Timo by Ban Viet Bank (Timo by Ban Viet Bank)',
+  code: 'TUNG_TIMO',
 }
 
 /**Thông tin chuyển khoản */
 const payment_info = ref<PaymentInfo>()
+/**id của time out check giao dịch */
+const check_txn_timeout_id = ref<number>()
 
 // tính toán thông tin chuyển khoản khi khởi tạo
 onMounted(() => {
   payment_info.value = calcPaymentInfo()
+
+  // kiểm tra giao dịch đã thành công chưa
+  checkTxnSuccess()
 })
+
+// xoá time out check giao dịch
+onUnmounted(() => clearInterval(check_txn_timeout_id.value))
 
 // tính toán thông tin chuyển khoản khi có thay đổi mã
 watch(
   () => $props.txn_id,
   () => {
     payment_info.value = calcPaymentInfo()
+
+    // kiểm tra giao dịch đã thành công chưa
+    checkTxnSuccess()
   }
 )
 
+/**kiẻm tra xem giao dich đã thành công chưa */
+function checkTxnSuccess() {
+  // chỉ kiểm tra giao dịch mới tạo
+  if (txn_info.value?.txn_status !== 'PENDING') return
+
+  /**bước nhảy */
+  // const TIMER = 1000 * 20 // 20s 1 lần
+  const TIMER = 1000 * 5 // 20s 1 lần
+
+  // kiểm tra giao dịch liên tục, sau 20s sẽ chạy lần đầu tiên
+  check_txn_timeout_id.value = setInterval(async () => {
+    try {
+      // nếu không có id giao dịch thì dừng
+      if (!txn_info.value?.txn_id || !txn_info.value?.txn_amount) throw 'NO_TXN'
+
+      /**thời gian tạo giao dịch */
+      const CREATED_AT = new Date(txn_info.value?.createdAt || 0).getTime()
+      /**thời gian kiểm tra tối đa */
+      const MAX_CHECK_TIME = 1000 * 60 * 30 // 30 phút
+
+      // nếu quá thời gian kiểm tra thì dừng
+      if (Date.now() - CREATED_AT > MAX_CHECK_TIME) throw 'MAX_CHECK_TIME'
+
+      /**dữ liệu giao dịch */
+      const TXN = await new BillingAppTxn().checkTxn(
+        txn_info.value?.txn_id,
+        payment_info.value?.code || ''
+      )
+
+      // nếu không có giao dịch thì check lại sau
+      if (!TXN) return
+
+      // cập nhật thông tin giao dịch
+      txn_info.value = TXN
+    } catch (e) {
+      clearInterval(check_txn_timeout_id.value)
+    }
+  }, TIMER)
+}
 /**Tính toán thông tin chuyển khoản */
 function calcPaymentInfo(): PaymentInfo {
   // nếu không có mã, hoặc mã không bật chế độ đối tác, thì chuyển về cty
-  // if (!$props?.is_pay_partner) return A_TUNG_TIMO
   if (!$props?.is_pay_partner) return BBH
 
   // nếu xuất hoá đơn thì vẫn chuyển về cty
   if ($props?.is_issue_invoice) return BBH
 
   // nếu không có thông tin đối tác thì chuyển về a Tùng
-  if (!size($props?.partner_info)) return A_TUNG
+  if (!size($props?.partner_info)) return A_TUNG_TIMO
 
   // nếu có thông tin đối tác thì chuyển về đối tác
-  return $props.partner_info || A_TUNG
+  return $props.partner_info || A_TUNG_TIMO
 }
 </script>
