@@ -108,9 +108,8 @@ export class BillingAppTxn extends Billing {
    */
   public async checkTxn(
     txn_id: string,
-    txn_amount: number,
-    txn_currency?: string
+    bank_name: string,
   ): Promise<TransactionInfo | undefined> {
-    return this.post('check_txn', { txn_id, txn_amount, txn_currency })
+    return this.post('check_txn', { txn_id, bank_name })
   }
 }
