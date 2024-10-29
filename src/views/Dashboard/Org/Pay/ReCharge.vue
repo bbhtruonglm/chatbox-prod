@@ -490,8 +490,8 @@ async function createTxn() {
     const AMOUNT = Number(amount.value)
 
     // kiểm tra số tiền nạp có hợp lệ không
-    // if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
-    //   throw $t('v1.view.main.dashboard.org.pay.recharge.amount_description')
+    if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
+      throw $t('v1.view.main.dashboard.org.pay.recharge.amount_description')
 
     /**lấy thông tin ví hiện tại */
     const WALLET_INFO = await read_wallet(orgStore.selected_org_id)

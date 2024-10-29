@@ -49,11 +49,14 @@
             </template>
             <template #description>
               <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
-                {{
-                  $t('v1.view.main.dashboard.org.setting.add_history', {
-                    duration: timeAgo(staff.createdAt),
-                  })
-                }}
+                <template v-if="staff.ms_role === 'ADMIN'">
+                  {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org_staff.member') }}
+                </template>
+                -
+                {{ staff?.staff_id }}
               </div>
             </template>
           </ActorItem>
