@@ -24,7 +24,8 @@ const ENV: EnvInfo = {
             retion: 'https://analytic-chatbox-v2.retion.ai/dashboard',
             bbh: 'https://analytic-chatbox-v2.botbanhang.vn/dashboard'
         },
-        bbh_admin: 'https://ad.retion.ai'
+        bbh_admin: 'https://ad.retion.ai',
+        n8_merge_v2: 'https://chatbox-merge-v2.botbanhang.vn',
     },
     facebook: {
         app_id: '1282108599314861',

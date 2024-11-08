@@ -42,7 +42,7 @@ import type { PageInfo } from '@/service/interface/app/page'
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
-    page_info: PageInfo
+    page_info?: PageInfo
     /**có hiển thị checkbox không */
     checkbox_is_visible?: boolean
     /**trạng thái của checkbox */
@@ -52,5 +52,5 @@ const $props = withDefaults(
 )
 
 /**giá trị của checkbox */
-const checkbox_model = defineModel<boolean>('checkbox')
+const checkbox_model = defineModel('checkbox')
 </script>

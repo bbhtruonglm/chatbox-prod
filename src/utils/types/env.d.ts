@@ -36,6 +36,8 @@ interface EnvInfo {
     }
     /**trang quản trị bbh */
     bbh_admin: string
+    /**api quản lý n8 merge v2 */
+    n8_merge_v2: string
   }
   /**cài đặt cho riêng facebook */
   facebook: {

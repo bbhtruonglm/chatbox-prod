@@ -62,14 +62,16 @@ export class ApiManager {
       /**chuyển dữ liệu về json */
       const RESULT = await RES.json()
 
+      if (RESULT?.message) throw RESULT
+
       // fix riêng cho trường hợp này
       if (RESULT?.data === false) return RESULT?.data
 
       // trả về dữ liệu
-      return RESULT?.data || RESULT?.message || RESULT?.mean || RESULT
+      return RESULT?.data || RESULT
     } catch (e: any) {
       // nếu có lỗi thì ưu tiên ném ra thông báo lỗi
-      throw e?.message || e
+      throw e?.mean || e?.message || e
     }
   }
 

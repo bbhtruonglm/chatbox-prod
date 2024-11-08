@@ -67,7 +67,7 @@ function genUrl() {
   let url = $props.selected_widget?.url
 
   // nếu không có CTA thì thôi
-  if (!$props.ai?.cta) return url
+  if (!$props.ai) return url
 
   // xoá bỏ _id của AI
   delete $props.ai._id
