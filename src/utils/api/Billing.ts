@@ -5,6 +5,7 @@ import type {
   PaymentInfo,
   TransactionInfo,
 } from '@/service/interface/app/billing'
+import type { IBankAccount } from './N4Service/Partner'
 
 /**gọi API lên server của billing */
 class Billing extends Botx {
@@ -52,7 +53,7 @@ export interface ResponseVerifyVoucher {
   /**tiền về đối tác */
   voucher_is_pay_partner?: boolean
   /**thông tin đối tác */
-  voucher_partner_info?: PaymentInfo
+  voucher_partner_info?: IBankAccount
 }
 
 /**gọi API mã khuyến mại */

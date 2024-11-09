@@ -14,7 +14,7 @@
     <div class="mt-0 h-full w-2/4 px-8 py-24 bg-white relative">
       <img
         class="absolute top-[-150px] w-[60px] h-[60px] md:w-[80px] md:h-[80px] md:static md:mx-auto left-8"
-        src="@/assets/imgs/chatbox.svg"
+        :src="commonStore.partner?.logo?.icon"
       />
       <div class="text-2xl font-semibold md:text-center md:mt-5">
         {{ $t('v1.view.oauth.login.login') }}

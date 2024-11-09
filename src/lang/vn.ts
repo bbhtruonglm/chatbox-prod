@@ -1124,6 +1124,18 @@ const source: Language = {
           },
         },
       },
+      template: {
+        title: 'Template',
+        code: 'Mã kích hoạt:',
+        error_code: {
+          title: 'Mã không hợp lệ',
+          description: 'Vui lòng kiểm tra lại mã code',
+        },
+        loading: {
+          title: 'Đang kích hoạt...',
+          description: 'Vui lòng chờ hệ thống kích hoạt',
+        },
+      }
     },
   },
 }

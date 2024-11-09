@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
+import type { IPartner } from '@/utils/api/N4Service/Partner'
 
 export const useCommonStore = defineStore('common_store', () => {
     /**toggle loading toàn trang */
@@ -42,6 +43,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const is_typing = ref(false)
     /**gắn cờ hiển thị trả lời nhanh */
     const is_show_quick_answer = ref(false)
+    /**dữ liệu đối tác */
+    const partner = ref<IPartner>()
 
     return {
         is_loading_full_screen,
@@ -53,6 +56,7 @@ export const useCommonStore = defineStore('common_store', () => {
         is_connected_internet,
         is_typing,
         is_show_quick_answer,
+        partner,
 
         triggerRequirePricing,
     }

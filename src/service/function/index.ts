@@ -151,7 +151,7 @@ export function getStaffReadDate(staff_id: string) {
   const TIME =
     conversationStore.select_conversation?.staff_read?.[staff_id] || 0
 
-  return format_date(new Date(TIME), 'HH:mm:ss, dd/MM/yyyy')
+  return format_date(new Date(TIME), 'HH:mm dd/MM/yyyy')
 }
 
 /**lấy danh sách widget của trang */

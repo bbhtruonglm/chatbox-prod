@@ -1,3 +1,4 @@
+import type { IBankAccount } from '@/utils/api/N4Service/Partner'
 import type { ChatbotUserInfo } from './chatbot_user'
 import type { PageInfo } from './page'
 
@@ -236,7 +237,7 @@ export interface IVoucher {
   /**tiền khi nạp mà có voucher này sẽ về stk của đổi tác */
   voucher_is_pay_partner?: boolean
   /**thông tin tài khoản của đối tác này */
-  voucher_partner_info?: PaymentInfo
+  voucher_partner_info?: IBankAccount
   /**id của voucher này */
   voucher_id?: string
   /**phạm vi của mã này với khách hàng */
@@ -356,7 +357,7 @@ export interface QrCodeInput {
   /**mã BIN của ngân hàng */
   bank_bin: number
   /**số tài khoản người nhận */
-  consumer_id: number
+  consumer_id: string
   /**số tiền chuyển khoản */
   amount: number
   /**nội dung chuyển khoản */

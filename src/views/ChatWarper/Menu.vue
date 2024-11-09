@@ -10,6 +10,10 @@
               class="w-full h-full rounded-full"
             />
             <img
+              :src="commonStore.partner?.logo?.icon"
+              class="w-full h-full"
+            />
+            <!-- <img
               v-else-if="Domain.isRetion()"
               src="@/assets/imgs/retion.svg"
               class="w-full h-full"
@@ -18,7 +22,7 @@
               v-else
               src="@/assets/icons/bbh-mini.svg"
               class="w-full h-full"
-            />
+            /> -->
           </div>
         </button>
       </div>
@@ -128,7 +132,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useConversationStore, useOrgStore } from '@/stores'
+import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import {
   isActiveMessageFilter,
   isFilterActive,
@@ -162,6 +166,7 @@ import { Domain } from '@/utils/helper/Domain'
 
 const conversationStore = useConversationStore()
 const orgStore = useOrgStore()
+const commonStore = useCommonStore()
 
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Attach>>()
