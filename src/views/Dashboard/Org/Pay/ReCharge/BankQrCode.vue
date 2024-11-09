@@ -12,7 +12,7 @@
         class="w-11 h-11 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white flex justify-center items-center rounded border-2"
       >
         <img
-          src="@/assets/icons/bbh-mini.svg"
+          :src="commonStore.partner?.logo?.icon"
           class="w-full h-full"
         />
       </div>
@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { qr_code } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { onMounted, ref, watch } from 'vue'
 
 import VueQrcode from '@chenfengyuan/vue-qrcode'
@@ -33,7 +33,7 @@ const $props = withDefaults(
     /**mã BIN của ngân hàng */
     bank_bin?: number
     /**số tài khoản người nhận */
-    consumer_id?: number
+    consumer_id?: string
     /**số tiền chuyển khoản */
     amount?: string
     /**nội dung chuyển khoản */
@@ -43,6 +43,7 @@ const $props = withDefaults(
 )
 
 const orgStore = useOrgStore()
+const commonStore = useCommonStore()
 
 /**có đang loading không */
 const is_loading = ref<boolean>(false)

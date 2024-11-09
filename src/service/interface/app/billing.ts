@@ -356,7 +356,7 @@ export interface QrCodeInput {
   /**mã BIN của ngân hàng */
   bank_bin: number
   /**số tài khoản người nhận */
-  consumer_id: number
+  consumer_id: string
   /**số tiền chuyển khoản */
   amount: number
   /**nội dung chuyển khoản */

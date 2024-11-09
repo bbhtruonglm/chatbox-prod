@@ -8,7 +8,7 @@ export const loadApp = (APP: App, proceed: Cb) => {
     const { t } = i18n.global
 
     // i18n cho title của trang
-    document.title = t('v1.common.title')
+    // document.title = t('v1.common.title')
 
     // init store
     APP.use(createPinia())
