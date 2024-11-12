@@ -18,7 +18,12 @@
     <div class="flex items-center gap-3 h-16">
       <img
         v-if="post_info?.attachments?.data?.[0]?.media?.image?.src"
-        :src="post_info?.attachments?.data?.[0]?.media?.image?.src"
+        :src="
+          $cdn.fbPostImg(
+            conversationStore.select_conversation?.fb_page_id,
+            post_info?.id
+          )
+        "
         class="w-20 h-full flex-shrink-0 rounded"
       />
       <div class="text-sm h-full truncate-3-line">
@@ -76,6 +81,7 @@ import {
   get_post_from_post_id,
 } from '@/service/api/chatbox/n4-service'
 import { openNewTab } from '@/service/function'
+import { SingletonCdn } from '@/utils/helper/Cdn'
 
 import Loading from '@/components/Loading.vue'
 import FacebookCommentModal from '@/components/Main/Dashboard/FacebookCommentModal.vue'
@@ -84,6 +90,9 @@ import SpeakerIcon from '@/components/Icons/Speaker.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 
+const conversationStore = useConversationStore()
+const $cdn = SingletonCdn.getInst()
+
 const $props = withDefaults(
   defineProps<{
     fb_post_id?: string
@@ -91,9 +100,6 @@ const $props = withDefaults(
   }>(),
   {}
 )
-
-// * Use store
-const conversationStore = useConversationStore()
 
 /** ref của modal */
 const fb_cmt_ref = ref<ComponentRef>()

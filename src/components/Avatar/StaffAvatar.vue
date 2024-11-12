@@ -13,6 +13,7 @@
 </template>
 <script setup lang="ts">
 import { usePageStore } from '@/stores';
+import { SingletonCdn } from '@/utils/helper/Cdn';
 import { ref } from 'vue'
 
 const $props = withDefaults(defineProps<{
@@ -20,6 +21,7 @@ const $props = withDefaults(defineProps<{
 }>(), {})
 
 const pageStore = usePageStore()
+const $cdn = SingletonCdn.getInst()
 
 /**kích thước thực tế */
 const SIZE = 64
@@ -42,8 +44,6 @@ function getFbAsId() {
 }
 /**tạo url ảnh */
 function loadImageUrl() {
-    // return `https://chatbox-static.botbanhang.vn/v1/app/avatar/${$props.id}.jpeg`
-
-    return `${$env.img_host}/${getFbAsId()}?width=${SIZE}&height=${SIZE}`
+    return $cdn.userAvt(getFbAsId())
 }
 </script>

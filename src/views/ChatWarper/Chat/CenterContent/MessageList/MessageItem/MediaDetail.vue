@@ -13,7 +13,7 @@
         <div class="h-full overflow-hidden flex justify-center">
           <img
             v-if="data_source?.image?.url"
-            :src="data_source?.image?.url"
+            :src="url"
             class="attachment-size"
           />
           <video
@@ -23,13 +23,13 @@
             preload="metadata"
           >
             <source
-              :src="data_source?.video?.url"
+              :src="url"
               type="video/mp4"
             />
           </video>
           <Audio
-            v-if="data_source?.audio?.url"
-            :src="data_source?.audio?.url"
+            v-if="data_source?.audio?.url && url"
+            :src="url"
             class="w-full p-3"
           />
           <div
@@ -108,6 +108,8 @@ import type { ComponentRef } from '@/service/interface/vue'
 const $props = withDefaults(
   defineProps<{
     data_source?: MessageTemplateInput
+    /**link media */
+    url?: string
   }>(),
   {}
 )
@@ -125,9 +127,9 @@ function toggleModal() {
 function downloadFile() {
   const URL = messageStore.select_attachment?.payload?.url
 
-  if (!URL) return
+  // if (!URL) return
 
-  openNewTab(URL)
+  openNewTab($props.url || URL || '')
 }
 
 defineExpose({ toggleModal })
