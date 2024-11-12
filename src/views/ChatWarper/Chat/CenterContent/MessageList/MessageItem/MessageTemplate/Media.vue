@@ -115,6 +115,9 @@ function initSize() {
 }
 /**đọc dữ liệu mới của tập tin */
 function getFbUrl(): string | undefined {
+  // nếu là slider thực thì dùng luôn
+  if ($props.message?.message_attachments?.[0]?.type === 'template') return
+
   /**lấy id của tin nhắn */
   const TARGET_ID = $props.message?.message_mid
 

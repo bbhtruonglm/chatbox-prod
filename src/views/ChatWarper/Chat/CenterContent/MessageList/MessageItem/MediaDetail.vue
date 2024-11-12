@@ -13,7 +13,7 @@
         <div class="h-full overflow-hidden flex justify-center">
           <img
             v-if="data_source?.image?.url"
-            :src="url"
+            :src="url || data_source?.image?.url"
             class="attachment-size"
           />
           <video
@@ -23,13 +23,13 @@
             preload="metadata"
           >
             <source
-              :src="url"
+              :src="url || data_source?.video?.url"
               type="video/mp4"
             />
           </video>
           <Audio
             v-if="data_source?.audio?.url && url"
-            :src="url"
+            :src="url || data_source?.audio?.url"
             class="w-full p-3"
           />
           <div
