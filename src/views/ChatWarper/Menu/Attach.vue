@@ -5,7 +5,7 @@
     width="349px"
     height="auto"
     position="RIGHT"
-    class_content="flex flex-col gap-1"
+    class_content="flex flex-col gap-1 max-h-[calc(100vh-100px)] overflow-y-auto"
   >
     <MenuTitle :title="$t('v1.view.main.dashboard.nav.chat')" />
     <MenuItem
@@ -19,11 +19,25 @@
       :title="$t('v1.view.main.dashboard.nav.select_page')"
     />
     <hr class="my-1" />
-    <MenuTitle :title="$t('v1.common.more')" />
+    <MenuTitle :title="$t('v1.common.page')" />
+    <MenuItem
+      @click="openMerchant"
+      :icon="OrderIcon"
+      :title="$t('v1.common.order')"
+    >
+      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
+    </MenuItem>
     <MenuItem
       @click="openAnalytic"
       :icon="AnalyticIcon"
       :title="$t('v1.view.main.dashboard.nav.analytic')"
+    >
+      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
+    </MenuItem>
+    <MenuItem
+      @click="openChatbot"
+      :icon="ManyChatIcon"
+      :title="$t('v1.view.main.dashboard.nav.bot')"
     >
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
@@ -35,13 +49,30 @@
     >
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
-    <MenuItem
-      @click="openChatbot"
-      :icon="ManyChatIcon"
-      :title="$t('v1.view.main.dashboard.nav.bot')"
-    >
-      <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
-    </MenuItem>
+    <template v-if="orgStore.isAdminOrg()">
+      <hr class="my-1" />
+      <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
+      <MenuItem
+        @click="redirectMenu('org')"
+        :icon="BriefCaseIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
+      />
+      <MenuItem
+        @click="redirectMenu('org')"
+        :icon="UsersIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
+      />
+      <MenuItem
+        @click="redirectMenu('org/pay')"
+        :icon="CheckBadgeIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
+      ></MenuItem>
+      <MenuItem
+        @click="redirectMenu('widget')"
+        :icon="SquareIcon"
+        :title="$t('v1.view.main.dashboard.nav.widget')"
+      />
+    </template>
     <!-- <template v-if="orgStore.isAdminOrg()">
       <MenuItem
         @click="openWidget"
@@ -86,6 +117,11 @@ import ManyChatIcon from '@/components/Icons/ManyChat.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
 import CogIcon from '@/components/Icons/Cog.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
+import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
+import UsersIcon from '@/components/Icons/Users.vue'
+import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
+import OrderIcon from '@/components/Icons/Order.vue'
+
 import { Domain } from '@/utils/helper/Domain'
 import { Parser } from '@/utils/helper/Parser'
 import { Navigation } from '@/utils/helper/Navigation'
@@ -100,6 +136,11 @@ const locale = LocaleSingleton.getInst().get()
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Dropdown>>()
 
+/**mở menu */
+function redirectMenu(path: string) {
+  // chuyển đến trang
+  $router.push(`/dashboard/${path}`)
+}
 /**mở cài đặt trang */
 function openPageSetting() {
   /**lấy ra id đầu tiên trong list các trang đang chọn */
@@ -119,6 +160,10 @@ function openPageSetting() {
 
   // mở tab mới
   Navigation.openNewTab(`${URI}?${QS}`)
+}
+function openMerchant() {
+  // mở tab mới
+  Navigation.openNewTab(`https://merchant.vn`)
 }
 /**mở thống kê */
 function openAnalytic() {
