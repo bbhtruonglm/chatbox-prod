@@ -40,7 +40,7 @@ function onImageError($event: Event) {
 }
 /**lấy id của fb */
 function getFbAsId() {
-    return pageStore.selected_pages_staffs?.[$props.id || '']?.fb_staff_id || $props.id
+    return $props.id
 }
 /**tạo url ảnh */
 function loadImageUrl() {
