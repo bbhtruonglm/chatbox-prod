@@ -211,12 +211,12 @@ export const isCurrentStaffIsPageAdmin = (page_id: string) => {
 export const getIframeUrl = (widget: AppInstalledInfo) => {
   const conversationStore = useConversationStore()
 
-  const URL_APP = widget.snap_app.url_app
-  const ACCESS_TOKEN = conversationStore.list_widget_token?.data?.[widget._id]
+  const URL_APP = widget.snap_app?.url_app
+  const ACCESS_TOKEN = conversationStore.list_widget_token?.data?.[widget._id || '']
 
   const CHATBOX_TOKEN = getItem('access_token')
   const LOCALE = LocaleSingleton.getInst().get()
-  const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id)
+  const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id || '')
 
   return `${URL_APP}?access_token=${ACCESS_TOKEN}&locale=${LOCALE}&chatbox_token=${CHATBOX_TOKEN}&is_page_admin=${IS_PAGE_ADMIN}`
 }

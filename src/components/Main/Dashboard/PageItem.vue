@@ -37,12 +37,12 @@ import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
 
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
-    page_info?: PageInfo
+    page_info?: IPage
     /**có hiển thị checkbox không */
     checkbox_is_visible?: boolean
     /**trạng thái của checkbox */

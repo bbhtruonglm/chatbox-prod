@@ -79,7 +79,7 @@ import Modal from '@/components/Modal.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 import type { ComponentRef } from '@/service/interface/vue'
 
 const commonStore = useCommonStore()
@@ -89,7 +89,7 @@ const $router = useRouter()
 
 /**ref của modal */
 const require_pricing_ref = ref<ComponentRef>()
-const sorted_inactive_page = ref<(PageInfo | undefined)[]>()
+const sorted_inactive_page = ref<(IPage | undefined)[]>()
 
 // lắng nghe sự kiện để kích hoạt modal
 watch(

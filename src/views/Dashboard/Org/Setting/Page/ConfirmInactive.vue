@@ -47,13 +47,13 @@ import { toastError } from '@/service/helper/alert'
 
 import Alert from '@/components/Alert.vue'
 
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 const $emit = defineEmits(['done'])
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang được chọn */
-    selected_page?: PageInfo
+    selected_page?: IPage
   }>(),
   {}
 )

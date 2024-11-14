@@ -83,7 +83,7 @@ function updateWidgetPostition() {
 
             // * update lại widget thay đổi vị trí
             update_widget({
-                _id: widget._id,
+                _id: widget._id || '',
                 index_position: index as number,
             }, (e, r) => {
 
@@ -104,7 +104,7 @@ function updateWidgetPostition() {
 function sortWidgetByIndexPosition() {
     // * Sắp xếp vị trí widget từ trên xuống dưới
     widgets_installed.value = widgets_installed.value.sort((a, b) => {
-        return a.index_position - b.index_position
+        return (a?.index_position || 0) - (b?.index_position || 0)
     })
 }
 

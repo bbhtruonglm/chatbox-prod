@@ -33,13 +33,13 @@
       />
     </template>
 
-    <img
+    <!-- <img
       @load="removeAnimatePulse"
       loading="lazy"
       v-else-if="page_info?.type === 'FB_WHATSAPP'"
       src="@/assets/icons/whatsapp.svg"
       class="w-full h-full"
-    />
+    /> -->
 
     <img
       @load="removeAnimatePulse"
@@ -58,14 +58,14 @@ import { SingletonCdn } from '@/utils/helper/Cdn'
 import zaloSvg from '@/assets/icons/zalo.svg'
 import WebIcon from '@/components/Icons/Web.vue'
 
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 
 const $cdn = SingletonCdn.getInst()
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
-    page_info?: PageInfo
+    page_info?: IPage
   }>(),
   {}
 )

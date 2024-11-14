@@ -15,7 +15,7 @@
           @click="toggleWidget(widget)"
           class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
         >
-          {{ widget.snap_app.name }}
+          {{ widget.snap_app?.name }}
           <ArrowDown
             :class="{
               '-rotate-90': !widget.is_show,
@@ -127,7 +127,7 @@ async function getListWidget() {
         from: 'CHATBOX',
         type: 'RELOAD',
         payload: {
-          access_token: conversationStore.list_widget_token?.data?.[widget._id],
+          access_token: conversationStore.list_widget_token?.data?.[widget._id || ''],
         },
       })
     })

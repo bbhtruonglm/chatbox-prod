@@ -2,13 +2,13 @@
   <ActorItem class="cursor-pointer">
     <template #avatar>
       <WidgetAvatar
-        :src="widget.icon"
+        :src="widget?.icon"
         class="w-8 h-8 rounded-oval"
       />
     </template>
     <template #name>
       <div class="text-sm font-medium truncate">
-        {{ widget.name }}
+        {{ widget?.name }}
       </div>
     </template>
     <template #after-name> 
@@ -16,7 +16,7 @@
     </template>
     <template #description>
       <div class="truncate text-xs text-slate-500">
-        {{ widget.description }}
+        {{ widget?.description }}
       </div>
     </template>
   </ActorItem>
@@ -40,7 +40,7 @@ const $emit = defineEmits([
 const $props = withDefaults(
   defineProps<{
     /**giá trị widget đang chọn */
-    widget: AppInfo
+    widget?: AppInfo
     /**dữ liệu widget được cài đặt */
     app?: AppInstalledInfo
     /**hiển thị các button điều khiển */
