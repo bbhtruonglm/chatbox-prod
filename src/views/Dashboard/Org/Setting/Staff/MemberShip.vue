@@ -45,7 +45,7 @@
                   </template>
                   <template #avatar>
                     <StaffAvatar
-                      :id="staff?.fb_staff_id"
+                      :id="staff?.user_id"
                       class="w-8 h-8 rounded-oval"
                     />
                   </template>

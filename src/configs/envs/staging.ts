@@ -28,6 +28,7 @@ const ENV: EnvInfo = {
         },
         bbh_admin: 'https://bbh-dashboard-xi.vercel.app',
         n8_merge_v2: 'https://dev-api.botbanhang.vn/v1/n8_merge',
+        media_cdn: 'https://dev-api.botbanhang.vn/v1/n6_static/cdn',
     },
     facebook: {
         app_id: '1282108599314861',

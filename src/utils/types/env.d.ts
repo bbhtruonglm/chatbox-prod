@@ -38,6 +38,8 @@ interface EnvInfo {
     bbh_admin: string
     /**api quản lý n8 merge v2 */
     n8_merge_v2: string
+    /**host của cdn tập tin */
+    media_cdn: string
   }
   /**cài đặt cho riêng facebook */
   facebook: {

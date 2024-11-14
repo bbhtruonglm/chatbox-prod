@@ -8,8 +8,8 @@
       class="bg-gray-50"
       :style="initSize()"
     >
-    <img
-    :src="getFbUrl() || data_source?.image?.url"
+      <img
+        :src="getFbUrl() || data_source?.image?.url"
         class="w-full h-full object-contain"
       />
     </div>
@@ -31,7 +31,7 @@
     </div>
     <Audio
       v-if="data_source?.audio?.url"
-      :src="data_source?.audio?.url"
+      :src="getFbUrl() || ''"
       class="min-w-52"
     />
     <div
@@ -49,13 +49,13 @@
   <MediaDetail
     ref="media_detail_ref"
     :data_source
+    :url="getFbUrl()"
   />
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { last } from 'lodash'
 import { FitSize } from '@/utils/helper/Attachment'
-import { useMessageStore } from '@/stores'
 
 import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 import Audio from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media/Audio.vue'
@@ -67,7 +67,7 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
-import { get_url_attachment } from '@/service/api/chatbox/n6-static'
+import { SingletonCdn } from '@/utils/helper/Cdn'
 
 const $props = withDefaults(
   defineProps<{
@@ -81,16 +81,10 @@ const $props = withDefaults(
   {}
 )
 
-const messageStore = useMessageStore()
+const $cdn = SingletonCdn.getInst()
 
 /**ref của component MediaDetail */
 const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
-
-// khi tin nhắn được render
-onMounted(() => {
-  // đọc url file mới tránh lỗi 3 tháng
-  getAttachmentInfo()
-})
 
 /**lấy tên của file */
 function getFileName(url: string) {
@@ -121,49 +115,15 @@ function initSize() {
 }
 /**đọc dữ liệu mới của tập tin */
 function getFbUrl(): string | undefined {
+  // nếu là slider thực thì dùng luôn
+  if ($props.message?.message_attachments?.[0]?.type === 'template') return
+
   /**lấy id của tin nhắn */
   const TARGET_ID = $props.message?.message_mid
 
   // nếu không có id thì không cần xử lý
   if (!TARGET_ID) return
 
-  // trả về url của file
-  return messageStore.attachment_list?.[TARGET_ID]?.[0]?.payload?.url
-}
-/**lấy thông tin của file đính kèm */
-function getAttachmentInfo() {
-  // tạm thời chỉ xử lý trường hợp 1 file, vì nhiều file đã được xử lý ở chỗ khác rồi
-  if ($props.message?.message_attachments?.length !== 1) return
-
-  // nếu không có id tin nhắn thì thôi
-  if (!$props.message?.message_mid) return
-
-  // chỉ xử lý của FB
-  if ($props.message?.platform_type !== 'FB_MESS') return
-
-  // không có file thì không cần xử lý
-  if (
-    !['image', 'video', 'audio'].includes(
-      $props.message?.message_attachments?.[0]?.type || ''
-    )
-  )
-    return
-
-  // nếu đã có dữ liệu rồi thì thôi
-  if (messageStore.attachment_list?.[$props.message?.message_mid]) return
-
-  get_url_attachment(
-    {
-      target_id: $props.message?.message_mid,
-      type: 'MESSAGE',
-      page_id: $props.message?.fb_page_id,
-    },
-    (e, r) => {
-      if (e || !r) return
-
-      // nạp, cache dữ liệu
-      messageStore.attachment_list[$props.message?.message_mid!] = r
-    }
-  )
+  return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 }
 </script>

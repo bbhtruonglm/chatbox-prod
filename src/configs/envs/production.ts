@@ -26,6 +26,7 @@ const ENV: EnvInfo = {
         },
         bbh_admin: 'https://ad.retion.ai',
         n8_merge_v2: 'https://chatbox-merge-v2.botbanhang.vn',
+        media_cdn: 'https://cdn.botbanhang.vn',
     },
     facebook: {
         app_id: '1282108599314861',

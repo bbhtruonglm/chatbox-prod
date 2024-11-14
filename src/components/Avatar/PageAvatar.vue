@@ -53,11 +53,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { SingletonCdn } from '@/utils/helper/Cdn'
 
 import zaloSvg from '@/assets/icons/zalo.svg'
 import WebIcon from '@/components/Icons/Web.vue'
 
 import type { PageInfo } from '@/service/interface/app/page'
+
+const $cdn = SingletonCdn.getInst()
 
 const $props = withDefaults(
   defineProps<{
@@ -66,9 +69,6 @@ const $props = withDefaults(
   }>(),
   {}
 )
-
-/**kích thước thực tế của hình ảnh */
-const ACTUAL_SIZE = 64
 
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
@@ -85,8 +85,7 @@ function removeAnimatePulse() {
 }
 /**tạo url ảnh */
 function loadImageUrl(page_id?: string) {
-  return `${$env.img_host}/${
-    page_id || $props.page_info?.fb_page_id
-  }?width=${ACTUAL_SIZE}&height=${ACTUAL_SIZE}`
+  // nếu là trang facebook messenger thì lấy ảnh từ cdn
+  return $cdn.fbPageAvt(page_id || $props.page_info?.fb_page_id)
 }
 </script>
