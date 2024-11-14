@@ -59,6 +59,7 @@ import type { StaffSocket } from '@/service/interface/app/staff'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
+import { N5AppV1AppApp } from '@/utils/api/N5App'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -304,16 +305,16 @@ function getPageInfoToChat() {
           // intergrateChatV1()
           cb()
         }),
-      // * kiểm tra các page được chọn có thoả mãn điều kiện gói hay không
-      // (cb: CbError) =>
-      //   checkPricingValid((e, r) => {
-      //     if (e) {
-      //       toggle_loading(false)
-      //       return $router.push('/dashboard')
-      //     }
+      // lưu lại các widget trên chợ, để map cta
+      (cb: CbError) =>
+        new N5AppV1AppApp()
+          .readMarket()
+          .then(n => {
+            pageStore.market_widgets = n
 
-      //     cb()
-      //   }, true),
+            cb()
+          })
+          .catch(e => cb(e)),
       // * khởi tạo kết nối socket lên server
       (cb: CbError) => {
         onSocketFromChatboxServer()

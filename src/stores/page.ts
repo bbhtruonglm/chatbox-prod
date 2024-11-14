@@ -5,7 +5,7 @@ import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageList } from '@/service/interface/app/page'
 import { filter, map, size } from 'lodash'
-import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { AppInfo, AppInstalledInfo, ListPageIsInstall } from '@/service/interface/app/widget'
 import type { StaffInfo } from '@/service/interface/app/staff'
 
 export const usePageStore = defineStore('page_store', () => {
@@ -36,6 +36,9 @@ export const usePageStore = defineStore('page_store', () => {
 
   /**danh sách widget */
   const widget_list = ref<AppInstalledInfo[]>([])
+
+  /**các widget trên chợ */
+  const market_widgets = ref<Record<string, AppInfo>>()
 
   /**--------------- GETTER ------------ */
   /**đếm số trang đang kích hoạt */
@@ -73,6 +76,7 @@ export const usePageStore = defineStore('page_store', () => {
     selected_page_list_info,
     widget_list,
     selected_pages_staffs,
+    market_widgets,
 
     countSelectedPage,
     isSelectedPage,

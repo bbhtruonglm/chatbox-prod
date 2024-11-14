@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { getIframeUrl, openNewTab } from '@/service/function'
+import { getIframeUrl, getPageInfo, openNewTab } from '@/service/function'
 import { getPageWidget } from '@/service/function'
 import { useConversationStore, usePageStore } from '@/stores'
 
@@ -41,6 +41,7 @@ import type {
 import { ref } from 'vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import { copy } from '@/service/helper/format'
+import type { IPageAiCtaConfig } from '@/service/interface/app/page'
 
 const $props = withDefaults(
   defineProps<{
@@ -74,6 +75,20 @@ function genBtnTitle(button: MessageTemplateButton) {
       return $t('v1.view.main.dashboard.chat.message.cta.create_transaction')
     case 'bbh_schedule_appointment':
       return $t('v1.view.main.dashboard.chat.message.cta.schedule_appointment')
+    case 'bbh_address':
+      return $t('v1.view.main.dashboard.chat.message.cta.address')
+    case 'bbh_document':
+      return $t('v1.view.main.dashboard.chat.message.cta.document')
+    case 'bbh_email':
+      return $t('v1.view.main.dashboard.chat.message.cta.email')
+    case 'bbh_link':
+      return $t('v1.view.main.dashboard.chat.message.cta.link')
+    case 'bbh_phone':
+      return $t('v1.view.main.dashboard.chat.message.cta.phone')
+    case 'bbh_sale':
+      return $t('v1.view.main.dashboard.chat.message.cta.sale')
+    case 'bbh_shipping':
+      return $t('v1.view.main.dashboard.chat.message.cta.shipping')
     default:
       return ''
   }
@@ -105,16 +120,61 @@ function onClickBtn(button?: MessageTemplateButton) {
   // mở tab mới
   if (TYPE === 'web_url' && button?.url) openNewTab(button?.url)
 
-  // mở modal merchant
-  if (TYPE === 'bbh_create_transaction')
-    openWidgetModal($env.ai.widget.create_transaction)
+  // cta bbh
+  if (TYPE?.includes('bbh_')) {
+    /**map các cta */
+    const MAP_CTA: Record<string, string> = {
+      bbh_place_order: 'ai_cta_place_order',
+      bbh_create_transaction: 'ai_cta_payment_transaction',
+      bbh_schedule_appointment: 'ai_cta_schedule_appointment',
+      bbh_address: 'ai_cta_address',
+      bbh_document: 'ai_cta_identify_document',
+      bbh_email: 'ai_cta_email',
+      bbh_link: 'ai_cta_link',
+      bbh_phone: 'ai_cta_phone',
+      bbh_sale: 'ai_cta_invoice',
+      bbh_shipping: 'ai_cta_transportation',
+    }
 
-  // mở modal merchant
-  if (TYPE === 'bbh_place_order') openWidgetModal($env.ai.widget.place_order)
+    /**loại thiết lập cta */
+    const CTA: keyof IPageAiCtaConfig = MAP_CTA?.[
+      TYPE
+    ] as keyof IPageAiCtaConfig
 
-  // mở modal ghi chú đặt lịch
-  if (TYPE === 'bbh_schedule_appointment')
-    openWidgetModal($env.ai.widget.schedule_appointment)
+    // nếu không có cta thì không làm gì cả
+    if (!CTA) return
+
+    /**thông tin cấu hình cta */
+    const CTA_CONFIG = getPageInfo(
+      conversationStore.select_conversation?.fb_page_id
+    )?.[CTA]
+
+    // nếu không có cấu hình cta thì không làm gì cả
+    if (!CTA_CONFIG?.is_active || !CTA_CONFIG?.widget_id) return
+
+    /**dữ liệu của widget */
+    const WIDGET = pageStore.market_widgets?.[CTA_CONFIG?.widget_id]
+
+    // TODO mock tạm dữ liệu
+    selected_widget.value = {
+      url: WIDGET?.url_app,
+      snap_app: WIDGET
+    }
+
+    // mở modal widget
+    modal_widget_ref.value?.toggleModal()
+  }
+
+  // // mở modal merchant
+  // if (TYPE === 'bbh_create_transaction')
+  //   openWidgetModal($env.ai.widget.create_transaction)
+
+  // // mở modal merchant
+  // if (TYPE === 'bbh_place_order') openWidgetModal($env.ai.widget.place_order)
+
+  // // mở modal ghi chú đặt lịch
+  // if (TYPE === 'bbh_schedule_appointment')
+  //   openWidgetModal($env.ai.widget.schedule_appointment)
 }
 /**mở modal widget */
 function openWidgetModal(widget_id: string) {
@@ -134,8 +194,6 @@ function openWidgetModal(widget_id: string) {
    */
   if (selected_widget.value)
     selected_widget.value.url = getIframeUrl(selected_widget.value)
-
-  console.log('hey man', selected_widget.value?.url)
 
   // mở modal
   modal_widget_ref.value?.toggleModal()

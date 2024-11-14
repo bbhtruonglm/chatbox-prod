@@ -243,6 +243,13 @@ export type ButtonType =
   | 'bbh_place_order'
   | 'bbh_create_transaction'
   | 'bbh_schedule_appointment'
+  | 'bbh_address'
+  | 'bbh_document'
+  | 'bbh_email'
+  | 'bbh_link'
+  | 'bbh_phone'
+  | 'bbh_sale'
+  | 'bbh_shipping'
 
 /**dữ liệu dạng nút bấm */
 export interface ChatbotButton {
