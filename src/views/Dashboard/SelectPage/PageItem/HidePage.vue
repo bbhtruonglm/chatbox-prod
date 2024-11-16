@@ -64,7 +64,7 @@ import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 
 const $props = withDefaults(
   defineProps<{
@@ -73,7 +73,7 @@ const $props = withDefaults(
     /**tên trang */
     page_name?: string
     /**dữ liệu của trang được chọn */
-    selected_page?: PageInfo
+    selected_page?: IPage
   }>(),
   {}
 )

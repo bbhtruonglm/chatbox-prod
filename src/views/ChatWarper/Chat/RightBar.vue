@@ -15,7 +15,7 @@
           @click="toggleWidget(widget)"
           class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
         >
-          {{ widget.snap_app.name }}
+          {{ widget.snap_app?.name }}
           <ArrowDown
             :class="{
               '-rotate-90': !widget.is_show,
@@ -59,6 +59,7 @@ import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import { Parser } from '@/utils/helper/Parser'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
@@ -80,10 +81,11 @@ function toggleWidget(widget: AppInstalledInfo) {
       // tạo lại token cho widget nếu
       if (
         // widget bị tắt
-        !IS_SHOW && 
+        !IS_SHOW &&
         // và widget này post message
         item.snap_app?.is_post_message
-      ) item.url = getIframeUrl(item)
+      )
+        item.url = getIframeUrl(item)
 
       // gán giá trị hiển thị mới
       item.is_show = IS_SHOW
@@ -109,6 +111,18 @@ async function getListWidget() {
   )
     // loop danh sách widget hiện tại để xử lý
     return pageStore.widget_list.map(widget => {
+      /**dữ liệu của widget theo luồng mới */
+      const PARAM = {
+        partner_token:
+          pageStore.selected_page_list_info?.[
+            conversationStore.select_conversation?.fb_page_id!
+          ]?.partner_token,
+        client_id: conversationStore.select_conversation?.fb_client_id,
+      }
+
+      /**dữ liệu của widget theo luồng mới */
+      const NEW_PARAM = Parser.toQueryString(PARAM)
+
       // tạo lại url và trigger reload lại iframe nếu có thể khi
       if (
         // widget ở dạng cũ
@@ -117,7 +131,7 @@ async function getListWidget() {
         !widget.is_show
       ) {
         // reload lại iframe từ đầu
-        widget.url = getIframeUrl(widget)
+        widget.url = getIframeUrl(widget) + `&${NEW_PARAM}`
 
         return
       }
@@ -127,7 +141,8 @@ async function getListWidget() {
         from: 'CHATBOX',
         type: 'RELOAD',
         payload: {
-          access_token: conversationStore.list_widget_token?.data?.[widget._id],
+          access_token:
+            conversationStore.list_widget_token?.data?.[widget._id || ''],
         },
       })
     })
@@ -157,8 +172,20 @@ async function getListWidget() {
     // mặc định ẩn tất cả các widget
     widget.is_show = false
 
+    /**dữ liệu của widget theo luồng mới */
+    const PARAM = {
+        partner_token:
+          pageStore.selected_page_list_info?.[
+            conversationStore.select_conversation?.fb_page_id!
+          ]?.partner_token,
+        client_id: conversationStore.select_conversation?.fb_client_id,
+      }
+
+      /**dữ liệu của widget theo luồng mới */
+      const NEW_PARAM = Parser.toQueryString(PARAM)
+
     // thêm token cho url
-    widget.url = getIframeUrl(widget)
+    widget.url = getIframeUrl(widget) + `&${NEW_PARAM}`
 
     return widget
   })

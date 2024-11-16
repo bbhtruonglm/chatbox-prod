@@ -2,7 +2,7 @@
   <!-- :checkbox_is_disabled="!isActivePage(page_info)" -->
   <!-- :class="isActivePage(page_info) ? 'cursor-pointer' : 'cursor-not-allowed'" -->
   <PageItem
-    v-model:checkbox="pageStore.selected_page_id_list[page_id]"
+    v-model:checkbox="pageStore.selected_page_id_list[page_id || '']"
     :checkbox_is_visible="selectPageStore.is_group_page_mode"
     :page_info="page_info"
     @click="selectPage"
@@ -61,13 +61,13 @@ import StarIcon from '@/components/Icons/Star.vue'
 import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
 
 import type { CbError } from '@/service/interface/function'
-import type { PageData, PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import { Page } from '@/utils/helper/Page'
 
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
-    page_info: PageInfo
+    page_info: IPage
     /**dữ liệu của trang */
     page: PageData
     /**lọc hiển thị nền tảng */
@@ -111,14 +111,14 @@ function toggleSelectThisPage() {
 
   // xoá flag khi page không được chọn
   if (isSelectedThisPage())
-    delete pageStore.selected_page_id_list[page_id.value]
+    delete pageStore.selected_page_id_list[page_id.value || '']
   // set flag khi page được chọn
-  else pageStore.selected_page_id_list[page_id.value] = true
+  else pageStore.selected_page_id_list[page_id.value || ''] = true
 }
 /**kiểm tra xem page có được chọn để chat hay không */
 function isSelectedThisPage() {
   // format boolean
-  return !!pageStore.selected_page_id_list?.[page_id.value]
+  return !!pageStore.selected_page_id_list?.[page_id.value || '']
 }
 /**chỉ chat 1 page này */
 function selectOnePage() {

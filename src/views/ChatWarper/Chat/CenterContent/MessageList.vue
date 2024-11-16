@@ -121,7 +121,7 @@
             }"
           />
           <StaffAvatar
-            :id="chatbotUserStore.chatbot_user?.fb_staff_id"
+            :id="chatbotUserStore.chatbot_user?.user_id"
             class="w-6 h-6 rounded-oval flex-shrink-0"
           />
         </div>

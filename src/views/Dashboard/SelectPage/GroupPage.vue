@@ -50,7 +50,7 @@ import Checkbox from '@/components/Checkbox.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 
-import type { PageData, PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import type { Component } from 'vue'
 
 const $props = withDefaults(
@@ -123,7 +123,7 @@ watch(
 )
 
 /**lặp qua từng trang của nhóm */
-function loopPageOfGroup(proceed: (page?: PageInfo) => void) {
+function loopPageOfGroup(proceed: (page?: IPage) => void) {
   active_page_list.value?.forEach(page => {
     // bỏ qua các trang không thoả mãn
     if (

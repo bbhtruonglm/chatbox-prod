@@ -472,6 +472,14 @@ const source: Language = {
                 alert: 'Cảnh báo',
               },
               cta: {
+                address: 'Địa chỉ',
+                document: 'Nhận dạng giấy tờ',
+                email: 'Email',
+                link: 'Link Web',
+                phone: 'Số điện thoại',
+                sale: 'Hóa đơn mua hàng',
+                shipping: 'Phương tiện di chuyển',
+
                 place_order: 'Tạo đơn hàng',
                 create_transaction: 'Tạo giao dịch',
                 schedule_appointment: 'Lập lịch',

@@ -68,29 +68,29 @@ export interface AppInstalledInfo {
   /**link để hiển thị */
   url?: string
   /**id app được cài */
-  _id: string
+  _id?: string
   /**trạng thái cài */
-  status: AppInstalledStatus
+  status?: AppInstalledStatus
   /**đánh dấu widget này có được kích hoạt hay không */
-  active_widget: boolean
+  active_widget?: boolean
   /**vị trí hiển thị */
-  position: AppInstalledPosition
+  position?: AppInstalledPosition
   /**sắp xếp vị trí */
-  index_position: number
+  index_position?: number
   /**kích cỡ hiển thị */
-  app_installed_size: AppInstalledSize
+  app_installed_size?: AppInstalledSize
   /**hiển thị với staff có những nhóm quyền nào */
-  access_group: string[]
+  access_group?: string[]
   /**các quyền của app */
-  access_role_select: AccessRoleInfo
+  access_role_select?: AccessRoleInfo
   /**ẩn ở màn hình pc */
-  hide_pc: boolean
+  hide_pc?: boolean
   /**id của app */
-  app_id: string
+  app_id?: string
   /**id của page được cài */
-  fb_page_id: string
+  fb_page_id?: string
   /**dữ liệu của app */
-  snap_app: AppInfo
+  snap_app?: AppInfo
   /**token được tạo kém nếu có */
   access_token?: string
 }

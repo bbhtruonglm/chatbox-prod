@@ -50,6 +50,7 @@
     ref="media_detail_ref"
     :data_source
     :url="getFbUrl()"
+    :message_id="message?._id"
   />
 </template>
 <script setup lang="ts">

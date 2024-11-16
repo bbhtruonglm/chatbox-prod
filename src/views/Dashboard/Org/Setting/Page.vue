@@ -71,7 +71,7 @@ import StackIcon from '@/components/Icons/Stack.vue'
 import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import { remove } from 'lodash'
 
@@ -80,7 +80,7 @@ const orgStore = useOrgStore()
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**page đang được chọn */
-const selected_page = ref<PageInfo>()
+const selected_page = ref<IPage>()
 /**danh sách trang trong tổ chức */
 const list_os = ref<OwnerShipInfo[]>()
 /**ref của modal kết nối nền tảng */
@@ -92,7 +92,7 @@ onMounted(getOs)
 watch(() => orgStore.selected_org_id, getOs)
 
 /**chuẩn bị huỷ kích hoạt trang */
-function prepareInactivePage(page?: PageInfo) {
+function prepareInactivePage(page?: IPage) {
   // chọn trang
   selected_page.value = page
 

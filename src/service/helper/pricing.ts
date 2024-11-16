@@ -4,7 +4,7 @@ import { keys, size } from 'lodash'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
-import type { PageInfo } from '@/service/interface/app/page'
+import type { IPage, PageInfo } from '@/service/interface/app/page'
 
 /**kiểm tra xem user có đang được kích hoạt gói hay không */
 export const isActiveUser = (chatbot_user?: ChatbotUserInfo) => {
@@ -21,7 +21,7 @@ export const isActiveUser = (chatbot_user?: ChatbotUserInfo) => {
 }
 
 /**kiểm tra xem page có được kích hoạt gói hay không */
-export const isActivePage = (page?: PageInfo) => {
+export const isActivePage = (page?: IPage) => {
     const CURRENT_DATE = new Date().getTime()
 
     // nếu là page nội bộ thì cho qua

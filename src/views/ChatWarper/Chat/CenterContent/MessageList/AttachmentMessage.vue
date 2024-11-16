@@ -33,6 +33,7 @@
     <MediaDetail
       ref="media_detail_ref"
       :data_source
+      :message_id="message?._id"
     />
   </div>
 </template>

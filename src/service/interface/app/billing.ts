@@ -1,6 +1,6 @@
 import type { IBankAccount } from '@/utils/api/N4Service/Partner'
 import type { ChatbotUserInfo } from './chatbot_user'
-import type { PageInfo } from './page'
+import type { IPage, PageInfo } from './page'
 
 /**tổ chức */
 export interface OrgInfo {
@@ -134,7 +134,7 @@ export type OrgPackage = 'FREE' | 'TRIAL' | 'PRO' | 'BUSINESS'
 /**bảng tạm liên kết giữa tổ chức và trang */
 export interface OwnerShipInfo {
   /**inject thêm thông tin của trang */
-  page_info?: PageInfo
+  page_info?: IPage
   /**id của tổ chức */
   org_id?: string
   /**id của trang của tổ chức */
