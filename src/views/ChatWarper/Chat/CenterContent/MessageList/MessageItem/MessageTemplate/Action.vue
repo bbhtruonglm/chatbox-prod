@@ -42,6 +42,7 @@ import { ref } from 'vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import { copy } from '@/service/helper/format'
 import type { IPageAiCtaConfig } from '@/service/interface/app/page'
+import { Parser } from '@/utils/helper/Parser'
 
 const $props = withDefaults(
   defineProps<{
@@ -49,6 +50,8 @@ const $props = withDefaults(
     list_button?: MessageTemplateButton[]
     /**dữ liệu của AI nếu có */
     ai?: MessageAiData
+    /**id của tin nhắn */
+    message_id?: string
   }>(),
   {}
 )
@@ -155,26 +158,46 @@ function onClickBtn(button?: MessageTemplateButton) {
     /**dữ liệu của widget */
     const WIDGET = pageStore.market_widgets?.[CTA_CONFIG?.widget_id]
 
-    // TODO mock tạm dữ liệu
-    selected_widget.value = {
-      url: WIDGET?.url_app,
-      snap_app: WIDGET
+    /**dữ liệu của widget theo luồng mới */
+    const NEW_PARAM = Parser.toQueryString({
+      partner_token:
+        pageStore.selected_page_list_info?.[
+          conversationStore.select_conversation?.fb_page_id!
+        ]?.partner_token,
+      client_id: conversationStore.select_conversation?.fb_client_id,
+      message_id: $props.message_id,
+    })
+
+    /**dữ liệu của widget được cài */
+    const APP_INSTALLED = pageStore.widget_list?.find(
+      widget => widget.app_id === CTA_CONFIG?.widget_id
+    )
+
+    // chạy luồng chưa cài widget
+    if (!APP_INSTALLED) {
+      // tạo dữ liệu giống như app đã cài
+      selected_widget.value = {
+        url: WIDGET?.url_app + `?${NEW_PARAM}`,
+        snap_app: WIDGET,
+      }
+    }
+    // chạy luồng đã cài widget
+    else {
+      // cắt dữ liệu ra ô nhớ mới trong ram
+      selected_widget.value = copy(APP_INSTALLED)
+
+      /**
+       * tạo ra token mới, tránh lỗi widget đang bị mở bên phải + post message, thì
+       * vẫn là token cũ
+       */
+      if (selected_widget.value)
+        selected_widget.value.url =
+          getIframeUrl(selected_widget.value) + `&${NEW_PARAM}`
     }
 
-    // mở modal widget
+    // mở modal
     modal_widget_ref.value?.toggleModal()
   }
-
-  // // mở modal merchant
-  // if (TYPE === 'bbh_create_transaction')
-  //   openWidgetModal($env.ai.widget.create_transaction)
-
-  // // mở modal merchant
-  // if (TYPE === 'bbh_place_order') openWidgetModal($env.ai.widget.place_order)
-
-  // // mở modal ghi chú đặt lịch
-  // if (TYPE === 'bbh_schedule_appointment')
-  //   openWidgetModal($env.ai.widget.schedule_appointment)
 }
 /**mở modal widget */
 function openWidgetModal(widget_id: string) {

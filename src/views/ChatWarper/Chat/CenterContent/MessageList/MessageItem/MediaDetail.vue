@@ -68,6 +68,7 @@
           <Action
             v-if="data_source?.list_button?.length"
             :list_button="data_source?.list_button"
+            :message_id
           />
         </div>
       </div>
@@ -110,6 +111,8 @@ const $props = withDefaults(
     data_source?: MessageTemplateInput
     /**link media */
     url?: string
+    /**id của tin nhắn */
+    message_id?: string
   }>(),
   {}
 )

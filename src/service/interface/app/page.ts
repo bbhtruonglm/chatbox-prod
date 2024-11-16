@@ -564,6 +564,8 @@ export interface PageData {
   group_admin_id?: string
   /**id nhóm tổng */
   group_all_id?: string
+  /**token cho đối tác */
+  partner_token?: string
 }
 
 export interface PageList {
