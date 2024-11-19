@@ -32,7 +32,7 @@
             </template>
             <template #after-name>
               <div
-                v-if="staff?.ms_role !== 'ADMIN'"
+                v-if="$billing_helper.isActiveAdmin(staff)"
                 @click="prepareInactiveStaff(staff)"
                 v-tooltip="
                   $t('v1.view.main.dashboard.org.setting.remove_staff')
@@ -49,7 +49,7 @@
             </template>
             <template #description>
               <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
-                <template v-if="staff.ms_role === 'ADMIN'">
+                <template v-if="$billing_helper.isActiveAdmin(staff)">
                   {{ $t('v1.view.main.dashboard.org_staff.admin') }}
                 </template>
                 <template v-else>
@@ -82,6 +82,7 @@ import { read_ms } from '@/service/api/chatbox/billing'
 import { formatDistanceToNow } from 'date-fns'
 import vi from 'date-fns/locale/vi'
 import { remove } from 'lodash'
+import { SingletonBillingHelper } from '@/utils/helper/Billing'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -96,6 +97,7 @@ import UsersIcon from '@/components/Icons/Users.vue'
 import type { MemberShipInfo } from '@/service/interface/app/billing'
 
 const orgStore = useOrgStore()
+const $billing_helper = SingletonBillingHelper.getInst()
 
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
@@ -158,7 +160,7 @@ async function readMs() {
     // ghi đè lại tổng số nhân viên hiện tại
     if (orgStore.selected_org_info?.org_package)
       orgStore.selected_org_info.org_package.org_current_staff =
-        list_ms.value.length
+        list_ms.value?.filter(ms => ms?.ms_is_active).length
   } catch (e) {
     // thông báo lỗi
     toastError(e)

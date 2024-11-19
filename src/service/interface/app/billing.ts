@@ -125,6 +125,9 @@ export interface MemberShipInfo {
   staff_id?: string
   /**vai trò của nhân viên trong tổ chức */
   ms_role?: 'ADMIN' | 'STAFF'
+  /**nhân viên đã được kích hoạt chưa */
+  ms_is_active?: boolean
+  /**thời gian tạo */
   createdAt?: string
 }
 

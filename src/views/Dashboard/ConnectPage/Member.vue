@@ -9,7 +9,7 @@
         <template v-for="staff of list_ms">
           <Item
             @done="readMs"
-            v-if="staff.ms_role === 'ADMIN' && filterStaff(staff)"
+            v-if="$billing_helper.isActiveAdmin(staff) && filterStaff(staff)"
             :staff
           />
         </template>
@@ -21,7 +21,7 @@
         <template v-for="staff of list_ms">
           <Item
             @done="readMs"
-            v-if="staff.ms_role === 'STAFF' && filterStaff(staff)"
+            v-if="!$billing_helper.isActiveAdmin(staff) && filterStaff(staff)"
             :staff
           />
         </template>
@@ -47,6 +47,7 @@ import { useConnectPageStore, useOrgStore } from '@/stores'
 import { nonAccentVn } from '@/service/helper/format'
 import { read_ms } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
+import { SingletonBillingHelper } from '@/utils/helper/Billing'
 
 import LowPermision from '@/views/Dashboard/ConnectPage/ActivePage/LowPermision.vue'
 import Add from '@/views/Dashboard/ConnectPage/Member/Add.vue'
@@ -58,7 +59,7 @@ import type { MemberShipInfo } from '@/service/interface/app/billing'
 const $emit = defineEmits(['done', 'close'])
 
 const connectPageStore = useConnectPageStore()
-
+const $billing_helper = SingletonBillingHelper.getInst()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 

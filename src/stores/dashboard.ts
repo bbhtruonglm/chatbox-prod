@@ -5,6 +5,9 @@ import { format as date_format, differenceInDays } from 'date-fns'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
+import { SingletonBillingHelper } from '@/utils/helper/Billing'
+
+const $billing_helper = SingletonBillingHelper.getInst()
 
 /**store chọn trang */
 export const useSelectPageStore = defineStore('select_page_store', () => {
@@ -111,7 +114,8 @@ export const useOrgStore = defineStore('org_store', () => {
   }
   /**user có phải là admin của tổ chức không */
   function isAdminOrg() {
-    return selected_org_info.value?.current_ms?.ms_role === 'ADMIN'
+    // là admin và đang kích hoạt
+    return $billing_helper.isActiveAdmin(selected_org_info.value?.current_ms)
   }
   /**đã kích hoạt gói dùng thử chưa */
   function hasTrial() {

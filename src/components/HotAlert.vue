@@ -165,7 +165,7 @@ async function getNoti() {
     )
   } catch (e) {
     // thông báo lỗi
-    ToastSingleton.getInst().error(e)
+    // ToastSingleton.getInst().error(e)
   }
 }
 /**đọc thông báo */
