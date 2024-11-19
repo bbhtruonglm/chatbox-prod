@@ -90,6 +90,12 @@ export const useOrgStore = defineStore('org_store', () => {
   )
   // lưu lại data vào local để khi f5 không bị reset
   saveLocal(selected_org_id, 'selected_org_id')
+  /**có đang chọn toàn bộ tổ chức không */
+  const is_selected_all_org = ref<boolean>(
+    getLocal('is_selected_all_org', true)
+  )
+  // lưu lại data vào local để khi f5 không bị reset
+  saveLocal(is_selected_all_org, 'is_selected_all_org')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
   /**đếm số thông báo */
@@ -156,6 +162,7 @@ export const useOrgStore = defineStore('org_store', () => {
     selected_org_id,
     selected_org_info,
     count_noti,
+    is_selected_all_org,
 
     isFreePack,
     isTrialPack,

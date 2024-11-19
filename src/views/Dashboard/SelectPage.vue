@@ -17,7 +17,7 @@
           v-model="selectPageStore.search"
           :placeholder="$t('v1.common.page_search_placeholder')"
         />
-        <SelectOrg />
+        <SelectOrg is_allow_all />
       </div>
       <div
         v-if="selectPageStore.is_loading"
