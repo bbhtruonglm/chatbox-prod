@@ -7,7 +7,7 @@
   >
     <div
       v-if="selectPageStore.is_group_page_mode"
-      class="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-xl bg-slate-900 py-2 px-5 flex gap-6 text-sm font-medium"
+      class="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-xl bg-slate-900 py-2 px-5 flex gap-6 text-sm font-medium z-10"
     >
       <button
         @click="backSinglePageMode"

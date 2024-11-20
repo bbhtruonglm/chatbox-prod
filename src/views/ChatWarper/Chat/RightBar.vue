@@ -143,6 +143,7 @@ async function getListWidget() {
         payload: {
           access_token:
             conversationStore.list_widget_token?.data?.[widget._id || ''],
+          ...PARAM,
         },
       })
     })
@@ -174,15 +175,15 @@ async function getListWidget() {
 
     /**dữ liệu của widget theo luồng mới */
     const PARAM = {
-        partner_token:
-          pageStore.selected_page_list_info?.[
-            conversationStore.select_conversation?.fb_page_id!
-          ]?.partner_token,
-        client_id: conversationStore.select_conversation?.fb_client_id,
-      }
+      partner_token:
+        pageStore.selected_page_list_info?.[
+          conversationStore.select_conversation?.fb_page_id!
+        ]?.partner_token,
+      client_id: conversationStore.select_conversation?.fb_client_id,
+    }
 
-      /**dữ liệu của widget theo luồng mới */
-      const NEW_PARAM = Parser.toQueryString(PARAM)
+    /**dữ liệu của widget theo luồng mới */
+    const NEW_PARAM = Parser.toQueryString(PARAM)
 
     // thêm token cho url
     widget.url = getIframeUrl(widget) + `&${NEW_PARAM}`

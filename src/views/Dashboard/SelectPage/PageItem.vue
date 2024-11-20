@@ -64,6 +64,8 @@ import type { CbError } from '@/service/interface/function'
 import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import { Page } from '@/utils/helper/Page'
 
+const $emit = defineEmits(['select_page'])
+
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
@@ -71,7 +73,7 @@ const $props = withDefaults(
     /**dữ liệu của trang */
     page: PageData
     /**lọc hiển thị nền tảng */
-    filter: string
+    filter?: string
   }>(),
   {}
 )
@@ -102,18 +104,15 @@ function selectPage() {
   if (!selectPageStore.is_group_page_mode) return selectOnePage()
 
   // nếu ở chế độ chat nhiều page thì toggle lựa chọn
-  toggleSelectThisPage()
-}
-/**thay đổi giá trị lựa chọn page để chat */
-function toggleSelectThisPage() {
-  // nếu trang đã hết hạn thì thôi
-  // if (!isActivePage($props.page_info)) return
 
   // xoá flag khi page không được chọn
   if (isSelectedThisPage())
     delete pageStore.selected_page_id_list[page_id.value || '']
   // set flag khi page được chọn
   else pageStore.selected_page_id_list[page_id.value || ''] = true
+
+  // gửi sự kiện dữ liệu của trang được chọn ra ngoài
+  $emit('select_page', $props.page)
 }
 /**kiểm tra xem page có được chọn để chat hay không */
 function isSelectedThisPage() {
@@ -122,14 +121,6 @@ function isSelectedThisPage() {
 }
 /**chỉ chat 1 page này */
 function selectOnePage() {
-  // // nếu trang đã hết hạn thì thôi
-  // if (!isActivePage($props.page_info)) {
-  //   // hiện modal cảnh báo trang đã hết hạn
-  //   expired_alert_modal_ref.value?.toggleModal()
-
-  //   return
-  // }
-
   // nếu không có id trang thì thôi
   if (!page_id.value) return
 

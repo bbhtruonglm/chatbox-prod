@@ -74,6 +74,9 @@ async function loadListPage(org_id?: string): Promise<void> {
     // nếu không có tổ chức thì thôi
     if (!org_id) return
 
+    // nếu chọn tất cả tổ chức thì thôi
+    if (orgStore.is_selected_all_org) return
+
     // kích hoạt loading
     selectPageStore.is_loading = true
 

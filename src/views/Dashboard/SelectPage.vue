@@ -25,43 +25,53 @@
       >
         <Loading class="mx-auto" />
       </div>
-      <EmptyPage
-        v-if="!pageStore.countActivePage()"
-        tab="PAGE"
-      />
-      <div
-        v-else
-        :class="{
-          'pb-16': selectPageStore.is_group_page_mode,
-        }"
-        class="overflow-y-auto flex flex-col gap-3"
-      >
-        <GroupPage
-          filter="RECENT"
-          :icon="ClockIcon"
-          :title="$t('v1.common.recent')"
+      <template v-if="orgStore.is_selected_all_org">
+        <AllOrg />
+        <EmptyPage
+          v-if="!pageStore.countActivePage()"
           tab="PAGE"
         />
-        <GroupPage
-          filter="FB_MESS"
-          :icon="FacebookIcon"
-          :title="$t('v1.common.fb_mess')"
-          tab="FB_MESS"
-        />
-        <GroupPage
-          filter="WEBSITE"
-          :icon="WebIcon"
-          :title="$t('v1.common.website')"
-          tab="WEBSITE"
-        />
-        <GroupPage
-          filter="ZALO_OA"
-          :icon="ZaloIcon"
-          :title="$t('v1.common.zalo_oa')"
-          tab="ZALO_OA"
-        />
         <GroupPageAction />
-      </div>
+      </template>
+      <template v-else>
+        <EmptyPage
+          v-if="!pageStore.countActivePage()"
+          tab="PAGE"
+        />
+        <div
+          v-else
+          :class="{
+            'pb-16': selectPageStore.is_group_page_mode,
+          }"
+          class="overflow-y-auto flex flex-col gap-3"
+        >
+          <GroupPage
+            filter="RECENT"
+            :icon="ClockIcon"
+            :title="$t('v1.common.recent')"
+            tab="PAGE"
+          />
+          <GroupPage
+            filter="FB_MESS"
+            :icon="FacebookIcon"
+            :title="$t('v1.common.fb_mess')"
+            tab="FB_MESS"
+          />
+          <GroupPage
+            filter="WEBSITE"
+            :icon="WebIcon"
+            :title="$t('v1.common.website')"
+            tab="WEBSITE"
+          />
+          <GroupPage
+            filter="ZALO_OA"
+            :icon="ZaloIcon"
+            :title="$t('v1.common.zalo_oa')"
+            tab="ZALO_OA"
+          />
+          <GroupPageAction />
+        </div>
+      </template>
     </template>
   </DashboardLayout>
   <!-- <RequirePricing /> -->
@@ -94,6 +104,7 @@ import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import HotAlert from '@/components/HotAlert.vue'
+import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
@@ -117,10 +128,34 @@ const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)
 
+// xử lý khi thay đổi từ tất cả tổ chức xuống 1 tổ chức
+watch(
+  [() => orgStore.is_selected_all_org, () => orgStore.selected_org_id],
+  (
+    [new_is_selected_all_org, new_selected_org_id],
+    [old_is_selected_all_org, old_selected_org_id]
+  ) => {
+    // nếu chọn tất cả tổ chức thỉ thôi
+    if (new_is_selected_all_org) return
+
+    // nếu cờ chọn tất cả tổ chức không đổi thì thôi
+    if (new_is_selected_all_org === old_is_selected_all_org) return
+
+    // nếu chọn 1 tổ chức nhưng khác tổ chức cũ thì thôi (chạy ở watch khác)
+    if (new_selected_org_id !== old_selected_org_id) return
+
+    // load danh sách page
+    loadListPage?.(orgStore.selected_org_id)
+  }
+)
+
 // nếu thay đổi tổ chức, thì chọn lại danh sách trang
 watch(
   () => orgStore.selected_org_id,
   () => {
+    // nếu đang chọn all thì thôi
+    if (orgStore.is_selected_all_org) return
+
     // load danh sách page
     loadListPage?.(orgStore.selected_org_id)
   }

@@ -5,6 +5,8 @@ const source: Language = {
   v1: {
     common: {
       vn: 'Tiếng Việt',
+      selected: 'Đã chọn',
+      deselect: 'Bỏ chọn',
       retion: 'Retion',
       title: 'Retion',
       loading: 'Đang tải dữ liệu ...',
