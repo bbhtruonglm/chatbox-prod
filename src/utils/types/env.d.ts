@@ -71,7 +71,7 @@ interface EnvInfo {
     portal: string
   }
   /**danh sách các nền tảng được kết nối với hệ thống chatobox */
-  platform: string[]
+  platform: IPageType[]
   /**host của url link ảnh */
   img_host: string
   /**AI */

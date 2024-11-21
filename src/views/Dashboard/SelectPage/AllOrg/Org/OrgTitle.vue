@@ -9,25 +9,30 @@
           {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
         </div>
       </div>
-      <GripIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
-      <div
-        class="flex items-center gap-2 divide-x min-w-0 flex-grow overflow-x-auto"
-      >
-        <PageCount
-          :icon="SquareIcon"
-          :title="$t('v1.common.all')"
-          :count="count_total_page"
-          is_active
-          class="pr-2"
-        />
-        <PageCount
-          v-for="platform of PLATFORMS"
-          :icon="ICON_MAP?.[platform || ''] || SquareIcon"
-          :title="$t(`v1.common.${platform.toLowerCase()}`)"
-          :count="count_platform_page?.[platform]"
-          class="pl-2"
-        />
-      </div>
+      <template v-if="selectPageStore.current_menu === 'ALL_PLATFORM'">
+        <GripIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
+        <div
+          class="flex items-center gap-2 divide-x min-w-0 flex-grow overflow-x-auto"
+        >
+          <PageCount
+            @click="model_selected_platform = 'ALL_PLATFORM'"
+            :icon="SquareIcon"
+            :title="$t('v1.common.all')"
+            :count="count_total_page"
+            :is_active="model_selected_platform === 'ALL_PLATFORM'"
+            class="pr-2"
+          />
+          <PageCount
+            v-for="platform of PLATFORMS"
+            @click="model_selected_platform = platform"
+            :icon="ICON_MAP?.[platform || ''] || SquareIcon"
+            :title="$t(`v1.common.${platform.toLowerCase()}`)"
+            :count="count_platform_page?.[platform]"
+            :is_active="model_selected_platform === platform"
+            class="pl-2"
+          />
+        </div>
+      </template>
     </div>
     <div
       v-if="
@@ -71,6 +76,8 @@ import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
 import { keys, set, size, values } from 'lodash'
+import type { ISelectPlatform } from '../../type'
+import type { PageData } from '@/service/interface/app/page'
 
 /** Icon mặc định */
 const ICON_MAP: Record<string, Component> = {
@@ -88,6 +95,10 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+/**nền tảng đang chọn */
+const model_selected_platform =
+  defineModel<ISelectPlatform>('selected_platform')
 
 const pageStore = usePageStore()
 const orgStore = useOrgStore()

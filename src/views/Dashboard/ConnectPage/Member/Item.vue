@@ -1,5 +1,10 @@
 <template>
-  <ActorItem class="cursor-pointer">
+  <ActorItem
+    :class="{
+      'opacity-50': !staff?.ms_is_active,
+    }"
+    class="cursor-pointer"
+  >
     <template #avatar>
       <StaffAvatar
         :id="staff?.user_info?.user_id"

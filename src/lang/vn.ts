@@ -852,6 +852,10 @@ const source: Language = {
               member: 'Thành viên',
               add_history: 'Đã thêm {duration}',
               remove_staff: 'Xoá nhân viên',
+              active_staff: {
+                title: 'Kích hoạt nhân viên',
+                description: 'Bạn có chắc chắn muốn kích hoạt nhân viên này?'
+              },
               customer_info: {
                 empty: 'Chưa có dữ liệu',
                 title: 'Thông tin khách hàng',

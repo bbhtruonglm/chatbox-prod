@@ -7,7 +7,7 @@ import type { SweetAlertIcon } from 'sweetalert2'
 type ConfirmResult = Promise<boolean>
 
 /**hỏi người dùng có chắc chắn muốn thực hiện không */
-export class Confirm implements IAlert {
+export class Confirm implements IAlert<Promise<boolean>> {
   /**kích hoạt thông báo dạng confirm */
   async #trigger(
     icon: SweetAlertIcon,

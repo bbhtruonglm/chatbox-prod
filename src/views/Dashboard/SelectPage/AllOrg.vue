@@ -8,10 +8,12 @@
       tab="PAGE"
       :advancedFilter="filterOrgPageOnly"
     />
-    <Org
-      v-for="(page_ids, org_id) of pageStore.map_orgs?.map_org_page"
-      :org_id
-    />
+    <template v-if="selectPageStore.current_menu !== 'RECENT'">
+      <Org
+        v-for="(page_ids, org_id) of pageStore.map_orgs?.map_org_page"
+        :org_id
+      />
+    </template>
   </div>
 </template>
 <script setup lang="ts">

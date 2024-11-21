@@ -107,7 +107,7 @@ import StackIcon from '@/components/Icons/Stack.vue'
 
 import type { OrgInfo, PageOrgInfoMap } from '@/service/interface/app/billing'
 import type { CurrentPageData } from '@/utils/api/N4Service/Page'
-import { SingletonBillingHelper } from '@/utils/helper/Billing'
+import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 
 const $emit = defineEmits(['done'])
 
@@ -125,7 +125,7 @@ const $props = withDefaults(
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
-const $billing_helper = SingletonBillingHelper.getInst()
+const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
 /**ref của modal kết nối nền tảng */
 const move_to_org_ref = ref<InstanceType<typeof Modal>>()
@@ -137,7 +137,7 @@ const selected_org_id = ref<string>()
 /**danh sách các tổ chức có quyền quản trị */
 const list_admin_org = computed(() =>
   orgStore.list_org?.filter(org =>
-    $billing_helper.isActiveAdmin(org?.current_ms)
+    $member_ship_helper.isActiveAdmin(org?.current_ms)
   )
 )
 /**số lượng trang đang chọn */

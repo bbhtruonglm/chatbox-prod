@@ -5,15 +5,16 @@ import { format as date_format, differenceInDays } from 'date-fns'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
-import { SingletonBillingHelper } from '@/utils/helper/Billing'
+import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
+import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
 
-const $billing_helper = SingletonBillingHelper.getInst()
+const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
 /**store chọn trang */
 export const useSelectPageStore = defineStore('select_page_store', () => {
   /** -------------- STAGE -------------- */
   /**menu đang chọn */
-  const current_menu = ref<string>(
+  const current_menu = ref<ISelectPlatform>(
     getLocal('current_selected_tab', 'ALL_PLATFORM')
   )
   // lưu lại data vào local để khi f5 không bị reset
@@ -32,7 +33,7 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
-  function selectMenu(key: string) {
+  function selectMenu(key: ISelectPlatform) {
     current_menu.value = key
   }
 
@@ -121,7 +122,7 @@ export const useOrgStore = defineStore('org_store', () => {
   /**user có phải là admin của tổ chức không */
   function isAdminOrg() {
     // là admin và đang kích hoạt
-    return $billing_helper.isActiveAdmin(selected_org_info.value?.current_ms)
+    return $member_ship_helper.isActiveAdmin(selected_org_info.value?.current_ms)
   }
   /**đã kích hoạt gói dùng thử chưa */
   function hasTrial() {

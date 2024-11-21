@@ -27,10 +27,6 @@
       </div>
       <template v-if="orgStore.is_selected_all_org">
         <AllOrg />
-        <EmptyPage
-          v-if="!pageStore.countActivePage()"
-          tab="PAGE"
-        />
         <GroupPageAction />
       </template>
       <template v-else>
