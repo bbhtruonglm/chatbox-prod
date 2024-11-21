@@ -50,7 +50,6 @@ import { update_page } from '@/service/api/chatbox/n4-service'
 import { useI18n } from 'vue-i18n'
 import { flow } from '@/service/helper/async'
 import { computed, inject, ref } from 'vue'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
@@ -64,7 +63,7 @@ import type { CbError } from '@/service/interface/function'
 import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import { Page } from '@/utils/helper/Page'
 
-const $emit = defineEmits(['select_page'])
+const $emit = defineEmits(['select_page', 'sort_list_page'])
 
 const $props = withDefaults(
   defineProps<{
@@ -82,8 +81,6 @@ const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 /**hàm đi đến trang chat */
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
 
@@ -167,7 +164,7 @@ function togglePagePriority() {
           NEW_PRIORITY
         )
 
-        sortListPage?.()
+        $emit('sort_list_page')
       },
     ],
     undefined,

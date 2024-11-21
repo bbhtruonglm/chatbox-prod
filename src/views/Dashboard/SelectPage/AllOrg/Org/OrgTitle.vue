@@ -18,12 +18,14 @@
           :title="$t('v1.common.all')"
           :count="count_total_page"
           is_active
+          class="pr-2"
         />
         <PageCount
           v-for="platform of PLATFORMS"
           :icon="ICON_MAP?.[platform || ''] || SquareIcon"
           :title="$t(`v1.common.${platform.toLowerCase()}`)"
           :count="count_platform_page?.[platform]"
+          class="pl-2"
         />
       </div>
     </div>

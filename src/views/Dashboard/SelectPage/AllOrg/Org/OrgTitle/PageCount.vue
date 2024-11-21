@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <div v-if="count">
     <div
-      v-if="count"
       :class="{
         'bg-slate-100': is_active,
       }"

@@ -1,9 +1,12 @@
 <template>
-  <div class="bg-white rounded-lg py-3 px-4 grid grid-cols-4 gap-y-3 gap-x-6">
-    <template v-for="page of pageStore.active_page_list">
+  <div
+    v-if="active_page_list?.length"
+    class="bg-white rounded-lg py-3 px-4 grid grid-cols-4 gap-y-3 gap-x-6"
+  >
+    <template v-for="page of active_page_list">
       <PageItem
-        v-if="isVisible(page)"
-        @select_page="selectPage"
+        @select_page="triggerSelectPage"
+        @sort_list_page="getListPage"
         :page_info="page?.page!"
         :page="page"
       />
@@ -11,10 +14,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageStore } from '@/stores'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { provide } from 'vue'
+import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import { KEY_ADVANCE_SELECT_AGE_FUNCT, KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { omitBy } from 'lodash'
+import { inject, onMounted, ref, watch } from 'vue'
 
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 
@@ -29,31 +32,35 @@ const $props = withDefaults(
 )
 
 const pageStore = usePageStore()
-const orgStore = useOrgStore()
+const selectPageStore = useSelectPageStore()
 
-function sortListPage() {
-  console.log('alo')
-}
 /**xử lý khi trang được chọn ở chế độ nhiều */
-function selectPage(page: PageData) {
-  // nếu không có page thì không chọn
-  if (!page?.page?.fb_page_id) return
+const triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
 
-  // chọn lại tổ chức đang chọn
-  orgStore.selected_org_id =
-    pageStore.map_orgs?.map_page_org?.[page?.page?.fb_page_id!]
+/**danh sách page sau khi được lọc */
+const active_page_list = ref<PageData[]>()
 
-  // loại bỏ tất cả trang đang chọn khác tổ chức này
-  pageStore.selected_page_id_list = omitBy(
-    pageStore.selected_page_id_list,
-    (v, page_id) => {
-      /**id tổ chức của trang này */
-      const ORG_ID = pageStore.map_orgs?.map_page_org?.[page_id]
+// load danh sách trang khi component được tạo
+onMounted(() => getListPage())
 
-      // nếu tổ chức không phải tổ chức đang chọn thì loại bỏ
-      return ORG_ID !== orgStore.selected_org_id
-    }
-  )
+// lọc danh sách page khi được tìm kiếm
+watch(
+  () => selectPageStore.search,
+  () => getListPage()
+)
+// nạp lại danh sách page thì có thay đổi
+watch(
+  () => pageStore.active_page_list,
+  () => getListPage()
+)
+
+/**hàm sort lại danh sách trang của component cha */
+const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
+
+/**sắp xếp page gắn sao lên đầu */
+function getListPage() {
+  // lọc ra các page thuộc về nhóm này
+  active_page_list.value = sortListPage?.()?.filter(isVisible)
 }
 /**có hiển thị trang không */
 function isVisible(page?: PageData): boolean {
@@ -69,7 +76,4 @@ function isVisible(page?: PageData): boolean {
   // cho phép hiển thị
   return true
 }
-
-// xuất hàm cho các component con sử dụng
-provide(KEY_SORT_LIST_PAGE_FUNCT, sortListPage)
 </script>
