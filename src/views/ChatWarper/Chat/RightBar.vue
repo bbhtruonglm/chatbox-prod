@@ -44,14 +44,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { useConversationStore, usePageStore } from '@/stores'
-import {
-  getIframeUrl,
-  getPageWidget,
-  getPageCurrentStaff,
-} from '@/service/function'
-import { intersection, sortBy } from 'lodash'
+import { getIframeUrl, getPageWidget } from '@/service/function'
+import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
 
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
@@ -59,7 +55,6 @@ import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import { Parser } from '@/utils/helper/Parser'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
@@ -111,18 +106,6 @@ async function getListWidget() {
   )
     // loop danh sách widget hiện tại để xử lý
     return pageStore.widget_list.map(widget => {
-      /**dữ liệu của widget theo luồng mới */
-      const PARAM = {
-        partner_token:
-          pageStore.selected_page_list_info?.[
-            conversationStore.select_conversation?.fb_page_id!
-          ]?.partner_token,
-        client_id: conversationStore.select_conversation?.fb_client_id,
-      }
-
-      /**dữ liệu của widget theo luồng mới */
-      const NEW_PARAM = Parser.toQueryString(PARAM)
-
       // tạo lại url và trigger reload lại iframe nếu có thể khi
       if (
         // widget ở dạng cũ
@@ -131,7 +114,7 @@ async function getListWidget() {
         !widget.is_show
       ) {
         // reload lại iframe từ đầu
-        widget.url = getIframeUrl(widget) + `&${NEW_PARAM}`
+        widget.url = getIframeUrl(widget)
 
         return
       }
@@ -143,7 +126,11 @@ async function getListWidget() {
         payload: {
           access_token:
             conversationStore.list_widget_token?.data?.[widget._id || ''],
-          ...PARAM,
+          partner_token:
+            pageStore.selected_page_list_info?.[
+              conversationStore.select_conversation?.fb_page_id!
+            ]?.partner_token,
+          client_id: conversationStore.select_conversation?.fb_client_id,
         },
       })
     })
@@ -156,37 +143,13 @@ async function getListWidget() {
   /**danh sách widget của trang này */
   let temp_list_widget = getPageWidget(PAGE_ID) || []
 
-  /**các nhóm mà nhân viên này được phép truy cập dữ liệu */
-  // const GROUP_STAFF = getPageCurrentStaff(PAGE_ID)?.group_staff
-
-  // lọc lại danh sách widget
-  // temp_list_widget = temp_list_widget?.filter(widget => {
-  //   /**kiểm tra user có quyền xem widget này không */
-  //   const IS_ACCESSIBLE = intersection(widget.access_group, GROUP_STAFF)?.length
-
-  //   // chỉ hiển thị widget được kích hoạt và có quyền xem
-  //   return widget.active_widget && IS_ACCESSIBLE
-  // })
-
   // thêm dữ liệu cần thiết cho widget sau khi lọc
   temp_list_widget = temp_list_widget?.map(widget => {
     // mặc định ẩn tất cả các widget
     widget.is_show = false
 
-    /**dữ liệu của widget theo luồng mới */
-    const PARAM = {
-      partner_token:
-        pageStore.selected_page_list_info?.[
-          conversationStore.select_conversation?.fb_page_id!
-        ]?.partner_token,
-      client_id: conversationStore.select_conversation?.fb_client_id,
-    }
-
-    /**dữ liệu của widget theo luồng mới */
-    const NEW_PARAM = Parser.toQueryString(PARAM)
-
     // thêm token cho url
-    widget.url = getIframeUrl(widget) + `&${NEW_PARAM}`
+    widget.url = getIframeUrl(widget)
 
     return widget
   })

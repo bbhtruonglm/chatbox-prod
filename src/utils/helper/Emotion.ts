@@ -6,8 +6,11 @@ export class Emotion {
   static #ICON: Record<string, string> = {
     like: '👍',
     happiness: '😊',
+    happy: '😊',
     anger: '😡',
+    angry: '😡',
     sadness: '😢',
+    sad: '😢',
     fear: '😱',
     surprise: '😲',
     disgust: '🤢',
@@ -17,11 +20,23 @@ export class Emotion {
     pride: '😌',
   }
   /**các cảm xúc tích cực */
-  static #POSITIVE_EMOTION = ['like', 'happiness', 'love', 'pride', 'surprise']
+  static #POSITIVE_EMOTION = [
+    'like',
+    'happiness',
+    'happy',
+    'love',
+    'pride',
+    'surprise',
+  ]
   /**các cảm xúc cần nêu bật */
-  static #HIGHT_LIGHT_EMOTION = ['happiness', 'anger', 'like']
-  static #HIGHT_LIGHT_EMOTION_MESS_PAGE = ['anger']
-  static #HIGHT_LIGHT_EMOTION_MESS_CLIENT = ['happiness', 'anger']
+  static #HIGHT_LIGHT_EMOTION = ['happiness', 'happy', 'anger', 'angry', 'like']
+  static #HIGHT_LIGHT_EMOTION_MESS_PAGE = ['anger', 'angry']
+  static #HIGHT_LIGHT_EMOTION_MESS_CLIENT = [
+    'happiness',
+    'happy',
+    'anger',
+    'angry',
+  ]
 
   /**cảm xúc có phải là tích cực không */
   public static isPositive(input: string): boolean {

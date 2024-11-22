@@ -447,8 +447,11 @@ const source: Language = {
               summary: 'Tóm tắt',
               emotion_ai: {
                 happiness: 'AI: Vui vẻ',
+                happy: 'AI: Vui vẻ',
                 anger: 'AI: Giận dữ',
+                angry: 'AI: Giận dữ',
                 sadness: 'AI: Buồn bã',
+                sad: 'AI: Buồn bã',
                 fear: 'AI: Sợ hãi',
                 surprise: 'AI: Ngạc nhiên',
                 disgust: 'AI: Ghê tởm',
