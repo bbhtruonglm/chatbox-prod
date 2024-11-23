@@ -20,7 +20,13 @@
     <template #item>
       <div class="grid gap-6 grid-cols-4">
         <template v-for="staff of list_ms">
-          <ActorItem class="cursor-pointer">
+          <ActorItem
+            @click="activeMs(staff)"
+            :class="{
+              'opacity-50': !staff.ms_is_active,
+            }"
+            class="cursor-pointer"
+          >
             <template #avatar>
               <StaffAvatar
                 :id="staff?.user_info?.user_id"
@@ -32,8 +38,7 @@
             </template>
             <template #after-name>
               <div
-                v-if="staff?.ms_role !== 'ADMIN'"
-                @click="prepareInactiveStaff(staff)"
+                @click.stop="prepareInactiveStaff(staff)"
                 v-tooltip="
                   $t('v1.view.main.dashboard.org.setting.remove_staff')
                 "
@@ -49,7 +54,7 @@
             </template>
             <template #description>
               <div class="text-xs text-slate-500 flex-grow truncate min-w-0">
-                <template v-if="staff.ms_role === 'ADMIN'">
+                <template v-if="$member_ship_helper.isAdmin(staff)">
                   {{ $t('v1.view.main.dashboard.org_staff.admin') }}
                 </template>
                 <template v-else>
@@ -82,6 +87,7 @@ import { read_ms } from '@/service/api/chatbox/billing'
 import { formatDistanceToNow } from 'date-fns'
 import vi from 'date-fns/locale/vi'
 import { remove } from 'lodash'
+import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -94,8 +100,15 @@ import MinusIcon from '@/components/Icons/Minus.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
 
 import type { MemberShipInfo } from '@/service/interface/app/billing'
+import { ToastSingleton } from '@/utils/helper/Alert/Toast'
+import { ConfirmSingleton } from '@/utils/helper/Alert/Confirm'
+import { useI18n } from 'vue-i18n'
 
 const orgStore = useOrgStore()
+const $member_ship_helper = SingletonMemberShipHelper.getInst()
+const $toast = ToastSingleton.getInst()
+const $confirm = ConfirmSingleton.getInst()
+const { t: $t } = useI18n()
 
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
@@ -111,6 +124,40 @@ onMounted(readMs)
 // nạp danh sách nhân viên khi chọn tổ chức khác
 watch(() => orgStore.selected_org_id, readMs)
 
+/**kích hoạt nhân viên đang chờ */
+async function activeMs(staff: MemberShipInfo) {
+  try {
+    // nếu nhân viên đã kích hoạt thì thôi
+    if (staff.ms_is_active) return
+
+    /**có chắc chắn muốn kích hoạt khôg */
+    const IS_CONFIRM = await $confirm.question(
+      $t('v1.view.main.dashboard.org.setting.active_staff.title'),
+      $t('v1.view.main.dashboard.org.setting.active_staff.description')
+    )
+
+    // nếu không chắc chắn thì thôi
+    if (!IS_CONFIRM) return
+
+    // bật loading
+    orgStore.is_loading = true
+
+    // kích hoạt nhân viên
+    await $member_ship_helper.activeStaff(staff)
+
+    // lấy lại danh sách nhân viên mới
+    readMs()
+
+    // thông báo thành công
+    $toast.success($t('v1.common.success'))
+  } catch (e) {
+    // thông báo lỗi
+    $toast.error(e)
+  } finally {
+    // tắt loading
+    orgStore.is_loading = false
+  }
+}
 /**chuẩn bị huỷ kích hoạt nhân viên */
 function prepareInactiveStaff(ms?: MemberShipInfo) {
   // chọn nhân viên
@@ -158,7 +205,7 @@ async function readMs() {
     // ghi đè lại tổng số nhân viên hiện tại
     if (orgStore.selected_org_info?.org_package)
       orgStore.selected_org_info.org_package.org_current_staff =
-        list_ms.value.length
+        list_ms.value?.filter(ms => ms?.ms_is_active).length
   } catch (e) {
     // thông báo lỗi
     toastError(e)

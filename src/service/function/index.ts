@@ -27,6 +27,7 @@ import type { MessageInfo } from '../interface/app/message'
 import { copyToClipboard } from '../helper/copyWithAlert'
 import { User } from '@/utils/helper/User'
 import { LocaleSingleton } from '@/utils/helper/Locale'
+import { Parser } from '@/utils/helper/Parser'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -210,15 +211,42 @@ export const isCurrentStaffIsPageAdmin = (page_id: string) => {
 /**khởi tạo url và token cho iframe */
 export const getIframeUrl = (widget: AppInstalledInfo) => {
   const conversationStore = useConversationStore()
+  const pageStore = usePageStore()
 
   const URL_APP = widget.snap_app?.url_app
-  const ACCESS_TOKEN = conversationStore.list_widget_token?.data?.[widget._id || '']
+  const ACCESS_TOKEN =
+    conversationStore.list_widget_token?.data?.[widget._id || '']
 
   const CHATBOX_TOKEN = getItem('access_token')
   const LOCALE = LocaleSingleton.getInst().get()
   const IS_PAGE_ADMIN = isCurrentStaffIsPageAdmin(widget.fb_page_id || '')
 
-  return `${URL_APP}?access_token=${ACCESS_TOKEN}&locale=${LOCALE}&chatbox_token=${CHATBOX_TOKEN}&is_page_admin=${IS_PAGE_ADMIN}`
+  /**token của đối tác */
+  const PARTNER_TOKEN =
+    pageStore.selected_page_list_info?.[
+      conversationStore.select_conversation?.fb_page_id!
+    ]?.partner_token
+
+  /**id khách hàng */
+  const CLIENT_ID = conversationStore.select_conversation?.fb_client_id
+
+  /**tạo ra chuỗi query */
+  const PARAMS = Parser.toQueryString({
+    //v1
+    access_token: ACCESS_TOKEN,
+    // chatbox_token: CHATBOX_TOKEN,
+    is_page_admin: IS_PAGE_ADMIN,
+
+    //v2
+    partner_token: PARTNER_TOKEN,
+    client_id: CLIENT_ID,
+
+    // both
+    locale: LOCALE,
+  })
+
+  // trả về url đã tạo
+  return `${URL_APP}?${PARAMS}`
 }
 
 /**mở link tab mới */

@@ -1,11 +1,11 @@
 /**interface quản lý thông báo */
-export interface IAlert {
+export interface IAlert<T = any> {
   /**thông báo thành công */
-  success(...arg: any[]): void
+  success(...arg: any[]): T
   /**thông báo lỗi */
-  error(...arg: any[]): void
+  error(...arg: any[]): T
   /**cảnh báo người dùng */
-  warning(...arg: any[]): void
+  warning(...arg: any[]): T
   /**hỏi người dùng có chắc chắn không */
-  question(...arg: any[]): void
+  question(...arg: any[]): T
 }

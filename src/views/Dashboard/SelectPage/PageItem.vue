@@ -50,7 +50,6 @@ import { update_page } from '@/service/api/chatbox/n4-service'
 import { useI18n } from 'vue-i18n'
 import { flow } from '@/service/helper/async'
 import { computed, inject, ref } from 'vue'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
@@ -64,6 +63,8 @@ import type { CbError } from '@/service/interface/function'
 import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import { Page } from '@/utils/helper/Page'
 
+const $emit = defineEmits(['select_page', 'sort_list_page'])
+
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu của trang */
@@ -71,7 +72,7 @@ const $props = withDefaults(
     /**dữ liệu của trang */
     page: PageData
     /**lọc hiển thị nền tảng */
-    filter: string
+    filter?: string
   }>(),
   {}
 )
@@ -80,8 +81,6 @@ const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 /**hàm đi đến trang chat */
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
 
@@ -99,21 +98,20 @@ function isPageAdmin(page: PageData): boolean {
 /**click chọn vào 1 trang */
 function selectPage() {
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó
-  if (!selectPageStore.is_group_page_mode) return selectOnePage()
-
+  if (!selectPageStore.is_group_page_mode) {
+    selectOnePage()
+  }
   // nếu ở chế độ chat nhiều page thì toggle lựa chọn
-  toggleSelectThisPage()
-}
-/**thay đổi giá trị lựa chọn page để chat */
-function toggleSelectThisPage() {
-  // nếu trang đã hết hạn thì thôi
-  // if (!isActivePage($props.page_info)) return
+  else {
+    // xoá flag khi page không được chọn
+    if (isSelectedThisPage())
+      delete pageStore.selected_page_id_list[page_id.value || '']
+    // set flag khi page được chọn
+    else pageStore.selected_page_id_list[page_id.value || ''] = true
+  }
 
-  // xoá flag khi page không được chọn
-  if (isSelectedThisPage())
-    delete pageStore.selected_page_id_list[page_id.value || '']
-  // set flag khi page được chọn
-  else pageStore.selected_page_id_list[page_id.value || ''] = true
+  // gửi sự kiện dữ liệu của trang được chọn ra ngoài
+  $emit('select_page', $props.page)
 }
 /**kiểm tra xem page có được chọn để chat hay không */
 function isSelectedThisPage() {
@@ -122,14 +120,6 @@ function isSelectedThisPage() {
 }
 /**chỉ chat 1 page này */
 function selectOnePage() {
-  // // nếu trang đã hết hạn thì thôi
-  // if (!isActivePage($props.page_info)) {
-  //   // hiện modal cảnh báo trang đã hết hạn
-  //   expired_alert_modal_ref.value?.toggleModal()
-
-  //   return
-  // }
-
   // nếu không có id trang thì thôi
   if (!page_id.value) return
 
@@ -176,7 +166,7 @@ function togglePagePriority() {
           NEW_PRIORITY
         )
 
-        sortListPage?.()
+        $emit('sort_list_page')
       },
     ],
     undefined,

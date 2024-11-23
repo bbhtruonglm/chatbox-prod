@@ -13,9 +13,14 @@ export const saveLocal = (data: Ref<any>, name: string) => watch(
 
 /**load lại giá trị đã được lưu local vào store, khi trang được load */
 export const getLocal = (name: string, default_value: any) => {
+    /**lấy giá trị từ local */
     const VALUE = getItem(name)
 
-    return VALUE || default_value
+    // nếu không có giá trị thì trả về giá trị mặc định
+    if (VALUE === null || VALUE === undefined) return default_value
+
+    // nếu có giá trị thì trả về giá trị đó
+    return VALUE
 }
 
 /**lưu lại giá trị của store vào indexedDB, để khi f5 trang không bị mất */

@@ -5,8 +5,13 @@ import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageList } from '@/service/interface/app/page'
 import { filter, map, size } from 'lodash'
-import type { AppInfo, AppInstalledInfo, ListPageIsInstall } from '@/service/interface/app/widget'
+import type {
+  AppInfo,
+  AppInstalledInfo,
+  ListPageIsInstall,
+} from '@/service/interface/app/widget'
 import type { StaffInfo } from '@/service/interface/app/staff'
+import type { PageOrgInfoMap } from '@/service/interface/app/billing'
 
 export const usePageStore = defineStore('page_store', () => {
   /** -------------- STAGE -------------- */
@@ -20,6 +25,13 @@ export const usePageStore = defineStore('page_store', () => {
   )
   // lưu dữ liệu xuống indexed khi có thay đổi
   saveIndexedDB(active_page_list, 'active_page_list')
+
+  /**mapping trang và tổ chức */
+  const map_orgs = ref<PageOrgInfoMap>()
+  // đọc dữ liệu được lưu ở indexeddb
+  getIndexedDB('map_orgs', undefined, (e, r) => (map_orgs.value = r))
+  // lưu dữ liệu xuống indexed khi có thay đổi
+  saveIndexedDB(map_orgs, 'map_orgs')
 
   /**lưu id của các page được chọn để chat */
   const selected_page_id_list = ref<{
@@ -77,6 +89,7 @@ export const usePageStore = defineStore('page_store', () => {
     widget_list,
     selected_pages_staffs,
     market_widgets,
+    map_orgs,
 
     countSelectedPage,
     isSelectedPage,

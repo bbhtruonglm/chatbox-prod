@@ -28,7 +28,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { getIframeUrl, getPageInfo, openNewTab } from '@/service/function'
-import { getPageWidget } from '@/service/function'
 import { useConversationStore, usePageStore } from '@/stores'
 
 import NewTabIcon from '@/components/Icons/NewTab.vue'
@@ -189,36 +188,16 @@ function onClickBtn(button?: MessageTemplateButton) {
       /**
        * tạo ra token mới, tránh lỗi widget đang bị mở bên phải + post message, thì
        * vẫn là token cũ
+       * widget đã cài chỉ cần thêm id tin nhắn
        */
       if (selected_widget.value)
         selected_widget.value.url =
-          getIframeUrl(selected_widget.value) + `&${NEW_PARAM}`
+          getIframeUrl(selected_widget.value) +
+          `&message_id=${$props.message_id}`
     }
 
     // mở modal
     modal_widget_ref.value?.toggleModal()
   }
-}
-/**mở modal widget */
-function openWidgetModal(widget_id: string) {
-  // lấy dữ liệu của widget được chọn
-  const WIDGET = pageStore.widget_list?.find(
-    widget => widget.app_id === widget_id
-  )
-
-  if (!WIDGET) return
-
-  // cắt dữ liệu ra ô nhớ mới trong ram
-  selected_widget.value = copy(WIDGET)
-
-  /**
-   * tạo ra token mới, tránh lỗi widget đang bị mở bên phải + post message, thì
-   * vẫn là token cũ
-   */
-  if (selected_widget.value)
-    selected_widget.value.url = getIframeUrl(selected_widget.value)
-
-  // mở modal
-  modal_widget_ref.value?.toggleModal()
 }
 </script>

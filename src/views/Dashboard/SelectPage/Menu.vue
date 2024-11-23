@@ -21,6 +21,7 @@ import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
 
 import type { Component } from 'vue'
+import type { ISelectPlatform } from './type'
 
 const { t: $t } = useI18n()
 const selectPageStore = useSelectPageStore()
@@ -28,7 +29,7 @@ const selectPageStore = useSelectPageStore()
 /** một phần tử của nền tảng */
 interface PlatformItem {
   /** Khóa */
-  key: string
+  key: ISelectPlatform
   /** Tiêu đề */
   title: string
   /** Icon vue */
@@ -73,7 +74,7 @@ function getPlatform(): PlatformItem[] {
       key: platform_key,
       title: $t(`v1.common.${platform_key.toLowerCase()}`),
       icon: ICON_MAP[platform_key],
-      class_icon: 'w-4 h-4'
+      class_icon: 'w-4 h-4',
     })
   )
 

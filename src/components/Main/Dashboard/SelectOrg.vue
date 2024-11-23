@@ -18,22 +18,28 @@
         @click="showOption"
         class="rounded-lg w-full h-full py-2 px-3 pr-8 bg-white flex items-center text-sm gap-2.5"
       >
-        <Badge
-          v-if="
-            orgStore.selected_org_info?.org_package?.org_package_type !== 'FREE'
-          "
-        />
-        <span
-          v-if="orgStore.selected_org_id"
-          class="w-[inherit] text-left text-ellipsis overflow-hidden whitespace-nowrap"
-        >
-          {{ orgStore.selected_org_info?.org_info?.org_name }}
-        </span>
-        <span
-          v-else="!orgStore.selected_org_id"
-          class="text-gray-400 text-sm"
-          >{{ $t('v1.view.main.dashboard.select_page.select_org') }}</span
-        >
+        <template v-if="is_allow_all && orgStore.is_selected_all_org">
+          {{ $t('v1.view.main.dashboard.select_page.all_org') }}
+        </template>
+        <template v-else>
+          <Badge
+            v-if="
+              orgStore.selected_org_info?.org_package?.org_package_type !==
+              'FREE'
+            "
+          />
+          <span
+            v-if="orgStore.selected_org_id"
+            class="w-[inherit] text-left text-ellipsis overflow-hidden whitespace-nowrap"
+          >
+            {{ orgStore.selected_org_info?.org_info?.org_name }}
+          </span>
+          <span
+            v-else="!orgStore.selected_org_id"
+            class="text-gray-400 text-sm"
+            >{{ $t('v1.view.main.dashboard.select_page.select_org') }}</span
+          >
+        </template>
       </button>
       <div
         v-show="is_show_option"
@@ -55,15 +61,25 @@
         v-show="is_show_option"
         class="p-2 rounded-lg shadow-lg bg-white mt-1 h-auto max-h-52 overflow-y-auto absolute z-40 w-[-webkit-fill-available] flex flex-col gap-1"
       >
+        <div
+          v-if="is_allow_all"
+          @click="selectAllOrg()"
+          :class="{ 'bg-slate-100': orgStore.is_selected_all_org }"
+          class="custom-option"
+        >
+          {{ $t('v1.view.main.dashboard.select_page.all_org') }}
+        </div>
         <template v-for="org of orgStore.list_org">
           <div
             v-if="filterOrg(org)"
             @click="selectOption(org)"
             :value="org.org_id"
             :class="{
-              'bg-slate-100': org?.org_id === orgStore.selected_org_id,
+              'bg-slate-100':
+                org?.org_id === orgStore.selected_org_id &&
+                !orgStore.is_selected_all_org,
             }"
-            class="text-sm custom-select-option cursor-pointer break-words whitespace-pre-line hover:bg-slate-100 rounded-md py-1.5 px-2 flex items-center gap-2.5 justify-between"
+            class="custom-option"
           >
             <span>{{ org?.org_info?.org_name }}</span>
             <Badge v-if="org?.org_package?.org_package_type !== 'FREE'" />
@@ -99,6 +115,14 @@ import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { OrgInfo } from '@/service/interface/app/billing'
 
+const $props = withDefaults(
+  defineProps<{
+    /**có cho phép chọn tất cả tổ chức không */
+    is_allow_all?: boolean
+  }>(),
+  {}
+)
+
 const orgStore = useOrgStore()
 const pageStore = usePageStore()
 
@@ -113,10 +137,8 @@ const search = ref<string>()
 
 // nạp dữ liệu tổ chức hiện tại khi component được mount
 onMounted(getCurrentOrgInfo)
-
 /**lắng nghe sự kiện khi click ra ngoài */
 onMounted(() => document.body.addEventListener('click', clickOutSide, true))
-
 /**lắng nghe sự kiện khi huỷ component */
 onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 
@@ -126,14 +148,22 @@ watch(() => orgStore.list_org, getCurrentOrgInfo)
 watch(
   () => orgStore.selected_org_id,
   () => {
-    // reset chọn page
-    pageStore.selected_page_id_list = {}
+    // reset chọn page nếu không chọn tất cả tổ chức
+    if (!orgStore.is_selected_all_org) pageStore.selected_page_id_list = {}
 
     // nạp lại dữ liệu tổ chức
     getCurrentOrgInfo()
   }
 )
 
+/**chọn toàn bộ tổ chức */
+function selectAllOrg() {
+  // gán giá trị chọn toàn bộ tổ chức
+  orgStore.is_selected_all_org = !orgStore.is_selected_all_org
+
+  // ẩn danh sách option
+  hideOption()
+}
 /**ẩn hiện org theo tìm kiếm */
 function filterOrg(org: OrgInfo): boolean {
   // nếu không có giá trị tìm kiếm thì hiển thị tất cả
@@ -159,6 +189,9 @@ function clickOutSide($event: MouseEvent) {
 }
 /**xử lý sự kiện khi click vào một option */
 function selectOption(org: OrgInfo) {
+  // bỏ chọn toàn bộ tổ chức nếu đang ở chế độ cho phép chọn tất cả
+  if ($props.is_allow_all) orgStore.is_selected_all_org = false
+
   // gán tổ chức được chọn
   orgStore.selected_org_id = org?.org_id
 
@@ -181,3 +214,8 @@ function hideOption() {
   is_show_option.value = false
 }
 </script>
+<style scoped lang="scss">
+.custom-option {
+  @apply text-sm cursor-pointer break-words whitespace-pre-line hover:bg-slate-100 rounded-md py-1.5 px-2 flex items-center gap-2.5 justify-between;
+}
+</style>

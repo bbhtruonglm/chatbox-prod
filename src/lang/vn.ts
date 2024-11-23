@@ -5,6 +5,8 @@ const source: Language = {
   v1: {
     common: {
       vn: 'Tiếng Việt',
+      selected: 'Đã chọn',
+      deselect: 'Bỏ chọn',
       retion: 'Retion',
       title: 'Retion',
       loading: 'Đang tải dữ liệu ...',
@@ -445,8 +447,11 @@ const source: Language = {
               summary: 'Tóm tắt',
               emotion_ai: {
                 happiness: 'AI: Vui vẻ',
+                happy: 'AI: Vui vẻ',
                 anger: 'AI: Giận dữ',
+                angry: 'AI: Giận dữ',
                 sadness: 'AI: Buồn bã',
+                sad: 'AI: Buồn bã',
                 fear: 'AI: Sợ hãi',
                 surprise: 'AI: Ngạc nhiên',
                 disgust: 'AI: Ghê tởm',
@@ -850,6 +855,10 @@ const source: Language = {
               member: 'Thành viên',
               add_history: 'Đã thêm {duration}',
               remove_staff: 'Xoá nhân viên',
+              active_staff: {
+                title: 'Kích hoạt nhân viên',
+                description: 'Bạn có chắc chắn muốn kích hoạt nhân viên này?'
+              },
               customer_info: {
                 empty: 'Chưa có dữ liệu',
                 title: 'Thông tin khách hàng',

@@ -5,12 +5,16 @@ import { format as date_format, differenceInDays } from 'date-fns'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
+import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
+import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
+
+const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
 /**store chọn trang */
 export const useSelectPageStore = defineStore('select_page_store', () => {
   /** -------------- STAGE -------------- */
   /**menu đang chọn */
-  const current_menu = ref<string>(
+  const current_menu = ref<ISelectPlatform>(
     getLocal('current_selected_tab', 'ALL_PLATFORM')
   )
   // lưu lại data vào local để khi f5 không bị reset
@@ -29,7 +33,7 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
-  function selectMenu(key: string) {
+  function selectMenu(key: ISelectPlatform) {
     current_menu.value = key
   }
 
@@ -87,6 +91,12 @@ export const useOrgStore = defineStore('org_store', () => {
   )
   // lưu lại data vào local để khi f5 không bị reset
   saveLocal(selected_org_id, 'selected_org_id')
+  /**có đang chọn toàn bộ tổ chức không */
+  const is_selected_all_org = ref<boolean>(
+    getLocal('is_selected_all_org', true)
+  )
+  // lưu lại data vào local để khi f5 không bị reset
+  saveLocal(is_selected_all_org, 'is_selected_all_org')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
   /**đếm số thông báo */
@@ -111,7 +121,8 @@ export const useOrgStore = defineStore('org_store', () => {
   }
   /**user có phải là admin của tổ chức không */
   function isAdminOrg() {
-    return selected_org_info.value?.current_ms?.ms_role === 'ADMIN'
+    // là admin và đang kích hoạt
+    return $member_ship_helper.isActiveAdmin(selected_org_info.value?.current_ms)
   }
   /**đã kích hoạt gói dùng thử chưa */
   function hasTrial() {
@@ -152,6 +163,7 @@ export const useOrgStore = defineStore('org_store', () => {
     selected_org_id,
     selected_org_info,
     count_noti,
+    is_selected_all_org,
 
     isFreePack,
     isTrialPack,

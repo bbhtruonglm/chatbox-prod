@@ -25,11 +25,33 @@ import AdBlocker from './components/AdBlocker.vue'
 import { onMounted } from 'vue'
 import { ToastSingleton } from './utils/helper/Alert/Toast'
 import { N4SerivcePublicPartner } from './utils/api/N4Service/Partner'
+import { setItem } from './service/helper/localStorage'
 
 const commonStore = useCommonStore()
 const $toast = ToastSingleton.getInst()
 
-onMounted(getPartnerInfo)
+onMounted(() => {
+  // lấy token từ param nếu có
+  getParamToken()
+
+  // lấy thông tin đối tác
+  getPartnerInfo()
+})
+
+/**ghi đè lại token lấy từ param, phục vụ cho trường hợp mở từ app mobile */
+function getParamToken() {
+  /**query param */
+  const ROUTE_QUERY = new URLSearchParams(new URL(window.location.href)?.search)
+
+  /**mã xác thực */
+  const ACCESS_TOKEN = ROUTE_QUERY.get('access_token') || ROUTE_QUERY.get('token')
+
+  // nếu không có token thì thôi
+  if (!ACCESS_TOKEN) return
+
+  // lưu token vào local storage
+  setItem('access_token', ACCESS_TOKEN)
+}
 
 /**Lấy thông tin đối tác */
 async function getPartnerInfo() {
