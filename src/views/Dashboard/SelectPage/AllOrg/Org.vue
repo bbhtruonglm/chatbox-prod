@@ -74,6 +74,11 @@ watch(
   () => selectPageStore.current_menu,
   () => getListPage()
 )
+// khi có dữ liệu tổ chức-page
+watch(
+  () => pageStore.map_orgs,
+  () => getListPage()
+)
 
 /**sắp xếp page gắn sao lên đầu */
 function getListPage() {
@@ -84,7 +89,7 @@ function getListPage() {
 function isVisible(page?: PageData): boolean {
   // không có page thì không hiển thị
   if (!page?.page?.fb_page_id) return false
-
+  
   // chỉ hiển thị trang của tổ chức này
   if (
     !pageStore.map_orgs?.map_org_page?.[$props.org_id]?.[page?.page?.fb_page_id]

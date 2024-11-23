@@ -98,15 +98,17 @@ function isPageAdmin(page: PageData): boolean {
 /**click chọn vào 1 trang */
 function selectPage() {
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó
-  if (!selectPageStore.is_group_page_mode) return selectOnePage()
-
+  if (!selectPageStore.is_group_page_mode) {
+    selectOnePage()
+  }
   // nếu ở chế độ chat nhiều page thì toggle lựa chọn
-
-  // xoá flag khi page không được chọn
-  if (isSelectedThisPage())
-    delete pageStore.selected_page_id_list[page_id.value || '']
-  // set flag khi page được chọn
-  else pageStore.selected_page_id_list[page_id.value || ''] = true
+  else {
+    // xoá flag khi page không được chọn
+    if (isSelectedThisPage())
+      delete pageStore.selected_page_id_list[page_id.value || '']
+    // set flag khi page được chọn
+    else pageStore.selected_page_id_list[page_id.value || ''] = true
+  }
 
   // gửi sự kiện dữ liệu của trang được chọn ra ngoài
   $emit('select_page', $props.page)

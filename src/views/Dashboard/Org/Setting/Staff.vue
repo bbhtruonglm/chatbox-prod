@@ -38,7 +38,7 @@
             </template>
             <template #after-name>
               <div
-                @click="prepareInactiveStaff(staff)"
+                @click.stop="prepareInactiveStaff(staff)"
                 v-tooltip="
                   $t('v1.view.main.dashboard.org.setting.remove_staff')
                 "

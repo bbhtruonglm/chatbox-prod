@@ -22,7 +22,7 @@
     :distance="10"
     class_content="flex flex-col gap-1"
   >
-    <template v-if="orgStore.isAdminOrg()">
+    <template v-if="orgStore.isAdminOrg() || orgStore.is_selected_all_org">
       <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
       <MenuItem
         @click="redirectMenu('org')"

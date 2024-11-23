@@ -9,7 +9,7 @@
           {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
         </div>
       </div>
-      <template v-if="selectPageStore.current_menu === 'ALL_PLATFORM'">
+      <!-- <template v-if="selectPageStore.current_menu === 'ALL_PLATFORM'">
         <GripIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
         <div
           class="flex items-center gap-2 divide-x min-w-0 flex-grow overflow-x-auto"
@@ -32,7 +32,7 @@
             class="pl-2"
           />
         </div>
-      </template>
+      </template> -->
     </div>
     <div
       v-if="

@@ -9,10 +9,13 @@
       :advancedFilter="filterOrgPageOnly"
     />
     <template v-if="selectPageStore.current_menu !== 'RECENT'">
-      <Org
-        v-for="(page_ids, org_id) of pageStore.map_orgs?.map_org_page"
-        :org_id
-      />
+      <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
+        <Org
+          v-if="org?.org_id"
+          :key="org?.org_id"
+          :org_id="org?.org_id"
+        />
+      </template>
     </template>
   </div>
 </template>
@@ -21,7 +24,7 @@ import { read_link_org } from '@/service/api/chatbox/billing'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { ToastSingleton } from '@/utils/helper/Alert/Toast'
-import { keys, omitBy } from 'lodash'
+import { keys, omitBy, sortBy } from 'lodash'
 import { onMounted, provide } from 'vue'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
 
