@@ -7,11 +7,14 @@
     <div class="flex-grow">
       <div class="font-medium text-[10px] flex items-center gap-1">
         {{ $t('v1.view.main.dashboard.chat.message.header.note') }}
-        <Badge :value="2" />
+        <!-- <Badge :value="2" /> -->
       </div>
       <div class="text-xs font-medium truncate">
-        {{ formatDate() }}
-        - Nhắc khách thanh toán
+        <div>Không có nhắc lịch</div>
+        <!-- <div>
+          {{ formatDate() }}
+          - Nhắc khách thanh toán
+        </div> -->
       </div>
     </div>
     <ArrowDown class="-rotate-90 w-3 text-slate-500 flex-shrink-0 mr-1" />

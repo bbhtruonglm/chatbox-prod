@@ -396,7 +396,7 @@ const source: Language = {
             error: {
               get_page_info: 'Không tìm thấy dữ liệu trang',
               get_org_info: 'Không tìm thấy dữ liệu tổ chức',
-              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng vui ,lòng liên hệ QTV để năng cấp'
+              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng, vui lòng liên hệ QTV để nâng cấp'
             },
             online_status: {
               online: 'Đang trực tuyến',
@@ -899,6 +899,10 @@ const source: Language = {
               },
             },
             pay: {
+              chatbot_ai_base: 'Chatbot AI Base',
+              chatbot_ai_business: 'Chatbot AI Business',
+              chatbot_ai_pro: 'Chatbot AI Pro',
+              chatbot_ai_enterprise: 'Chatbot AI Enterprise',
               account: 'Tài khoản',
               balance: 'Số dư tài khoản',
               pack_info: 'Thông tin gói cước',

@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import { initRequireData } from '@/views/composable'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { checkPricingValid } from '@/service/helper/pricing'
 import HotAlert from '@/components/HotAlert.vue'
 import { useRouter } from 'vue-router'
 import {
@@ -46,7 +45,6 @@ import {
   getPageWidget,
   getSelectedPageInfo,
 } from '@/service/function'
-import { getItem } from '@/service/helper/localStorage'
 import { handleFileLocal } from '@/service/helper/file'
 
 import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
@@ -64,7 +62,7 @@ import type { SocketEvent } from '@/service/interface/app/common'
 import { N5AppV1AppApp } from '@/utils/api/N5App'
 import { loading } from '@/utils/decorator/loading'
 import { error } from '@/utils/decorator/error'
-import { container, singleton } from 'tsyringe'
+import { container } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { Delay } from '@/utils/helper/Delay'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
@@ -80,7 +78,6 @@ const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
-const $toast = container.resolve(Toast)
 const $delay = container.resolve(Delay)
 
 // composable
@@ -100,7 +97,6 @@ watch(
 
 onMounted(() => {
   $main.getPageInfoToChat()
-  // getPageInfoToChat()
 
   initExtensionLogic()
 
@@ -654,7 +650,6 @@ class Main {
   @loading(commonStore.is_loading_full_screen)
   // nếu lỗi thì chuyển về trang chọn page
   @error(new CustomToast(), () => $router.push('/dashboard'))
-  // @error($toast, () => $router.push('/dashboard'))
   async getPageInfoToChat() {
     // delay một chút để load dữ liệu từ local vào store kịp
     await $delay.exec(200)
