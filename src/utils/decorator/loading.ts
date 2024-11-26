@@ -2,10 +2,10 @@ import type { Ref } from 'vue'
 
 /**
  * hàm trang trí tính năng loading cho phương thức
- * @param is_loading tên biến ref để bật tắt loading
+ * @param is_loading biến để bật tắt loading
  * @param is_block_if_loading có chặn hành động khi đang loading hay không
  */
-export function loading(is_loading: Ref<boolean>, is_block_if_loading = true) {
+export function loading(is_loading: boolean, is_block_if_loading = true) {
   return function (
     target: any,
     property_key: string,
@@ -17,17 +17,20 @@ export function loading(is_loading: Ref<boolean>, is_block_if_loading = true) {
     // trang trí phương thức
     descriptor.value = async function (...args: any[]) {
       // nếu bật chặn khi đang loading
-      if (is_block_if_loading && is_loading.value) return
+      if (is_block_if_loading && is_loading) return
 
+      // thử chạy phương thức
       try {
         // bật loading
-        is_loading.value = true
+        is_loading = true
 
         // chạy phương thức gốc
         await ORIGINAL_METHOD.apply(this, args)
-      } finally {
-        // tắt loading
-        is_loading.value = false
+      } 
+      // sau khi chạy xong (lỗi hoặc thành công)
+      finally {
+        // tắt loading khi phương thức chạy xong
+        is_loading = false
       }
     }
 

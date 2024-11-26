@@ -122,7 +122,7 @@ class Main {
     change_staff_ref.value?.toggle($event)
   }
 
-  @loading(is_loading_unread_conversation)
+  @loading(is_loading_unread_conversation.value)
   @error($toast)
   /**đánh dấu hội thoại này là chưa đọc */
   async unreadConversation() {
@@ -131,9 +131,6 @@ class Main {
 
     // * gắn cờ hội thoại chưa đọc, để không bị conflig vào code hiện thị
     conversationStore.select_conversation.is_force_unread = true
-
-    // delay 3 giây
-    await new Promise(resolve => setTimeout(resolve, 3000))
 
     // gọi api đánh dấu hội thoại chưa đọc
     await new N4SerivceAppOneConversation(

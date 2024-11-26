@@ -1,5 +1,15 @@
 <template>
   <div
+    v-if="!conversationStore.select_conversation"
+    class="w-full h-full flex justify-center items-center text-slate-500 gap-1"
+  >
+    <ChatIcon class="w-5" />
+    <div>
+      {{ $t('v1.view.main.dashboard.chat.empty_message') }}
+    </div>
+  </div>
+  <div
+    v-else
     id="chat__message-list"
     class="h-full overflow-hidden rounded-b-xl relative"
   >
@@ -166,11 +176,11 @@ import MessageItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/Messa
 import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnReadAlert.vue'
 
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
+import ChatIcon from '@/components/Icons/Chat.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 import type { DebouncedFunc } from 'lodash'
-import { copy } from '@/service/helper/format'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {

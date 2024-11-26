@@ -3,9 +3,14 @@ import type { IAlert } from '../helper/Alert/type'
 /**
  * hàm trang trí tính năng bắt và cảnh báo lỗi cho phương thức
  * @param service_alert service cảnh báo lỗi
+ * @param callback callback sau khi cảnh báo
  * @param is_continue có tiếp tục ném lỗi sau khi cảnh báo hay không
  */
-export function error(service_alert: IAlert, is_continue = false) {
+export function error(
+  service_alert: IAlert,
+  callback?: Function,
+  is_continue = false
+) {
   return function (
     target: any,
     property_key: string,
@@ -22,6 +27,9 @@ export function error(service_alert: IAlert, is_continue = false) {
       } catch (e) {
         // bắt lỗi và cảnh báo
         service_alert.error(e)
+
+        // chạy callback nếu có
+        if (callback) await callback()
 
         // tiếp tục ném lỗi nếu cần
         if (is_continue) throw e

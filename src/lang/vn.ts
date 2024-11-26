@@ -395,12 +395,15 @@ const source: Language = {
             },
             error: {
               get_page_info: 'Không tìm thấy dữ liệu trang',
+              get_org_info: 'Không tìm thấy dữ liệu tổ chức',
+              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng vui ,lòng liên hệ QTV để năng cấp'
             },
             online_status: {
               online: 'Đang trực tuyến',
               offline: 'Đã ngoại tuyến',
             },
             you: 'Bạn:',
+            empty_message: 'Hãy chọn 1 hội thoại để bắt đầu trò chuyện',
             empty_conversation: 'Không tìm thấy hội thoại!',
             empty_select_conversation: 'Chọn một khách hàng để bắt đầu!',
             assign_staff: {

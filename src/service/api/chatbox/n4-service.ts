@@ -222,7 +222,7 @@ export const online_staff = (
     body: { list_page_id },
 }, proceed)
 
-/**đọc dữ liệu của page để chat */
+/**@deprecated đọc dữ liệu của page để chat */
 export const get_page_info_to_chat = (
     list_page_id: string[],
     proceed: (e?: any, r?: PageList) => void
