@@ -75,12 +75,12 @@ export class N4SerivceAppPage extends N4Serivce {
    * lấy dữ liệu page, widget, staff, user, ... của các page liên quan cần chat
    * @param org_id id tổ chức
    * @param page_ids danh sách id trang
-   * @param is_raw trả về dữ liệu nguyên bản
+   * @param is_raw_error trả về dữ liệu lỗi nguyên bản
    */
   public async getPageInfoToChat(
     org_id: string,
     page_ids: string[],
-    is_raw?: boolean
+    is_raw_error?: boolean
   ): Promise<PageList> {
     // gọi api
     return this.post(
@@ -89,7 +89,7 @@ export class N4SerivceAppPage extends N4Serivce {
         org_id,
         list_page_id: page_ids,
       },
-      is_raw
+      is_raw_error
     )
   }
 }

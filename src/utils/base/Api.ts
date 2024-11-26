@@ -21,7 +21,7 @@ export class ApiManager {
     method: string,
     qs?: any,
     body?: any,
-    is_raw?: boolean
+    is_raw_error?: boolean
   ): Promise<any> {
     try {
       /**đường dẫn cần gọi */
@@ -67,7 +67,7 @@ export class ApiManager {
       if (RESULT?.message) throw RESULT
 
       // nếu là raw thì trả về nguyên bản
-      if (is_raw) return RESULT
+      // if (is_raw) return RESULT
 
       // fix riêng cho trường hợp này
       if (RESULT?.data === false) return RESULT?.data
@@ -76,7 +76,7 @@ export class ApiManager {
       return RESULT?.data || RESULT
     } catch (e: any) {
       // nếu là raw thì ném ra luôn
-      if (is_raw) throw e
+      if (is_raw_error) throw e
       // nếu có lỗi thì ưu tiên ném ra thông báo lỗi
       else throw e?.mean || e?.message || e
     }
@@ -86,25 +86,25 @@ export class ApiManager {
   protected get(
     path: string,
     qs?: Record<string, any>,
-    is_raw?: boolean
+    is_raw_error?: boolean
   ): Promise<any> {
-    return this.#request(true, false, path, 'GET', qs, undefined, is_raw)
+    return this.#request(true, false, path, 'GET', qs, undefined, is_raw_error)
   }
   /**gọi API dạng post */
   protected post(
     path: string,
     body?: Record<string, any>,
-    is_raw?: boolean
+    is_raw_error?: boolean
   ): Promise<any> {
-    return this.#request(true, false, path, 'POST', undefined, body, is_raw)
+    return this.#request(true, false, path, 'POST', undefined, body, is_raw_error)
   }
   /**gọi API dạng form upload */
   protected upload(
     path: string,
     qs?: Record<string, any>,
     body?: FormData,
-    is_raw?: boolean
+    is_raw_error?: boolean
   ): Promise<any> {
-    return this.#request(true, true, path, 'POST', qs, body, is_raw)
+    return this.#request(true, true, path, 'POST', qs, body, is_raw_error)
   }
 }
