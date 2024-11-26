@@ -3,6 +3,7 @@ import { i18n } from '@/lang'
 
 /**
  * Custom copy to clipboard
+ * @deprecated use Clipboard instead
  */
 export const copyToClipboard = (
     text: string,

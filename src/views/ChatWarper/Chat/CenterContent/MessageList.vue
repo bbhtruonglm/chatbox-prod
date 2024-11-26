@@ -1,5 +1,8 @@
 <template>
-  <div class="h-full overflow-hidden rounded-xl relative">
+  <div
+    id="chat__message-list"
+    class="h-full overflow-hidden rounded-b-xl relative"
+  >
     <div
       v-if="isLockPage()"
       class="text-sm text-red-600 text-center"
@@ -10,7 +13,7 @@
       v-else
       @scroll="onScrollMessage"
       id="list-message"
-      class="pt-14 pb-5 px-4 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-xl"
+      class="pt-14 pb-5 px-4 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
         v-if="is_loading"
@@ -158,7 +161,7 @@ import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/Face
 import PageStaffAvatar from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageStaffAvatar.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import HeaderChat from '@/views/ChatWarper/Chat/CenterContent/MessageList/HeaderChat.vue'
+// import HeaderChat from '@/views/ChatWarper/Chat/CenterContent/MessageList/HeaderChat.vue'
 import MessageItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem.vue'
 import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnReadAlert.vue'
 

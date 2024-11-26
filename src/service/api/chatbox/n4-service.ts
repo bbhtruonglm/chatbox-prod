@@ -258,7 +258,10 @@ export const read_message = (
     body,
 }, proceed)
 
-/**đánh dấu hội thoại là đã đọc */
+/**
+ * đánh dấu hội thoại là đã đọc
+ * @deprecated dùng new N4SerivceAppOneConversation().resetRead thay thế
+ */
 export const reset_read_conversation = (
     body: QueryResetReadConversation,
     proceed: Cb

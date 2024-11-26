@@ -473,7 +473,7 @@ const source: Language = {
               reply_time: 'AI: Phản hồi chậm',
               reply_time_not_rep: 'AI: Chưa trả lời',
               header: {
-                note: 'Ghi chú, ghim, đặt lịch',
+                note: 'Ghim - Nhắc lịch - Cảnh báo',
                 alert: 'Cảnh báo',
               },
               cta: {

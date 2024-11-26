@@ -1,8 +1,10 @@
 <template>
   <div
-    class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-3"
+    id="chat__right-bar"
+    class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-2"
   >
-    <UserInfo />
+    <!-- <UserInfo /> -->
+    <AlertHeader />
     <template v-for="widget of pageStore.widget_list">
       <div
         v-if="!widget.is_hidden"
@@ -51,6 +53,7 @@ import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
 
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
+import AlertHeader from '@/views/ChatWarper/Chat/CenterContent/MessageList/AlertHeader.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
