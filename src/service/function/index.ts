@@ -28,6 +28,7 @@ import { copyToClipboard } from '../helper/copyWithAlert'
 import { User } from '@/utils/helper/User'
 import { LocaleSingleton } from '@/utils/helper/Locale'
 import { Parser } from '@/utils/helper/Parser'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -167,7 +168,10 @@ export const getPageCurrentStaff = (page_id?: string) => {
 
   return pageStore.selected_page_list_info?.[page_id as string]?.current_staff
 }
-/**lấy dữ liệu của nhân viên của trang */
+/**
+ * lấy dữ liệu của nhân viên của trang
+ * @deprecated dùng hàm của store thay thế
+ */
 export const getStaffInfo = (page_id?: string, staff_id?: string) => {
   const pageStore = usePageStore()
 
@@ -190,7 +194,10 @@ export const getLabelValid = (page_id?: string, label_list?: string[]) => {
   return label_list?.filter(label_id => getLabelInfo(page_id, label_id))
 }
 
-/**kiểm tra staff hiện tại có phải là admin của page không */
+/**
+ * kiểm tra staff hiện tại có phải là admin của page không
+ * @deprecated dùng hàm của store thay thế
+ */
 export const isCurrentStaffIsPageAdmin = (page_id: string) => {
   const pageStore = usePageStore()
 
@@ -343,8 +350,12 @@ export function isActiveFilter(type: string): boolean {
  * - đọc dữ liệu của các trang được chọn để chat
  * - đọc dữ liệu tổ chức
  * - i18n phải được truyền vào để đọc ngôn ngữ
+ * @deprecated không dùng nữa
  */
-export function getSelectedPageInfo($t: ComposerTranslation, proceed: Cb) {
+export async function getSelectedPageInfo(
+  $t: ComposerTranslation,
+  proceed: Cb
+) {
   const pageStore = usePageStore()
 
   // nạp dữ liệu của tổ chức hiện tại

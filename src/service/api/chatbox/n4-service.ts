@@ -222,7 +222,7 @@ export const online_staff = (
     body: { list_page_id },
 }, proceed)
 
-/**đọc dữ liệu của page để chat */
+/**@deprecated đọc dữ liệu của page để chat */
 export const get_page_info_to_chat = (
     list_page_id: string[],
     proceed: (e?: any, r?: PageList) => void
@@ -258,7 +258,10 @@ export const read_message = (
     body,
 }, proceed)
 
-/**đánh dấu hội thoại là đã đọc */
+/**
+ * đánh dấu hội thoại là đã đọc
+ * @deprecated dùng new N4SerivceAppOneConversation().resetRead thay thế
+ */
 export const reset_read_conversation = (
     body: QueryResetReadConversation,
     proceed: Cb

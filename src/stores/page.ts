@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { saveIndexedDB, getIndexedDB } from '@/service/helper/store'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
-import type { PageList } from '@/service/interface/app/page'
+import type { PageData, PageList } from '@/service/interface/app/page'
 import { filter, map, size } from 'lodash'
 import type {
   AppInfo,
@@ -42,6 +42,53 @@ export const usePageStore = defineStore('page_store', () => {
 
   /**dữ liệu của các page được chọn khi vào trang chat */
   const selected_page_list_info = ref<PageList>({})
+
+  /**lấy dữ liệu của nhân viên của trang */
+  function getStaff(
+    page_id?: string,
+    staff_id?: string
+  ): StaffInfo | undefined {
+    // nếu không có page_id hoặc staff_id thì thôi
+    if (!page_id || !staff_id) return
+
+    // trả về thông tin nhân viên
+    return selected_page_list_info.value?.[page_id]?.staff_list?.[staff_id]
+  }
+  /**đọc dữ liệu của 1 trang nằm trong các trang đang được chọn */
+  function getPage(page_id?: string): PageData | undefined {
+    // nếu không có page_id thì thôi
+    if (!page_id) return
+
+    // trả về thông tin trang
+    return selected_page_list_info.value?.[page_id]
+  }
+  /**lấy thông tin nhân viên hiện tại đang đăng nhập của trang */
+  function getCurrentStaff(page_id?: string): StaffInfo | undefined {
+    // nếu không có page_id thì thôi
+    if (!page_id) return
+
+    // trả về thông tin nhân viên hiện tại
+    return getPage(page_id)?.current_staff
+  }
+  /**kiểm tra staff hiện tại có phải là admin của page không */
+  function isCurrentStaffAdmin(page_id?: string) {
+    // nếu không có page_id hoặc staff_id thì thôi
+    if (!page_id) return false
+
+    /**trang hiện tại */
+    const PAGE = getPage(page_id)
+    /**nhân viên hiện tại */
+    const STAFF = getCurrentStaff(page_id)
+
+    // nếu không có trang hoặc nhân viên thì thôi
+    if (!PAGE?.group_admin_id || !STAFF) return false
+
+    // kiểm tra staff có nằm trong nhóm admin không
+    if (!STAFF?.group_staff?.includes(PAGE?.group_admin_id)) return false
+
+    // nếu là admin thì trả về true
+    return true
+  }
 
   /**dữ liệu của các nhân viên của các trang đang được chọn */
   const selected_pages_staffs = ref<Record<string, StaffInfo>>({})
@@ -95,5 +142,9 @@ export const usePageStore = defineStore('page_store', () => {
     isSelectedPage,
     setPageSelected,
     countActivePage,
+    getStaff,
+    getPage,
+    isCurrentStaffAdmin,
+    getCurrentStaff,
   }
 })

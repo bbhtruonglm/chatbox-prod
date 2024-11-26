@@ -31,7 +31,7 @@
     </template>
     <template #description>
       <div
-        @click="clipboard.copy(staff?.staff_id)"
+        @click="$clipboard.copy(staff?.staff_id)"
         class="text-xs text-slate-500 flex-grow truncate min-w-0 cursor-copy"
       >
         {{ staff?.staff_id }}
@@ -48,6 +48,8 @@
 import { useOrgStore, useChatbotUserStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import { Clipboard } from '@/utils/helper/Clipboard'
+import { container } from 'tsyringe'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
@@ -57,7 +59,6 @@ import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 
 import type { MemberShipInfo } from '@/service/interface/app/billing'
-import { ClipboardSingleton } from '@/utils/helper/Clipboard'
 
 const $emit = defineEmits(['done'])
 
@@ -69,10 +70,10 @@ const $props = withDefaults(
   {}
 )
 
+const $clipboard = container.resolve(Clipboard)
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 const { t: $t } = useI18n()
-const clipboard = ClipboardSingleton.getInst()
 
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()

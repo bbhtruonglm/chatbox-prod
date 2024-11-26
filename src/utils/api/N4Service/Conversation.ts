@@ -42,4 +42,14 @@ export class N4SerivceAppOneConversation extends N4SerivceAppConversation {
     // gọi api
     return this.post('edit_client_name', { client_name })
   }
+  /**
+   * thay đổi số tin nhắn chưa đọc
+   * @param amount số lượng tin nhắn chưa đọc mới
+   */
+  async resetRead(amount: number = 0): Promise<void> {
+    // gọi api
+    return this.post('reset_read_conversation', {
+      unread_message_amount: amount,
+    })
+  }
 }

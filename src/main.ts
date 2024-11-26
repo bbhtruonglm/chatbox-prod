@@ -1,8 +1,16 @@
+/**cái này phải để trên cùng, không được xóa, hay thay đổi vị trí */
+import 'reflect-metadata'
+
 import { waterfall } from 'async'
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import {
-    loadEnv, loadLib, loadApp, loadLanguage, loadDirective, loadRouter
+  loadEnv,
+  loadLib,
+  loadApp,
+  loadLanguage,
+  loadDirective,
+  loadRouter,
 } from '@/service/core'
 
 import type { CbError } from '@/service/interface/function'
@@ -11,11 +19,14 @@ import '@/assets/css/tailwind.css'
 
 const APP = createApp(App)
 
-waterfall([
+waterfall(
+  [
     (cb: CbError) => loadEnv(cb),
     (cb: CbError) => loadLib(cb),
     (cb: CbError) => loadRouter(APP, cb),
     (cb: CbError) => loadLanguage(APP, cb),
     (cb: CbError) => loadDirective(APP, cb),
     (cb: CbError) => loadApp(APP, cb),
-], e => APP.mount('#app'))
+  ],
+  e => APP.mount('#app')
+)

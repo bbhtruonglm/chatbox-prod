@@ -395,12 +395,15 @@ const source: Language = {
             },
             error: {
               get_page_info: 'Không tìm thấy dữ liệu trang',
+              get_org_info: 'Không tìm thấy dữ liệu tổ chức',
+              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng, vui lòng liên hệ QTV để nâng cấp'
             },
             online_status: {
               online: 'Đang trực tuyến',
               offline: 'Đã ngoại tuyến',
             },
             you: 'Bạn:',
+            empty_message: 'Hãy chọn 1 hội thoại để bắt đầu trò chuyện',
             empty_conversation: 'Không tìm thấy hội thoại!',
             empty_select_conversation: 'Chọn một khách hàng để bắt đầu!',
             assign_staff: {
@@ -473,7 +476,7 @@ const source: Language = {
               reply_time: 'AI: Phản hồi chậm',
               reply_time_not_rep: 'AI: Chưa trả lời',
               header: {
-                note: 'Ghi chú, ghim, đặt lịch',
+                note: 'Ghim - Nhắc lịch - Cảnh báo',
                 alert: 'Cảnh báo',
               },
               cta: {
@@ -896,6 +899,10 @@ const source: Language = {
               },
             },
             pay: {
+              chatbot_ai_base: 'Chatbot AI Base',
+              chatbot_ai_business: 'Chatbot AI Business',
+              chatbot_ai_pro: 'Chatbot AI Pro',
+              chatbot_ai_enterprise: 'Chatbot AI Enterprise',
               account: 'Tài khoản',
               balance: 'Số dư tài khoản',
               pack_info: 'Thông tin gói cước',

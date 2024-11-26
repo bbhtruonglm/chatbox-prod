@@ -1,5 +1,7 @@
 <template>
   <div
+    v-if="messageStore.list_message?.length"
+    id="chat_input-chat"
     ref="input_chat_warper"
     class="w-full relative flex-shrink-0 py-2 px-3 flex flex-col gap-2"
   >

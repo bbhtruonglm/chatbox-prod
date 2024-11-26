@@ -3,8 +3,10 @@ import { isObject } from 'lodash'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
 import type { SweetAlertIcon, SweetAlertPosition } from 'sweetalert2'
+import { singleton } from 'tsyringe'
 
 /**thông báo dạng toast */
+@singleton()
 export class Toast implements IAlert {
   /**thời gian toast hiển thị */
   readonly #TIMER: number
@@ -68,7 +70,10 @@ export class Toast implements IAlert {
   }
 }
 
-/**singleton quản lý toast */
+/**
+ * singleton quản lý toast
+ * @deprecated sử dụng DI container thay thế
+ */
 export class ToastSingleton extends Toast implements IAlert {
   /**đối tượng toast */
   static #inst: IAlert

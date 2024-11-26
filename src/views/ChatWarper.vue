@@ -2,7 +2,8 @@
   <div
     @dragover.prevent
     @drop="onDropFile"
-    class="h-full w-full flex relative py-3 px-4 gap-4"
+    id="router__chat"
+    class="h-full w-full flex relative p-2 gap-3"
   >
     <HotAlert
       :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE']"
@@ -17,7 +18,6 @@
 <script setup lang="ts">
 import { initRequireData } from '@/views/composable'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { checkPricingValid } from '@/service/helper/pricing'
 import HotAlert from '@/components/HotAlert.vue'
 import { useRouter } from 'vue-router'
 import {
@@ -40,11 +40,11 @@ import {
 } from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import {
+  getCurrentOrgInfo,
   getPageInfo,
   getPageWidget,
   getSelectedPageInfo,
 } from '@/service/function'
-import { getItem } from '@/service/helper/localStorage'
 import { handleFileLocal } from '@/service/helper/file'
 
 import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
@@ -60,6 +60,14 @@ import type { MessageInfo } from '@/service/interface/app/message'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
 import { N5AppV1AppApp } from '@/utils/api/N5App'
+import { loading } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error'
+import { container } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { Delay } from '@/utils/helper/Delay'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { User } from '@/utils/helper/User'
+import type { IAlert } from '@/utils/helper/Alert/type'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -70,6 +78,7 @@ const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+const $delay = container.resolve(Delay)
 
 // composable
 initRequireData()
@@ -87,7 +96,7 @@ watch(
 )
 
 onMounted(() => {
-  getPageInfoToChat()
+  $main.getPageInfoToChat()
 
   initExtensionLogic()
 
@@ -324,39 +333,6 @@ function getPageInfoToChat() {
     ],
     undefined,
     true
-  )
-}
-/**lưu trữ một số dữ liệu giống bản v1, để không cần phải sửa nhiều code */
-function intergrateChatV1() {
-  /**dữ liệu fake v1 */
-  let temp: any = {}
-
-  // format dữ liệu giống v1
-  map(pageStore.selected_page_list_info, (data, page_id) => {
-    temp[page_id] = {
-      name: data.page?.name,
-      page_id: data.current_staff?.fb_page_id,
-      fb_as_id: data.current_staff?.fb_staff_id,
-      isAdmin: !(
-        !data?.group_admin_id ||
-        !data?.current_staff?.group_staff ||
-        !data?.current_staff?.group_staff?.includes(data?.group_admin_id)
-      ),
-      fb_page_token: data.page?.fb_page_token,
-      type: data.page?.type,
-    }
-  })
-
-  // sử dụng thư viện của bản v1, nên không ép kiểu nữa
-  // @ts-ignore
-  ldb.set('storage-token__Pages', JSON.stringify(temp))
-
-  // dữ liệu local của v1
-  localStorage.setItem(
-    'vuex',
-    JSON.stringify({
-      login: { token: getItem('access_token') },
-    })
   )
 }
 /**lắng nghe sự kiện từ socket */
@@ -657,4 +633,63 @@ function closeSocketConnect() {
 
   socket_connection.value?.close()
 }
+
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // nếu lỗi là không có quyền truy cập thì thông báo khác
+    if (message?.message === 'COMMON.ACCESS_DENIED')
+      message = $t('v1.view.main.dashboard.chat.error.org_quota_staff')
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
+
+class Main {
+  /**đọc dữ liệu của các page được chọn lưu lại */
+  @loading(commonStore.is_loading_full_screen)
+  // nếu lỗi thì chuyển về trang chọn page
+  @error(new CustomToast(), () => $router.push('/dashboard'))
+  async getPageInfoToChat() {
+    // delay một chút để load dữ liệu từ local vào store kịp
+    await $delay.exec(200)
+
+    /**danh sách id các page được chọn */
+    const SELECTED_PAGE_IDS = keys(pageStore.selected_page_id_list)
+
+    // nếu không có page nào được chọn thì thôi
+    if (!SELECTED_PAGE_IDS?.length)
+      throw $t('v1.view.main.dashboard.chat.error.get_page_info')
+
+    // nạp lại dữ liệu của tổ chức hiện tại đang chọn cho chắc
+    getCurrentOrgInfo()
+
+    // nếu vẫn không có tổ chức thì thôi
+    if (!orgStore.selected_org_id)
+      throw $t('v1.view.main.dashboard.chat.error.get_org_info')
+
+    /**dữ liệu các trang đang chọn */
+    const PAGES = await new N4SerivceAppPage().getPageInfoToChat(
+      orgStore.selected_org_id,
+      SELECTED_PAGE_IDS,
+      true
+    )
+
+    // nếu không có dữ liệu trang nào thì thôi
+    if (!PAGES) throw $t('v1.view.main.dashboard.chat.error.get_page_info')
+
+    // lưu dữ liệu trang đã chọn
+    pageStore.selected_page_list_info = PAGES
+
+    // lưu dữ liệu nhân viên của các trang đã chọn
+    pageStore.selected_pages_staffs = User.getUsersInfo(PAGES)
+
+    // lưu lại các widget trên chợ, để map cta
+    pageStore.market_widgets = await new N5AppV1AppApp().readMarket()
+
+    // khởi tạo kết nối socket lên server
+    onSocketFromChatboxServer()
+  }
+}
+const $main = new Main()
 </script>

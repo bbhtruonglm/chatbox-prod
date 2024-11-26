@@ -7,6 +7,7 @@ import type {
   ConversationList,
   FilterConversation,
 } from '@/service/interface/app/conversation'
+import { usePageStore } from './page'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { ClientInfo } from '@/utils/api/Chatbot'
 
@@ -22,6 +23,25 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
   /**dữ liệu của 1 khách hàng khi được chọn */
   const select_conversation = ref<ConversationInfo>()
+
+  /**lấy thông tin nhân viên được gán cho hội thoại này */
+  function getAssignStaff() {
+    const pageStore = usePageStore()
+
+    // lấy thông tin nhân viên được gán
+    return pageStore.getStaff(
+      select_conversation.value?.fb_page_id,
+      select_conversation.value?.user_id ||
+        select_conversation.value?.fb_staff_id
+    )
+  }
+  /**kiểm tra staff hiện tại có phải là admin của page của hội thoại này không */
+  function isCurrentStaffAdmin() {
+    const pageStore = usePageStore()
+
+    // trả về kết quả kiểm tra
+    return pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id)
+  }
 
   /**danh sách hội thoại đang hiển thị */
   const conversation_list = ref<ConversationList>({})
@@ -72,5 +92,8 @@ export const useConversationStore = defineStore('conversation_store', () => {
     is_edit_info,
     chatbot_client,
     is_edit_client,
+
+    getAssignStaff,
+    isCurrentStaffAdmin,
   }
 })
