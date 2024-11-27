@@ -52,7 +52,7 @@ export class EnvManage implements IEnvManage {
     if (!this.store) throw new UninitializedError('ENV')
 
     // nếu không có đường dẫn thì trả về toàn bộ cài đặt
-    if (!path) return this.store as T
+    if (!path) return this.store as unknown as T
 
     // lấy giá trị theo đường dẫn
     return get(this.store, path)
