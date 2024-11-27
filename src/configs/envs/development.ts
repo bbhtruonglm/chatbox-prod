@@ -1,5 +1,5 @@
 /**thiết lập của môi trường này */
-const ENV: EnvInfo = {
+const ENV: IEnv = {
     local_storage: {
         prefix: 'chatbox_'
     },
