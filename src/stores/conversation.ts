@@ -10,6 +10,7 @@ import type {
 import { usePageStore } from './page'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { ClientInfo } from '@/utils/api/Chatbot'
+import type { ILabel } from '@/service/interface/app/label'
 
 export const useConversationStore = defineStore('conversation_store', () => {
   /**lưu dữ liệu lọc hội thoại */
@@ -41,6 +42,26 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
     // trả về kết quả kiểm tra
     return pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id)
+  }
+  /**lấy danh sách nhãn của trang của hội thoại này */
+  function getLabels(): Record<string, ILabel> | undefined {
+    const pageStore = usePageStore()
+
+    // trả về danh sách nhãn
+    return pageStore.getLabels(select_conversation.value?.fb_page_id)
+  }
+  /**
+   * danh sách các id nhãn đang kích hoạt của hội thoại 
+   * - đã lọc ra các id nhãn đã bị xóa
+   */
+  function getActiveLabelIds() {
+    /**các nhãn của trang của hội thoại này */
+    const LABELS = getLabels()
+
+    // lọc các id nhãn còn tồn tại của trang
+    return select_conversation.value?.label_id?.filter(
+      label_id => LABELS?.[label_id]
+    )
   }
 
   /**danh sách hội thoại đang hiển thị */
@@ -95,5 +116,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
     getAssignStaff,
     isCurrentStaffAdmin,
+    getLabels,
+    getActiveLabelIds,
   }
 })

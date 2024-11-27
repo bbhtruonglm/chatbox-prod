@@ -1,5 +1,5 @@
 /**dữ liệu của một nhãn */
-export interface LabelInfo {
+export interface ILabel {
     type: 'custom'
     text_color: string
     bg_color: string
@@ -10,4 +10,6 @@ export interface LabelInfo {
     is_selected?: boolean
     /** trạng thái hiển thị khi lọc theo page */
     show_label?: boolean
+    /**thời gian tạo */
+    createdAt?: string
 }

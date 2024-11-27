@@ -130,6 +130,11 @@ watch(
   () => pageStore.active_page_list,
   () => getListPage()
 )
+// nạp lại danh sách page thì có thay đổi ở trang toàn bộ tổ chức
+watch(
+  () => pageStore.map_orgs,
+  () => getListPage()
+)
 
 /**lặp qua từng trang của nhóm */
 function loopPageOfGroup(proceed: (page?: IPage) => void) {

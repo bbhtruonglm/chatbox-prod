@@ -184,7 +184,7 @@ import { useI18n } from 'vue-i18n'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
-import type { LabelInfo } from '@/service/interface/app/label'
+import type { ILabel } from '@/service/interface/app/label'
 import type { StaffInfo } from '@/service/interface/app/staff'
 import { getSelectedPageInfo, isCurrentStaffIsPageAdmin, openNewTab } from '@/service/function'
 import type { Cb, CbError } from '@/service/interface/function'
@@ -209,7 +209,7 @@ const list_page = ref<PageData[]>([])
 /**đếm tổng số khách hàng thoả mãn điều kiện lọc */
 const total_conversation = ref<number>()
 /** Danh sách label của page đang được chọn */
-const labels = ref<{ [index: string]: LabelInfo }>({})
+const labels = ref<{ [index: string]: ILabel }>({})
 /** Danh sách nhân viên */
 const staffs = ref<{ [index: string]: StaffInfo }>({})
 

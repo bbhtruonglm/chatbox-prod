@@ -1,3 +1,5 @@
+import { singleton } from 'tsyringe'
+
 /**quản lý local của trang */
 export interface ILocalStorage {
   /**
@@ -17,6 +19,7 @@ export interface ILocalStorage {
 }
 
 /**quản lý local của trang */
+@singleton()
 export class LocalStorage implements ILocalStorage {
   getItem<T = any>(
     key: string,
@@ -39,25 +42,5 @@ export class LocalStorage implements ILocalStorage {
   setItem(key: string, value: any, prefix: string = $env.local_storage.prefix) {
     // lưu dữ liệu vào local
     localStorage.setItem(`${prefix}${key}`, JSON.stringify(value))
-  }
-}
-
-/**quản lý local của trang */
-export class SingletonLocalStorage extends LocalStorage {
-  /**thực thể duy nhất */
-  private static inst: ILocalStorage
-
-  // chặn khởi tạo từ bên ngoài
-  private constructor() {
-    super()
-  }
-
-  /**lấy thực thể */
-  static getInst(): ILocalStorage {
-    // nếu chưa có thực thể thì tạo mới
-    if (!this.inst) this.inst = new this()
-
-    // trả về thực thể
-    return this.inst
   }
 }

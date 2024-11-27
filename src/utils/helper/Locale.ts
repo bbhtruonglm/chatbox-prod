@@ -1,4 +1,5 @@
 import { CookieSingleton } from '@/utils/base/KVStorage/Cookie'
+import { singleton } from 'tsyringe'
 
 import type { IKVStorage } from '@/utils/base/KVStorage/type'
 
@@ -14,6 +15,7 @@ export interface ILocale {
 }
 
 /**quản lý giá trị locale hiện tại */
+@singleton()
 export class Locale implements ILocale {
   /**cookie quản lý locale */
   readonly #KVS: IKVStorage = CookieSingleton.getInst()
@@ -32,7 +34,10 @@ export class Locale implements ILocale {
   }
 }
 
-/**singleton quản lý locale */
+/**
+ * singleton quản lý locale
+ * @deprecated
+ */
 export class LocaleSingleton extends Locale implements ILocale {
   /**đối tượng locale */
   static #inst: ILocale

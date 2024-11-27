@@ -57,15 +57,15 @@ import TagItem from '@/views/ChatWarper/Menu/FilterModal/Tag/TagItem.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import type { LabelInfo } from '@/service/interface/app/label'
+import type { ILabel } from '@/service/interface/app/label'
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
 
 /** Danh sách label của page đang được chọn */
-const label_list = ref<LabelInfo[]>([])
+const label_list = ref<ILabel[]>([])
 /** Snap label của page đang được chọn */
-const snap_labels = ref<{ [index: string]: LabelInfo }>({})
+const snap_labels = ref<{ [index: string]: ILabel }>({})
 /** ID page hiện tại đang được chọn */
 const label_search_name = ref<string>('')
 /**ref của dropdown */
@@ -101,7 +101,7 @@ function getLabelList() {
   // lưu lại danh sách nhãn gốc dưới dạng obj
   map(pageStore.selected_page_list_info, item => {
     /**tạo ra obj mới để tránh lỗi trùng lặp lựa chọn */
-    const ORIGIN_PAGE_LIST_LABEL: Record<string, LabelInfo> = copy(
+    const ORIGIN_PAGE_LIST_LABEL: Record<string, ILabel> = copy(
       mapValues(item.label_list, label => {
         // gắn toàn bộ nhãn cờ chưa chọn để tránh lỗi khi sort
         label.is_selected = false
@@ -171,7 +171,7 @@ function selectLabel(index: number) {
   label_list.value = sortLabel(label_list.value)
 }
 /**đưa các label được chọn lên đầu */
-function sortLabel(input: LabelInfo[]) {
+function sortLabel(input: ILabel[]) {
   return sortBy(input, 'is_selected').reverse()
 }
 /** Tìm kiếm nhãn theo tên */
@@ -181,7 +181,7 @@ const searchLabel = debounce(($event: Event) => {
     return (label_list.value = sortLabel(map(snap_labels.value)))
 
   // lọc các nhãn thoả mãn tìm kiếm
-  let temp: LabelInfo[] = map(snap_labels.value).filter((item: LabelInfo) =>
+  let temp: ILabel[] = map(snap_labels.value).filter((item: ILabel) =>
     nonAccentVn(item.title).includes(nonAccentVn(label_search_name.value))
   )
 

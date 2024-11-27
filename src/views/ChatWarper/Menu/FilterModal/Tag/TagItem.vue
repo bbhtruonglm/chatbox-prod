@@ -22,13 +22,13 @@
 import { usePageStore } from '@/stores'
 import { getPageInfo } from '@/service/function'
 
-import type { LabelInfo } from '@/service/interface/app/label'
+import type { ILabel } from '@/service/interface/app/label'
 
 const pageStore = usePageStore()
 
 const $props = withDefaults(defineProps<{
     /**dữ liệu của nhãn */
-    label?: LabelInfo
+    label?: ILabel
     /**nhãn có được chọn hay không */
     is_selected?: boolean
     /**nhãn có bị tắt hay không */

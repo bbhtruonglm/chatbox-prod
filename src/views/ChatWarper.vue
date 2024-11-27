@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { initRequireData } from '@/views/composable'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, toRef, watch } from 'vue'
 import HotAlert from '@/components/HotAlert.vue'
 import { useRouter } from 'vue-router'
 import {
@@ -647,7 +647,7 @@ class CustomToast extends Toast implements IAlert {
 
 class Main {
   /**đọc dữ liệu của các page được chọn lưu lại */
-  @loading(commonStore.is_loading_full_screen)
+  @loading(toRef(commonStore, 'is_loading_full_screen'))
   // nếu lỗi thì chuyển về trang chọn page
   @error(new CustomToast(), () => $router.push('/dashboard'))
   async getPageInfoToChat() {
