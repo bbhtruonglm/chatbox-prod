@@ -1,17 +1,19 @@
 <template>
   <div
     v-if="active_page_list?.length"
+    id="all-org__org-item"
     :class="{
       'opacity-50':
         orgStore.selected_org_id !== org_id &&
         size(pageStore.selected_page_id_list) &&
         selectPageStore.is_group_page_mode,
     }"
-    class="flex flex-col gap-2.5"
+    class="flex flex-col"
   >
     <OrgTitle
       v-model:selected_platform="selected_platform"
       :org_id
+      :active_page_list
     />
     <OrgPages
       @sort_list_page="getListPage"

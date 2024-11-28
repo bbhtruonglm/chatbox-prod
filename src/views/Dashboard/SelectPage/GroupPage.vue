@@ -10,7 +10,10 @@
     <template #title>
       {{ title }}
     </template>
-    <template #action>
+    <template
+      v-if="!orgStore.is_selected_all_org"
+      #action
+    >
       <label
         v-if="selectPageStore.is_group_page_mode"
         class="flex items-center gap-1 px-6 cursor-pointer"
@@ -42,7 +45,7 @@
   />
 </template>
 <script setup lang="ts">
-import { usePageStore, useSelectPageStore } from '@/stores'
+import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { ref, watch, computed, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
@@ -76,6 +79,7 @@ const $props = withDefaults(
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
+const orgStore = useOrgStore()
 
 /**hàm sort lại danh sách trang của component cha */
 const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)

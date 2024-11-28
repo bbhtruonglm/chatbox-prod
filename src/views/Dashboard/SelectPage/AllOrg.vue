@@ -4,6 +4,7 @@
     class="overflow-y-auto flex flex-col gap-6 pb-16"
   >
     <GroupPage
+      v-if="!selectPageStore.is_group_page_mode"
       @select_page="$main.triggerSelectPage"
       filter="RECENT"
       :icon="ClockIcon"
