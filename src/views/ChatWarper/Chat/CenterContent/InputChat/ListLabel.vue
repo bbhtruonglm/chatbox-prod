@@ -10,8 +10,7 @@
     >
       <Loading />
     </div>
-
-    <div class="flex items-start flex-grow gap-1">
+    <div class="flex items-end flex-grow gap-1">
       <div
         ref="ref_labels"
         :class="is_expand_label ? 'overflow-y-auto' : 'overflow-hidden'"
@@ -24,6 +23,14 @@
         />
       </div>
       <button
+        v-if="orgStore.isAdminOrg()"
+        v-tooltip="$t('v1.common.setting')"
+        @click="$external_site.openPageSetting('dialogue-tag')"
+        class="rounded border border-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center hidden group-hover:flex"
+      >
+        <CogBoldIcon class="w-4 h-4 text-slate-700" />
+      </button>
+      <button
         v-tooltip="
           is_expand_label ? $t('v1.common.contract') : $t('v1.common.expand')
         "
@@ -31,49 +38,39 @@
         @click="$main.expandList"
         class="rounded border border-slate-500 text-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center flex text-xs font-semibold"
       >
-        +{{ total_over_label }}
+        <ArrowDownIcon
+          v-if="is_expand_label"
+          class="w-2.5 h-2.5"
+        />
+        <span v-else> +{{ total_over_label }} </span>
       </button>
     </div>
-
-    <button
-      v-tooltip="$t('v1.common.setting')"
-      @click="$main.openSettingLabel"
-      class="rounded border border-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center hidden group-hover:flex"
-    >
-      <CogBoldIcon class="w-4 h-4 text-slate-700" />
-    </button>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { map, sortBy } from 'lodash'
 import { useConversationStore, useOrgStore } from '@/stores'
-
-import Loading from '@/components/Loading.vue'
-import LabelItem from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel/LabelItem.vue'
-
-import CogBoldIcon from '@/components/Icons/CogBold.vue'
-
-import type { ICustomLabel } from './ListLabel/type'
 import { loading } from '@/utils/decorator/loading'
 import { error } from '@/utils/decorator/error'
 import { container } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
 import { nextTick } from 'async'
-import {
-  Navigation,
-  WindowAction,
-  type IWindowAction,
-} from '@/utils/helper/Navigation'
-import { Locale, LocaleSingleton, type ILocale } from '@/utils/helper/Locale'
-import { Parser } from '@/utils/helper/Parser'
-import { LocalStorage, type ILocalStorage } from '@/utils/helper/LocalStorage'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
+
+import Loading from '@/components/Loading.vue'
+import LabelItem from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel/LabelItem.vue'
+
+import CogBoldIcon from '@/components/Icons/CogBold.vue'
+import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
+
+import type { ICustomLabel } from './ListLabel/type'
 
 const conversationStore = useConversationStore()
 const $toast = container.resolve(Toast)
-const locale = LocaleSingleton.getInst().get()
 const orgStore = useOrgStore()
+const $external_site = container.resolve(ExternalSite)
 
 /**tham chiếu đến div danh sách nhãn */
 const ref_labels = ref<HTMLDivElement>()
@@ -87,21 +84,6 @@ const labels = ref<ICustomLabel[]>()
 const total_over_label = ref<number>(0)
 
 class Main {
-  /**
-   * @param SERVICE_LOCALSTORAGE service lưu trữ local
-   * @param SERVICE_LOCALE service ngôn ngữ
-   * @param SERVICE_WINDOW_ACTION service thao tác cửa sổ
-   */
-  constructor(
-    private readonly SERVICE_LOCALSTORAGE: ILocalStorage = container.resolve(
-      LocalStorage
-    ),
-    private readonly SERVICE_LOCALE: ILocale = container.resolve(Locale),
-    private readonly SERVICE_WINDOW_ACTION: IWindowAction = container.resolve(
-      WindowAction
-    )
-  ) {}
-
   /**kiểm tra label có được chọn hay không */
   private isActiveLabel(label_id?: string) {
     // nếu không có nhãn thì trả về false
@@ -187,25 +169,6 @@ class Main {
       conversationStore.select_conversation?.fb_page_id as string,
       conversationStore.select_conversation?.fb_client_id as string
     ).toggleLabel(label_id)
-  }
-  openSettingLabel() {
-    /**id trang */
-    const PAGE_ID = conversationStore.select_conversation?.fb_page_id
-
-    /**đường dẫn ui thiết lập trang */
-    const URI = $env.host.page_setting_view
-
-    /**dữ liệu đính kèm url */
-    const QS = Parser.toQueryString({
-      token: this.SERVICE_LOCALSTORAGE.getItem('access_token'),
-      fb_page_id: PAGE_ID,
-      page_id: PAGE_ID,
-      locale: this.SERVICE_LOCALE.get(),
-      org_id: orgStore.selected_org_id,
-    })
-
-    // mở tab mới
-    this.SERVICE_WINDOW_ACTION.openNewTab(`${URI}/dialogue-tag?${QS}`)
   }
 }
 const $main = new Main()

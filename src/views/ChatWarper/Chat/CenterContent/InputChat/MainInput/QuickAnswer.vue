@@ -1,5 +1,6 @@
 <template>
   <SlashQuareIcon
+    id="chat__quick-answer__btn"
     v-if="!isVisibleSendBtn?.()"
     v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')"
     @click="toggleModal()"
@@ -10,6 +11,7 @@
     v-if="commonStore.is_show_quick_answer"
   >
     <div
+      id="chat__quick-answer__modal"
       @click="toggleModal"
       class="absolute top-0 left-0 w-screen h-screen z-20"
     >
@@ -28,8 +30,14 @@
           <div class="font-semibold">
             {{ $t('v1.view.main.dashboard.chat.quick_answer.enter') }}
           </div>
-          <div class="text-gray-500">
+          <div class="text-gray-500 flex items-center gap-3">
             {{ $t('v1.view.main.dashboard.chat.quick_answer.guild') }}
+            <CogIcon
+              v-if="orgStore.isAdminOrg()"
+              v-tooltip="$t('v1.common.setting')"
+              @click="$external_site.openPageSetting('quick-reply')"
+              class="w-6 h-6 text-black cursor-pointer"
+            />
           </div>
         </div>
         <div class="overflow-y-auto flex flex-col py-2 gap-2">
@@ -72,29 +80,39 @@
 </template>
 <script setup lang="ts">
 import { computed, inject, nextTick, ref } from 'vue'
-import { useConversationStore, useMessageStore, useCommonStore } from '@/stores'
+import {
+  useConversationStore,
+  useMessageStore,
+  useCommonStore,
+  useOrgStore,
+} from '@/stores'
 import { nonAccentVn } from '@/service/helper/format'
 import { last, size } from 'lodash'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 import { useI18n } from 'vue-i18n'
+import { getPageInfo, getStaffInfo } from '@/service/function'
+import { toastError } from '@/service/helper/alert'
+import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
+import { QuickAnswer } from '@/utils/api/Widget'
+import { container } from 'tsyringe'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
 
 import Loading from '@/components/Loading.vue'
 
 import SlashQuareIcon from '@/components/Icons/SlashQuare.vue'
 import AiBoldIcon from '@/components/Icons/AiBold.vue'
 import TextIcon from '@/components/Icons/Text.vue'
+import CogIcon from '@/components/Icons/Cog.vue'
 
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
-import { getPageInfo, getStaffInfo } from '@/service/function'
-import { toastError } from '@/service/helper/alert'
-import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
 import type { SourceChat } from '@/service/interface/app/ai'
-import { QuickAnswer } from '@/utils/api/Widget'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
+const orgStore = useOrgStore()
+const $external_site = container.resolve(ExternalSite)
 
 /**cache câu trả lời, hạnc chế gọi API liên tục mỗi lần click */
 const CACHE_LIST_ANSWER = new Map<string, QuickAnswerInfo[]>()

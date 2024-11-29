@@ -1,6 +1,6 @@
 /**lớp cha để tạo ra các lớp lỗi dựa theo tên của lớp */
 export class CustomError extends Error {
-  constructor(message: string) {
+  constructor(message?: string) {
     // gọi hàm khởi tạo của lớp cha
     super(message)
 

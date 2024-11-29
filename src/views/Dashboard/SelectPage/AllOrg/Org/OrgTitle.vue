@@ -1,7 +1,7 @@
 <template>
   <div
     id="org-item__org-title"
-    class="bg-white rounded-t-lg py-1.5 px-3 flex justify-between gap-2 sticky top-0 z-10"
+    class="bg-white rounded-t-lg pt-1.5 px-3 flex justify-between gap-2 sticky top-0 z-10"
   >
     <div class="flex items-center gap-3">
       <div class="flex items-center gap-1 flex-shrink-0">
