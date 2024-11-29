@@ -1,5 +1,5 @@
 import type { AllStaffList, StaffInfo } from '@/service/interface/app/staff'
-import type { LabelInfo } from './label'
+import type { ILabel } from './label'
 import type { AppInstalledInfo } from './widget'
 
 export type PageType =
@@ -555,9 +555,7 @@ export interface PageData {
   data_key?: string
   page?: IPage
   staff_list?: AllStaffList
-  label_list?: {
-    [index: string]: LabelInfo
-  }
+  label_list?: Record<string, ILabel>
   current_staff?: StaffInfo
   widget_list: AppInstalledInfo[]
   /**id nhóm admin */

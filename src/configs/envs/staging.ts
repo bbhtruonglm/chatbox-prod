@@ -1,5 +1,5 @@
 /**thiết lập của môi trường này */
-const ENV: EnvInfo = {
+const ENV: IEnv = {
     local_storage: {
         prefix: 'chatbox_'
     },
@@ -18,7 +18,7 @@ const ENV: EnvInfo = {
         n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',
         
-        page_setting_view: 'https://bbh-setting-three.vercel.app',
+        page_setting_view: 'https://setting-dev.vercel.app',
         analytic_view: 'https://sellingpage.net/analytic/#/',
         chatbot_view: 'https://chatbot.sellingpage.net/#/',
         download_client: 'https://sellingpage.net/download/',

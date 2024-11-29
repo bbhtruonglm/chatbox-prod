@@ -1,4 +1,4 @@
-import type { LabelInfo } from './label'
+import type { ILabel } from './label'
 
 /**các trạng thái của app được cài */
 export type AppInstalledStatus = 'SUCCESS' | 'INIT'
@@ -115,7 +115,7 @@ export interface InputCreateTokenWidget {
     /**tên nv hiện tại đang chat */
     current_staff_name?: string
     /**dữ liệu của các nhãn của hội thoại này */
-    label_data?: LabelInfo[]
+    label_data?: ILabel[]
     /**id tổ chức hiện tại */
     org_id?: string
   }

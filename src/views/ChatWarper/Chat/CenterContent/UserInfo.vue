@@ -122,7 +122,7 @@ class Main {
     change_staff_ref.value?.toggle($event)
   }
 
-  @loading(is_loading_unread_conversation.value)
+  @loading(is_loading_unread_conversation)
   @error($toast)
   /**đánh dấu hội thoại này là chưa đọc */
   async unreadConversation() {

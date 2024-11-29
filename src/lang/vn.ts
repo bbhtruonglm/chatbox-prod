@@ -473,6 +473,7 @@ const source: Language = {
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
+              reply_time_basic: 'Phản hồi tin nhắn',
               reply_time: 'AI: Phản hồi chậm',
               reply_time_not_rep: 'AI: Chưa trả lời',
               header: {

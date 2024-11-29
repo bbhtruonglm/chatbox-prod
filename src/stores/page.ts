@@ -12,6 +12,7 @@ import type {
 } from '@/service/interface/app/widget'
 import type { StaffInfo } from '@/service/interface/app/staff'
 import type { PageOrgInfoMap } from '@/service/interface/app/billing'
+import type { ILabel } from '@/service/interface/app/label'
 
 export const usePageStore = defineStore('page_store', () => {
   /** -------------- STAGE -------------- */
@@ -89,6 +90,14 @@ export const usePageStore = defineStore('page_store', () => {
     // nếu là admin thì trả về true
     return true
   }
+  /**lấy danh sách nhãn của trang */
+  function getLabels(page_id?: string): Record<string, ILabel> | undefined {
+    // nếu không có page_id thì thôi
+    if (!page_id) return
+
+    // trả về thông tin trang
+    return selected_page_list_info.value?.[page_id]?.label_list
+  }
 
   /**dữ liệu của các nhân viên của các trang đang được chọn */
   const selected_pages_staffs = ref<Record<string, StaffInfo>>({})
@@ -146,5 +155,6 @@ export const usePageStore = defineStore('page_store', () => {
     getPage,
     isCurrentStaffAdmin,
     getCurrentStaff,
+    getLabels,
   }
 })

@@ -52,4 +52,8 @@ export class N4SerivceAppOneConversation extends N4SerivceAppConversation {
       unread_message_amount: amount,
     })
   }
+  async toggleLabel(label_id: string): Promise<void> {
+    // gọi api
+    return this.post('toggle_label_conversation', { label_id })
+  }
 }

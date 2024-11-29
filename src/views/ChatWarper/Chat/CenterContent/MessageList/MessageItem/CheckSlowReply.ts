@@ -15,6 +15,8 @@ export interface ICheckSlowReply {
   isWarning(): boolean | undefined
   /**thời gian rep chậm là bao lâu */
   getDuration(): string | undefined
+  /**tin nhắn có cần hiển thị thời gian rep không */
+  isShowDuration(): boolean | undefined
 }
 
 /**tính toán hiển thị, cảnh báo tin nhắn của khách có bị nhân viên rep chậm không */
@@ -66,6 +68,17 @@ export class CheckSlowReply implements ICheckSlowReply {
 
     // trả về thời gian giữa 2 tin nhắn
     return this.#calcDuration(CURRENT_DATE, NEXT_DATE)
+  }
+  isShowDuration() {
+    // nếu tin nhắn này không phải của khách gửi thì thôi
+    if (this.CURRENT_MESSAGE?.message_type !== 'client') return false
+
+    // nếu có tin tiếp theo, thì phải là tin của page mới tính
+    if (!this.NEXT_MESSAGE || this.NEXT_MESSAGE?.message_type !== 'page')
+      return false
+
+    // đánh dấu rep chậm
+    return true
   }
   isSlowReply() {
     // nếu AI không đánh dấu rep chậm thì thôi

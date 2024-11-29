@@ -70,7 +70,6 @@
       </template>
     </template>
   </DashboardLayout>
-  <!-- <RequirePricing /> -->
 </template>
 
 <script setup lang="ts">
@@ -168,9 +167,6 @@ onMounted(() => {
    * nhưng sẽ bị gọi api 2 lần lúc đầu
    */
   getMeChatbotUser?.()
-
-  // load danh sách page
-  loadListPage?.(orgStore.selected_org_id)
 
   // kích hoạt zalo nếu phát hiện
   triggerConnectZalo()

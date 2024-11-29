@@ -1,29 +1,21 @@
 <template>
   <button
     :style="{
-      color: isActiveLabel?.(label_info?._id) ? 'white' : label_info?.bg_color,
-      background: isActiveLabel?.(label_info?._id)
-        ? label_info?.bg_color
-        : 'white',
+      color: label?.is_active ? 'white' : label?.bg_color,
+      background: label?.is_active ? label?.bg_color : 'white',
     }"
-    class="text-xs w-fit px-2 rounded-md py-0.5"
+    class="text-xs w-fit px-2 rounded-md py-1 truncate"
   >
-    {{ label_info?.title }}
+    {{ label?.title }}
   </button>
 </template>
 <script setup lang="ts">
-import { IS_ACTIVE_LABEL_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
-import { inject } from 'vue'
-
-import type { LabelInfo } from '@/service/interface/app/label'
+import type { ICustomLabel } from './type'
 
 const $props = withDefaults(
   defineProps<{
-    label_info: LabelInfo
+    label: ICustomLabel
   }>(),
   {}
 )
-
-/**kiểm tra xem nhãn có được chọn không */
-const isActiveLabel = inject(IS_ACTIVE_LABEL_FUNCT)
 </script>

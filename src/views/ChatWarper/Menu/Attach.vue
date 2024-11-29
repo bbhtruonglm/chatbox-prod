@@ -43,7 +43,7 @@
     </MenuItem>
     <MenuItem
       v-if="orgStore.isAdminOrg()"
-      @click="openPageSetting"
+      @click="$external_site.openPageSetting()"
       :icon="CogIcon"
       :title="$t('v1.view.main.dashboard.nav.setting')"
     >
@@ -104,6 +104,8 @@ import { getItem } from '@/service/helper/localStorage'
 import { useRouter } from 'vue-router'
 import { toastError } from '@/service/helper/alert'
 import { ref } from 'vue'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
+import { container } from 'tsyringe'
 
 import Dropdown from '@/components/Dropdown.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
@@ -132,6 +134,7 @@ const pageStore = usePageStore()
 const $router = useRouter()
 const orgStore = useOrgStore()
 const locale = LocaleSingleton.getInst().get()
+const $external_site = container.resolve(ExternalSite)
 
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Dropdown>>()
@@ -141,26 +144,7 @@ function redirectMenu(path: string) {
   // chuyển đến trang
   $router.push(`/dashboard/${path}`)
 }
-/**mở cài đặt trang */
-function openPageSetting() {
-  /**lấy ra id đầu tiên trong list các trang đang chọn */
-  const PAGE_ID = keys(pageStore.selected_page_id_list)?.[0]
-
-  /**đường dẫn ui thiết lập trang */
-  const URI = $env.host.page_setting_view
-
-  /**dữ liệu đính kèm url */
-  const QS = Parser.toQueryString({
-    token: getItem('access_token'),
-    fb_page_id: PAGE_ID,
-    page_id: PAGE_ID,
-    locale: locale,
-    org_id: orgStore.selected_org_id,
-  })
-
-  // mở tab mới
-  Navigation.openNewTab(`${URI}?${QS}`)
-}
+/**mở merchant */
 function openMerchant() {
   // mở tab mới
   Navigation.openNewTab(`https://merchant.vn`)

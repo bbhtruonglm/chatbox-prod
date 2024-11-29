@@ -1,7 +1,8 @@
 <template>
   <div
-    :class="is_expand_label ? 'max-h-40 min-h-5' : 'h-5'"
-    class="flex pl-4 gap-2"
+    id="chat__select-label"
+    :class="is_expand_label ? 'max-h-40 min-h-6' : 'h-6'"
+    class="flex gap-1 group"
   >
     <div
       v-if="is_loading_label"
@@ -9,110 +10,184 @@
     >
       <Loading />
     </div>
-
-    <div class="flex items-end">
+    <div class="flex items-end flex-grow gap-1">
+      <div
+        ref="ref_labels"
+        :class="is_expand_label ? 'overflow-y-auto' : 'overflow-hidden'"
+        class="w-full flex flex-wrap justify-start gap-1 h-full"
+      >
+        <LabelItem
+          v-for="label of labels"
+          :label
+          @click="$main.toggleLabel(label._id)"
+        />
+      </div>
+      <button
+        v-if="orgStore.isAdminOrg()"
+        v-tooltip="$t('v1.common.setting')"
+        @click="$external_site.openPageSetting('dialogue-tag')"
+        class="rounded border border-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center hidden group-hover:flex"
+      >
+        <CogBoldIcon class="w-4 h-4 text-slate-700" />
+      </button>
       <button
         v-tooltip="
           is_expand_label ? $t('v1.common.contract') : $t('v1.common.expand')
         "
-        @click="is_expand_label = !is_expand_label"
+        v-if="total_over_label"
+        @click="$main.expandList"
+        class="rounded border border-slate-500 text-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center flex text-xs font-semibold"
       >
-        <ArrowCircleUp
-          :class="{
-            'rotate-180': is_expand_label,
-          }"
-          class="w-5 h-5 duration-500"
+        <ArrowDownIcon
+          v-if="is_expand_label"
+          class="w-2.5 h-2.5"
         />
+        <span v-else> +{{ total_over_label }} </span>
       </button>
-    </div>
-    <div class="w-full overflow-y-auto flex flex-wrap justify-start gap-2">
-      <LabelItem
-        v-for="label_info of getActiveLabel()"
-        :label_info
-        @click="toggleLabel(label_info._id)"
-      />
-      <div
-        v-if="getActiveLabel()?.length"
-        class="w-full"
-      />
-      <LabelItem
-        v-for="label_info of getUnactiveLabel()"
-        :label_info
-        @click="toggleLabel(label_info._id)"
-      />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from 'vue'
-import { getLabelValid, getPageLabel } from '@/service/function'
-import { map } from 'lodash'
-import { useConversationStore } from '@/stores'
-import { toggle_label_conversation } from '@/service/api/chatbox/n4-service'
-import { toastError } from '@/service/helper/alert'
-import { IS_ACTIVE_LABEL_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
+import { onMounted, ref, watch } from 'vue'
+import { map, sortBy } from 'lodash'
+import { useConversationStore, useOrgStore } from '@/stores'
+import { loading } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error'
+import { container } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
+import { nextTick } from 'async'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
 
 import Loading from '@/components/Loading.vue'
 import LabelItem from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel/LabelItem.vue'
 
-import ArrowCircleUp from '@/components/Icons/ArrowCircleUp.vue'
+import CogBoldIcon from '@/components/Icons/CogBold.vue'
+import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
+
+import type { ICustomLabel } from './ListLabel/type'
 
 const conversationStore = useConversationStore()
+const $toast = container.resolve(Toast)
+const orgStore = useOrgStore()
+const $external_site = container.resolve(ExternalSite)
 
+/**tham chiếu đến div danh sách nhãn */
+const ref_labels = ref<HTMLDivElement>()
 /**gắn cờ hiển thị nhiều nhãn */
 const is_expand_label = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
+/**danh sách nhãn của trang của hội thoại này */
+const labels = ref<ICustomLabel[]>()
+/**tổng số nhãn bị ẩn */
+const total_over_label = ref<number>(0)
 
-/**chỉ lấy các nhãn được chọn */
-function getActiveLabel() {
-  /**chuyển đổi obj thành array */
-  let list_label = map(
-    getPageLabel(conversationStore.select_conversation?.fb_page_id)
-  )
+class Main {
+  /**kiểm tra label có được chọn hay không */
+  private isActiveLabel(label_id?: string) {
+    // nếu không có nhãn thì trả về false
+    if (!label_id) return false
 
-  return list_label?.filter(label_info => isActiveLabel(label_info._id))
+    // trả về trạng thái nhãn có được chọn hay không
+    return conversationStore.getActiveLabelIds()?.includes(label_id)
+  }
+  /**đếm số nhãn bị ẩn bởi css flex overflow-hidden  */
+  private countHiddenLabel(): void {
+    // nếu không có div danh sách nhãn thì thôi
+    if (!ref_labels.value) return
+
+    // reset lại số nhãn bị ẩn
+    total_over_label.value = 0
+
+    /**khoảng cách giữa các nhãn */
+    const GAP = parseFloat(
+      window.getComputedStyle(ref_labels.value).getPropertyValue('gap')
+    )
+
+    /**độ rộng của div bao ngoài danh sách nhãn */
+    const CONTAINER_WIDTH = ref_labels.value?.clientWidth || 0
+
+    // chờ render xong mới thực hiện
+    nextTick(() => {
+      // lấy toàn bộ các div nhãn bên trong div bao ngoài
+      const DIV_LABELS = ref_labels.value?.querySelectorAll('button')
+
+      /**tổng độ rộng của các div nhãn */
+      let total_width = 0
+
+      // lặp qua từng div nhãn, lấy width của nó
+      map(DIV_LABELS, div => {
+        /**độ rộng của div tính cả gap */
+        const LABEL_WIDTH = div.clientWidth + GAP
+
+        // cộng dồn vào tổng độ rộng
+        total_width += LABEL_WIDTH
+
+        // nếu vượt thì tăng số nhãn bị ẩn
+        if (total_width > CONTAINER_WIDTH) total_over_label.value++
+      })
+    })
+  }
+
+  /**khởi tạo danh sách nhãn của trang của hội thoại đang chọn */
+  getLabels(): void {
+    /**dữ liệu nhãn gốc của trang */
+    const MAP_LABELS = conversationStore.getLabels()
+
+    // mảng các nhãn
+    labels.value = map(MAP_LABELS)?.map((label: ICustomLabel) => {
+      // tiêm trạng thái nhãn được chọn
+      label.is_active = this.isActiveLabel(label._id)
+
+      // trả về nhãn đã được tiêm trạng thái
+      return label
+    })
+
+    // sắp xếp các nhãn được chọn lên trên, và sắp xếp theo thời gian tạo
+    labels.value = sortBy(labels.value, ['is_active', 'createdAt'])?.reverse()
+
+    // đếm số nhãn bị ẩn
+    this.countHiddenLabel()
+  }
+  /**xem toàn bộ, chỉ xem 1 dòng của nhãn */
+  expandList() {
+    // nếu về chế độ 1 dòng, thì scroll về đầu
+    if (is_expand_label.value && ref_labels.value)
+      ref_labels.value.scrollTop = 0
+
+    // thay đổi trạng thái hiển thị
+    is_expand_label.value = !is_expand_label.value
+  }
+  /**
+   * thay đổi gắn nhãn của khách hàng này
+   * @param label_id id của nhãn
+   */
+  @loading(is_loading_label)
+  @error($toast)
+  async toggleLabel(label_id: string) {
+    // nếu không có trang hoặc khách hàng nào được chọn thì không thực hiện
+    if (
+      !conversationStore.select_conversation?.fb_page_id ||
+      !conversationStore.select_conversation?.fb_client_id
+    )
+      return
+
+    // thực hiện thay đổi nhãn
+    await new N4SerivceAppOneConversation(
+      conversationStore.select_conversation?.fb_page_id as string,
+      conversationStore.select_conversation?.fb_client_id as string
+    ).toggleLabel(label_id)
+  }
 }
-/**thay đổi gắn nhãn của khách hàng này */
-function toggleLabel(label_id: string) {
-  is_loading_label.value = true
+const $main = new Main()
 
-  toggle_label_conversation(
-    {
-      page_id: conversationStore.select_conversation?.fb_page_id as string,
-      client_id: conversationStore.select_conversation?.fb_client_id as string,
-      label_id,
-    },
-    (e, r) => {
-      if (e) return toastError(e)
+// lấy danh sách nhãn khi component được render
+onMounted(() => $main.getLabels())
 
-      is_loading_label.value = false
-    }
-  )
-}
-/**kiểm tra label có được chọn hay không */
-function isActiveLabel(label_id?: string | number) {
-  if (!label_id) return false
-
-  return getCurrentLabel()?.includes(label_id as string)
-}
-/**chỉ lấy các nhãn không được chọn */
-function getUnactiveLabel() {
-  /**chuyển đổi obj thành array */
-  let list_label = map(
-    getPageLabel(conversationStore.select_conversation?.fb_page_id)
-  )
-
-  return list_label?.filter(label_info => !isActiveLabel(label_info._id))
-}
-/**lấy danh sách id nhãn của khách hàng hiện tại */
-function getCurrentLabel() {
-  return getLabelValid(
-    conversationStore.select_conversation?.fb_page_id,
-    conversationStore.select_conversation?.label_id
-  )
-}
-
-// xuất hàm cho component con sử dụng
-provide(IS_ACTIVE_LABEL_FUNCT, isActiveLabel)
+// lấy danh sách nhãn khi thay đổi trang hoặc khách hàng
+watch(
+  () => conversationStore.select_conversation,
+  () => $main.getLabels()
+)
 </script>

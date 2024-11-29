@@ -1,6 +1,7 @@
 <template>
   <div
-    class="bg-white rounded-lg py-1.5 px-3 flex justify-between gap-2 sticky top-0 z-10"
+    id="org-item__org-title"
+    class="bg-white rounded-t-lg pt-1.5 px-3 flex justify-between gap-2 sticky top-0 z-10"
   >
     <div class="flex items-center gap-3">
       <div class="flex items-center gap-1 flex-shrink-0">
@@ -9,138 +10,101 @@
           {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
         </div>
       </div>
-      <!-- <template v-if="selectPageStore.current_menu === 'ALL_PLATFORM'">
-        <GripIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
-        <div
-          class="flex items-center gap-2 divide-x min-w-0 flex-grow overflow-x-auto"
-        >
-          <PageCount
-            @click="model_selected_platform = 'ALL_PLATFORM'"
-            :icon="SquareIcon"
-            :title="$t('v1.common.all')"
-            :count="count_total_page"
-            :is_active="model_selected_platform === 'ALL_PLATFORM'"
-            class="pr-2"
-          />
-          <PageCount
-            v-for="platform of PLATFORMS"
-            @click="model_selected_platform = platform"
-            :icon="ICON_MAP?.[platform || ''] || SquareIcon"
-            :title="$t(`v1.common.${platform.toLowerCase()}`)"
-            :count="count_platform_page?.[platform]"
-            :is_active="model_selected_platform === platform"
-            class="pl-2"
-          />
-        </div>
-      </template> -->
     </div>
-    <div
-      v-if="
-        orgStore.selected_org_id === org_id &&
-        countSelectedPage() &&
-        selectPageStore.is_group_page_mode
-      "
-      class="flex items-center gap-3 flex-shrink-0"
-    >
-      <div class="flex items-center gap-1 py-1 px-2 rounded-md bg-blue-700">
-        <div class="font-medium text-xs text-white">
-          {{ $t('v1.common.selected') }}
-        </div>
-        <div class="font-medium text-xs px-1 rounded bg-white">
-          {{ countSelectedPage() }}
-        </div>
-      </div>
+    <template v-if="selectPageStore.is_group_page_mode">
       <div
-        @click="cancelSelectPage"
-        class="flex items-center gap-1 rounded-md cursor-pointer text-slate-500"
+        v-if="orgStore.selected_org_id === org_id && $main.countSelectedPage()"
+        class="flex items-center gap-3 flex-shrink-0"
       >
-        <div class="font-medium text-xs">
-          {{ $t('v1.common.deselect') }}
+        <div class="flex items-center gap-1 py-1 px-2 rounded-md bg-blue-700">
+          <div class="font-medium text-xs text-white">
+            {{ $t('v1.common.selected') }}
+          </div>
+          <div class="font-medium text-xs px-1 rounded bg-white">
+            {{ $main.countSelectedPage() }}
+          </div>
         </div>
-        <CloseBoldIcon class="w-4 h-4" />
+        <div
+          @click="$main.cancelSelectPage"
+          class="flex items-center gap-1 rounded-md cursor-pointer text-slate-500"
+        >
+          <div class="font-medium text-xs">
+            {{ $t('v1.common.deselect') }}
+          </div>
+          <CloseBoldIcon class="w-4 h-4" />
+        </div>
       </div>
-    </div>
+      <button
+        v-else
+        @click="$main.selectAllOrgPage"
+        class="text-blue-700 flex items-center gap-1"
+      >
+        <CheckCircelIcon class="w-4 h-4" />
+        <div class="font-medium text-xs">
+          {{ $t('v1.common.select_all') }}
+        </div>
+      </button>
+    </template>
   </div>
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { markRaw, onMounted, ref, type Component } from 'vue'
-
-import PageCount from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitle/PageCount.vue'
+import { set, values } from 'lodash'
+import { KEY_ADVANCE_SELECT_AGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
+import { inject } from 'vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
-import GripIcon from '@/components/Icons/Grip.vue'
-import SquareIcon from '@/components/Icons/Square.vue'
-import FacebookIcon from '@/components/Icons/Facebook.vue'
-import ZaloIcon from '@/components/Icons/Zalo.vue'
-import WebIcon from '@/components/Icons/Web.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
-import { keys, set, size, values } from 'lodash'
-import type { ISelectPlatform } from '../../type'
-import type { PageData } from '@/service/interface/app/page'
+import CheckCircelIcon from '@/components/Icons/CheckCircel.vue'
 
-/** Icon mặc định */
-const ICON_MAP: Record<string, Component> = {
-  FB_MESS: markRaw(FacebookIcon),
-  ZALO_OA: markRaw(ZaloIcon),
-  WEBSITE: markRaw(WebIcon),
-}
-/** Danh sách các nền tảng */
-const PLATFORMS = $env.platform
+import type { PageData } from '@/service/interface/app/page'
 
 const $props = withDefaults(
   defineProps<{
     /**id tổ chức */
     org_id: string
+    /**dữ liệu trang */
+    active_page_list?: PageData[]
   }>(),
   {}
 )
-
-/**nền tảng đang chọn */
-const model_selected_platform =
-  defineModel<ISelectPlatform>('selected_platform')
 
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
 const selectPageStore = useSelectPageStore()
 
-/**tổng số trang của tổ chức này */
-const count_total_page = ref<number>(
-  size(pageStore.map_orgs?.map_org_page?.[$props.org_id])
-)
-/**đếm số trang của các nền tảng */
-const count_platform_page = ref<Record<string, number>>({})
+class Main {
+  /**xử lý khi trang được chọn ở chế độ nhiều */
+  triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
 
-// đếm số trang của các nền tảng khi component được mount
-onMounted(countPlatformPage)
+  /**chọn toàn bộ trang của tổ chức này */
+  selectAllOrgPage() {
+    // lặp qua từng trang khả thi của tổ chức này
+    $props.active_page_list?.map(page => {
+      /**id trang */
+      const PAGE_ID = page?.page?.fb_page_id
 
-/**đếm số trang của các nền tảng */
-function countPlatformPage() {
-  /**các id trang của tổ chức này */
-  const PAGE_IDS = keys(pageStore.map_orgs?.map_org_page?.[$props.org_id])
+      // nếu không có id trang thì bỏ qua
+      if (!PAGE_ID) return
 
-  // lặp qua từng trang
-  PAGE_IDS?.forEach(page_id => {
-    /**loại nền tảng của trang */
-    const TYPE = pageStore.active_page_list?.[page_id]?.page?.type
+      // chọn trang này
+      set(pageStore.selected_page_id_list, PAGE_ID, true)
+    })
 
-    // nếu không có loại nền tảng thì bỏ qua
-    if (!TYPE) return
+    /**trang đầu tiên của tổ chức */
+    const FIRST_PAGE = $props.active_page_list?.[0]
 
-    /**số trang hiện tại của nền tảng */
-    const CURRENT_COUNT = count_platform_page.value?.[TYPE] || 0
-
-    // tăng số trang của nền tảng
-    set(count_platform_page.value, [TYPE], CURRENT_COUNT + 1)
-  })
+    // gọi hàm xử lý khi trang được chọn ở chế độ nhiều
+    if (FIRST_PAGE) this.triggerSelectPage?.(FIRST_PAGE)
+  }
+  /**hủy chọn toàn bộ các trang */
+  cancelSelectPage() {
+    pageStore.selected_page_id_list = {}
+  }
+  /**đếm số trang đã chọn */
+  countSelectedPage() {
+    return values(pageStore.selected_page_id_list)?.filter(Boolean)?.length
+  }
 }
-
-/**hủy chọn toàn bộ các trang */
-function cancelSelectPage() {
-  pageStore.selected_page_id_list = {}
-}
-/**đếm số trang đã chọn */
-function countSelectedPage() {
-  return values(pageStore.selected_page_id_list)?.filter(Boolean)?.length
-}
+const $main = new Main()
 </script>

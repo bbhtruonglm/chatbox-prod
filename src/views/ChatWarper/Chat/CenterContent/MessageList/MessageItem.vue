@@ -1,5 +1,8 @@
 <template>
-  <div class="w-fit max-w-96 group relative">
+  <div
+    id="chat__message-item"
+    class="w-fit max-w-96 group relative"
+  >
     <Emotion
       v-if="primary_emotion"
       :emotion="primary_emotion"
@@ -13,6 +16,10 @@
       :time="message_time"
       :meta="meta"
       :is_edit="message?.is_edit"
+      :duration="CHECK_SLOW_REPLY.getDuration()"
+      :is_show_duration="
+        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
+      "
     />
     <ReplyMessage
       v-if="reply_message"

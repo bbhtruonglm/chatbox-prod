@@ -1,5 +1,5 @@
 /**các cài đặt cho một môi trường */
-interface EnvInfo {
+interface IEnv {
   /**cài đặt cho local */
   local_storage: {
     /**prefix cho tên của local */

@@ -88,7 +88,7 @@
           <div
             v-for="label_id of conversationStore.select_conversation?.label_id"
             :style="{
-              background: getLabelInfo(
+              background: getILabel(
                 conversationStore.select_conversation?.fb_page_id,
                 label_id
               )?.bg_color,
@@ -96,7 +96,7 @@
             class="text-xs px-1 text-white rounded"
           >
             {{
-              getLabelInfo(
+              getILabel(
                 conversationStore.select_conversation?.fb_page_id,
                 label_id
               )?.title
@@ -124,7 +124,7 @@
 import { useConversationStore, useCommonStore } from '@/stores'
 import { computed } from 'vue'
 import { dateFormat } from '@/service/helper/format'
-import { getLabelInfo } from '@/service/function'
+import { getILabel } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 

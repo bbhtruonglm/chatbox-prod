@@ -1,21 +1,21 @@
 <template>
   <div
-    v-tooltip.bottom="getLabelInfo(page_id, label_id)?.title"
+    v-tooltip.bottom="getILabel(page_id, label_id)?.title"
     :tooltip-disabled="getLabelConfig() === 'ICON'"
-    v-if="getLabelInfo(page_id, label_id)"
-    :style="{ background: getLabelInfo(page_id, label_id)?.bg_color }"
+    v-if="getILabel(page_id, label_id)"
+    :style="{ background: getILabel(page_id, label_id)?.bg_color }"
     :class="{
       'w-3 h-3': getLabelConfig()?.includes('ICON'),
     }"
     class="text-white rounded-full text-[9px] truncate px-1"
   >
     <template v-if="!getLabelConfig()?.includes('ICON')">
-      {{ getLabelInfo(page_id, label_id)?.title }}
+      {{ getILabel(page_id, label_id)?.title }}
     </template>
   </div>
 </template>
 <script setup lang="ts">
-import { getLabelInfo, getPageInfo } from '@/service/function'
+import { getILabel, getPageInfo } from '@/service/function'
 import { useChatbotUserStore } from '@/stores'
 
 const $props = withDefaults(

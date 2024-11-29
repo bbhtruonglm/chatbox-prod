@@ -17,16 +17,33 @@ import type { CbError } from '@/service/interface/function'
 
 import '@/assets/css/tailwind.css'
 
-const APP = createApp(App)
+import { container } from 'tsyringe'
+import { EnvManage } from './utils/base/EnvManage'
 
-waterfall(
-  [
-    (cb: CbError) => loadEnv(cb),
-    (cb: CbError) => loadLib(cb),
-    (cb: CbError) => loadRouter(APP, cb),
-    (cb: CbError) => loadLanguage(APP, cb),
-    (cb: CbError) => loadDirective(APP, cb),
-    (cb: CbError) => loadApp(APP, cb),
-  ],
-  e => APP.mount('#app')
-)
+const $env_manage = container.resolve(EnvManage)
+
+/**khởi tạo ứng dụng*/
+async function bootstrap() {
+  /**đối tượng vue app */
+  const APP = createApp(App)
+
+  // TODO sau này dùng hết class thì không cần khai báo global nữa
+  // nạp cài đặt môi trường vào biến toàn cục
+  globalThis.$env = await $env_manage.loadEnv()
+  // nạp giá trị môi trường hiện tại vào biến toàn cục
+  globalThis.$node_env = $env_manage.NODE_ENV
+
+  waterfall(
+    [
+      (cb: CbError) => loadLib(cb),
+      (cb: CbError) => loadRouter(APP, cb),
+      (cb: CbError) => loadLanguage(APP, cb),
+      (cb: CbError) => loadDirective(APP, cb),
+      (cb: CbError) => loadApp(APP, cb),
+    ],
+    e => APP.mount('#app')
+  )
+}
+
+// khởi tạo ứng dụng
+bootstrap()

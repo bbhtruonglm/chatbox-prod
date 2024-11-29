@@ -21,10 +21,10 @@
       class="w-3 h-3 text-lime-500"
     />
     <div
-      v-if="last_emotion && Emotion.isHighlight(last_emotion)"
+      v-if="last_emotion && $emotion.isHighlight(last_emotion)"
       class="text-xs"
     >
-      {{ Emotion.getIcon(last_emotion) }}
+      {{ $emotion.getIcon(last_emotion) }}
     </div>
   </div>
 </template>
@@ -32,6 +32,7 @@
 import { useConversationStore } from '@/stores'
 import { Emotion } from '@/utils/helper/Emotion'
 import { computed } from 'vue'
+import { container } from 'tsyringe'
 
 import PhoneIcon from '@/components/Icons/Phone.vue'
 import LocationIcon from '@/components/Icons/Location.vue'
@@ -39,6 +40,7 @@ import BirthDayCakeIcon from '@/components/Icons/BirthDayCake.vue'
 import EmailIcon from '@/components/Icons/Mail.vue'
 
 const conversationStore = useConversationStore()
+const $emotion = container.resolve(Emotion)
 
 /**sdt cuối của khách */
 const last_client_phone = computed(

@@ -42,11 +42,7 @@
                   v-else
                   class="py-2 px-3 rounded-md border w-full"
                 >
-                  {{
-                    currency(
-                      Number(amount) + (txn_info?.txn_credit_amount || 0)
-                    )
-                  }}
+                  {{ currency(txn_info?.txn_origin_amount || 0) }}
                 </div>
                 <div class="text-sm text-slate-500">
                   {{
@@ -59,33 +55,59 @@
                   v-if="verify_voucher?.is_verify || txn_info?.txn_voucher_id"
                   class="text-sm font-semibold text-green-600"
                 >
-                  <template
-                    v-if="
-                      amount ===
-                      String(verify_voucher?.txn_amount || txn_info?.txn_amount)
-                    "
-                  >
-                    {{
-                      $t(
-                        'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
-                      )
-                    }}
-                    {{
-                      currency(
-                        verify_voucher?.txn_origin_amount ||
-                          txn_info?.txn_amount
-                      )
-                    }}
+                  <template v-if="verify_voucher?.is_verify">
+                    <template
+                      v-if="amount === String(verify_voucher?.txn_amount)"
+                    >
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
+                        )
+                      }}
+                      {{ currency(verify_voucher?.txn_origin_amount) }}
+                    </template>
+                    <template
+                      v-if="
+                        amount === String(verify_voucher?.txn_origin_amount)
+                      "
+                    >
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.amount'
+                        )
+                      }}
+                      {{ currency(verify_voucher?.txn_amount) }}
+                    </template>
                   </template>
-                  <template
-                    v-if="amount === String(verify_voucher?.txn_origin_amount)"
-                  >
-                    {{
-                      $t(
-                        'v1.view.main.dashboard.org.pay.recharge.voucher.amount'
-                      )
-                    }}
-                    {{ currency(verify_voucher?.txn_amount) }}
+                  <template v-else>
+                    <template
+                      v-if="
+                        txn_info?.txn_voucher_info?.voucher_effect ===
+                        'DECREASE'
+                      "
+                    >
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.origin_amount'
+                        )
+                      }}
+                      {{ currency(txn_info.txn_amount) }}
+                    </template>
+                    <template v-else>
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.amount'
+                        )
+                      }}
+                      {{
+                        currency(
+                          sum([
+                            txn_info?.txn_amount,
+                            txn_info?.txn_credit_amount,
+                          ])
+                        )
+                      }}
+                    </template>
                   </template>
                 </div>
               </div>
@@ -361,7 +383,7 @@ import {
   BillingAppVoucher,
   type ResponseVerifyVoucher,
 } from '@/utils/api/Billing'
-import { debounce, size } from 'lodash'
+import { debounce, size, sum } from 'lodash'
 
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()

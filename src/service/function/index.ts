@@ -122,7 +122,10 @@ export const scrollToBottomMessage = () => {
   })
 }
 
-/**lấy danh sách nhãn của trang */
+/**
+ * lấy danh sách nhãn của trang 
+ * @deprecated dùng hàm của store thay thế
+ */
 export const getPageLabel = (page_id?: string) => {
   const pageStore = usePageStore()
 
@@ -185,13 +188,16 @@ export const getPageInfo = (page_id?: string) => {
 }
 
 /**đọc dữ liệu của nhãn */
-export const getLabelInfo = (page_id?: string, label_id?: string) => {
+export const getILabel = (page_id?: string, label_id?: string) => {
   return getPageLabel(page_id)?.[label_id as string]
 }
 
-/**lọc các nhãn chưa bị xoá */
+/**
+ * lọc các nhãn chưa bị xoá 
+ * @deprecated dùng hàm của store thay thế
+ */
 export const getLabelValid = (page_id?: string, label_list?: string[]) => {
-  return label_list?.filter(label_id => getLabelInfo(page_id, label_id))
+  return label_list?.filter(label_id => getILabel(page_id, label_id))
 }
 
 /**

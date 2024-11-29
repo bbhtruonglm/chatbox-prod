@@ -8,7 +8,7 @@ import type { IndexedDB } from '@/service/helper/indexedDB'
 
 declare global {
     /**các cài đặt của môi trường */
-    var $env: EnvInfo
+    var $env: IEnv
     /**NODE_ENV */
     var $node_env: string
     /**đối tượng index db */
