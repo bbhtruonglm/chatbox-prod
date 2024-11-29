@@ -1,4 +1,5 @@
 import { format as data_format } from 'date-fns'
+import { isDate } from 'lodash'
 import { singleton } from 'tsyringe'
 
 /**các hàm hỗ trợ cho ngày tháng */
@@ -8,16 +9,19 @@ export interface IDateHandle {
    * @param date dữ liệu ngày tháng
    * @param format định dạng chuỗi
    */
-  format(date?: Date, format?: string): string
+  format(date?: Date | string | number, format?: string): string
 }
 
 /**các hàm hỗ trợ cho ngày tháng */
 @singleton()
 export class DateHandle implements IDateHandle {
   format(
-    date: Date = new Date(),
+    date: Date | string | number = new Date(),
     format: string = 'HH:mm:ss dd/MM/yyyy'
   ): string {
-    return data_format(date, format)
+    /**dữ liệu ngày tháng */
+    const DATE = isDate(date) ? date : new Date(date)
+
+    return data_format(DATE, format)
   }
 }

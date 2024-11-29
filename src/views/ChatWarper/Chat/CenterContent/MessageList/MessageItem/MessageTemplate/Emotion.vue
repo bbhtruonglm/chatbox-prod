@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="emotion !== 'none'"
+    v-if="$emotion.isValidEmotion(emotion)"
     v-tooltip="$t(`v1.view.main.dashboard.chat.message.emotion_ai.${emotion}`)"
     :class="{
       '-right-2.5': position === 'RIGHT',
@@ -12,13 +12,15 @@
     }"
     class="border rounded-full w-6 h-6 flex items-center justify-center text-sm absolute -top-2.5 z-20"
   >
-    {{ Emotion.getIcon(emotion) }}
+    {{ $emotion.getIcon(emotion) }}
   </div>
 </template>
 <script setup lang="ts">
-import type { MessageInfo } from '@/service/interface/app/message'
 import { Emotion } from '@/utils/helper/Emotion'
 import { computed } from 'vue'
+
+import type { MessageInfo } from '@/service/interface/app/message'
+import { container } from 'tsyringe'
 
 const $props = withDefaults(
   defineProps<{
@@ -32,10 +34,12 @@ const $props = withDefaults(
   {}
 )
 
+const $emotion = container.resolve(Emotion)
+
 /**cảm xúc có tích cực không */
-const is_positive = computed(() => Emotion.isPositive($props.emotion))
+const is_positive = computed(() => $emotion.isPositive($props.emotion))
 /**có phải là cảm xúc cần nêu bật không */
 const is_highlight = computed(() =>
-  Emotion.isHighlightInMess($props.emotion, $props.message_type)
+  $emotion.isHighlightInMess($props.emotion, $props.message_type)
 )
 </script>

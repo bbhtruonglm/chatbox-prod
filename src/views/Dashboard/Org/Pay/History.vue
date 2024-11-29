@@ -1,5 +1,8 @@
 <template>
-  <CardItem class="h-full">
+  <CardItem
+    id="org__pay__txns"
+    class="h-full"
+  >
     <template #icon>
       <QueueIcon class="w-5 h-5" />
     </template>
@@ -71,29 +74,20 @@
                   }"
                   class="px-2.5 whitespace-nowrap text-right"
                 >
-                  <div>
-                    <span v-if="txn.txn_type !== 'DEPOSIT'">-</span>
-                    <span v-else>+</span>
-                    {{ currency(txn.txn_amount) || 0 }}
-                    {{ txn?.txn_currency }}
-                  </div>
-                  <div
-                    v-if="txn?.txn_credit_amount"
-                    class="text-xs"
-                  >
-                    + {{ currency(txn?.txn_credit_amount) || 0 }}
-                    {{ txn?.txn_currency }}
-                  </div>
+                  <span v-if="txn.txn_type !== 'DEPOSIT'">-</span>
+                  <span v-else>+</span>
+                  {{ $main.getTxnAmount(txn) }}
+                  {{ txn?.txn_currency }}
                 </td>
                 <td class="px-2.5 whitespace-nowrap text-left">
-                  {{ formatDate(txn.createdAt) }}
+                  {{ $date_handle.format(txn.createdAt, 'dd/MM/yyyy - HH:mm') }}
                 </td>
                 <td class="px-2.5 whitespace-nowrap text-left">
                   {{ txn.txn_data?.user_info?.full_name }}
                 </td>
                 <td
                   v-if="txn.txn_type === 'DEPOSIT'"
-                  @click="detailTxn(txn.txn_id)"
+                  @click="$main.detailTxn(txn.txn_id)"
                   class="pl-2.5 text-right text-blue-700 cursor-pointer font-medium"
                 >
                   {{ $t('v1.view.main.dashboard.org.pay.view') }}
@@ -108,66 +102,65 @@
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
-import { format as format_date } from 'date-fns'
-import { toastError } from '@/service/helper/alert'
 import { read_txn } from '@/service/api/chatbox/billing'
 import { useOrgStore } from '@/stores'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, toRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { DateHandle } from '@/utils/helper/DateHandle'
+import { container } from 'tsyringe'
+import { loading } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error'
+import { Toast } from '@/utils/helper/Alert/Toast'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'
 
 import type { TransactionInfo } from '@/service/interface/app/billing'
+import { sum } from 'lodash'
 
 const orgStore = useOrgStore()
 const $router = useRouter()
+const $date_handle = container.resolve(DateHandle)
+const $toast = container.resolve(Toast)
 
 /**danh sách giao dịch */
 const list_txn = ref<TransactionInfo[]>()
 
-// khi component được mount
-onMounted(readTxn)
-// khi chọn org khác
-watch(() => orgStore.selected_org_id, readTxn)
+class Main {
+  /**chuyển đến trang chi tiết giao dịch */
+  detailTxn(txn_id?: string) {
+    // nếu không có txn_id thì không chuyển
+    if (!txn_id) return
 
-/**chuyển đến trang chi tiết giao dịch */
-function detailTxn(txn_id?: string) {
-  // nếu không có txn_id thì không chuyển
-  if (!txn_id) return
+    // chuyển đến trang chi tiết giao dịch + query txn_id
+    $router.push({ path: '/dashboard/org/pay/recharge', query: { txn_id } })
+  }
+  /**đọc danh sách giao dịch */
+  @loading(toRef(orgStore, 'is_loading'), false)
+  @error($toast)
+  async readTxn() {
+    // kiểm tra xem đã chọn org chưa
+    if (!orgStore.selected_org_id) return
 
-  // chuyển đến trang chi tiết giao dịch + query txn_id
-  $router.push({ path: '/dashboard/org/pay/recharge', query: { txn_id } })
-}
-/**định dạng thời gian */
-function formatDate(date?: string) {
-  // nếu không có thời gian
-  if (!date) return ''
-
-  // định dạng thời gian
-  return format_date(new Date(date), 'dd/MM/yyyy - HH:mm')
-}
-
-/**đọc danh sách giao dịch */
-async function readTxn() {
-  // kiểm tra xem đã chọn org chưa
-  if (!orgStore.selected_org_id) return
-
-  // bắt đầu loading
-  orgStore.is_loading = true
-
-  try {
     // đọc danh sách giao dịch
     list_txn.value = await read_txn(orgStore.selected_org_id)
-  } catch (e) {
-    // thông báo lỗi
-    toastError(e)
   }
+  /**lấy số tiền giao dịch */
+  getTxnAmount(txn: TransactionInfo) {
+    /**tổng số tiền giao dịch */
+    const TOTAL_AMOUNT = sum([txn.txn_amount, txn?.txn_credit_amount])
 
-  // tắt loading
-  orgStore.is_loading = false
+    // trả về số tiền đã định dạng
+    return currency(TOTAL_AMOUNT)
+  }
 }
+const $main = new Main()
+
+// khi component được mount thì đọc danh sách giao dịch
+onMounted($main.readTxn)
+// khi chọn org khác thi đọc lại danh sách giao dịch
+watch(() => orgStore.selected_org_id, $main.readTxn)
 </script>
 <style scoped lang="scss">
 .sticky-left {

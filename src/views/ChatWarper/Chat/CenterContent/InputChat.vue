@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="messageStore.list_message?.length"
+    v-if="$route.query.user_id"
     id="chat_input-chat"
     ref="input_chat_warper"
     class="w-full relative flex-shrink-0 py-2 px-3 flex flex-col gap-2"
@@ -16,6 +16,7 @@ import { onMounted, ref } from 'vue'
 import { size } from 'lodash'
 import { useMessageStore } from '@/stores'
 import { onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 import ScrollToBottomBtn from '@/views/ChatWarper/Chat/CenterContent/InputChat/ScrollToBottomBtn.vue'
 import ListLabel from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel.vue'
@@ -26,6 +27,7 @@ import type { ComponentRef } from '@/service/interface/vue'
 import type { WidgetEventData } from '@/service/interface/app/widget'
 
 const messageStore = useMessageStore()
+const $route = useRoute()
 
 /**ref của input chat */
 const input_chat_warper = ref<ComponentRef>()

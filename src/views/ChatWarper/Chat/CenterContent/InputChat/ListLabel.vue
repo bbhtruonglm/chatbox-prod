@@ -48,7 +48,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { map, sortBy } from 'lodash'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { loading } from '@/utils/decorator/loading'
@@ -94,8 +94,17 @@ class Main {
   }
   /**đếm số nhãn bị ẩn bởi css flex overflow-hidden  */
   private countHiddenLabel(): void {
-    /**số px của gap */
-    const GAP = 4
+    // nếu không có div danh sách nhãn thì thôi
+    if (!ref_labels.value) return
+
+    // reset lại số nhãn bị ẩn
+    total_over_label.value = 0
+
+    /**khoảng cách giữa các nhãn */
+    const GAP = parseFloat(
+      window.getComputedStyle(ref_labels.value).getPropertyValue('gap')
+    )
+
     /**độ rộng của div bao ngoài danh sách nhãn */
     const CONTAINER_WIDTH = ref_labels.value?.clientWidth || 0
 
@@ -173,5 +182,12 @@ class Main {
 }
 const $main = new Main()
 
+// lấy danh sách nhãn khi component được render
 onMounted(() => $main.getLabels())
+
+// lấy danh sách nhãn khi thay đổi trang hoặc khách hàng
+watch(
+  () => conversationStore.select_conversation,
+  () => $main.getLabels()
+)
 </script>
