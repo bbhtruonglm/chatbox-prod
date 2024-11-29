@@ -13,6 +13,7 @@
     <LeftBar />
     <CenterContent />
     <RightBar />
+    <AlertOverQuota ref="ref_alert_over_quota" />
   </div>
 </template>
 <script setup lang="ts">
@@ -51,6 +52,7 @@ import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
 import Menu from '@/views/ChatWarper/Menu.vue'
+import AlertOverQuota from './ChatWarper/AlertOverQuota.vue'
 
 import BellSound from '@/assets/sound/notification-sound.mp3'
 
@@ -89,6 +91,8 @@ const socket_connection = ref<WebSocket>()
 const is_force_close_socket = ref(false)
 /**cờ xác định người dùng có đang focus vào tab chat không */
 const is_focus_chat_tab = ref(true)
+/**ref modal cảnh báo hết gói */
+const ref_alert_over_quota = ref<InstanceType<typeof AlertOverQuota>>()
 
 watch(
   () => conversationStore.select_conversation,
@@ -638,7 +642,7 @@ class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
     // nếu lỗi là không có quyền truy cập thì thông báo khác
     if (message?.message === 'COMMON.ACCESS_DENIED')
-      message = $t('v1.view.main.dashboard.chat.error.org_quota_staff')
+      return ref_alert_over_quota.value?.toggleModal()
 
     // thông báo lỗi
     super.error(message)
@@ -649,7 +653,7 @@ class Main {
   /**đọc dữ liệu của các page được chọn lưu lại */
   @loading(toRef(commonStore, 'is_loading_full_screen'))
   // nếu lỗi thì chuyển về trang chọn page
-  @error(new CustomToast(), () => $router.push('/dashboard'))
+  @error(new CustomToast())
   async getPageInfoToChat() {
     // delay một chút để load dữ liệu từ local vào store kịp
     await $delay.exec(200)

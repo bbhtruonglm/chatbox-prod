@@ -1,5 +1,6 @@
 <template>
   <div
+    id="chat__message-template"
     :class="is_fix_size ? 'w-[300px]' : 'max-w-[300px]'"
     class="rounded-lg p-2 gap-2.5 flex flex-col flex-shrink-0"
   >

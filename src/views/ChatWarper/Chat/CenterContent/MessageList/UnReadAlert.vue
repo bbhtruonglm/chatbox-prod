@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isVisible()"
-    class="px-3 text-slate-100 w-fit mx-auto bg-slate-600 rounded-lg text-center text-xs font-medium"
+    class="my-2 px-3 text-slate-100 w-fit mx-auto bg-slate-600 rounded-lg text-center text-xs font-medium"
   >
     {{ $t('v1.view.main.dashboard.chat.filter.message.unread') }}
   </div>
