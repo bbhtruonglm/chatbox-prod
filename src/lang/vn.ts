@@ -7,8 +7,6 @@ const source: Language = {
       vn: 'Tiếng Việt',
       selected: 'Đã chọn',
       deselect: 'Bỏ chọn',
-      retion: 'Retion',
-      title: 'Retion',
       loading: 'Đang tải dữ liệu ...',
       cancel: 'Huỷ',
       ok: 'Xác nhận',
@@ -186,7 +184,7 @@ const source: Language = {
             accept: 'Xác nhận lời mời',
             denied: 'Từ chối lời mời',
             facebook: {
-              guild: 'Kết nối Bot Bán Hàng với Trang Facebook',
+              guild: 'Kết nối {partner} với Trang Facebook',
               description:
                 'Kết nối với Facebook để chat nhiều Trang tự động với AI, tối ưu chi phí Marketing với CAPI, tự động tích hợp các ứng dụng của Doanh nghiệp.',
               title: 'Kết nối với Facebook',
@@ -207,7 +205,7 @@ const source: Language = {
               },
             },
             zalo_oa: {
-              guild: 'Kết nối Bot Bán Hàng với Zalo OA',
+              guild: 'Kết nối {partner} với Zalo OA',
               description:
                 'Kết nối với Zalo OA cần phải là tài khoản Zalo OA Nâng cao hoặc Zalo Premium.',
               lean_more: 'Tìm hiểu thêm',
@@ -396,7 +394,7 @@ const source: Language = {
             error: {
               get_page_info: 'Không tìm thấy dữ liệu trang',
               get_org_info: 'Không tìm thấy dữ liệu tổ chức',
-              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng, vui lòng liên hệ QTV để nâng cấp'
+              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng, vui lòng liên hệ Quản trị viên để nâng cấp'
             },
             online_status: {
               online: 'Đang trực tuyến',
@@ -594,7 +592,7 @@ const source: Language = {
               190: {
                 facebook_permission: 'Cấp quyền Facebook',
                 session_expired:
-                  'Bạn đã hết phiên sử dụng Facebook trên Bot Ban Hang do một số hoạt động của bạn như: Đổi mật khẩu, Checkpoint tài khoản hoặc các vấn đề khác do Facebook.',
+                  'Bạn đã hết phiên sử dụng Facebook trên ứng dụng do một số hoạt động của bạn như: Đổi mật khẩu, Checkpoint tài khoản hoặc các vấn đề khác do Facebook.',
                 continue_get_permission:
                   'Để tiếp tục sử dụng, bạn cần ấn nút <strong>"Tiếp tục với Facebook"</strong> và cấp quyền sử dụng Page ',
                 error_content: 'Mã lỗi của bạn từ phía Facebook phản hồi:',
@@ -711,7 +709,7 @@ const source: Language = {
             position: 'Vị trí hiển thị',
             role_list: {
               conversation_chatbot: {
-                title: 'Chatbot Bot Bán Hàng',
+                title: 'Chatbot',
                 description: 'Dữ liệu của Chatbot',
               },
               conversation_contact: {
@@ -877,9 +875,9 @@ const source: Language = {
                 phone: 'Số điện thoại',
                 email: 'Email',
                 guild_1:
-                  'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). Bot Bán Hàng sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
+                  'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). {partner} sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
                 guild_2:
-                  'Dữ liệu doanh nghiệp sẽ được Bot Bán Hàng sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới',
+                  'Dữ liệu doanh nghiệp sẽ được {partner} sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới',
               },
               staff: {
                 title: 'Thêm nhân viên vào tổ chức',
@@ -1075,12 +1073,12 @@ const source: Language = {
                     'Sau khi Quý khách đã thanh toán, hệ thống sẽ tự động kích hoạt sau 1-2 phút.',
                   support: 'Hỗ trợ thanh toán',
                   guild_2:
-                    'Quý khách có thể liên hệ với Bot Bán Hàng khi thanh toán thành công nhưng hệ thống chưa kích hoạt.',
+                    'Quý khách có thể liên hệ với {partner} khi thanh toán thành công nhưng hệ thống chưa kích hoạt.',
                   hint: 'Lưu ý',
                   hint_1:
                     'Vui lòng đọc ký hướng dẫn sử dụng Chuyển khoản nhanh tại',
                   hint_2:
-                    'Bot Bán Hàng không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản.',
+                    '{partner} không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản.',
                   hint_3: 'Vui lòng giữ biên lai để đối chứng khi cần thiết.',
                   hint_4:
                     'Quý khách vui lòng không chỉnh sửa số tài khoản và tên tài khoản thụ hưởng được cung cấp.',

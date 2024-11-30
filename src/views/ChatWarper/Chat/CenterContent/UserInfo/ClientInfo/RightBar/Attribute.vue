@@ -11,7 +11,7 @@
     v-model="conversationStore.chatbot_client.client_attribute[key]"
   />
   <button
-    @click="openChatbot"
+    @click="$external_site.openPageChatbot('dashboard/attribute')"
     class="py-1 px-5 text-sm font-medium text-slate-500 flex gap-1 items-center w-fit mb-3"
   >
     {{ $t('v1.view.main.dashboard.chat.client.add_attr') }}
@@ -76,10 +76,13 @@ import NewTabIcon from '@/components/Icons/NewTab.vue'
 import { mapValues } from 'lodash'
 import { ChatbotAppClient } from '@/utils/api/Chatbot'
 import { LocaleSingleton } from '@/utils/helper/Locale'
+import { container } from 'tsyringe'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
 
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
+const $external_site = container.resolve(ExternalSite)
 
 /**danh sách các thuộc tính bị sửa */
 const list_attribute_update = ref<Record<string, 1>>({})
@@ -131,21 +134,5 @@ function updateAttributeChatbot(is_edit_info: boolean) {
 
   // tắt loading
   commonStore.is_loading_full_screen = false
-}
-/**mở chatbot thiết lập thuộc tính */
-function openChatbot() {
-  if (!$env.host.chatbot_view) return
-
-  /**lấy locale */
-  const locale = LocaleSingleton.getInst().get()
-
-  // nếu đang chon nhiều page thì mở chatbot với page đầu tiên
-  openNewTab(
-    `${$env.host.chatbot_view}dashboard/attribute?access_token=${getItem(
-      'access_token'
-    )}&page_id=${
-      conversationStore.select_conversation?.fb_page_id
-    }&locale=${locale}`
-  )
 }
 </script>

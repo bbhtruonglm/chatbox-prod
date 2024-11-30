@@ -111,18 +111,26 @@
       </div>
       <ul class="list-disc list-inside text-xs text-slate-500 pl-2.5">
         <li class="pl-4 -indent-4">
-          {{ $t('v1.view.main.dashboard.org.setting.customer_info.guild_1') }}
+          {{
+            $t('v1.view.main.dashboard.org.setting.customer_info.guild_1', {
+              partner: commonStore.partner?.name,
+            })
+          }}
         </li>
         <li class="pl-4 -indent-4">
-          {{ $t('v1.view.main.dashboard.org.setting.customer_info.guild_2') }}
-          hotro@botbanhang.vn
+          {{
+            $t('v1.view.main.dashboard.org.setting.customer_info.guild_2', {
+              partner: commonStore.partner?.name,
+            })
+          }}
+          {{ commonStore.partner?.support_email }}
         </li>
       </ul>
     </template>
   </CardItem>
 </template>
 <script setup lang="ts">
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { computed, ref } from 'vue'
 import { set } from 'lodash'
 import { copy } from '@/service/helper/format'
@@ -139,6 +147,7 @@ import type { OrgInfo } from '@/service/interface/app/billing'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+const commonStore = useCommonStore()
 
 /**có kích hoat chế độ sửa không */
 const is_edit = ref(false)

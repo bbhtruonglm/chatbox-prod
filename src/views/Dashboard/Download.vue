@@ -277,7 +277,7 @@ function countTotalConversationValid() {
 }
 /**mở trang để tải dữ liệu */
 function openDownloadPage() {
-    openNewTab(`${$env.host.download_client}${chatbotUserStore.chatbot_user?._id}`)
+    // openNewTab(`${$env.host.download_client}${chatbotUserStore.chatbot_user?._id}`)
 }
 /**đọc trạng thái */
 function getDownloadStatus(proceed: Cb) {

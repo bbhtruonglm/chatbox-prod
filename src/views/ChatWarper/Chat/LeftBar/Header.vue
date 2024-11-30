@@ -7,11 +7,8 @@
       <template v-if="orgStore.selected_org_info?.org_info?.org_name">
         {{ orgStore.selected_org_info?.org_info?.org_name }}
       </template>
-      <template v-else-if="Domain.isRetion()">
-        {{ $t('v1.common.retion') }}
-      </template>
       <template v-else>
-        {{ $t('v1.common.title') }}
+        {{ commonStore.partner?.name }}
       </template>
     </div>
     <Badge
@@ -34,7 +31,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useConversationStore, useOrgStore } from '@/stores'
+import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import { debounce, sumBy, values } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { Domain } from '@/utils/helper/Domain'
@@ -44,6 +41,7 @@ import Badge from '@/components/Badge.vue'
 import SearchIcon from '@/components/Icons/Search.vue'
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 

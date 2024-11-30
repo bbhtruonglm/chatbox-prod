@@ -458,7 +458,7 @@ async function pushWebNoti(conversation?: ConversationInfo) {
     return
 
   /**tiêu đề */
-  const TITLE = $t('v1.common.title')
+  const TITLE = commonStore.partner?.name || ''
   /**link avatar của khách hàng */
   const AVATAR = `https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar/${conversation?.fb_client_id}?page_id=${conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=64&height=64&type=${conversation?.platform_type}`
   /**nội dung muốn thông báo */

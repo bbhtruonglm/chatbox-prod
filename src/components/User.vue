@@ -70,7 +70,7 @@
     </MenuItem>
     <MenuItem
       v-if="chatbotUserStore.isBbhMember()"
-      @click="openBbhAdminPage()"
+      @click="$external_site.openSystemDashboard()"
       :icon="ServerSettingIcon"
       :title="$t('v1.view.main.dashboard.header.menu.admin')"
     />
@@ -85,9 +85,12 @@
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { signout } from '@/service/helper/oauth'
 import { useRouter } from 'vue-router'
+import { count_noti } from '@/service/api/chatbox/billing'
+import { container } from 'tsyringe'
+import { ExternalSite } from '@/utils/helper/ExternalSite'
 
 import Dropdown from '@/components/Dropdown.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
@@ -102,16 +105,11 @@ import UsersIcon from '@/components/Icons/Users.vue'
 import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
 import UserIcon from '@/components/Icons/User.vue'
 import BellIcon from '@/components/Icons/Bell.vue'
-import CogIcon from '@/components/Icons/Cog.vue'
 import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
 import LogOutIcon from '@/components/Icons/LogOut.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
 
 import type { ModalPosition } from '@/service/interface/vue'
-import { count_noti } from '@/service/api/chatbox/billing'
-import { Navigation } from '@/utils/helper/Navigation'
-import { getItem } from '@/service/helper/localStorage'
-import { LocaleSingleton } from '@/utils/helper/Locale'
 
 const $props = withDefaults(
   defineProps<{
@@ -126,6 +124,7 @@ const $props = withDefaults(
 const chatbotUserStore = useChatbotUserStore()
 const orgStore = useOrgStore()
 const $router = useRouter()
+const $external_site = container.resolve(ExternalSite)
 
 /** Ref của menu dropdown */
 const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
@@ -179,15 +178,5 @@ function openNoti() {
 
   // mở modal
   modal_alert_ref.value?.toggleModal()
-}
-/**mở trang quản trị bbh */
-function openBbhAdminPage() {
-  /**token */
-  const TOKEN = getItem('access_token')
-  const LOCALE = LocaleSingleton.getInst().get()
-  /**đường dẫn */
-  const URI = $env.host.bbh_admin
-  // mở tab mới
-  Navigation.openNewTab(`${URI}?token=${TOKEN}&locale=${LOCALE}`)
 }
 </script>
