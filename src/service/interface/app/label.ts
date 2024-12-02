@@ -12,4 +12,8 @@ export interface ILabel {
     show_label?: boolean
     /**thời gian tạo */
     createdAt?: string
+    /**chú thích */
+    description?: string
+    /**vị trí */
+    index?: number
 }

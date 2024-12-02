@@ -28,6 +28,7 @@ export class QuickAnswer extends Widget {
       skip,
       limit,
       fb_page_id: this.#PAGE_ID,
+      // sort: 'index ASC'
     })
   }
 }

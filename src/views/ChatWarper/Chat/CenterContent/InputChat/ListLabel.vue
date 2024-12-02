@@ -49,7 +49,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { map, sortBy } from 'lodash'
+import { map, partition, sortBy } from 'lodash'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { loading } from '@/utils/decorator/loading'
 import { error } from '@/utils/decorator/error'
@@ -79,18 +79,21 @@ const is_expand_label = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
 /**danh sách nhãn của trang của hội thoại này */
-const labels = ref<ICustomLabel[]>()
+const labels = ref<ICustomLabel[]>([])
 /**tổng số nhãn bị ẩn */
 const total_over_label = ref<number>(0)
 
 class Main {
   /**kiểm tra label có được chọn hay không */
-  private isActiveLabel(label_id?: string) {
+  private isActiveLabel(label_id?: string): number | undefined {
     // nếu không có nhãn thì trả về false
-    if (!label_id) return false
+    if (!label_id) return undefined
+
+    /**trạng thái nhãn có được chọn hay không */
+    const iS_SELECT = conversationStore.getActiveLabelIds()?.includes(label_id)
 
     // trả về trạng thái nhãn có được chọn hay không
-    return conversationStore.getActiveLabelIds()?.includes(label_id)
+    return iS_SELECT ? 1 : undefined
   }
   /**đếm số nhãn bị ẩn bởi css flex overflow-hidden  */
   private countHiddenLabel(): void {
@@ -135,17 +138,14 @@ class Main {
     /**dữ liệu nhãn gốc của trang */
     const MAP_LABELS = conversationStore.getLabels()
 
-    // mảng các nhãn
-    labels.value = map(MAP_LABELS)?.map((label: ICustomLabel) => {
-      // tiêm trạng thái nhãn được chọn
+    // tiêm trạng thái nhãn được chọn
+    map(MAP_LABELS, (label: ICustomLabel) => {
+      // đánh dấu các nhãn đã được chọn
       label.is_active = this.isActiveLabel(label._id)
-
-      // trả về nhãn đã được tiêm trạng thái
-      return label
     })
 
-    // sắp xếp các nhãn được chọn lên trên, và sắp xếp theo thời gian tạo
-    labels.value = sortBy(labels.value, ['is_active', 'createdAt'])?.reverse()
+    // sắp xếp
+    labels.value = sortBy(MAP_LABELS, 'is_active', 'description')
 
     // đếm số nhãn bị ẩn
     this.countHiddenLabel()
