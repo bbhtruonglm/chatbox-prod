@@ -7,6 +7,7 @@ import type { OrgInfo } from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
 import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
+import { gte } from 'lodash'
 
 const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
@@ -122,7 +123,9 @@ export const useOrgStore = defineStore('org_store', () => {
   /**user có phải là admin của tổ chức không */
   function isAdminOrg() {
     // là admin và đang kích hoạt
-    return $member_ship_helper.isActiveAdmin(selected_org_info.value?.current_ms)
+    return $member_ship_helper.isActiveAdmin(
+      selected_org_info.value?.current_ms
+    )
   }
   /**đã kích hoạt gói dùng thử chưa */
   function hasTrial() {
@@ -156,6 +159,13 @@ export const useOrgStore = defineStore('org_store', () => {
   function hasDiscount() {
     return selected_org_info.value?.org_package?.org_has_discounted
   }
+  /**tổ chức đã đạt đến số trang tối đa chưa */
+  function isReachPageQuota() {
+    return gte(
+      selected_org_info.value?.org_package?.org_current_page,
+      selected_org_info.value?.org_package?.org_quota_page
+    )
+  }
 
   return {
     is_loading,
@@ -174,6 +184,7 @@ export const useOrgStore = defineStore('org_store', () => {
     calcNextPay,
     calcDayRemaining,
     hasDiscount,
+    isReachPageQuota,
   }
 })
 

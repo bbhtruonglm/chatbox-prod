@@ -13,7 +13,11 @@
     <LeftBar />
     <CenterContent />
     <RightBar />
-    <AlertOverQuota ref="ref_alert_over_quota" />
+    <AlertRechQuota
+      @close_modal="goDashboard"
+      @confirm="goDashboard()"
+      ref="ref_alert_reach_quota"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -52,7 +56,7 @@ import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
 import Menu from '@/views/ChatWarper/Menu.vue'
-import AlertOverQuota from './ChatWarper/AlertOverQuota.vue'
+import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import BellSound from '@/assets/sound/notification-sound.mp3'
 
@@ -92,7 +96,7 @@ const is_force_close_socket = ref(false)
 /**cờ xác định người dùng có đang focus vào tab chat không */
 const is_focus_chat_tab = ref(true)
 /**ref modal cảnh báo hết gói */
-const ref_alert_over_quota = ref<InstanceType<typeof AlertOverQuota>>()
+const ref_alert_reach_quota = ref<InstanceType<typeof AlertRechQuota>>()
 
 watch(
   () => conversationStore.select_conversation,
@@ -119,6 +123,10 @@ onUnmounted(() => {
   window.removeEventListener('blur', checkFocusChatTab)
 })
 
+/**chuyển đến trang dashboard */
+function goDashboard() {
+  $router.push('/dashboard')
+}
 /**kiểm tra xem người dùng có đang ở trong tab chatbox không */
 function checkFocusChatTab($event: FocusEvent) {
   // nếu type của sự kiện là focus thì đánh dấu đang focus, ngược lại thì không
@@ -642,7 +650,7 @@ class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
     // nếu lỗi là không có quyền truy cập thì thông báo khác
     if (message?.message === 'COMMON.ACCESS_DENIED')
-      return ref_alert_over_quota.value?.toggleModal()
+      return ref_alert_reach_quota.value?.toggleModal()
 
     // thông báo lỗi
     super.error(message)

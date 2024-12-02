@@ -16,7 +16,7 @@
         />
       </div>
       <button
-        @click="createWebsite"
+        @click="$main.createWebsite"
         :class="{
           'contrast-50 cursor-not-allowed': !name,
         }"
@@ -39,83 +39,81 @@
   <InjectScript
     ref="inject_script_ref"
     :page_id
-    @done="done"
+    @done="$main.done"
   />
+  <AlertRechQuota ref="alert_reach_quota_page_ref" />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import { toastError } from '@/service/helper/alert'
-import { create_website_page } from '@/service/api/chatbox/n4-service'
-import { useCommonStore, useConnectPageStore } from '@/stores'
+import { ref, toRef } from 'vue'
+import { useCommonStore, useConnectPageStore, useOrgStore } from '@/stores'
 import { isDomain } from '@/service/helper/check'
 import { useI18n } from 'vue-i18n'
+import { loading } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error'
+import { container } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
 import InjectScript from '@/views/Dashboard/ConnectPage/Website/InjectScript.vue'
+import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import WebIcon from '@/components/Icons/Web.vue'
-import type { PageInfo } from '@/service/interface/app/page'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
+const $toast = container.resolve(Toast)
+const orgStore = useOrgStore()
 
 /**tên của trang web mới */
 const name = ref<string>()
 /**ref của modal hướng dẫn nhúng script */
 const inject_script_ref = ref<InstanceType<typeof InjectScript>>()
+/**ref của modal thông báo hết quota */
+const alert_reach_quota_page_ref =
+  ref<InstanceType<typeof AlertRechQuota>>()
 /**id trang sau khi tạo */
 const page_id = ref<string>()
 
-/**tạo mới page web */
-async function createWebsite() {
-  try {
+class Main {
+  /**tạo mới page web */
+  @loading(toRef(commonStore, 'is_loading_full_screen'))
+  @error($toast)
+  async createWebsite() {
     // nếu chưa nhập tên thì không thực hiện
     if (!name.value) return
-
-    // hiển thị loading
-    commonStore.is_loading_full_screen = true
 
     // kiểm tra tên trang web có hợp lệ không
     if (!isDomain(name.value))
       throw $t('v1.view.main.dashboard.select_platform.website.wrong_name')
 
-    // tạo mới page web
-    const PAGE: PageInfo = await new Promise((resolve, reject) =>
-      create_website_page(
-        {
-          name: name.value!,
-        },
-        (e, r) => {
-          if (e) return reject(e)
+    // nếu tổ chức hiện tại đã hết quota thì cảnh báo
+    if (orgStore.isReachPageQuota())
+      return alert_reach_quota_page_ref.value?.toggleModal()
 
-          resolve(r)
-        }
-      )
-    )
+    /**tạo mới page web */
+    const PAGE = await new N4SerivceAppPage().createWebsite({
+      name: name.value,
+    })
 
     // lưu lại id trang mới được tạo
     page_id.value = PAGE?.fb_page_id
 
     // mở modal hướng dẫn nhúng script
     inject_script_ref.value?.toggleModal()
-  } catch (e) {
-    toastError(e)
-  } finally {
-    // tắt loading
-    commonStore.is_loading_full_screen = false
+  }
+  /**sau khi xong */
+  done() {
+    // reset lại giá trị
+    name.value = ''
+
+    // reset id trang
+    page_id.value = undefined
+
+    // quay lại page danh sách trang
+    connectPageStore.selectMenu('PAGE')
   }
 }
-/**sau khi xong */
-function done() {
-  // reset lại giá trị
-  name.value = ''
-
-  // reset id trang
-  page_id.value = undefined
-
-  // quay lại page danh sách trang
-  connectPageStore.selectMenu('PAGE')
-
-}
+const $main = new Main()
 </script>

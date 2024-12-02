@@ -9,6 +9,7 @@ export type PageType =
   | 'FB_WHATSAPP'
   | 'FB_INSTAGRAM'
 
+/**@deprecated IPage */
 export interface PageInfo {
   /**vị trí quét từ FB */
   location?: {

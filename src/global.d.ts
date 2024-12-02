@@ -17,6 +17,8 @@ declare global {
     var check_ad_blocker: boolean
     /**gắn cờ trình phát hiện adblock đã hoạt động */
     var detect_ad_blocker: boolean
+    /**sdk của chatbox */
+    var BBH: any
 }
 
 export {}
