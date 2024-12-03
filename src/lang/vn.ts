@@ -866,6 +866,7 @@ const source: Language = {
                 title: 'Thông tin khách hàng',
                 customer_code: 'Mã khách hàng',
                 org_avatar: 'Ảnh đại diện',
+                require_upgrade: 'Nâng cấp để sử dụng tính năng này',
                 org_name: 'Tên tổ chức',
                 contract_code: 'Mã hợp đồng',
                 company_name: 'Tên công ty',

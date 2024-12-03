@@ -49,17 +49,27 @@
           v-model="org_info.org_avatar"
           :is_edit
         >
+          <img
+            v-if="!is_edit"
+            :src="org_info.org_avatar || commonStore.partner?.logo?.icon"
+            class="w-5 h-5"
+          />
+          <span
+            v-else-if="orgStore.isFreePack() || orgStore.isTrialPack()"
+            class="text-red-500"
+          >
+            {{
+              $t(
+                'v1.view.main.dashboard.org.setting.customer_info.require_upgrade'
+              )
+            }}
+          </span>
           <AvatarUpload
-            v-if="is_edit"
+            v-else
             @upload="file => $main.uploadOrgAvatar(file)"
             v-model="org_info.org_avatar"
             :default="commonStore.partner?.logo?.icon"
             class="h-5"
-          />
-          <img
-            v-else
-            :src="org_info.org_avatar || commonStore.partner?.logo?.icon"
-            class="w-5 h-5"
           />
         </Item>
         <Item
