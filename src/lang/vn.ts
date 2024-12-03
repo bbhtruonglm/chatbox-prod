@@ -44,7 +44,7 @@ const source: Language = {
       download: 'Tải về',
       upload: 'Tải lên',
       copy_to_clipboard: 'Đã sao chép',
-      delete: 'Xoá',
+      delete: 'Xóa',
       update: 'Cập nhật',
       update_success: 'Đã cập nhật',
       create: 'Tạo',
@@ -1161,6 +1161,13 @@ const source: Language = {
         },
       }
     },
+    component: {
+      upload: {
+        avatar_upload: {
+          upload_logo: 'Tải lên Logo',
+        }
+      }
+    }
   },
 }
 

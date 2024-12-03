@@ -571,7 +571,10 @@ function getFile() {
     }
   )
 }
-/**chọn file từ thiết bị để thêm vào album */
+/**
+ * chọn file từ thiết bị để thêm vào album 
+ * @deprecated dùng qua UploadFile ở utils
+ */
 function uploadFileFromDevice() {
   /**input upload file */
   const INPUT = document.createElement('input')

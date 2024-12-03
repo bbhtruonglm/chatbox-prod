@@ -38,6 +38,21 @@ export class BillingAppOrganization extends Billing {
     // cập nhật thiết lập, thông tin một tổ chức
     return this.post('update_org', { org_id, ...body })
   }
+  /**
+   * upload avt của tổ chức
+   * @param org_id id tổ chức
+   * @param file dữ liệu upload
+   */
+  async uploadOrgAvatar(org_id: string, file: File): Promise<string> {
+    /**đối tượng form */
+    const FORM = new FormData()
+
+    // tải file lên hệ thống
+    FORM.append('file', file)
+
+    /**kết quả upload */
+    return this.upload('upload_org_avatar', { org_id }, FORM)
+  }
 }
 
 /**xác minh người dùng thoả mãn điều kiện dùng mã này */
@@ -109,7 +124,7 @@ export class BillingAppTxn extends Billing {
    */
   public async checkTxn(
     txn_id: string,
-    bank_name: string,
+    bank_name: string
   ): Promise<TransactionInfo | undefined> {
     return this.post('check_txn', { txn_id, bank_name })
   }

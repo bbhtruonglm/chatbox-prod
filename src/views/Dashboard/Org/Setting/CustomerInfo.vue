@@ -9,7 +9,7 @@
     <template #action>
       <button
         v-if="!is_edit"
-        @click="activeEdit"
+        @click="$main.activeEdit"
         class="bg-blue-600 text-white py-1 px-4 rounded-md text-sm font-medium"
       >
         {{ $t('v1.common.change') }}
@@ -19,13 +19,14 @@
         class="flex gap-2"
       >
         <button
-          @click="save"
+          v-if="!orgStore.is_loading"
+          @click="$main.save"
           class="bg-green-600 text-white py-1 px-4 rounded-md text-sm font-medium"
         >
           {{ $t('v1.common.ok') }}
         </button>
         <button
-          @click="cancelEdit"
+          @click="$main.cancelEdit"
           class="bg-gray-600 text-white py-1 px-4 rounded-md text-sm font-medium"
         >
           {{ $t('v1.common.cancel') }}
@@ -48,9 +49,16 @@
           v-model="org_info.org_avatar"
           :is_edit
         >
+          <AvatarUpload
+            v-if="is_edit"
+            @upload="file => $main.uploadOrgAvatar(file)"
+            v-model="org_info.org_avatar"
+            :default="commonStore.partner?.logo?.icon"
+            class="h-5"
+          />
           <img
-            v-if="org_info.org_avatar"
-            :src="org_info.org_avatar"
+            v-else
+            :src="org_info.org_avatar || commonStore.partner?.logo?.icon"
             class="w-5 h-5"
           />
         </Item>
@@ -131,10 +139,9 @@
 </template>
 <script setup lang="ts">
 import { useCommonStore, useOrgStore } from '@/stores'
-import { computed, ref } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { set } from 'lodash'
 import { copy } from '@/service/helper/format'
-import { toast, toastError } from '@/service/helper/alert'
 import { update_org } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
 
@@ -142,19 +149,26 @@ import Item from '@/views/Dashboard/Org/Setting/CustomerInfo/Item.vue'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
+import AvatarUpload from '@/components/Upload/AvatarUpload.vue'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
+import { loading } from '@/utils/decorator/loading'
+import { container } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { error } from '@/utils/decorator/error'
+import { BillingAppOrganization } from '@/utils/api/Billing'
 
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 const commonStore = useCommonStore()
+const $toast = container.resolve(Toast)
 
 /**có kích hoat chế độ sửa không */
 const is_edit = ref(false)
 /**dữ liệu trước khi sửa */
 const old_info = ref<OrgInfo['org_info']>({})
 
-/** Lấy thông tin khách hàng */
+/**thông tin của tổ chức */
 const org_info = computed({
   get() {
     return orgStore.selected_org_info?.org_info || {}
@@ -164,49 +178,56 @@ const org_info = computed({
   },
 })
 
-/**bắt đầu chỉnh sửa nội dung */
-function activeEdit() {
-  // lưu lại thông tin cũ
-  old_info.value = copy(org_info.value)
+class Main {
+  /**bắt đầu chỉnh sửa nội dung */
+  activeEdit() {
+    // lưu lại thông tin cũ
+    old_info.value = copy(org_info.value)
 
-  // kích hoạt chế độ sửa
-  is_edit.value = true
-}
-/**hủy bỏ chỉnh sửa */
-function cancelEdit() {
-  // nếu đang xử lý thì không cho huỷ
-  if (orgStore.is_loading) return
+    // kích hoạt chế độ sửa
+    is_edit.value = true
+  }
+  /**hủy bỏ chỉnh sửa */
+  cancelEdit() {
+    // nếu đang xử lý thì không cho huỷ
+    if (orgStore.is_loading) return
 
-  // khôi phục lại thông tin cũ
-  org_info.value = copy(old_info.value || {})
+    // khôi phục lại thông tin cũ
+    org_info.value = copy(old_info.value || {})
 
-  // tắt chế độ sửa
-  is_edit.value = false
-}
-/**lưu lại thông tin mới */
-async function save() {
-  // nếu chưa chọn org thì không làm gì
-  if (!orgStore.selected_org_id || orgStore.is_loading) return
+    // tắt chế độ sửa
+    is_edit.value = false
+  }
+  /**upload ảnh avt mới của tổ chức */
+  @loading(toRef(orgStore, 'is_loading'))
+  @error($toast)
+  async uploadOrgAvatar(file?: File) {
+    // nếu chưa chọn org thì không làm gì
+    if (!orgStore.selected_org_id || !file) return
 
-  // bật chế độ loading
-  orgStore.is_loading = true
+    // lấy link avt mới
+    org_info.value.org_avatar =
+      await new BillingAppOrganization().uploadOrgAvatar(
+        orgStore.selected_org_id,
+        file
+      )
+  }
+  /**lưu lại thông tin mới */
+  @loading(toRef(orgStore, 'is_loading'))
+  @error($toast)
+  async save() {
+    // nếu chưa chọn org thì không làm gì
+    if (!orgStore.selected_org_id) return
 
-  try {
     // gửi request lên server
-    await update_org(orgStore.selected_org_id, {
-      org_info: org_info.value,
-    })
+    await update_org(orgStore.selected_org_id, { org_info: org_info.value })
 
     // tắt chế độ sửa
     is_edit.value = false
 
-    toast('success', $t('v1.common.update_success'))
-  } catch (e) {
-    // nếu có lỗi thì thông báo lỗi
-    toastError(e)
+    // thông báo thành công
+    $toast.success($t('v1.common.update_success'))
   }
-
-  // tắt chế độ loading
-  orgStore.is_loading = false
 }
+const $main = new Main()
 </script>

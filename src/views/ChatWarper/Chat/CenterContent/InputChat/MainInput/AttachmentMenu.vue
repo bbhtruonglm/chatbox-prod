@@ -80,7 +80,10 @@ function uploadFile(): void {
   // nếu là fb, web thì cho tải tất cả các dạng
   else selectAttachmentFromDevice()
 }
-/**chọn file từ thiết bị để gửi đi */
+/**
+ * chọn file từ thiết bị để gửi đi
+ * @deprecated dùng qua UploadFile ở utils
+ */
 function selectAttachmentFromDevice(accept: string = '*') {
   // đang gửi thì không cho chọn lại file để bị lỗi
   if (messageStore.is_send_file) return
