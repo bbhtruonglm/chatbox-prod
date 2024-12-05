@@ -22,14 +22,14 @@
           @click="$main.toggleLabel(label._id)"
         />
       </div>
-      <button
+      <!-- <button
         v-if="orgStore.isAdminOrg()"
         v-tooltip="$t('v1.common.setting')"
         @click="$external_site.openPageSetting('dialogue-tag')"
         class="rounded border border-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center hidden group-hover:flex"
       >
         <CogBoldIcon class="w-4 h-4 text-slate-700" />
-      </button>
+      </button> -->
       <button
         v-tooltip="
           is_expand_label ? $t('v1.common.contract') : $t('v1.common.expand')

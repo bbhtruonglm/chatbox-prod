@@ -74,6 +74,7 @@ import { Delay } from '@/utils/helper/Delay'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { User } from '@/utils/helper/User'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -670,8 +671,7 @@ class Main {
     const SELECTED_PAGE_IDS = keys(pageStore.selected_page_id_list)
 
     // nếu không có page nào được chọn thì thôi
-    if (!SELECTED_PAGE_IDS?.length)
-      throw $t('v1.view.main.dashboard.chat.error.get_page_info')
+    if (!SELECTED_PAGE_IDS?.length) return goDashboard()
 
     // nạp lại dữ liệu của tổ chức hiện tại đang chọn cho chắc
     getCurrentOrgInfo()

@@ -13,13 +13,14 @@
     "build-staging": "run-p type-check build-only-staging",
     "build-prod": "run-p type-check build-only-prod",
     "build": "run-p type-check build-only-prod",
-    "build-retion": "VITE_BASE_URL=/chat run-s build zip",
+    "build-sub-path": "VITE_BASE_URL=/chat run-s build zip",
     "build-only-dev": "vite build --mode dev",
     "build-only-staging": "vite build --mode staging",
     "build-only-prod": "vite build --mode prod",
     "type-check": "vue-tsc --noEmit",
     "deploy": "./deploy.sh",
-    "zip": "zip -r dist.zip dist"
+    "zip": "zip -r dist.zip dist",
+    "build-retion": "pnpm build-sub-path && rm -rf ../retion__landing-page/public/chat && mv dist ../retion__landing-page/public/chat"
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
