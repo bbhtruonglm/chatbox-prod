@@ -244,7 +244,7 @@ function sendFile(page_id: string, client_id: string) {
       (cb: CbError) =>
         eachOfLimit(
           IMAGE_LIST,
-          1,
+          20,
           (file: UploadFile, i, next) => {
             file.is_loading = true
 
@@ -295,7 +295,7 @@ function sendFile(page_id: string, client_id: string) {
         else
           eachOfLimit(
             IMAGE_LIST,
-            1,
+            20,
             (file: UploadFile, i, next) => {
               if (!file.url) return next()
 
@@ -320,7 +320,7 @@ function sendFile(page_id: string, client_id: string) {
       (cb: CbError) =>
         eachOfLimit(
           FILE_LIST,
-          1,
+          20,
           (file: UploadFile, i, next) => {
             // đang gửi mà file bị xoá mất
             if (!file) return next()

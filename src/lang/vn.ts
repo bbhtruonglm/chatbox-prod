@@ -394,7 +394,8 @@ const source: Language = {
             error: {
               get_page_info: 'Không tìm thấy dữ liệu trang',
               get_org_info: 'Không tìm thấy dữ liệu tổ chức',
-              org_quota_staff: 'Tổ chức đã đạt giới hạn sử dụng, vui lòng liên hệ Quản trị viên để nâng cấp'
+              org_quota_staff:
+                'Tổ chức của bạn hiện không còn quyền kiểm soát trang hoặc đã đạt giới hạn sử dụng. Vui lòng liên hệ Quản trị viên',
             },
             online_status: {
               online: 'Đang trực tuyến',
@@ -859,7 +860,7 @@ const source: Language = {
               remove_staff: 'Xoá nhân viên',
               active_staff: {
                 title: 'Kích hoạt nhân viên',
-                description: 'Bạn có chắc chắn muốn kích hoạt nhân viên này?'
+                description: 'Bạn có chắc chắn muốn kích hoạt nhân viên này?',
               },
               customer_info: {
                 empty: 'Chưa có dữ liệu',
@@ -1160,15 +1161,15 @@ const source: Language = {
           title: 'Đang kích hoạt...',
           description: 'Vui lòng chờ hệ thống kích hoạt',
         },
-      }
+      },
     },
     component: {
       upload: {
         avatar_upload: {
           upload_logo: 'Tải lên Logo',
-        }
-      }
-    }
+        },
+      },
+    },
   },
 }
 

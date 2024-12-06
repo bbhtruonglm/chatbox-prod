@@ -66,6 +66,10 @@ import CogBoldIcon from '@/components/Icons/CogBold.vue'
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
 import type { ICustomLabel } from './ListLabel/type'
+import {
+  CountHiddenItem,
+  type ICounHiddenItem,
+} from '@/utils/helper/CountHiddenItem'
 
 const conversationStore = useConversationStore()
 const $toast = container.resolve(Toast)
@@ -81,9 +85,18 @@ const is_loading_label = ref(false)
 /**danh sách nhãn của trang của hội thoại này */
 const labels = ref<ICustomLabel[]>([])
 /**tổng số nhãn bị ẩn */
-const total_over_label = ref<number>(0)
+const total_over_label = ref<number>()
 
 class Main {
+  /**
+   * @param SERVICE_COUNT_HIDDEN_ITEM đếm số nhãn bị ẩn
+   */
+  constructor(
+    private readonly SERVICE_COUNT_HIDDEN_ITEM: ICounHiddenItem = container.resolve(
+      CountHiddenItem
+    )
+  ) {}
+
   /**kiểm tra label có được chọn hay không */
   private isActiveLabel(label_id?: string): number | undefined {
     // nếu không có nhãn thì trả về false
@@ -96,41 +109,11 @@ class Main {
     return iS_SELECT ? 1 : undefined
   }
   /**đếm số nhãn bị ẩn bởi css flex overflow-hidden  */
-  private countHiddenLabel(): void {
-    // nếu không có div danh sách nhãn thì thôi
-    if (!ref_labels.value) return
-
-    // reset lại số nhãn bị ẩn
-    total_over_label.value = 0
-
-    /**khoảng cách giữa các nhãn */
-    const GAP = parseFloat(
-      window.getComputedStyle(ref_labels.value).getPropertyValue('gap')
+  private async countHiddenLabel(): Promise<void> {
+    total_over_label.value = await this.SERVICE_COUNT_HIDDEN_ITEM.exec(
+      'button',
+      ref_labels.value
     )
-
-    /**độ rộng của div bao ngoài danh sách nhãn */
-    const CONTAINER_WIDTH = ref_labels.value?.clientWidth || 0
-
-    // chờ render xong mới thực hiện
-    nextTick(() => {
-      // lấy toàn bộ các div nhãn bên trong div bao ngoài
-      const DIV_LABELS = ref_labels.value?.querySelectorAll('button')
-
-      /**tổng độ rộng của các div nhãn */
-      let total_width = 0
-
-      // lặp qua từng div nhãn, lấy width của nó
-      map(DIV_LABELS, div => {
-        /**độ rộng của div tính cả gap */
-        const LABEL_WIDTH = div.clientWidth + GAP
-
-        // cộng dồn vào tổng độ rộng
-        total_width += LABEL_WIDTH
-
-        // nếu vượt thì tăng số nhãn bị ẩn
-        if (total_width > CONTAINER_WIDTH) total_over_label.value++
-      })
-    })
   }
 
   /**khởi tạo danh sách nhãn của trang của hội thoại đang chọn */

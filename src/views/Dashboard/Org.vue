@@ -45,7 +45,7 @@ class Main {
     // khởi tạo bong bóng chat
     BBH?.init?.({
       // kích hoạt id trang chat
-      page_id: 'bf425487afbe403895116dd9b585537b',
+      page_id: '4aa9fb0c619f42bc94240a4d441ba654',
       // thiết lập hiển thị - chưa có logic
       config: {},
       // cho phép gỡ lỗi
