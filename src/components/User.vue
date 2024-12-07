@@ -110,6 +110,7 @@ import LogOutIcon from '@/components/Icons/LogOut.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
 
 import type { ModalPosition } from '@/service/interface/vue'
+import { Device } from '@/utils/helper/Device'
 
 const $props = withDefaults(
   defineProps<{
@@ -125,6 +126,7 @@ const chatbotUserStore = useChatbotUserStore()
 const orgStore = useOrgStore()
 const $router = useRouter()
 const $external_site = container.resolve(ExternalSite)
+const $device = container.resolve(Device)
 
 /** Ref của menu dropdown */
 const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
@@ -153,6 +155,9 @@ async function countNotiCurrentOrg() {
 }
 /** Mở menu */
 function openMenu($event: MouseEvent) {
+  // nếu là mobile thì không cho click
+  if ($device.isMobile()) return
+  
   user_menu_ref.value?.toggleDropdown($event)
 }
 /**mở menu */

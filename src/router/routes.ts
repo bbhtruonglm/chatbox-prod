@@ -30,6 +30,7 @@ import OrgPayInfo from '@/views/Dashboard/Org/Pay/Info.vue'
 import OrgPayReCharge from '@/views/Dashboard/Org/Pay/ReCharge.vue'
 
 import Template from '@/views/Template.vue'
+import DownloadApp from '@/views/DownloadApp.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },
@@ -83,6 +84,7 @@ export const routes = [
     ],
   },
   { path: '/template', component: Template },
+  { path: '/download-app', component: DownloadApp },
   { path: '/delete-account', component: DeleteAccount },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },

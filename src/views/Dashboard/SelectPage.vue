@@ -11,9 +11,9 @@
           'LOCK_FEATURE',
         ]"
       />
-      <div class="flex justify-between flex-shrink-0">
+      <div class="grid grid-cols-2 gap-2 md:flex md:justify-between flex-shrink-0">
         <Search
-          class="w-72"
+          class="md:w-72"
           v-model="selectPageStore.search"
           :placeholder="$t('v1.common.page_search_placeholder')"
         />

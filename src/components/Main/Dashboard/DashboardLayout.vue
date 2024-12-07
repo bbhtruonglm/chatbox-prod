@@ -1,7 +1,7 @@
 <template>
   <div class="h-full w-full flex relative gap-3">
     <div
-      class="h-full flex-shrink-0 w-56 bg-white rounded-md p-2 gap-1 flex flex-col overflow-y-auto"
+      class="h-full flex-shrink-0 w-56 bg-white rounded-md p-2 gap-1 flex-col overflow-y-auto hidden md:flex"
     >
       <slot name="menu" />
     </div>

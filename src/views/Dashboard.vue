@@ -121,7 +121,7 @@ provide(KEY_LOAD_LIST_PAGE_FUNCT, loadListPage)
 <style scoped lang="scss">
 .dashboard-header {
   .btn-custom {
-    @apply rounded flex items-center gap-1 hover:brightness-90;
+    @apply rounded items-center gap-1 hidden md:flex;
   }
 }
 </style>

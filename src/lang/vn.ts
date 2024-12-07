@@ -1162,6 +1162,11 @@ const source: Language = {
           description: 'Vui lòng chờ hệ thống kích hoạt',
         },
       },
+      download_app: {
+        title: 'Tải xuống ứng dụng {name} cho Ios và Android',
+        description:
+          'Theo dõi và điều hành doanh nghiệp của bạn từ mọi nơi trên điện thoại hoặc máy tính. Tải ngay ứng dụng cho iOS hoặc Android',
+      },
     },
     component: {
       upload: {
