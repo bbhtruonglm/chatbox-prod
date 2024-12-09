@@ -1,36 +1,47 @@
 <template>
-  <div class="relative flex flex-row-reverse h-full">
+  <div
+    id="oauth"
+    class="relative h-full w-full"
+  >
     <div
       @click="openForm"
-      class="absolute w-[10px] h-[10px] top-0 right-[45%] cursor-pointer bg-gray-500"
+      class="absolute w-2.5 h-2.5 top-0 left-0 cursor-pointer z-50"
     ></div>
     <div
       @click="testLogin"
-      class="absolute w-[10px] h-[10px] top-0 right-0 cursor-pointer"
+      class="absolute w-2.5 h-2.5 top-0 right-0 cursor-pointer"
     ></div>
+
     <div
-      class="w-full h-[250px] md:h-full md:w-2/4 bg-no-repeat bg-center bg-cover bg-[url(@/assets/imgs/login-background.svg)]"
-    />
-    <div class="mt-0 h-full w-2/4 px-8 py-24 bg-white relative">
-      <img
-        class="absolute top-[-150px] w-[60px] h-[60px] md:w-[80px] md:h-[80px] md:static md:mx-auto left-8"
-        :src="commonStore.partner?.logo?.icon"
-      />
-      <div class="text-2xl font-semibold md:text-center md:mt-5">
-        {{ $t('v1.view.oauth.login.login') }}
-      </div>
+      class="h-full w-full flex flex-col-reverse md:grid md:grid-cols-2 bg-white"
+    >
       <div
-        class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full px-[33px] flex justify-center"
+        class="h-1/2 md:h-full md:pb-1/2 bg-white flex flex-col items-center md:justify-end gap-2 md:gap-14 mt-20 md:mt-0"
       >
-        <Facebook
-          :text="$t('v1.view.oauth.login.btn_text')"
-          class="h-[40px] w-full md:w-[350px]"
-          @access_token="loginChatbox"
-        />
+        <div class="flex flex-col items-center gap-2">
+          <img
+            :src="commonStore.partner?.logo?.icon"
+            class="w-20 h-20 hidden md:block"
+          />
+          <div class="text-2xl font-semibold">
+            {{ $t('v1.view.oauth.login.login') }}
+          </div>
+        </div>
+        <div class="w-full flex justify-center">
+          <Facebook
+            :text="$t('v1.view.oauth.login.btn_text')"
+            class="h-[40px] w-full md:w-[350px]"
+            @access_token="loginChatbox"
+          />
+        </div>
       </div>
+
+      <div
+        class="bg-no-repeat bg-center bg-cover h-1/2 md:h-full rounded-bl-3xl md:rounded-none bg-[url(@/assets/imgs/login__bg-mobile.svg)] md:bg-[url(@/assets/imgs/login-background.svg)] bg-orange-50"
+      />
     </div>
 
-    <div class="absolute bottom-[40px] left-8">
+    <div class="absolute bottom-0 md:bottom-10 md:left-8">
       <Language />
     </div>
   </div>

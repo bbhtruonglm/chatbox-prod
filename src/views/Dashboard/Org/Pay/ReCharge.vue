@@ -277,14 +277,20 @@
                 <li class="pl-4 -indent-4">
                   {{
                     $t(
-                      'v1.view.main.dashboard.org.setting.customer_info.guild_1'
+                      'v1.view.main.dashboard.org.setting.customer_info.guild_1',
+                      {
+                        partner: commonStore.partner?.name,
+                      }
                     )
                   }}
                 </li>
                 <li class="pl-4 -indent-4">
                   {{
                     $t(
-                      'v1.view.main.dashboard.org.setting.customer_info.guild_2'
+                      'v1.view.main.dashboard.org.setting.customer_info.guild_2',
+                      {
+                        partner: commonStore.partner?.name,
+                      }
                     )
                   }}
                   hotro@botbanhang.vn
@@ -361,7 +367,7 @@
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cleave from 'vue-cleave-component'
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { toast, toastError } from '@/service/helper/alert'
 import {
   create_txn,
@@ -389,6 +395,7 @@ const { t: $t } = useI18n()
 const orgStore = useOrgStore()
 const $router = useRouter()
 const $route = useRoute()
+const commonStore = useCommonStore()
 
 /**các phương thức thanh toán */
 const LIST_PAYMENT_METHOD: {

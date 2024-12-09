@@ -7,7 +7,7 @@
       <div class="flex flex-wrap relative z-1 gap-2">
         <template v-for="(attachment, index) of message?.message_attachments">
           <div
-            @click="viewAttachment(attachment.index)"
+            @click="viewAttachment(index)"
             class="cursor-pointer hover:brightness-90 rounded-lg bg-gray-50 overflow-hidden"
             :style="
               initSize(
@@ -70,6 +70,7 @@ const data_source = ref<MessageTemplateInput>({})
 
 /**xem chi tiết file này */
 function viewAttachment(index: number = 0) {
+  console.log(index)
   // tạm thời xử lý data để hiện CTA
   data_source.value = {
     image: {

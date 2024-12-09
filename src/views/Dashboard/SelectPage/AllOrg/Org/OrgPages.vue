@@ -1,7 +1,7 @@
 <template>
   <div
     id="org-item__org-page"
-    class="bg-white rounded-b-lg py-3 px-4 grid grid-cols-4 gap-y-3 gap-x-6"
+    class="bg-white rounded-b-lg py-3 px-4 grid grid-cols-1 md:grid-cols-4 gap-y-3 gap-x-6"
   >
     <template v-for="page of active_page_list">
       <PageItem

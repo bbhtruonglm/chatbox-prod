@@ -16,17 +16,17 @@ const ENV: IEnv = {
         chatbot: 'https://chatbot-api.botbanhang.vn',
         n8_merge: 'https://chatbox-merge.botbanhang.vn',
         widget: 'https://chatbox-widget.botbanhang.vn',
-        page_setting_view: 'https://setting.retion.ai',
-        analytic_view: 'https://analytic-chatbox.botbanhang.vn/#/',
-        chatbot_view: 'https://bot.botbanhang.vn/#/',
-        download_client: 'https://chatbox-merge.botbanhang.vn/download',
-        analytic: {
-            retion: 'https://analytic-chatbox-v2.retion.ai/dashboard',
-            bbh: 'https://analytic-chatbox-v2.botbanhang.vn/dashboard'
-        },
-        bbh_admin: 'https://ad.retion.ai',
         n8_merge_v2: 'https://chatbox-merge-v2.botbanhang.vn',
         media_cdn: 'https://cdn.botbanhang.vn',
+    },
+    external_link: {
+        setting: 'https://setting.retion.ai',
+        analytic: 'https://analytic-chatbox-v2.retion.ai',
+        chatbot: 'https://bot.botbanhang.vn/#',
+        chatbox: 'https://chat.retion.ai',
+        download: 'https://chatbox-merge.botbanhang.vn/download',
+        merchant: 'https://merchant.vn',
+        admin: 'https://ad.retion.ai',
     },
     facebook: {
         app_id: '1282108599314861',

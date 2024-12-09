@@ -1,7 +1,11 @@
 <template>
   <EmptyPage
     :icon="FacebookIcon"
-    :guild="$t('v1.view.main.dashboard.select_platform.facebook.guild')"
+    :guild="
+      $t('v1.view.main.dashboard.select_platform.facebook.guild', {
+        partner: commonStore.partner?.name,
+      })
+    "
     :description="
       $t('v1.view.main.dashboard.select_platform.facebook.description')
     "

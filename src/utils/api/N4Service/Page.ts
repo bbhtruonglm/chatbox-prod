@@ -1,6 +1,10 @@
 import { N4Serivce } from '@/utils/api/N4Serivce'
 
-import type { PageList } from '@/service/interface/app/page'
+import type {
+  IPage,
+  PageList,
+  PageWebsiteCreate,
+} from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { LocationQueryValue } from 'vue-router'
 
@@ -91,5 +95,13 @@ export class N4SerivceAppPage extends N4Serivce {
       },
       is_raw_error
     )
+  }
+  /**
+   * tạo trang website
+   * @param body thông tin trang
+   */
+  public async createWebsite(body: PageWebsiteCreate): Promise<IPage> {
+    // gọi api
+    return this.post('create_website_page', body)
   }
 }

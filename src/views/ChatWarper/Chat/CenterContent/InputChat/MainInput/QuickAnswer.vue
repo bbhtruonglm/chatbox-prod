@@ -87,7 +87,7 @@ import {
   useOrgStore,
 } from '@/stores'
 import { nonAccentVn } from '@/service/helper/format'
-import { last, size } from 'lodash'
+import { last, size, sortBy } from 'lodash'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 import { useI18n } from 'vue-i18n'
 import { getPageInfo, getStaffInfo } from '@/service/function'
@@ -208,10 +208,13 @@ async function getQuickAnswer() {
     is_loading.value = true
 
     // gọi api lấy dữ liệu câu trả lời
-    list_answer.value = await new QuickAnswer(page_id.value).readAnswer(
+    const ANSWERS = await new QuickAnswer(page_id.value).readAnswer(
       0,
       MAX_ANSWER
     )
+
+    // sắp xếp
+    list_answer.value = sortBy(ANSWERS, 'index')
 
     // thêm tính năng AI lên đầu trả lời nhanh
     list_answer.value?.unshift(...AI_FEATURE)

@@ -62,6 +62,9 @@ import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
 import type { CbError } from '@/service/interface/function'
 import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
 import { Page } from '@/utils/helper/Page'
+import { Device } from '@/utils/helper/Device'
+import { container } from 'tsyringe'
+import { useRouter } from 'vue-router'
 
 const $emit = defineEmits(['select_page', 'sort_list_page'])
 
@@ -80,6 +83,8 @@ const $props = withDefaults(
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
+const $device = container.resolve(Device)
+const $router = useRouter()
 
 /**hàm đi đến trang chat */
 const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
@@ -97,6 +102,9 @@ function isPageAdmin(page: PageData): boolean {
 }
 /**click chọn vào 1 trang */
 function selectPage() {
+  // nếu là mobile thì thông báo tải app
+  if ($device.isMobile()) return $router.push('/download-app')
+
   // nếu đang ở chế độ chat 1 page bấm vào page sẽ chọn luôn page đó
   if (!selectPageStore.is_group_page_mode) {
     selectOnePage()

@@ -13,7 +13,11 @@
     <LeftBar />
     <CenterContent />
     <RightBar />
-    <AlertOverQuota ref="ref_alert_over_quota" />
+    <AlertRechQuota
+      @close_modal="goDashboard"
+      @confirm="goDashboard()"
+      ref="ref_alert_reach_quota"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -52,7 +56,7 @@ import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
 import Menu from '@/views/ChatWarper/Menu.vue'
-import AlertOverQuota from './ChatWarper/AlertOverQuota.vue'
+import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import BellSound from '@/assets/sound/notification-sound.mp3'
 
@@ -70,6 +74,7 @@ import { Delay } from '@/utils/helper/Delay'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { User } from '@/utils/helper/User'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -92,7 +97,7 @@ const is_force_close_socket = ref(false)
 /**cờ xác định người dùng có đang focus vào tab chat không */
 const is_focus_chat_tab = ref(true)
 /**ref modal cảnh báo hết gói */
-const ref_alert_over_quota = ref<InstanceType<typeof AlertOverQuota>>()
+const ref_alert_reach_quota = ref<InstanceType<typeof AlertRechQuota>>()
 
 watch(
   () => conversationStore.select_conversation,
@@ -119,6 +124,10 @@ onUnmounted(() => {
   window.removeEventListener('blur', checkFocusChatTab)
 })
 
+/**chuyển đến trang dashboard */
+function goDashboard() {
+  $router.push('/dashboard')
+}
 /**kiểm tra xem người dùng có đang ở trong tab chatbox không */
 function checkFocusChatTab($event: FocusEvent) {
   // nếu type của sự kiện là focus thì đánh dấu đang focus, ngược lại thì không
@@ -458,7 +467,7 @@ async function pushWebNoti(conversation?: ConversationInfo) {
     return
 
   /**tiêu đề */
-  const TITLE = $t('v1.common.title')
+  const TITLE = commonStore.partner?.name || ''
   /**link avatar của khách hàng */
   const AVATAR = `https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar/${conversation?.fb_client_id}?page_id=${conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=64&height=64&type=${conversation?.platform_type}`
   /**nội dung muốn thông báo */
@@ -642,7 +651,7 @@ class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
     // nếu lỗi là không có quyền truy cập thì thông báo khác
     if (message?.message === 'COMMON.ACCESS_DENIED')
-      return ref_alert_over_quota.value?.toggleModal()
+      return ref_alert_reach_quota.value?.toggleModal()
 
     // thông báo lỗi
     super.error(message)
@@ -662,8 +671,7 @@ class Main {
     const SELECTED_PAGE_IDS = keys(pageStore.selected_page_id_list)
 
     // nếu không có page nào được chọn thì thôi
-    if (!SELECTED_PAGE_IDS?.length)
-      throw $t('v1.view.main.dashboard.chat.error.get_page_info')
+    if (!SELECTED_PAGE_IDS?.length) return goDashboard()
 
     // nạp lại dữ liệu của tổ chức hiện tại đang chọn cho chắc
     getCurrentOrgInfo()

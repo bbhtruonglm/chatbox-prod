@@ -22,14 +22,14 @@
           @click="$main.toggleLabel(label._id)"
         />
       </div>
-      <button
+      <!-- <button
         v-if="orgStore.isAdminOrg()"
         v-tooltip="$t('v1.common.setting')"
         @click="$external_site.openPageSetting('dialogue-tag')"
         class="rounded border border-slate-700 w-6 h-6 flex-shrink-0 justify-center items-center hidden group-hover:flex"
       >
         <CogBoldIcon class="w-4 h-4 text-slate-700" />
-      </button>
+      </button> -->
       <button
         v-tooltip="
           is_expand_label ? $t('v1.common.contract') : $t('v1.common.expand')
@@ -49,7 +49,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { map, sortBy } from 'lodash'
+import { map, partition, sortBy } from 'lodash'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { loading } from '@/utils/decorator/loading'
 import { error } from '@/utils/decorator/error'
@@ -66,6 +66,10 @@ import CogBoldIcon from '@/components/Icons/CogBold.vue'
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
 import type { ICustomLabel } from './ListLabel/type'
+import {
+  CountHiddenItem,
+  type ICounHiddenItem,
+} from '@/utils/helper/CountHiddenItem'
 
 const conversationStore = useConversationStore()
 const $toast = container.resolve(Toast)
@@ -79,55 +83,37 @@ const is_expand_label = ref(false)
 /**gắn cờ đang loading label */
 const is_loading_label = ref(false)
 /**danh sách nhãn của trang của hội thoại này */
-const labels = ref<ICustomLabel[]>()
+const labels = ref<ICustomLabel[]>([])
 /**tổng số nhãn bị ẩn */
-const total_over_label = ref<number>(0)
+const total_over_label = ref<number>()
 
 class Main {
+  /**
+   * @param SERVICE_COUNT_HIDDEN_ITEM đếm số nhãn bị ẩn
+   */
+  constructor(
+    private readonly SERVICE_COUNT_HIDDEN_ITEM: ICounHiddenItem = container.resolve(
+      CountHiddenItem
+    )
+  ) {}
+
   /**kiểm tra label có được chọn hay không */
-  private isActiveLabel(label_id?: string) {
+  private isActiveLabel(label_id?: string): number | undefined {
     // nếu không có nhãn thì trả về false
-    if (!label_id) return false
+    if (!label_id) return undefined
+
+    /**trạng thái nhãn có được chọn hay không */
+    const iS_SELECT = conversationStore.getActiveLabelIds()?.includes(label_id)
 
     // trả về trạng thái nhãn có được chọn hay không
-    return conversationStore.getActiveLabelIds()?.includes(label_id)
+    return iS_SELECT ? 1 : undefined
   }
   /**đếm số nhãn bị ẩn bởi css flex overflow-hidden  */
-  private countHiddenLabel(): void {
-    // nếu không có div danh sách nhãn thì thôi
-    if (!ref_labels.value) return
-
-    // reset lại số nhãn bị ẩn
-    total_over_label.value = 0
-
-    /**khoảng cách giữa các nhãn */
-    const GAP = parseFloat(
-      window.getComputedStyle(ref_labels.value).getPropertyValue('gap')
+  private async countHiddenLabel(): Promise<void> {
+    total_over_label.value = await this.SERVICE_COUNT_HIDDEN_ITEM.exec(
+      'button',
+      ref_labels.value
     )
-
-    /**độ rộng của div bao ngoài danh sách nhãn */
-    const CONTAINER_WIDTH = ref_labels.value?.clientWidth || 0
-
-    // chờ render xong mới thực hiện
-    nextTick(() => {
-      // lấy toàn bộ các div nhãn bên trong div bao ngoài
-      const DIV_LABELS = ref_labels.value?.querySelectorAll('button')
-
-      /**tổng độ rộng của các div nhãn */
-      let total_width = 0
-
-      // lặp qua từng div nhãn, lấy width của nó
-      map(DIV_LABELS, div => {
-        /**độ rộng của div tính cả gap */
-        const LABEL_WIDTH = div.clientWidth + GAP
-
-        // cộng dồn vào tổng độ rộng
-        total_width += LABEL_WIDTH
-
-        // nếu vượt thì tăng số nhãn bị ẩn
-        if (total_width > CONTAINER_WIDTH) total_over_label.value++
-      })
-    })
   }
 
   /**khởi tạo danh sách nhãn của trang của hội thoại đang chọn */
@@ -135,17 +121,14 @@ class Main {
     /**dữ liệu nhãn gốc của trang */
     const MAP_LABELS = conversationStore.getLabels()
 
-    // mảng các nhãn
-    labels.value = map(MAP_LABELS)?.map((label: ICustomLabel) => {
-      // tiêm trạng thái nhãn được chọn
+    // tiêm trạng thái nhãn được chọn
+    map(MAP_LABELS, (label: ICustomLabel) => {
+      // đánh dấu các nhãn đã được chọn
       label.is_active = this.isActiveLabel(label._id)
-
-      // trả về nhãn đã được tiêm trạng thái
-      return label
     })
 
-    // sắp xếp các nhãn được chọn lên trên, và sắp xếp theo thời gian tạo
-    labels.value = sortBy(labels.value, ['is_active', 'createdAt'])?.reverse()
+    // sắp xếp
+    labels.value = sortBy(MAP_LABELS, 'is_active', 'description')
 
     // đếm số nhãn bị ẩn
     this.countHiddenLabel()

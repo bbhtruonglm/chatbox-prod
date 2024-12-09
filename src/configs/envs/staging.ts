@@ -17,18 +17,17 @@ const ENV: IEnv = {
         n5_app_v1: 'https://dev-api.botbanhang.vn/app',
         n8_merge: 'https://merge.sellingpage.net',
         widget: 'https://chatbox-widget.botbanhang.vn',
-        
-        page_setting_view: 'https://setting-dev.vercel.app',
-        analytic_view: 'https://sellingpage.net/analytic/#/',
-        chatbot_view: 'https://chatbot.sellingpage.net/#/',
-        download_client: 'https://sellingpage.net/download/',
-        analytic: {
-            retion: 'https://analytic-chatbox-v2.retion.ai/dashboard',
-            bbh: 'https://analytic-chatbox-v2.botbanhang.vn/dashboard'
-        },
-        bbh_admin: 'https://bbh-dashboard-xi.vercel.app',
         n8_merge_v2: 'https://dev-api.botbanhang.vn/v1/n8_merge',
         media_cdn: 'https://dev-api.botbanhang.vn/v1/n6_static/cdn',
+    },
+    external_link: {
+        setting: 'https://setting-dev.vercel.app',
+        analytic: 'https://bbh-chart-nu.vercel.app',
+        chatbot: 'https://chatbot.sellingpage.net/#',
+        chatbox: 'https://chat-dev.botbanhang.vn',
+        download: 'https://sellingpage.net/download',
+        merchant: 'https://merchant.vn',
+        admin: 'https://bbh-dashboard-xi.vercel.app',
     },
     facebook: {
         app_id: '1282108599314861',

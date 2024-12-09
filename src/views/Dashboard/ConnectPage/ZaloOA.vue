@@ -1,7 +1,9 @@
 <template>
   <EmptyPage
     :icon="ZaloIcon"
-    :guild="$t('v1.view.main.dashboard.select_platform.zalo_oa.guild')"
+    :guild="$t('v1.view.main.dashboard.select_platform.zalo_oa.guild', {
+        partner: commonStore.partner?.name,
+      })"
     :description="
       $t('v1.view.main.dashboard.select_platform.zalo_oa.description')
     "
@@ -24,7 +26,7 @@
   </EmptyPage>
 </template>
 <script setup lang="ts">
-import { useConnectPageStore } from '@/stores'
+import { useCommonStore, useConnectPageStore } from '@/stores'
 
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
 import ZaloOA from '@/components/OAuth/ZaloOA.vue'
@@ -33,4 +35,5 @@ import ZaloIcon from '@/components/Icons/Zalo.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 
 const connectPageStore = useConnectPageStore()
+const commonStore = useCommonStore()
 </script>

@@ -85,7 +85,11 @@
       {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild_1') }}
     </div>
     <div>
-      {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild_2') }}
+      {{
+        $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.guild_2', {
+          partner: commonStore.partner?.name,
+        })
+      }}
     </div>
   </div>
   <a
@@ -118,7 +122,11 @@
         >
       </li>
       <li class="pl-3">
-        {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_2') }}
+        {{
+          $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_2', {
+            partner: commonStore.partner?.name,
+          })
+        }}
       </li>
       <li class="pl-3">
         {{ $t('v1.view.main.dashboard.org.pay.recharge.transfer_info.hint_3') }}

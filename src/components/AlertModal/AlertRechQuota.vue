@@ -1,5 +1,6 @@
 <template>
   <Alert
+    @close_modal="$emit('close_modal')"
     ref="alert_over_quota_ref"
     class_modal="w-[507px]"
     class_body="text-zinc-500"
@@ -13,13 +14,13 @@
     </template>
     <template #footer>
       <button
-        @click="goDashboard"
+        @click="closeModal"
         class="btn-custom bg-slate-100 text-slate-500"
       >
         {{ $t('v1.common.close') }}
       </button>
       <button
-        @click="goDashboard"
+        @click="confirm"
         class="btn-custom bg-red-100 text-red-500"
       >
         {{ $t('v1.common.ok') }}
@@ -29,24 +30,32 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 import Alert from '@/components/Alert.vue'
 
-const $emit = defineEmits(['done'])
-
-const $router = useRouter()
+const $emit = defineEmits(['close_modal', 'confirm'])
 
 /**modal xác nhận huỷ trang */
 const alert_over_quota_ref = ref<InstanceType<typeof Alert>>()
 
-/**quay về trang dashboard */
-function goDashboard() {
-  $router.push('/dashboard')
-}
 /**ẩn hiện modal của component */
 function toggleModal() {
   alert_over_quota_ref.value?.toggleModal()
+}
+/**tắt modal */
+function closeModal() {
+  // gửi sự kiện đóng modal
+  $emit('close_modal')
+
+  // ẩn modal
+  toggleModal()
+}
+function confirm() {
+  // gửi sự kiện xác nhận
+  $emit('confirm')
+
+  // ẩn modal
+  toggleModal()
 }
 
 defineExpose({ toggleModal })

@@ -24,32 +24,58 @@
 </template>
 
 <script setup lang="ts">
-import { useOrgStore } from '@/stores'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
 
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Menu from '@/views/Dashboard/Org/Menu.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 import Loading from '@/components/Loading.vue'
-import { onBeforeMount, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { Delay } from '@/utils/helper/Delay'
+import { container } from 'tsyringe'
 
 const orgStore = useOrgStore()
+const chatbotUserStore = useChatbotUserStore()
+const $delay = container.resolve(Delay)
 
-onMounted(() => {
-  try {
-    // @ts-ignore
-    BBH?.init({
+class Main {
+  /**khởi tạo bong bóng chat */
+  async initEmbedChat() {
+    // khởi tạo bong bóng chat
+    BBH?.init?.({
       // kích hoạt id trang chat
-      page_id: 'bf425487afbe403895116dd9b585537b',
+      page_id: '4aa9fb0c619f42bc94240a4d441ba654',
       // thiết lập hiển thị - chưa có logic
       config: {},
       // cho phép gỡ lỗi
-      is_debug: true,
+      is_debug: false,
     })
-  } catch (e) {
-    console.log('không load được bbh sdk:', e)
+
+    // delay tạm 1 ít thời gian để bong bóng chat load xong
+    await $delay.exec(1000)
+
+    /**iframe của bong bóng chat */
+    const IFRAME = document.querySelector(
+      '#BBH-EMBED-IFRAME'
+    ) as HTMLIFrameElement
+
+    // gửi sự kiện để init thông tin user
+    IFRAME?.contentWindow?.postMessage(
+      {
+        from: 'parent-app',
+        user_name: chatbotUserStore.chatbot_user?.full_name,
+        user_email: chatbotUserStore.chatbot_user?.email,
+        user_phone: '',
+      },
+      '*'
+    )
   }
-})
+}
+const $main = new Main()
+
+// khởi động bong bóng chat khi component được mount
+onMounted($main.initEmbedChat)
 
 // function
 </script>

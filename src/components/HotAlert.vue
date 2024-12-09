@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="list_noti?.length"
-    class="flex flex-col gap-3"
+    class="flex-col gap-3 hidden md:flex"
   >
     <div
       v-for="noti of list_noti"

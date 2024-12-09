@@ -12,7 +12,7 @@
           </button>
           <button
             v-if="size(pageStore.active_page_list)"
-            @click="selectPageStore.toggleGroupPageMode()"
+            @click="toggleModelGroupPage()"
             class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
           >
             <SquaresPlusIcon class="w-3 h-3" />
@@ -64,6 +64,14 @@ const { getMeChatbotUser } = initRequireData()
 /**ref của modal kết nối nền tảng */
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
+/**vào chế độ chat nhiều trang */
+function toggleModelGroupPage() {
+  // reset lại danh sách trang đã chọn nếu đang ở chế độ nhiều tổ chức
+  if (orgStore.is_selected_all_org) pageStore.selected_page_id_list = {}
+
+  // toggle chế độ chat nhiều page
+  selectPageStore.toggleGroupPageMode()
+}
 /**ẩn hiện modal kết nối nền tảng */
 function toggleModalConnectPage(key?: string) {
   connect_page_ref.value?.toggleModal?.(key)
@@ -98,12 +106,10 @@ function isShowSelectPageButton() {
   return (
     // đang ở trang chọn page
     $route.path.includes('select-page') &&
-    (
-      // không ở chế độ chat nhiều page
-      !selectPageStore.is_group_page_mode || 
+    // không ở chế độ chat nhiều page
+    (!selectPageStore.is_group_page_mode ||
       // người dùng chưa có trang nào
-      !size(pageStore.active_page_list)
-    )
+      !size(pageStore.active_page_list))
   )
 }
 
@@ -115,7 +121,7 @@ provide(KEY_LOAD_LIST_PAGE_FUNCT, loadListPage)
 <style scoped lang="scss">
 .dashboard-header {
   .btn-custom {
-    @apply rounded flex items-center gap-1 hover:brightness-90;
+    @apply rounded items-center gap-1 hidden md:flex;
   }
 }
 </style>

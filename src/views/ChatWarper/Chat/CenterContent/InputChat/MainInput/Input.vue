@@ -39,6 +39,8 @@ import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
 import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
+import { container } from 'tsyringe'
+import { Delay } from '@/utils/helper/Delay'
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -51,6 +53,7 @@ const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const pageStore = usePageStore()
 const { t: $t } = useI18n()
+const $delay = container.resolve(Delay)
 
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<HTMLDivElement>()
@@ -110,7 +113,10 @@ function onPasteImage() {
   }, 100)
 }
 /**xử lý sự kiện nhấn enter ở ô chat */
-function submitInput($event: KeyboardEvent) {
+async function submitInput($event: KeyboardEvent) {
+  // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
+  await $delay.exec(10)
+
   // nếu bấm shift + enter thì chỉ xuống dòng, không submit
   if ($event.shiftKey) return
 
@@ -238,7 +244,7 @@ function sendFile(page_id: string, client_id: string) {
       (cb: CbError) =>
         eachOfLimit(
           IMAGE_LIST,
-          1,
+          20,
           (file: UploadFile, i, next) => {
             file.is_loading = true
 
@@ -289,7 +295,7 @@ function sendFile(page_id: string, client_id: string) {
         else
           eachOfLimit(
             IMAGE_LIST,
-            1,
+            20,
             (file: UploadFile, i, next) => {
               if (!file.url) return next()
 
@@ -314,7 +320,7 @@ function sendFile(page_id: string, client_id: string) {
       (cb: CbError) =>
         eachOfLimit(
           FILE_LIST,
-          1,
+          20,
           (file: UploadFile, i, next) => {
             // đang gửi mà file bị xoá mất
             if (!file) return next()
