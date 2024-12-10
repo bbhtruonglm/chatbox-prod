@@ -32,6 +32,5 @@ export const signout = () => {
 
     // reload lại trang để xoá dữ liệu store
     location.reload()
-    console.log('alo')
   }
 }

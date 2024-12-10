@@ -3,7 +3,7 @@
     id="chat__quick-answer__btn"
     v-if="!isVisibleSendBtn?.()"
     v-tooltip="$t('v1.view.main.dashboard.chat.action.open_quick_anwser')"
-    @click="toggleModal()"
+    @click="clickBtnOpenQuickAnswer"
     class="text-slate-400 w-5 h-5 cursor-pointer my-1.5 flex-shrink-0"
   />
   <Teleport
@@ -12,7 +12,7 @@
   >
     <div
       id="chat__quick-answer__modal"
-      @click="toggleModal"
+      @click="toggleModal(true)"
       class="absolute top-0 left-0 w-screen h-screen z-20"
     >
       <div
@@ -156,8 +156,16 @@ const client_id = computed(
 /**có hiển thị nút gửi tin không */
 const isVisibleSendBtn = inject(IS_VISIBLE_SEND_BTN_FUNCT)
 
+/**click vào nút mở modal */
+function clickBtnOpenQuickAnswer() {
+  // thêm / vào input chat
+  setInputText('/')
+
+  // hiện modal
+  toggleModal()
+}
 /** ẩn hiện modal */
-function toggleModal() {
+function toggleModal(is_clear_input?: boolean) {
   // thay đổi trạng thái hiển thị modal
   commonStore.is_show_quick_answer = !commonStore.is_show_quick_answer
 
@@ -169,6 +177,15 @@ function toggleModal() {
     changeModalPosition()
     getQuickAnswer()
   }
+
+  /**input chat */
+  const INPUT_CHAT = document.getElementById('chat-text-input-message')
+
+  // nếu không có input chat thì thôi
+  if (!INPUT_CHAT) return
+
+  // xóa nội dung input nếu được yêu cầu
+  if (is_clear_input && INPUT_CHAT.innerText === '/') setInputText('')
 }
 /**thay đổi vị chí, kích thước của modal cho vừa với input chat */
 async function changeModalPosition() {
