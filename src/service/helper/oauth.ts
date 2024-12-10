@@ -1,22 +1,37 @@
 import { router as $router } from '@/service/core/router'
+import { useCommonStore } from '@/stores'
+import { Delay } from '@/utils/helper/Delay'
+import { container } from 'tsyringe'
+
+const $delay = container.resolve(Delay)
 
 /**đăng xuất */
 export const signout = () => {
-    // xoá dữ liệu của DB
-    $indexed_db.clear(() => {})
+  const commonStore = useCommonStore()
 
-    // @ts-ignore
-    // ldb.clear()
+  // xoá dữ liệu của DB
+  $indexed_db.clear(() => {})
 
-    // xoá dữ liệu local
-    localStorage.clear()
+  // xoá dữ liệu local
+  localStorage.clear()
 
+  // nếu là trang nội bộ, thì chuyển hướng qua trang logout khác
+  if (
+    ['retion.ai', 'botbanhang.vn'].includes(commonStore.partner?.domain || '')
+  ) {
+    // chuyển hướng về xxxx/logout
+    window.location.href = 'logout'
+  }
+  // nếu không phải trang nội bộ, thì chạy bình thường như cũ
+  else {
     // chuyển hướng qua trang login
     $router.push('/oauth')
 
-    // reload lại trang để xoá dữ liệu store
-    setTimeout(() => {
-        location.reload()
+    // đợi một chút để chuyển trang thành công
+    $delay.exec(200)
 
-    }, 200)
+    // reload lại trang để xoá dữ liệu store
+    location.reload()
+    console.log('alo')
+  }
 }
