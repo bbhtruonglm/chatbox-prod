@@ -34,7 +34,7 @@ import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 export const preGoToChat = (proceed: Cb) => {
   const pageStore = usePageStore()
   const conversationStore = useConversationStore()
-
+  console.log('di chat')
   flow(
     [
       // * kiểm tra xem page đã được chọn hay chưa
@@ -44,14 +44,6 @@ export const preGoToChat = (proceed: Cb) => {
 
         cb()
       },
-      // * kiểm tra các page và user hiện tại có gói hay không
-      // (cb: CbError) =>
-      //   checkPricingValid((e, r) => {
-      //     // tắt loading
-      //     if (e) return toggle_loading(false)
-
-      //     cb()
-      //   }),
       // * nếu danh sách page chọn thay đổi, thì xoá filter conversation
       (cb: CbError) => {
         // nếu vẫn là các page cũ đã chọn thì bỏ qua
@@ -70,6 +62,9 @@ export const preGoToChat = (proceed: Cb) => {
 
         // xoá conversation đang chọn
         conversationStore.select_conversation = undefined
+
+        // xóa widget
+        pageStore.widget_list = []
 
         cb()
       },

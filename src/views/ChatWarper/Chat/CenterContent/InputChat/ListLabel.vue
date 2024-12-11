@@ -10,7 +10,7 @@
     >
       <Loading />
     </div>
-    <div class="flex items-end flex-grow gap-1">
+    <div class="flex items-end flex-grow gap-1 min-w-0">
       <div
         ref="ref_labels"
         :class="is_expand_label ? 'overflow-y-auto' : 'overflow-hidden'"
@@ -168,9 +168,14 @@ const $main = new Main()
 // lấy danh sách nhãn khi component được render
 onMounted(() => $main.getLabels())
 
-// lấy danh sách nhãn khi thay đổi trang hoặc khách hàng
+// lấy danh sách nhãn khi thay đổi khách hàng
 watch(
-  () => conversationStore.select_conversation,
+  () => conversationStore.select_conversation?.fb_client_id,
+  () => $main.getLabels()
+)
+// lấy danh sách nhãn khi có thay đổi nhãn ở máy khác
+watch(
+  () => conversationStore.select_conversation?.label_id,
   () => $main.getLabels()
 )
 </script>

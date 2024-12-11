@@ -79,9 +79,15 @@ const platform_type = computed(
 )
 
 /**tính toán xem ô input có dữ liệu không */
-function calcIsTyping($event: Event) {
+async function calcIsTyping($event: Event) {
+  /**thẻ div input */
+  const INPUT_DIV = $event.target as HTMLDivElement
+
+  /**nội dung */
+  const INPUT_VALUE = INPUT_DIV?.innerText?.trim()
+
   // gắn cờ input có dữ liệu
-  commonStore.is_typing = !!($event.target as HTMLDivElement)?.innerText?.length
+  commonStore.is_typing = !!INPUT_VALUE
 }
 /**lấy ảnh khi được ctrl + v vào input */
 function onPasteImage() {
