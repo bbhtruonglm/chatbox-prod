@@ -4,18 +4,5 @@
             "source": "/(.*)",
             "destination": "/index.html"
         }
-    ],
-    "redirects": [
-        {
-            "source": "/:path*",
-            "has": [
-                {
-                    "type": "host",
-                    "value": "chat.retion.ai"
-                }
-            ],
-            "destination": "https://retion.ai/chat",
-            "permanent": true
-        }
     ]
 }
