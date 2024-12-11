@@ -469,6 +469,7 @@ const source: Language = {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
                 ai_handle: 'Nội dung được xử lý bởi AI',
+                copy_content: 'Sao chép nội dung'
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',

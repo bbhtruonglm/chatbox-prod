@@ -51,6 +51,7 @@
     :data_source
     :url="getFbUrl()"
     :message_id="message?._id"
+    :message
   />
 </template>
 <script setup lang="ts">

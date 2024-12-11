@@ -34,6 +34,7 @@
       ref="media_detail_ref"
       :data_source
       :message_id="message?._id"
+      :message
     />
   </div>
 </template>
@@ -70,7 +71,6 @@ const data_source = ref<MessageTemplateInput>({})
 
 /**xem chi tiết file này */
 function viewAttachment(index: number = 0) {
-  console.log(index)
   // tạm thời xử lý data để hiện CTA
   data_source.value = {
     image: {
@@ -80,7 +80,7 @@ function viewAttachment(index: number = 0) {
         index
       ),
     },
-    content: $props.message?.ai?.[index]?.ocr,
+    ocr: $props.message?.ai?.[index]?.ocr,
     list_button:
       $props.message?.message_attachments?.[index]?.payload?.elements?.[0]
         ?.buttons,

@@ -23,7 +23,7 @@
       v-else
       @scroll="onScrollMessage"
       id="list-message"
-      class="pt-14 pb-5 px-4 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-b-xl"
+      class="pt-14 pb-5 px-2 gap-1 flex flex-col h-full overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
         v-if="is_loading"

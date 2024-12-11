@@ -3,7 +3,7 @@
     @dragover.prevent
     @drop="onDropFile"
     id="router__chat"
-    class="h-full w-full flex relative p-2 gap-3"
+    class="h-full w-full flex relative p-2 gap-2"
   >
     <HotAlert
       :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE']"
