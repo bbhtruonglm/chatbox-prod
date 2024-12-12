@@ -2,9 +2,9 @@
   <div class="flex flex-col h-full p-3 gap-3">
     <Header class="flex-shrink-0">
       <template #right>
-        <template v-if="isShowSelectPageButton()">
+        <template v-if="$main.isShowSelectPageButton()">
           <button
-            @click="toggleModalConnectPage?.('PAGE')"
+            @click="$main.toggleModalConnectPage?.('PAGE')"
             class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
           >
             <PlusCircleIcon class="w-3 h-3" />
@@ -12,7 +12,7 @@
           </button>
           <button
             v-if="size(pageStore.active_page_list)"
-            @click="toggleModelGroupPage()"
+            @click="$main.toggleModelGroupPage()"
             class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
           >
             <SquaresPlusIcon class="w-3 h-3" />
@@ -27,23 +27,24 @@
     </div>
   </div>
   <ConnectPage
-    @done="loadListPage?.(orgStore.selected_org_id)"
+    @done="$main.reloadPageData()"
     ref="connect_page_ref"
   />
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from 'vue'
+import { provide, ref, toRef } from 'vue'
 import { initRequireData } from '@/views/composable'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
-  KEY_LOAD_LIST_PAGE_FUNCT,
+  KEY_GET_ORG_PAGES_FN,
+  KEY_GET_ALL_ORG_AND_PAGE_FN,
 } from '@/views/Dashboard/symbol'
 import { usePageStore, useSelectPageStore, useOrgStore } from '@/stores'
-import { size } from 'lodash'
+import { keys, size } from 'lodash'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { ToastSingleton } from '@/utils/helper/Alert/Toast'
+import { Toast, ToastSingleton } from '@/utils/helper/Alert/Toast'
 import { useRoute } from 'vue-router'
 
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
@@ -52,11 +53,16 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
+import { loading } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error'
+import { container } from 'tsyringe'
+import { read_link_org } from '@/service/api/chatbox/billing'
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
 const $route = useRoute()
+const $toast = container.resolve(Toast)
 
 // composable
 const { getMeChatbotUser } = initRequireData()
@@ -64,59 +70,80 @@ const { getMeChatbotUser } = initRequireData()
 /**ref của modal kết nối nền tảng */
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
-/**vào chế độ chat nhiều trang */
-function toggleModelGroupPage() {
-  // reset lại danh sách trang đã chọn nếu đang ở chế độ nhiều tổ chức
-  if (orgStore.is_selected_all_org) pageStore.selected_page_id_list = {}
+class Main {
+  /**nạp lại dữ liệu trang */
+  reloadPageData() {
+    // nếu chọn tất cả tổ chức
+    if (orgStore.is_selected_all_org) this.getALlOrgAndPage()
+    // nếu chọn 1 tổ chức
+    else this.getOrgPages(orgStore.selected_org_id)
+  }
+  /**vào chế độ chat nhiều trang */
+  toggleModelGroupPage() {
+    // reset lại danh sách trang đã chọn nếu đang ở chế độ nhiều tổ chức
+    if (orgStore.is_selected_all_org) pageStore.selected_page_id_list = {}
 
-  // toggle chế độ chat nhiều page
-  selectPageStore.toggleGroupPageMode()
-}
-/**ẩn hiện modal kết nối nền tảng */
-function toggleModalConnectPage(key?: string) {
-  connect_page_ref.value?.toggleModal?.(key)
-}
-/**lấy toàn bộ các page đang được kích hoạt của người dùng */
-async function loadListPage(org_id?: string): Promise<void> {
-  try {
+    // toggle chế độ chat nhiều page
+    selectPageStore.toggleGroupPageMode()
+  }
+  /**ẩn hiện modal kết nối nền tảng */
+  toggleModalConnectPage(key?: string) {
+    connect_page_ref.value?.toggleModal?.(key)
+  }
+  /**lấy toàn bộ các page đang được kích hoạt của 1 tổ chức */
+  @loading(toRef(selectPageStore, 'is_loading'))
+  @error($toast)
+  async getOrgPages(org_id?: string): Promise<void> {
     // nếu không có tổ chức thì thôi
     if (!org_id) return
 
     // nếu chọn tất cả tổ chức thì thôi
     if (orgStore.is_selected_all_org) return
 
-    // kích hoạt loading
-    selectPageStore.is_loading = true
-
     /**danh sách trang của tổ chức đang kích hoạt */
     const RES = await new N4SerivceAppPage().getOrgActiveListPage(org_id)
 
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}
-  } catch (e) {
-    // nếu có lỗi thì hiển thị thông báo
-    ToastSingleton.getInst().error(e)
-  } finally {
-    // tắt loading
-    selectPageStore.is_loading = false
+  }
+  /**có hiển thị các nút của trang chọn page không */
+  isShowSelectPageButton() {
+    return (
+      // đang ở trang chọn page
+      $route.path.includes('select-page') &&
+      // không ở chế độ chat nhiều page
+      (!selectPageStore.is_group_page_mode ||
+        // người dùng chưa có trang nào
+        !size(pageStore.active_page_list))
+    )
+  }
+  /**lấy toàn bộ dữ liệu tổ chức và trang */
+  @loading(toRef(selectPageStore, 'is_loading'))
+  @error($toast)
+  async getALlOrgAndPage(): Promise<void> {
+    // xóa toàn bộ trang hiện tại
+    pageStore.active_page_list = {}
+
+    /**toàn bộ các trang của người dùng */
+    const PAGE_DATA = await new N4SerivceAppPage().getListPage()
+
+    // nếu không có dữ liệu trang thì thôi
+    if (!PAGE_DATA?.page_list) return
+
+    // lưu trữ danh sách trang hiện tại
+    pageStore.active_page_list = PAGE_DATA?.page_list
+
+    // lấy dữ liệu mapping tổ chức và trang
+    pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
   }
 }
-/**có hiển thị các nút của trang chọn page không */
-function isShowSelectPageButton() {
-  return (
-    // đang ở trang chọn page
-    $route.path.includes('select-page') &&
-    // không ở chế độ chat nhiều page
-    (!selectPageStore.is_group_page_mode ||
-      // người dùng chưa có trang nào
-      !size(pageStore.active_page_list))
-  )
-}
+const $main = new Main()
 
 // cung cấp hàm này cho component con dùng
 provide(KEY_GET_CHATBOT_USER_FUNCT, getMeChatbotUser)
-provide(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT, toggleModalConnectPage)
-provide(KEY_LOAD_LIST_PAGE_FUNCT, loadListPage)
+provide(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT, $main.toggleModalConnectPage)
+provide(KEY_GET_ORG_PAGES_FN, $main.getOrgPages)
+provide(KEY_GET_ALL_ORG_AND_PAGE_FN, $main.getALlOrgAndPage)
 </script>
 <style scoped lang="scss">
 .dashboard-header {

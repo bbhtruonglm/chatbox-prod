@@ -6,5 +6,8 @@ export const KEY_GET_CHATBOT_USER_FUNCT = Symbol() as InjectionKey<Function>
 /**toggle modal kết nối trang */
 export const KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT = Symbol() as InjectionKey<Function>
 
-/**hàm lấy danh sách trang */
-export const KEY_LOAD_LIST_PAGE_FUNCT = Symbol() as InjectionKey<Function>
+/**hàm lấy danh sách trang của 1 tổ chức */
+export const KEY_GET_ORG_PAGES_FN = Symbol() as InjectionKey<Function>
+
+/**hàm lấy toàn bộ tổ chức + toàn bộ trang */
+export const KEY_GET_ALL_ORG_AND_PAGE_FN = Symbol() as InjectionKey<Function>

@@ -22,4 +22,6 @@ mv dist ../retion__landing-page/public/chat
 cd ../retion__landing-page
 
 # commit code mới
-gitacp 'update chat'
+git add .
+git commit -m 'update chat'
+git push

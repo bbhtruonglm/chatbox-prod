@@ -1,16 +1,5 @@
 <template>
-  <div
-    id="org-item__org-title"
-    class="bg-white rounded-t-lg pt-1.5 px-3 flex justify-between gap-2 sticky top-0 z-10"
-  >
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1 flex-shrink-0">
-        <BriefCaseIcon class="w-5 h-5 text-slate-700" />
-        <div class="text-sm font-medium">
-          {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
-        </div>
-      </div>
-    </div>
+  <div>
     <template v-if="selectPageStore.is_group_page_mode">
       <div
         v-if="orgStore.selected_org_id === org_id && $main.countSelectedPage()"
@@ -45,6 +34,15 @@
         </div>
       </button>
     </template>
+    <template v-else>
+      <button
+        @click="$main.quickGroupAllPage"
+        class="text-sm font-medium items-center gap-1 hover:text-blue-700 hidden group-hover/org-item:flex"
+      >
+        {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
+        <ArrowUpCircleIcon class="w-5 h-5 rotate-90" />
+      </button>
+    </template>
   </div>
 </template>
 <script setup lang="ts">
@@ -52,10 +50,11 @@ import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { set, values } from 'lodash'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { inject } from 'vue'
+import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
 import CheckCircelIcon from '@/components/Icons/CheckCircel.vue'
+import ArrowUpCircleIcon from '@/components/Icons/ArrowUpCircle.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 
@@ -73,7 +72,18 @@ const pageStore = usePageStore()
 const orgStore = useOrgStore()
 const selectPageStore = useSelectPageStore()
 
+/**hàm đi đến trang chat */
+const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
+
 class Main {
+  /**vào chế độ gộp trang + chọn toàn bộ các trang */
+  quickGroupAllPage() {
+    // chọn toàn bộ trang của tổ chức này
+    this.selectAllOrgPage()
+
+    // vào chat luôn
+    goToChat?.()
+  }
   /**xử lý khi trang được chọn ở chế độ nhiều */
   triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
 
