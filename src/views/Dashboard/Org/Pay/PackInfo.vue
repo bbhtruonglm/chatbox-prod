@@ -23,16 +23,12 @@
             }}
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_time')">
-            <template v-if="orgStore.isFreePack()">
+            <template
+              v-if="orgStore.isFreePack() || orgStore.isUnlimitedTime()"
+            >
               {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
             </template>
-            <template
-              v-else-if="
-                orgStore.isTrialPack() ||
-                orgStore.isProPack() ||
-                orgStore.isBusinessPack()
-              "
-            >
+            <template v-else>
               {{ orgStore.selected_org_info?.org_package?.org_months || 1 }}
               {{ $t('v1.view.main.dashboard.org.pay.month') }}
               <span class="font-medium">
@@ -42,22 +38,35 @@
             </template>
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.page_amount')">
-            <span class="text-green-700">
-              {{
-                orgStore.selected_org_info?.org_package?.org_current_page || 0
-              }}
-            </span>
-            /
-            {{ orgStore.selected_org_info?.org_package?.org_quota_page || 0 }}
+            <template v-if="orgStore.isUnlimitedPage()">
+              {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
+            </template>
+            <template v-else>
+              <span class="text-green-700">
+                {{
+                  orgStore.selected_org_info?.org_package?.org_current_page || 0
+                }}
+              </span>
+              /
+              {{ orgStore.selected_org_info?.org_package?.org_quota_page || 0 }}
+            </template>
           </Item>
           <Item :title="$t('v1.view.main.dashboard.org.pay.staff_amount')">
-            <span class="text-green-700">
+            <template v-if="orgStore.isUnlimitedStaff()">
+              {{ $t('v1.view.main.dashboard.org.pay.unlimited') }}
+            </template>
+            <template v-else>
+              <span class="text-green-700">
+                {{
+                  orgStore.selected_org_info?.org_package?.org_current_staff ||
+                  0
+                }}
+              </span>
+              /
               {{
-                orgStore.selected_org_info?.org_package?.org_current_staff || 0
+                orgStore.selected_org_info?.org_package?.org_quota_staff || 0
               }}
-            </span>
-            /
-            {{ orgStore.selected_org_info?.org_package?.org_quota_staff || 0 }}
+            </template>
           </Item>
           <Item
             v-if="orgStore.isFreePack()"

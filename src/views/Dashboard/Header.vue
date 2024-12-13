@@ -24,7 +24,7 @@
       <slot name="right" />
       <User
         position="BOTTOM"
-        :back="289"
+        :back="237"
       />
     </div>
   </div>

@@ -8,6 +8,7 @@ import type { AppInfo } from '@/service/interface/app/widget'
 import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
 import { gte } from 'lodash'
+import { UNLIMITED_VALUE } from '@/configs/constants/billing'
 
 const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
@@ -104,6 +105,22 @@ export const useOrgStore = defineStore('org_store', () => {
   const count_noti = ref()
 
   /** -------------- MUTATION / ACTION -------------- */
+  /**có phải là gói không giới hạn thời gian không */
+  function isUnlimitedTime() {
+    return selected_org_info.value?.org_package?.org_months === UNLIMITED_VALUE
+  }
+  /**có phải là gói không giới hạn trang không */
+  function isUnlimitedPage() {
+    return (
+      selected_org_info.value?.org_package?.org_quota_page === UNLIMITED_VALUE
+    )
+  }
+  /**có phải là gói không giới hạn nhân viên không */
+  function isUnlimitedStaff() {
+    return (
+      selected_org_info.value?.org_package?.org_quota_staff === UNLIMITED_VALUE
+    )
+  }
   /**có phải là gói miễn phí không */
   function isFreePack() {
     return selected_org_info.value?.org_package?.org_package_type === 'FREE'
@@ -185,6 +202,9 @@ export const useOrgStore = defineStore('org_store', () => {
     calcDayRemaining,
     hasDiscount,
     isReachPageQuota,
+    isUnlimitedTime,
+    isUnlimitedPage,
+    isUnlimitedStaff
   }
 })
 

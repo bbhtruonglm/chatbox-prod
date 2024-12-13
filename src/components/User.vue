@@ -14,7 +14,7 @@
   </button>
   <Dropdown
     ref="user_menu_ref"
-    width="349px"
+    width="297px"
     height="auto"
     :is_fit="false"
     :position="position"
@@ -22,58 +22,60 @@
     :distance="10"
     class_content="flex flex-col gap-1"
   >
-    <template v-if="orgStore.isAdminOrg() || orgStore.is_selected_all_org">
-      <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
-      <MenuItem
-        @click="redirectMenu('org')"
-        :icon="BriefCaseIcon"
-        :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
-      />
-      <MenuItem
-        @click="redirectMenu('org')"
-        :icon="UsersIcon"
-        :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
-      />
-      <MenuItem
-        @click="redirectMenu('org/pay')"
-        :icon="CheckBadgeIcon"
-        :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
-      >
-        <!-- <Badge
+    <template v-if="!$device.isMobile()">
+      <template v-if="orgStore.isAdminOrg() || orgStore.is_selected_all_org">
+        <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
+        <MenuItem
+          @click="redirectMenu('org')"
+          :icon="BriefCaseIcon"
+          :title="$t('v1.view.main.dashboard.header.menu.setting_business')"
+        />
+        <MenuItem
+          @click="redirectMenu('org')"
+          :icon="UsersIcon"
+          :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
+        />
+        <MenuItem
+          @click="redirectMenu('org/pay')"
+          :icon="CheckBadgeIcon"
+          :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
+        >
+          <!-- <Badge
         :value="1"
         class="flex-shrink-0"
       /> -->
+        </MenuItem>
+        <MenuItem
+          @click="redirectMenu('widget')"
+          :icon="SquareIcon"
+          :title="$t('v1.view.main.dashboard.nav.widget')"
+        />
+        <hr class="my-1" />
+      </template>
+      <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
+      <MenuItem
+        @click="openUserInfoModal()"
+        :icon="UserIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.user_info')"
+      />
+      <MenuItem
+        @click="openNoti"
+        :icon="BellIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.alert')"
+      >
+        <Badge
+          v-if="orgStore.count_noti"
+          :value="orgStore.count_noti"
+          class="flex-shrink-0"
+        />
       </MenuItem>
       <MenuItem
-        @click="redirectMenu('widget')"
-        :icon="SquareIcon"
-        :title="$t('v1.view.main.dashboard.nav.widget')"
+        v-if="chatbotUserStore.isBbhMember()"
+        @click="$external_site.openSystemDashboard()"
+        :icon="ServerSettingIcon"
+        :title="$t('v1.view.main.dashboard.header.menu.admin')"
       />
-      <hr class="my-1" />
     </template>
-    <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
-    <MenuItem
-      @click="openUserInfoModal()"
-      :icon="UserIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.user_info')"
-    />
-    <MenuItem
-      @click="openNoti"
-      :icon="BellIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.alert')"
-    >
-      <Badge
-        v-if="orgStore.count_noti"
-        :value="orgStore.count_noti"
-        class="flex-shrink-0"
-      />
-    </MenuItem>
-    <MenuItem
-      v-if="chatbotUserStore.isBbhMember()"
-      @click="$external_site.openSystemDashboard()"
-      :icon="ServerSettingIcon"
-      :title="$t('v1.view.main.dashboard.header.menu.admin')"
-    />
     <MenuItem
       @click="signout"
       :icon="LogOutIcon"
@@ -156,8 +158,8 @@ async function countNotiCurrentOrg() {
 /** Mở menu */
 function openMenu($event: MouseEvent) {
   // nếu là mobile thì không cho click
-  if ($device.isMobile()) return
-  
+  // if ($device.isMobile()) return
+
   user_menu_ref.value?.toggleDropdown($event)
 }
 /**mở menu */

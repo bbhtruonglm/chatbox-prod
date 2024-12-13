@@ -116,7 +116,7 @@
     </div>
     <User
       position="TOP"
-      :back="10"
+      :back="0"
     />
   </div>
   <Attach ref="attach_ref" />
