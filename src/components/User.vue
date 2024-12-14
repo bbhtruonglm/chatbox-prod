@@ -69,13 +69,13 @@
           class="flex-shrink-0"
         />
       </MenuItem>
-      <MenuItem
-        v-if="chatbotUserStore.isBbhMember()"
-        @click="$external_site.openSystemDashboard()"
-        :icon="ServerSettingIcon"
-        :title="$t('v1.view.main.dashboard.header.menu.admin')"
-      />
     </template>
+    <MenuItem
+      v-if="chatbotUserStore.isBbhMember()"
+      @click="$external_site.openSystemDashboard()"
+      :icon="ServerSettingIcon"
+      :title="$t('v1.view.main.dashboard.header.menu.admin')"
+    />
     <MenuItem
       @click="signout"
       :icon="LogOutIcon"
