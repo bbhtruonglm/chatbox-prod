@@ -169,6 +169,8 @@ const message_source = computed<MessageTemplateInput[]>(() => {
         res.title = element.title
         // nội dung văn bản, hoặc url file fb không hiển thị được
         res.content = element.subtitle || text.value || element.url
+        // dữ liệu ocr của AI
+        res.ocr = $props.message?.ai?.[0]?.ocr
         // danh sách nút bấm
         if (element?.buttons) res.list_button = formatButton(element?.buttons)
 

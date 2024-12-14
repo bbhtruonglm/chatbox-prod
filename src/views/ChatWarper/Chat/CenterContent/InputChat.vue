@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="$route.query.user_id"
-    id="chat_input-chat"
+    id="chat__input-chat"
     ref="input_chat_warper"
-    class="w-full relative flex-shrink-0 py-2 px-3 flex flex-col gap-2"
+    class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
   >
     <ScrollToBottomBtn />
     <ListLabel />

@@ -469,6 +469,7 @@ const source: Language = {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
                 ai_handle: 'Nội dung được xử lý bởi AI',
+                copy_content: 'Sao chép nội dung'
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
@@ -904,6 +905,8 @@ const source: Language = {
               chatbot_ai_business: 'Chatbot AI Business',
               chatbot_ai_pro: 'Chatbot AI Pro',
               chatbot_ai_enterprise: 'Chatbot AI Enterprise',
+              chatbot_unlimited_n_year: 'Chatbot Unlimited',
+              chatbot_unlimited_1_year: 'Chatbot Unlimited 1 năm',
               account: 'Tài khoản',
               balance: 'Số dư tài khoản',
               pack_info: 'Thông tin gói cước',

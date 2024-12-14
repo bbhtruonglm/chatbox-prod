@@ -83,13 +83,15 @@ import {
 } from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
-  KEY_LOAD_LIST_PAGE_FUNCT,
+  KEY_GET_ORG_PAGES_FN,
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
 import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import { useRoute, useRouter } from 'vue-router'
 import { preGoToChat } from '@/service/function'
+import { nonAccentVn } from '@/service/helper/format'
+import { map } from 'lodash'
 
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -106,8 +108,7 @@ import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
-import { nonAccentVn } from '@/service/helper/format'
-import { map } from 'lodash'
+
 import type { PageData } from '@/service/interface/app/page'
 
 const { t: $t } = useI18n()
@@ -115,13 +116,12 @@ const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const $router = useRouter()
 const $route = useRoute()
-const connectPageStore = useConnectPageStore()
 const orgStore = useOrgStore()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
 /**lấy danh sách trang đã kích hoạt */
-const loadListPage = inject(KEY_LOAD_LIST_PAGE_FUNCT)
+const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 /**mở modal connect page */
 const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
@@ -144,7 +144,7 @@ watch(
     if (new_selected_org_id !== old_selected_org_id) return
 
     // load danh sách page
-    loadListPage?.(orgStore.selected_org_id)
+    getOrgPages?.(orgStore.selected_org_id)
   }
 )
 
@@ -156,7 +156,7 @@ watch(
     if (orgStore.is_selected_all_org) return
 
     // load danh sách page
-    loadListPage?.(orgStore.selected_org_id)
+    getOrgPages?.(orgStore.selected_org_id)
   }
 )
 

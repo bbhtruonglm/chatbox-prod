@@ -1,3 +1,5 @@
+import { singleton } from "tsyringe"
+
 /**quản lý các đường dẫn của media */
 export interface ICdn {
   /**
@@ -38,6 +40,7 @@ export interface ICdn {
 }
 
 /**quản lý các đường dẫn của media */
+@singleton()
 export class Cdn implements ICdn {
   /**Host media cdn */
   constructor(private readonly HOST = $env.host.media_cdn) {}
@@ -62,7 +65,7 @@ export class Cdn implements ICdn {
   }
 }
 
-/**quản lý các đường dẫn của media */
+/**@deprecated quản lý các đường dẫn của media */
 export class SingletonCdn extends Cdn {
   /**Singleton instance */
   private static inst: ICdn

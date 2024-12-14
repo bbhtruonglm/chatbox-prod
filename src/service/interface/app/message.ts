@@ -75,13 +75,37 @@ export interface MessageAiData {
   /**cảm xúc */
   emotion?: string
   /**dữ liệu được orc từ media -> text */
-  ocr?: string
+  ocr?: IMediaOcrResult
   /**dữ liệu được chuyển từ text -> CTA */
   cta?: string
   /**id mongo tự tạo */
   _id?: string
   /**tóm tắt orc */
   summary?: string
+}
+
+/**kết quả khi chuyển media thành văn bản */
+export interface IMediaOcrResult {
+  /**văn bản gốc */
+  original_text?: string
+  /**ngôn ngữ gốc */
+  original_language?: string
+  /**văn bản dịch */
+  translated_text?: string
+  /**độ chính xác của OCR */
+  ocr_confidence?: number
+  /**mô tả */
+  description?: string
+  /**loại tài liệu */
+  document_type?: string
+  /**
+   * dữ liệu ocr này bắt nguồn từ tin nhắn dạng nào
+   * - IMAGE: hình ảnh
+   * - SOUND: âm thanh
+   * - TEXT: văn bản
+   * - các dạng khác chưa xử lý
+   */
+  origin_message_type?: 'IMAGE' | 'SOUND' | 'TEXT'
 }
 
 /**dữ liệu của một mẫu tin nhắn */
@@ -110,6 +134,8 @@ export interface MessageTemplateInput {
   title?: string
   /**nội dung */
   content?: string
+  /**dữ liệu ai detect ra văn bản từ media */
+  ocr?: IMediaOcrResult
   /**danh sáchnút */
   list_button?: MessageTemplateButton[]
   /**có xử lý AI thành công */

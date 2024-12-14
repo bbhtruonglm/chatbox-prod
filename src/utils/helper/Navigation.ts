@@ -15,7 +15,7 @@ export class Navigation {
 /**các tiện ích liên quan đến cửa sổ trình duyệt */
 export interface IWindowAction {
   /**mở url trong một tab mới */
-  openNewTab(url: string): void
+  openNewTab(url?: string): void
   /**mở url trong một popup */
   openPopup(url?: string, width?: number, height?: number): void
 }

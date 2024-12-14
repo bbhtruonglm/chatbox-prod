@@ -7,10 +7,10 @@
       <div class="flex flex-wrap relative z-1 gap-2">
         <template v-for="(attachment, index) of message?.message_attachments">
           <div
-            @click="viewAttachment(index)"
+            @click="$main.viewAttachment(index)"
             class="cursor-pointer hover:brightness-90 rounded-lg bg-gray-50 overflow-hidden"
             :style="
-              initSize(
+              $main.initSize(
                 message?.attachment_size?.[index]?.width,
                 message?.attachment_size?.[index]?.height
               )
@@ -34,6 +34,8 @@
       ref="media_detail_ref"
       :data_source
       :message_id="message?._id"
+      :message
+      :index="selected_item_index"
     />
   </div>
 </template>
@@ -48,6 +50,8 @@ import type {
 } from '@/service/interface/app/message'
 import { FitSize } from '@/utils/helper/Attachment'
 import { SingletonCdn } from '@/utils/helper/Cdn'
+import { CreateDataSource, type ICreateDataSource } from './CreateDataSource'
+import { container } from 'tsyringe'
 
 const $props = withDefaults(
   defineProps<{
@@ -67,31 +71,38 @@ const $cdn = SingletonCdn.getInst()
 const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
 /**dữ liệu của tin nhắn đã được format sang dạng mới */
 const data_source = ref<MessageTemplateInput>({})
+/**index của phần tử được chọn */
+const selected_item_index = ref<number>()
 
-/**xem chi tiết file này */
-function viewAttachment(index: number = 0) {
-  console.log(index)
-  // tạm thời xử lý data để hiện CTA
-  data_source.value = {
-    image: {
-      url: $cdn.fbMessageMedia(
-        $props.message?.fb_page_id,
-        $props.message?.message_mid,
-        index
-      ),
-    },
-    content: $props.message?.ai?.[index]?.ocr,
-    list_button:
-      $props.message?.message_attachments?.[index]?.payload?.elements?.[0]
-        ?.buttons,
+class Main {
+  /**
+   * @param SERVICE_CREATE_DATA_SOURCE dịch vụ tạo dữ liệu file
+   */
+  constructor(
+    private readonly SERVICE_CREATE_DATA_SOURCE: ICreateDataSource = container.resolve(
+      CreateDataSource
+    )
+  ) {}
+
+  /**xem chi tiết file này */
+  viewAttachment(index: number = 0) {
+    // lưu lại vị trí của phần tử được chọn
+    selected_item_index.value = index
+
+    // tạm thời xử lý data để hiện CTA
+    data_source.value = this.SERVICE_CREATE_DATA_SOURCE.exec(
+      $props.message,
+      index
+    )
+
+    // mở modal
+    media_detail_ref.value?.toggleModal()
   }
-
-  // mở modal
-  media_detail_ref.value?.toggleModal()
+  /**tạo ra kích thước cho phần từ trước khi hình ảnh, video được load */
+  initSize(width?: number, height?: number) {
+    // tính toán
+    return new FitSize(368, 80, width, height).toCss()
+  }
 }
-/**tạo ra kích thước cho phần từ trước khi hình ảnh, video được load */
-function initSize(width?: number, height?: number) {
-  // tính toán
-  return new FitSize(368, 80, width, height).toCss()
-}
+const $main = new Main()
 </script>

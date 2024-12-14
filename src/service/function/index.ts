@@ -34,7 +34,7 @@ import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 export const preGoToChat = (proceed: Cb) => {
   const pageStore = usePageStore()
   const conversationStore = useConversationStore()
-  console.log('di chat')
+
   flow(
     [
       // * kiểm tra xem page đã được chọn hay chưa

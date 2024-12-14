@@ -24,16 +24,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { read_link_org } from '@/service/api/chatbox/billing'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { keys, omitBy, sortBy } from 'lodash'
-import { onMounted, provide, toRef } from 'vue'
+import { omitBy, sortBy } from 'lodash'
+import { inject, onMounted, provide } from 'vue'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
-import { loading } from '@/utils/decorator/loading'
-import { error } from '@/utils/decorator/error'
-import { container } from 'tsyringe'
+import { KEY_GET_ALL_ORG_AND_PAGE_FN } from '../symbol'
 
 import Org from '@/views/Dashboard/SelectPage/AllOrg/Org.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
@@ -42,31 +37,13 @@ import ClockIcon from '@/components/Icons/Clock.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 
-const $toast = container.resolve(Toast)
 const selectPageStore = useSelectPageStore()
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
 
+const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
+
 class Main {
-  /**lấy toàn bộ dữ liệu tổ chức và trang */
-  @loading(toRef(selectPageStore, 'is_loading'))
-  @error($toast)
-  async getALlOrgAndPage() {
-    // xóa toàn bộ trang hiện tại
-    pageStore.active_page_list = {}
-
-    /**toàn bộ các trang của người dùng */
-    const PAGE_DATA = await new N4SerivceAppPage().getListPage()
-
-    // nếu không có dữ liệu trang thì thôi
-    if (!PAGE_DATA?.page_list) return
-
-    // lưu trữ danh sách trang hiện tại
-    pageStore.active_page_list = PAGE_DATA?.page_list
-
-    // lấy dữ liệu mapping tổ chức và trang
-    pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
-  }
   /**lọc ra các trang thuộc 1 tổ chức nào đó */
   filterOrgPageOnly(page: PageData): boolean {
     /**id trang */
@@ -109,7 +86,7 @@ class Main {
 const $main = new Main()
 
 // lấy toàn bộ dữ liệu tổ chức và trang khi component được mount
-onMounted($main.getALlOrgAndPage)
+onMounted(() => getALlOrgAndPage?.())
 
 // cung cấp hàm xử lý khi chọn trang
 provide(KEY_ADVANCE_SELECT_AGE_FUNCT, $main.triggerSelectPage)

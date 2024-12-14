@@ -1,74 +1,90 @@
 <template>
   <Modal
-    ref="media_detail_ref"
-    class_modal="w-[811px] h-[630px]"
+    @open_modal="$main.onOpenModal()"
+    id="chat__view-attachment"
+    ref="ref_media_detail"
+    class_modal="w-[900px] h-4/5"
   >
     <template v-slot:header>
       {{ $t('v1.view.main.dashboard.chat.message.attachment.title') }}
     </template>
     <template v-slot:body>
       <div
-        class="bg-white rounded-md p-4 gap-2 grid grid-cols-2 relative w-full h-full"
+        class="bg-white rounded-md p-2 gap-3 grid grid-cols-2 relative w-full h-full"
       >
-        <div class="h-full overflow-hidden flex justify-center">
-          <img
-            v-if="data_source?.image?.url"
-            :src="url || data_source?.image?.url"
-            class="attachment-size"
-          />
-          <video
-            v-if="data_source?.video?.url"
-            class="attachment-size"
-            controls
-            preload="metadata"
-          >
-            <source
-              :src="url || data_source?.video?.url"
-              type="video/mp4"
-            />
-          </video>
-          <Audio
-            v-if="data_source?.audio?.url && url"
-            :src="url || data_source?.audio?.url"
-            class="w-full p-3"
+        <div class="flex flex-col gap-5 overflow-hidden">
+          <Item
+            :data_source="input.data_source"
+            :url="input.url"
           />
           <div
-            v-if="data_source?.file?.url"
-            class="message-box bg-white flex flex-col items-end text-slate-700"
+            v-if="gt(input.message?.message_attachments?.length, 1)"
+            :class="is_expand ? 'max-h-[132px]' : 'h-[46px]'"
+            class="flex-shrink-0 flex gap-1.5 items-end"
           >
-            <div class="p-2 rounded-full bg-slate-300 w-9 h-9">
-              <DocumentIcon class="w-5 h-5" />
+            <div
+              ref="ref_attachments"
+              class="flex flex-wrap justify-start gap-1.5 overflow-hidden h-full py-[3px] px-[3px]"
+            >
+              <button
+                v-for="(attachment, att_index) of input.message
+                  ?.message_attachments"
+                @click="$main.changeAttachment(att_index)"
+                :class="{
+                  'fake-border-3-blue-700': input.index === att_index,
+                }"
+                class="w-10 h-10 rounded-lg bg-slate-100"
+              >
+                <Item
+                  :data_source="input.data_source"
+                  :url="attachment?.payload?.url"
+                  is_mini
+                />
+              </button>
             </div>
-            <div class="text-sm truncate min-w-0 w-full underline">
-              {{ getFileName(data_source?.file?.url) }}
-            </div>
+            <button
+              v-if="count_hidden_item"
+              @click="is_expand = !is_expand"
+              class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex-shrink-0 flex justify-center items-center text-sm font-medium mb-[3px]"
+            >
+              +
+              {{ count_hidden_item }}
+            </button>
           </div>
         </div>
         <div
-          class="h-full overflow-hidden border rounded-lg py-2 px-3 flex flex-col gap-2.5"
+          class="h-full overflow-hidden border rounded-lg py-2 px-3 flex flex-col gap-2.5 text-sm"
         >
           <div
-            class="bg-slate-100 text-xs font-medium py-1 px-2 rounded flex-shrink-0"
+            class="bg-slate-200 text-xs font-medium py-1 px-2 rounded flex-shrink-0"
           >
             {{ $t('v1.view.main.dashboard.chat.message.attachment.ai_handle') }}
           </div>
-          <div class="min-h-0 overflow-y-auto flex flex-col gap-2">
-            <div class="text-sm enter-line">
-              {{ data_source?.content }}
-            </div>
+          <div class="min-h-0 overflow-y-auto flex flex-col gap-0 enter-line">
             <div
-              v-if="data_source?.ai?.summary"
-              class="text-sm enter-line text-slate-500"
+              v-if="input.data_source?.ocr?.description"
+              class="font-medium"
             >
-              <div>-----</div>
               {{ $t('v1.view.main.dashboard.chat.message.summary') }}:
-              {{ data_source?.ai?.summary }}
+              {{ input.data_source?.ocr?.description }}
+              <div>---------</div>
+            </div>
+            <div>
+              {{ input.data_source?.ocr?.original_text }}
             </div>
           </div>
+          <button
+            @click="$clipboard.copy(input.data_source?.ocr?.original_text)"
+            class="py-2 px-4 rounded-md text-white bg-slate-700 w-fit"
+          >
+            {{
+              $t('v1.view.main.dashboard.chat.message.attachment.copy_content')
+            }}
+          </button>
           <Action
-            v-if="data_source?.list_button?.length"
-            :list_button="data_source?.list_button"
-            :message_id
+            v-if="input.data_source?.list_button?.length"
+            :list_button="input.data_source?.list_button"
+            :message_id="input.message_id"
           />
         </div>
       </div>
@@ -76,14 +92,14 @@
     <template v-slot:footer>
       <div class="flex justify-between mt-2">
         <button
-          @click="toggleModal()"
-          class="custom-btn bg-slate-700"
+          @click="$main.toggleModal()"
+          class="custom-btn bg-white text-slate-700"
         >
-          {{ $t('v1.common.cancel') }}
+          {{ $t('v1.common.close') }}
         </button>
         <button
-          @click="downloadFile"
-          class="custom-btn bg-blue-700"
+          @click="$main.downloadFile"
+          class="custom-btn text-white bg-blue-700"
         >
           {{ $t('v1.common.download') }}
         </button>
@@ -92,56 +108,136 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { useMessageStore } from '@/stores'
-import { ref } from 'vue'
-import { getFileName } from '@/service/helper/queryString'
-import { openNewTab } from '@/service/function'
+import { nextTick, ref, watch } from 'vue'
+import { container } from 'tsyringe'
+import { Clipboard } from '@/utils/helper/Clipboard'
+import { gt } from 'lodash'
+import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
+import {
+  CountHiddenItem,
+  type ICounHiddenItem,
+} from '@/utils/helper/CountHiddenItem'
+import { CreateDataSource, type ICreateDataSource } from '../CreateDataSource'
 
+import Item from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail/Item.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
 import Modal from '@/components/Modal.vue'
-import Audio from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media/Audio.vue'
 
-import DocumentIcon from '@/components/Icons/Document.vue'
+import type {
+  MessageInfo,
+  MessageTemplateInput,
+} from '@/service/interface/app/message'
 
-import type { MessageTemplateInput } from '@/service/interface/app/message'
-import type { ComponentRef } from '@/service/interface/vue'
+/**dữ liệu đầu vào */
+interface Input {
+  /**dữ liệu */
+  data_source?: MessageTemplateInput
+  /**link media */
+  url?: string
+  /**id của tin nhắn */
+  message_id?: string
+  /**dữ liệu của tin nhắn */
+  message?: MessageInfo
+  /**vi trí của phần tử trong mảng */
+  index?: number
+}
 
-const $props = withDefaults(
-  defineProps<{
-    data_source?: MessageTemplateInput
-    /**link media */
-    url?: string
-    /**id của tin nhắn */
-    message_id?: string
-  }>(),
-  {}
-)
-
-const messageStore = useMessageStore()
+const $props = withDefaults(defineProps<Input>(), {})
+const $clipboard = container.resolve(Clipboard)
 
 /**ref của modal xem chi tiết file */
-const media_detail_ref = ref<ComponentRef>()
+const ref_media_detail = ref<InstanceType<typeof Modal>>()
+/**ref của div */
+const ref_attachments = ref<HTMLDivElement>()
+/**đếm số phần tử bị ẩn */
+const count_hidden_item = ref<number>()
+/**dữ liệu đầu vào */
+const input = ref<Input>($props)
+/**có hiển thị hết không */
+const is_expand = ref<boolean>()
 
-/**mở modal xem chi tiết file */
-function toggleModal() {
-  media_detail_ref.value?.toggleModal()
+class Main {
+  /**
+   * @param SERVICE_COUNT_HIDDEN_ITEM dịch vụ đếm số phần tử bị ẩn
+   * @param SERVICE_WINDOW_ACTION dịch vụ mở tab mới
+   * @param SERVICE_CREATE_DATA_SOURCE tạo dữ liệu file
+   */
+  constructor(
+    private readonly SERVICE_COUNT_HIDDEN_ITEM: ICounHiddenItem = container.resolve(
+      CountHiddenItem
+    ),
+    private readonly SERVICE_WINDOW_ACTION: IWindowAction = container.resolve(
+      WindowAction
+    ),
+    private readonly SERVICE_CREATE_DATA_SOURCE: ICreateDataSource = container.resolve(
+      CreateDataSource
+    )
+  ) {}
+
+  /**chọn att khác */
+  changeAttachment(index?: number) {
+    // thay lại giá trị của att mới được chọn
+    input.value = {
+      ...input.value,
+      ...{
+        data_source: this.SERVICE_CREATE_DATA_SOURCE.exec(
+          $props.message,
+          index
+        ),
+        index,
+      },
+    }
+  }
+  /**đếm số phần tử bị ẩn khi mở modal */
+  async onOpenModal() {
+    // mặc định ẩn list
+    is_expand.value = false
+
+    // đợi vue render xong
+    await nextTick()
+
+    // đếm số phần tử bị ẩn
+    count_hidden_item.value = await this.SERVICE_COUNT_HIDDEN_ITEM.exec(
+      'button',
+      ref_attachments.value
+    )
+  }
+  /**mở modal xem chi tiết file */
+  toggleModal() {
+    ref_media_detail.value?.toggleModal()
+  }
+  /**tải về tập tin */
+  downloadFile() {
+    /**nguồn dữ liệu */
+    const SOURCE = input.value.data_source
+
+    /**đường dẫn */
+    const URL =
+      SOURCE?.image?.url ||
+      SOURCE?.video?.url ||
+      SOURCE?.audio?.url ||
+      SOURCE?.file?.url
+
+    // mở link để tải về
+    this.SERVICE_WINDOW_ACTION.openNewTab(URL || input.value.url)
+  }
 }
-/**tải về tập tin */
-function downloadFile() {
-  const URL = messageStore.select_attachment?.payload?.url
+const $main = new Main()
 
-  // if (!URL) return
+//  nếu chọn lại item của danh sách từ bên ngoài, thì map lại chính xác
+watch(
+  () => $props.index,
+  index => $main.changeAttachment(index)
+)
 
-  openNewTab($props.url || URL || '')
-}
-
-defineExpose({ toggleModal })
+// xuất phương thức
+defineExpose({ toggleModal: $main.toggleModal })
 </script>
 <style lang="scss" scoped>
-.attachment-size {
-  @apply h-full object-contain;
-}
 .custom-btn {
-  @apply py-2 px-5 flex items-center gap-1 rounded-lg text-white text-sm hover:brightness-90;
+  @apply py-2 px-5 flex items-center gap-1 rounded-lg text-sm;
+}
+.fake-border-3-blue-700 {
+  @apply shadow-[0_0_0_3px_rgba(29,78,216,1)];
 }
 </style>

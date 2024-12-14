@@ -11,6 +11,7 @@
     >
       <div
         @click="toggleModal"
+        :id
         class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20 shadow-lg"
       >
         <div
@@ -64,6 +65,8 @@ const $props = withDefaults(
     class_body?: string
     /**class cho footer */
     class_footer?: string
+    /**id nhận dạng */
+    id?: string
   }>(),
   {}
 )

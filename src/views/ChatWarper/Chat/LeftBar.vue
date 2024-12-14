@@ -1,6 +1,7 @@
 <template>
   <div
-    class="bg-white w-[360px] rounded-xl flex flex-col overflow-hidden flex-shrink-0 py-3 px-2 gap-3"
+    id="chat__left-bar"
+    class="bg-white w-[360px] rounded-xl flex flex-col overflow-hidden flex-shrink-0 p-2 gap-2"
   >
     <Header />
     <Conversation />
