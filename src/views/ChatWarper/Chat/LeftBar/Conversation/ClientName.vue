@@ -21,19 +21,14 @@
       </div>
     </div>
     <div class="flex-shrink-0 text-xs">
-      {{ formatLastMessageTime(source?.last_message_time) }}
+      {{ $date_handle.formatCompareCurrentYear(source?.last_message_time) }}
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { getStaffInfo } from '@/service/function'
-import {
-  format as format_date,
-  isToday,
-  isThisYear,
-  formatDistanceToNow,
-} from 'date-fns'
-import viLocale from 'date-fns/locale/vi'
+import { container } from 'tsyringe'
+import { DateHandle } from '@/utils/helper/DateHandle'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
@@ -41,35 +36,12 @@ import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 
+const $date_handle = container.resolve(DateHandle)
+
 const $props = withDefaults(
   defineProps<{
     source?: ConversationInfo
   }>(),
   {}
 )
-
-/**20 giây trước, 2 ngày trước, ... */
-function genAgoDate(timestamp: number) {
-  return formatDistanceToNow(new Date(timestamp), {
-    addSuffix: true,
-    locale: viLocale,
-  })
-    ?.replace('khoảng', '')
-    ?.replace('dưới', '')
-    ?.replace('nữa', 'trước')
-    ?.trim()
-}
-/**format lại thời gian trước khi hiển thị */
-function formatLastMessageTime(timestamp?: number) {
-  if (!timestamp) return ''
-
-  // nếu thời gian trong ngày thì chỉ hiện ago
-  if (isToday(timestamp)) return genAgoDate(timestamp)
-
-  // nếu trong năm thì hiện ngày tháng
-  if (isThisYear(timestamp)) return format_date(timestamp, 'dd/MM')
-
-  // nếu khác năm thì hiện full
-  return format_date(timestamp, 'dd/MM/yy')
-}
 </script>

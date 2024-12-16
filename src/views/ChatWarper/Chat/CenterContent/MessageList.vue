@@ -69,7 +69,7 @@
                 ['page', 'note'].includes(message.message_type) ||
                 message.ad_id,
             }"
-            class="relative flex flex-col w-full"
+            class="relative flex flex-col flex-grow min-w-0"
           >
             <MessageItem
               v-if="
@@ -94,11 +94,12 @@
               v-else-if="message.message_type === 'client' && message.ad_id"
               :ad_id="message.ad_id"
             />
-            <FacebookPost
+            <PostTemplate
               v-else-if="
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :fb_post_id="message.fb_post_id"
+              :message
             />
             <UnsupportMessage v-else />
             <DoubleCheckIcon
@@ -167,7 +168,7 @@ import SystemMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/Sys
 import ClientRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/ClientRead.vue'
 import StaffRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/StaffRead.vue'
 import AdMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AdMessage.vue'
-import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FacebookPost.vue'
+import PostTemplate from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate.vue'
 import PageStaffAvatar from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageStaffAvatar.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'

@@ -7,8 +7,51 @@ export interface AttachmentSize {
   /**độ cao */
   height?: number
 }
+/**dữ liệu của 1 bài post */
+export interface IPost {
+  /**id bài viết */
+  id?: string
+  /**tên người tạo */
+  creator_name?: string
+  /**dữ liệu của admin */
+  admin_creator?: {
+    /**tên */
+    name: string
+  }
+  /**dữ liệu người tạo */
+  from?: {
+    /**tên */
+    name: string
+  }
+  /**file đính kèm */
+  attachments?: {
+    /**dữ liệu */
+    data?: [
+      {
+        /**đa phương tiện */
+        media?: {
+          /**hình ảnh chính */
+          image?: {
+            /**đường dẫn */
+            src?: string
+          }
+        }
+        /**tiêu đề bài viết */
+        title?: string
+      }
+    ]
+  }
+  /**nội dung thông điệp */
+  message?: string
+  /**đường dẫn của bài viết */
+  permalink_url?: string
+  /**thời gian cập nhật bài vieets */
+  updated_time?: string
+}
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**dữ liệu của 1 bài post, tin nhắn dạng post */
+  post?: IPost
   /**cảm xúc thả tim của tin nhắn */
   reaction?: {
     /**loại reaction */
