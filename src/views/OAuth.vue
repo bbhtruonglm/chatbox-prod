@@ -93,7 +93,8 @@ async function loginChatbox(access_token: string) {
 
     /**jwt đại diện cho người dùng */
     const { access_token: JWT } = await new N4SerivcePublicOauthFacebok().login(
-      access_token
+      access_token,
+      getItem('ref')
     )
 
     // lưu token vào local storage

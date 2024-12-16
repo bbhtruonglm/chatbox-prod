@@ -28,9 +28,9 @@ export class N4SerivcePublicOauthFacebok extends N4SerivcePublicOauth {
   }
 
   /**api đăng nhâp */
-  public async login(access_token: string): Promise<LoginRes> {
+  public async login(access_token: string, ref?: string): Promise<LoginRes> {
     // gọi api
-    return this.post('login', { access_token })
+    return this.post('login', { access_token, ref })
   }
 }
 /**gọi API xác thực truy cập email */
