@@ -28,7 +28,7 @@ import { N4SerivcePublicPartner } from './utils/api/N4Service/Partner'
 import { setItem } from './service/helper/localStorage'
 import { error } from './utils/decorator/error'
 import { container } from 'tsyringe'
-import { QueryString } from './utils/helper/QueryString'
+import { QueryString, type IQueryString } from './utils/helper/QueryString'
 
 const commonStore = useCommonStore()
 const $toast = container.resolve(Toast)
@@ -38,7 +38,9 @@ class Main {
    * @param SERVICE_QUERY_STRING query string service
    */
   constructor(
-    private readonly SERVICE_QUERY_STRING = container.resolve(QueryString)
+    private readonly SERVICE_QUERY_STRING: IQueryString = container.resolve(
+      QueryString
+    )
   ) {}
 
   /**lưu lại ref được truyền ở param */

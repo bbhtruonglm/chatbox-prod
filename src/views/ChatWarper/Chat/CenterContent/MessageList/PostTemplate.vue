@@ -137,6 +137,8 @@ import type {
 } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
+import '@/utils/base/ApiV2'
+
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const $cdn = container.resolve(Cdn)
