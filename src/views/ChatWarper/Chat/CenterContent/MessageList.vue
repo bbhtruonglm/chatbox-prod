@@ -94,13 +94,21 @@
               v-else-if="message.message_type === 'client' && message.ad_id"
               :ad_id="message.ad_id"
             />
+
             <PostTemplate
+              v-else-if="
+                message.platform_type === 'FB_POST' && message.fb_post_id
+              "
+              :message
+            />
+            <!-- <FacebookPost
               v-else-if="
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :fb_post_id="message.fb_post_id"
               :message
-            />
+            /> -->
+
             <UnsupportMessage v-else />
             <DoubleCheckIcon
               v-if="isLastPageMessage(message, index)"
@@ -169,6 +177,7 @@ import ClientRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/Client
 import StaffRead from '@/views/ChatWarper/Chat/CenterContent/MessageList/StaffRead.vue'
 import AdMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AdMessage.vue'
 import PostTemplate from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate.vue'
+import FacebookPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FacebookPost.vue'
 import PageStaffAvatar from '@/views/ChatWarper/Chat/CenterContent/MessageList/PageStaffAvatar.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'

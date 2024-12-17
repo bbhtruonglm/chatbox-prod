@@ -6,7 +6,8 @@
     class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
   >
     <ScrollToBottomBtn />
-    <ListLabel />
+    <ReplyComment v-if="messageStore.reply_comment" />
+    <ListLabel v-else />
     <PreviewAttachment />
     <MainInput />
   </div>
@@ -22,6 +23,7 @@ import ScrollToBottomBtn from '@/views/ChatWarper/Chat/CenterContent/InputChat/S
 import ListLabel from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel.vue'
 import PreviewAttachment from '@/views/ChatWarper/Chat/CenterContent/InputChat/PreviewAttachment.vue'
 import MainInput from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput.vue'
+import ReplyComment from '@/views/ChatWarper/Chat/CenterContent/InputChat/ReplyComment.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { WidgetEventData } from '@/service/interface/app/widget'

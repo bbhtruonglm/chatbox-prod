@@ -1,14 +1,13 @@
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
- /**kích thước của file */
+/**kích thước của file */
 export interface AttachmentSize {
   /**độ rộng */
   width?: number
   /**độ cao */
   height?: number
 }
-/**dữ liệu của 1 bài post */
-export interface IPost {
+export interface IPortContent {
   /**id bài viết */
   id?: string
   /**tên người tạo */
@@ -48,10 +47,17 @@ export interface IPost {
   /**thời gian cập nhật bài vieets */
   updated_time?: string
 }
+/**dữ liệu của 1 bài post */
+export interface IPost extends IPortContent {
+  /**nội dung bài viết */
+  content?: IPortContent
+}
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
   /**dữ liệu của 1 bài post, tin nhắn dạng post */
   post?: IPost
+  /**id của bình luận này */
+  comment_id?: string
   /**cảm xúc thả tim của tin nhắn */
   reaction?: {
     /**loại reaction */
@@ -103,6 +109,23 @@ export interface MessageInfo {
   snap_replay_message?: MessageInfo
   /**dữ liệu của AI */
   ai?: MessageAiData[]
+}
+
+/**
+ * loại trả lời
+ * - REPLY: trả lời bình luận bình thường
+ * - PRIVATE_REPLY: trả lời tin nhắn riêng
+ */
+export type IReplyCommentType = 'REPLY' | 'PRIVATE_REPLY'
+
+/**dữ liệu cần thiết để trả lời bình luận */
+export interface IReplyComment {
+  /**loại trả lời */
+  type?: IReplyCommentType
+  /**id của bình luận gốc */
+  root_comment_id?: string
+  /**nội dung bình luận gốc */
+  root_comment_message?: string
 }
 
 /**dữ liệu AI của một phần tử */

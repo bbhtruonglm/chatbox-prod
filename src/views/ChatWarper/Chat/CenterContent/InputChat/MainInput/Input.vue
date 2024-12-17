@@ -32,15 +32,14 @@ import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
-import { upload_file, upload_temp_file } from '@/service/api/chatbox/n6-static'
+import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
+import { container } from 'tsyringe'
+import { Delay } from '@/utils/helper/Delay'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
-import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
-import { container } from 'tsyringe'
-import { Delay } from '@/utils/helper/Delay'
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -50,7 +49,6 @@ const $emit = defineEmits<{
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
-const orgStore = useOrgStore()
 const pageStore = usePageStore()
 const { t: $t } = useI18n()
 const $delay = container.resolve(Delay)
