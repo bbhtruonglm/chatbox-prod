@@ -1,3 +1,6 @@
+import { container } from 'tsyringe'
+import { Toast } from '../helper/Alert/Toast'
+
 import type { IAlert } from '../helper/Alert/type'
 
 /**
@@ -7,7 +10,7 @@ import type { IAlert } from '../helper/Alert/type'
  * @param is_continue có tiếp tục ném lỗi sau khi cảnh báo hay không
  */
 export function error(
-  service_alert: IAlert,
+  service_alert: IAlert = container.resolve(Toast),
   callback?: Function,
   is_continue = false
 ) {
