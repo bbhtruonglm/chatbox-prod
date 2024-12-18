@@ -910,6 +910,7 @@ const source: Language = {
               chatbot_unlimited_n_year: 'Chatbot Unlimited',
               chatbot_unlimited_1_year: 'Chatbot Unlimited 1 năm',
               chatbot_loyalty_1_year: 'Chatbot Loyalty 1 năm',
+              chatbot_marketing_1_year: 'Chatbot Marketing 1 năm',
               account: 'Tài khoản',
               balance: 'Số dư tài khoản',
               pack_info: 'Thông tin gói cước',

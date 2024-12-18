@@ -16,7 +16,7 @@
           :src="`https://graph.facebook.com/${page?.id}/picture`"
           class="w-8 h-8 rounded-full"
         />
-        {{ page?.name }}
+        {{ page?.name }} - {{ page?.id }}
       </button>
     </div>
 
