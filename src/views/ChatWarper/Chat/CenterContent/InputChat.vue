@@ -6,7 +6,7 @@
     class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
   >
     <ScrollToBottomBtn />
-    <ReplyComment v-if="messageStore.reply_comment" />
+    <ReplyComment v-if="messageStore.reply_comment?.root_comment_id" />
     <ListLabel v-else />
     <PreviewAttachment />
     <MainInput />

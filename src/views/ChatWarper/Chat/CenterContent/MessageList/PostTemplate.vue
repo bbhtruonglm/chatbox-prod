@@ -18,7 +18,9 @@
             <span class="px-1">-</span>
           </template>
           {{
-            $date_handle.formatCompareCurrentYear(message?.post?.updated_time)
+            $date_handle.formatCompareCurrentYear(
+              message?.post?.content?.updated_time
+            )
           }}
         </small>
         <a
@@ -69,7 +71,7 @@
         </div>
 
         <div
-          v-for="comment of reply_comments"
+          v-for="comment of $props.message?.reply_comments?.slice(0, 2)"
           class="flex flex-col"
         >
           <div class="flex items-center">
@@ -148,6 +150,8 @@ const $props = withDefaults(
   defineProps<{
     /**dữ liệu tin nhắn */
     message?: MessageInfo
+    /**vị trí của tin nhắn */
+    message_index?: number
   }>(),
   {}
 )
@@ -179,7 +183,7 @@ const $props = withDefaults(
 // }
 
 /** Dữ liệu bình luận trả lời */
-const reply_comments = ref<FacebookCommentPost[]>()
+// const reply_comments = ref<FacebookCommentPost[]>()
 
 class Main {
   /**
@@ -207,7 +211,8 @@ class Main {
     if (!$props.message?.comment_id) return
 
     // lấy vài comment mới nhất
-    reply_comments.value = await this.API_POST.getMainComment(
+    // reply_comments.value = await this.API_POST.getMainComment(
+    $props.message.reply_comments = await this.API_POST.getMainComment(
       conversationStore.select_conversation?.fb_page_id,
       conversationStore.select_conversation?.fb_client_id,
       $props.message?.comment_id,
@@ -241,6 +246,7 @@ class Main {
       type,
       root_comment_id: $props.message?.comment_id,
       root_comment_message: $props.message?.message_text,
+      message_index: $props.message_index,
     }
 
     // focus vào input chat

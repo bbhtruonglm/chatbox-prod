@@ -2,9 +2,9 @@
   <div
     ref="input_chat_ref"
     id="chat-text-input-message"
-    @input="calcIsTyping"
-    @keydown.enter="submitInput"
-    @paste="onPasteImage"
+    @input="$main.calcIsTyping"
+    @keydown.enter="$main.submitInput"
+    @paste="$main.onPasteImage"
     @keyup="$emit('keyup', $event)"
     class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word mb-1.5"
     contenteditable="true"
@@ -16,7 +16,7 @@
   />
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useConversationStore,
@@ -26,9 +26,9 @@ import {
   useOrgStore,
 } from '@/stores'
 import { send_message } from '@/service/api/chatbox/n4-service'
-import { map, get, size, uniqueId, partition } from 'lodash'
+import { map, get, size, uniqueId, partition, set } from 'lodash'
 import { srcImageToFile } from '@/service/helper/file'
-import { scrollToBottomMessage } from '@/service/function'
+import { getPageInfo, scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
@@ -40,6 +40,9 @@ import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
+import { error } from '@/utils/decorator/error'
+import { loadingV2 } from '@/utils/decorator/loading'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -76,240 +79,354 @@ const platform_type = computed(
   () => conversationStore.select_conversation?.platform_type
 )
 
-/**tính toán xem ô input có dữ liệu không */
-async function calcIsTyping($event: Event) {
-  /**thẻ div input */
-  const INPUT_DIV = $event.target as HTMLDivElement
+class Main {
+  /**
+   * @param API_POST API của bài viết
+   */
+  constructor(
+    private readonly API_POST = container.resolve(N4SerivceAppPost)
+  ) {}
 
-  /**nội dung */
-  const INPUT_VALUE = INPUT_DIV?.innerText?.trim()
+  /**tính toán xem ô input có dữ liệu không */
+  async calcIsTyping($event: Event) {
+    /**thẻ div input */
+    const INPUT_DIV = $event.target as HTMLDivElement
 
-  // gắn cờ input có dữ liệu
-  commonStore.is_typing = !!INPUT_VALUE
-}
-/**lấy ảnh khi được ctrl + v vào input */
-function onPasteImage() {
-  setTimeout(() => {
-    /**ô input */
-    const PARENT = input_chat_ref.value
+    /**nội dung */
+    const INPUT_VALUE = INPUT_DIV?.innerText?.trim()
 
-    // loop dữ liệu input để tìm các img được paste vào
-    map(PARENT?.children, (element: HTMLElement) => {
-      // chỉ xử lý img
-      if (element?.tagName !== 'IMG') return
+    // gắn cờ input có dữ liệu
+    commonStore.is_typing = !!INPUT_VALUE
+  }
+  /**lấy ảnh khi được ctrl + v vào input */
+  onPasteImage() {
+    setTimeout(() => {
+      /**ô input */
+      const PARENT = input_chat_ref.value
 
-      // lấy source của hình ảnh
-      const SRC = (element as HTMLImageElement).src
+      // loop dữ liệu input để tìm các img được paste vào
+      map(PARENT?.children, (element: HTMLElement) => {
+        // chỉ xử lý img
+        if (element?.tagName !== 'IMG') return
 
-      // loại bỏ hình ảnh khỏi input
-      PARENT?.removeChild(element)
+        // lấy source của hình ảnh
+        const SRC = (element as HTMLImageElement).src
 
-      srcImageToFile(SRC, (e, r) => {
-        if (e || !r) return
+        // loại bỏ hình ảnh khỏi input
+        PARENT?.removeChild(element)
 
-        messageStore.upload_file_list.push({
-          source: r,
-          type: 'image',
-          preview: SRC,
+        srcImageToFile(SRC, (e, r) => {
+          if (e || !r) return
+
+          messageStore.upload_file_list.push({
+            source: r,
+            type: 'image',
+            preview: SRC,
+          })
         })
       })
-    })
-  }, 100)
-}
-/**xử lý sự kiện nhấn enter ở ô chat */
-async function submitInput($event: KeyboardEvent) {
-  // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
-  await $delay.exec(10)
+    }, 100)
+  }
+  /**xử lý sự kiện nhấn enter ở ô chat */
+  async submitInput($event: KeyboardEvent) {
+    // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
+    await $delay.exec(10)
 
-  // nếu bấm shift + enter thì chỉ xuống dòng, không submit
-  if ($event.shiftKey) return
+    // nếu bấm shift + enter thì chỉ xuống dòng, không submit
+    if ($event.shiftKey) return
 
-  // nếu chỉ bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
-  $event.preventDefault()
+    // nếu chỉ bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
+    $event.preventDefault()
 
-  // nếu đang mở trả lời nhanh thì không submit, mà chạy vào logic chọn câu trả lời
-  if (commonStore.is_show_quick_answer) return
-  // nếu không thì gửi tin nhắn bình thường
-  else sendMessage()
-}
-/**gửi tin nhắn */
-function sendMessage() {
-  // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
-  if (messageStore.is_send_file) return
+    // nếu đang mở trả lời nhanh thì không submit, mà chạy vào logic chọn câu trả lời
+    if (commonStore.is_show_quick_answer) return
+    // nếu không thì gửi tin nhắn bình thường
+    else this.sendMessage()
+  }
+  /**gửi tin nhắn */
+  sendMessage() {
+    // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
+    if (messageStore.is_send_file) return
 
-  // bắt buộc phải có id của trang và khách
-  if (!page_id.value || !client_id.value) return
+    // bắt buộc phải có id của trang và khách
+    if (!page_id.value || !client_id.value) return
 
-  // tránh trường hợp đang gửi, lại chuyển page, nên sẽ giữ cố định id
-  /**id trang */
-  const PAGE_ID = page_id.value
-  /*id khách */
-  const CLIENT_ID = client_id.value
-  /**div input */
-  const INPUT = input_chat_ref.value as HTMLDivElement
-  /**nội dung tin nhắn */
-  const TEXT = INPUT.innerText.trim()
+    // tránh trường hợp đang gửi, lại chuyển page, nên sẽ giữ cố định id
+    /**id trang */
+    const PAGE_ID = page_id.value
+    /*id khách */
+    const CLIENT_ID = client_id.value
+    /**div input */
+    const INPUT = input_chat_ref.value as HTMLDivElement
+    /**nội dung tin nhắn */
+    const TEXT = INPUT.innerText.trim()
 
-  // gửi text
-  if (TEXT) sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
+    // xử lý luồng bình luận riêng
+    if (messageStore.reply_comment) return this.replyComment(PAGE_ID, TEXT)
 
-  // gửi file
-  if (size(messageStore.upload_file_list)) sendFile(PAGE_ID, CLIENT_ID)
-}
-/**gửi tin nhắn dạng văn bản */
-async function sendText(
-  page_id: string,
-  client_id: string,
-  text: string,
-  input: HTMLDivElement
-) {
-  // xoá dữ liệu trong input
-  input.innerHTML = ''
+    // gửi text
+    if (TEXT) this.sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
 
-  // đánh dấu là input đã hết text
-  commonStore.is_typing = false
+    // gửi file
+    if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
+  }
+  /**luồng trả lời bình luận */
+  @loadingV2(messageStore, 'reply_comment.is_loading')
+  @error()
+  async replyComment(page_id: string, text: string) {
+    // xoá dữ liệu trong input
+    this.clearInputText()
 
-  // scroll xuống cuối trang
-  scrollToBottomMessage()
+    // xác thực dữ liệu
+    if (!messageStore.reply_comment?.root_comment_id) return
 
-  /**tạo id cho tin nhắn tạm */
-  const TEMP_ID = uniqueId(text)
-
-  // thêm vào danh sách tin nhắn tạm
-  messageStore.send_message_list.push({
-    text,
-    time: new Date().toISOString(),
-    temp_id: TEMP_ID,
-  })
-
-  try {
-    // gửi tin nhắn bằng api chính thống
-    const MESSAGE_ID = await new Promise<string>((resolve, reject) =>
-      send_message(
-        {
-          page_id,
-          client_id,
-          text,
-        },
-        (e, r) => {
-          // nếu có lỗi thì báo lỗi
-          if (e) return reject(e)
-          // nếu không có id tin nhắn thì báo lỗi
-          if (!r?.message_id) return reject(r)
-
-          // nếu có id tin nhắn thì trả về id
-          resolve(r?.message_id)
-        }
-      )
-    )
-
-    // cập nhật id tin nhắn thật vào tin nhắn tạm
-    messageStore.updateTempMessage(TEMP_ID, 'message_id', MESSAGE_ID)
-  } catch (e) {
-    // nếu không có ext thì báo lỗi
-    if (commonStore.extension_status !== 'FOUND') {
-      // đánh dấu tin nhắn tạm là có lỗi
-      messageStore.updateTempMessage(TEMP_ID, 'error', true)
-
-      // xử lý thông báo lỗi
-      return handleSendMessageError(e)
-    }
-
-    // nếu bật ext thì gửi lại 1 lần nữa
-    sendTextMesage(
-      conversationStore.select_conversation?.platform_type,
+    // gửi bình luận
+    const RES = await this.API_POST.sendComment(
       page_id,
-      client_id,
-      pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
-      conversationStore.select_conversation?.client_bio?.fb_uid,
+      messageStore.reply_comment?.root_comment_id,
       text
     )
 
-    // xoá tin nhắn tạm khỏi danh sách
-    messageStore.removeTempMessage(TEMP_ID)
+    // TODO đang xử dụng index, có thể bị bug khi có tin nhắn mới, index bị thay đổi
+    // tự động thêm luôn vào danh sách bình luận
+    messageStore.list_message?.[
+      messageStore.reply_comment?.message_index || 0
+    ]?.reply_comments?.unshift({
+      comment_id: RES.id || '',
+      message: text,
+      from: { name: conversationStore.getPage()?.name },
+      createdAt: new Date().toISOString(),
+    })
+
+    // xóa dữ liệu trả lời khi xong
+    messageStore.reply_comment = undefined
   }
-}
-/**gửi tập tin */
-function sendFile(page_id: string, client_id: string) {
-  // đánh dấu đang gửi file
-  messageStore.is_send_file = true
+  /**gửi tin nhắn dạng văn bản */
+  async sendText(
+    page_id: string,
+    client_id: string,
+    text: string,
+    input: HTMLDivElement
+  ) {
+    // xoá dữ liệu trong input
+    this.clearInputText()
 
-  // cắt file gửi thành 2 loại
-  const [
-    /**danh sách hình ảnh */
-    IMAGE_LIST,
-    /**danh sách file còn lại */
-    FILE_LIST,
-  ] = partition(messageStore.upload_file_list, file => file.type === 'image')
+    // xoá dữ liệu trong input
+    // input.innerHTML = ''
 
-  waterfall(
-    [
-      // * loop qua các file ảnh để upload lên server nếu cần
-      (cb: CbError) =>
-        eachOfLimit(
-          IMAGE_LIST,
-          20,
-          (file: UploadFile, i, next) => {
-            file.is_loading = true
+    // đánh dấu là input đã hết text
+    // commonStore.is_typing = false
 
-            // đang gửi mà file bị xoá mất, hoặc đã có url rồi
-            if (!file || file.url) return next()
+    // scroll xuống cuối trang
+    scrollToBottomMessage()
 
-            // file tự upload
-            getFileUrl(file?.source as File, (e, r) => {
-              if (r) file.url = r
+    /**tạo id cho tin nhắn tạm */
+    const TEMP_ID = uniqueId(text)
 
-              next()
-            })
-          },
-          cb
-        ),
-      // * gửi các hình ảnh đã được upload
-      (cb: CbError) => {
-        // gửi ngang qua ext cho riêng luồng FB
-        if (
-          commonStore.extension_status === 'FOUND' &&
-          conversationStore.select_conversation?.platform_type === 'FB_MESS'
-        ) {
-          // gắn cờ done
-          IMAGE_LIST.forEach(image => {
-            image.is_loading = false
-            image.is_done = true
-          })
+    // thêm vào danh sách tin nhắn tạm
+    messageStore.send_message_list.push({
+      text,
+      time: new Date().toISOString(),
+      temp_id: TEMP_ID,
+    })
 
-          // gửi qua ext
-          sendImageMessage(
-            conversationStore.select_conversation?.platform_type,
+    try {
+      // gửi tin nhắn bằng api chính thống
+      const MESSAGE_ID = await new Promise<string>((resolve, reject) =>
+        send_message(
+          {
             page_id,
             client_id,
-            pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
-            conversationStore.select_conversation?.client_bio?.fb_uid,
-            IMAGE_LIST.map(image => {
-              return {
-                url: image.url as string,
-                fb_image_id: image.fb_image_id,
-                type: 'image',
-              }
-            })
-          )
+            text,
+          },
+          (e, r) => {
+            // nếu có lỗi thì báo lỗi
+            if (e) return reject(e)
+            // nếu không có id tin nhắn thì báo lỗi
+            if (!r?.message_id) return reject(r)
 
-          cb()
-        }
-        // gửi chính thống
-        else
+            // nếu có id tin nhắn thì trả về id
+            resolve(r?.message_id)
+          }
+        )
+      )
+
+      // cập nhật id tin nhắn thật vào tin nhắn tạm
+      messageStore.updateTempMessage(TEMP_ID, 'message_id', MESSAGE_ID)
+    } catch (e) {
+      // nếu không có ext thì báo lỗi
+      if (commonStore.extension_status !== 'FOUND') {
+        // đánh dấu tin nhắn tạm là có lỗi
+        messageStore.updateTempMessage(TEMP_ID, 'error', true)
+
+        // xử lý thông báo lỗi
+        return this.handleSendMessageError(e)
+      }
+
+      // nếu bật ext thì gửi lại 1 lần nữa
+      sendTextMesage(
+        conversationStore.select_conversation?.platform_type,
+        page_id,
+        client_id,
+        pageStore?.selected_page_list_info?.[page_id]?.page?.fb_page_token,
+        conversationStore.select_conversation?.client_bio?.fb_uid,
+        text
+      )
+
+      // xoá tin nhắn tạm khỏi danh sách
+      messageStore.removeTempMessage(TEMP_ID)
+    }
+  }
+  /**xóa dữ liệu của input chat */
+  clearInputText() {
+    /**input chat */
+    const INPUT = document.getElementById('chat-text-input-message')
+
+    // xoá dữ liệu trong input
+    if (INPUT) INPUT.innerHTML = ''
+
+    // đánh dấu là input đã hết text
+    commonStore.is_typing = false
+  }
+  /**gửi tập tin */
+  sendFile(page_id: string, client_id: string) {
+    // đánh dấu đang gửi file
+    messageStore.is_send_file = true
+
+    // cắt file gửi thành 2 loại
+    const [
+      /**danh sách hình ảnh */
+      IMAGE_LIST,
+      /**danh sách file còn lại */
+      FILE_LIST,
+    ] = partition(messageStore.upload_file_list, file => file.type === 'image')
+
+    waterfall(
+      [
+        // * loop qua các file ảnh để upload lên server nếu cần
+        (cb: CbError) =>
           eachOfLimit(
             IMAGE_LIST,
             20,
             (file: UploadFile, i, next) => {
-              if (!file.url) return next()
+              file.is_loading = true
 
-              send_message(
-                {
-                  page_id,
-                  client_id,
-                  attachment: { url: file.url, type: file.type },
-                },
-                (e, r) => {
+              // đang gửi mà file bị xoá mất, hoặc đã có url rồi
+              if (!file || file.url) return next()
+
+              // file tự upload
+              this.getFileUrl(file?.source as File, (e, r) => {
+                if (r) file.url = r
+
+                next()
+              })
+            },
+            cb
+          ),
+        // * gửi các hình ảnh đã được upload
+        (cb: CbError) => {
+          // gửi ngang qua ext cho riêng luồng FB
+          if (
+            commonStore.extension_status === 'FOUND' &&
+            conversationStore.select_conversation?.platform_type === 'FB_MESS'
+          ) {
+            // gắn cờ done
+            IMAGE_LIST.forEach(image => {
+              image.is_loading = false
+              image.is_done = true
+            })
+
+            // gửi qua ext
+            sendImageMessage(
+              conversationStore.select_conversation?.platform_type,
+              page_id,
+              client_id,
+              pageStore?.selected_page_list_info?.[page_id]?.page
+                ?.fb_page_token,
+              conversationStore.select_conversation?.client_bio?.fb_uid,
+              IMAGE_LIST.map(image => {
+                return {
+                  url: image.url as string,
+                  fb_image_id: image.fb_image_id,
+                  type: 'image',
+                }
+              })
+            )
+
+            cb()
+          }
+          // gửi chính thống
+          else
+            eachOfLimit(
+              IMAGE_LIST,
+              20,
+              (file: UploadFile, i, next) => {
+                if (!file.url) return next()
+
+                send_message(
+                  {
+                    page_id,
+                    client_id,
+                    attachment: { url: file.url, type: file.type },
+                  },
+                  (e, r) => {
+                    file.is_loading = false
+                    file.is_done = true
+
+                    next()
+                  }
+                )
+              },
+              cb
+            )
+        },
+        // * loop qua các file còn lại
+        (cb: CbError) =>
+          eachOfLimit(
+            FILE_LIST,
+            20,
+            (file: UploadFile, i, next) => {
+              // đang gửi mà file bị xoá mất
+              if (!file) return next()
+
+              file.is_loading = true
+              /**link file */
+              let url: string
+              waterfall(
+                [
+                  // lấy link của file
+                  (_cb: CbError) => {
+                    // file từ album
+                    if (file.url) {
+                      url = file.url
+
+                      return _cb()
+                    }
+
+                    // file tự upload
+                    this.getFileUrl(file?.source as File, (e, r) => {
+                      if (e) return _cb(e)
+
+                      if (r) url = r
+                      _cb()
+                    })
+                  },
+                  // * gửi file lên fb
+                  (_cb: CbError) =>
+                    send_message(
+                      {
+                        page_id,
+                        client_id,
+                        attachment: { url: url, type: file.type },
+                      },
+                      (e, r) => {
+                        if (e) return _cb('DONE')
+
+                        _cb()
+                      }
+                    ),
+                ],
+                e => {
                   file.is_loading = false
                   file.is_done = true
 
@@ -318,128 +435,73 @@ function sendFile(page_id: string, client_id: string) {
               )
             },
             cb
-          )
-      },
-      // * loop qua các file còn lại
-      (cb: CbError) =>
-        eachOfLimit(
-          FILE_LIST,
-          20,
-          (file: UploadFile, i, next) => {
-            // đang gửi mà file bị xoá mất
-            if (!file) return next()
+          ),
+      ],
+      e => {
+        // reset upload
+        setTimeout(() => {
+          // làm mới list file
+          messageStore.upload_file_list = []
 
-            file.is_loading = true
-            /**link file */
-            let url: string
-            waterfall(
-              [
-                // lấy link của file
-                (_cb: CbError) => {
-                  // file từ album
-                  if (file.url) {
-                    url = file.url
-
-                    return _cb()
-                  }
-
-                  // file tự upload
-                  getFileUrl(file?.source as File, (e, r) => {
-                    if (e) return _cb(e)
-
-                    if (r) url = r
-                    _cb()
-                  })
-                },
-                // * gửi file lên fb
-                (_cb: CbError) =>
-                  send_message(
-                    {
-                      page_id,
-                      client_id,
-                      attachment: { url: url, type: file.type },
-                    },
-                    (e, r) => {
-                      if (e) return _cb('DONE')
-
-                      _cb()
-                    }
-                  ),
-              ],
-              e => {
-                file.is_loading = false
-                file.is_done = true
-
-                next()
-              }
-            )
-          },
-          cb
-        ),
-    ],
-    e => {
-      // reset upload
-      setTimeout(() => {
-        // làm mới list file
-        messageStore.upload_file_list = []
-
-        // đã gửi xong
-        messageStore.is_send_file = false
-      }, 500)
-    }
-  )
-}
-/**xử lý báo lỗi khi gửi tin nhắn thất bại */
-function handleSendMessageError(error: any) {
-  switch (get(error, 'error.code')) {
-    case 10:
-      toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
-      break
-    case 551:
-      toastError($t('v1.view.main.dashboard.chat.facebook_errors.551'))
-      break
-    case 100:
-      toastError($t('v1.view.main.dashboard.chat.facebook_errors.100'))
-      break
-    case 190:
-      facebook_error.value = get(error, 'error')
-      facebook_error_ref.value?.toggleModal()
-      break
-    default:
-      toastError(error)
-      break
-  }
-}
-/**upload file lên server để lấy link tạm thời */
-async function getFileUrl(source: File, proceed: Cb<string>): Promise<void> {
-  try {
-    // nếu không có id trang thì thôi
-    if (!page_id.value) return
-
-    /**loại upload */
-    let type: Uploadtype
-
-    // loại riêng cho zalo oa file khác hình ảnh
-    if (platform_type.value === 'ZALO_OA' && !source.type?.includes('image'))
-      type = 'ZALO_FILE'
-    // website thì lưu vĩnh viễn
-    else if (platform_type.value === 'WEBSITE') type = 'FULL'
-    // các loại còn lại chỉ lưu tạm thời
-    else type = 'TEMP'
-
-    /**kết quả upload */
-    const RES = await new N6StaticAppUploadFile(page_id.value).uploadTempFile(
-      type,
-      source
+          // đã gửi xong
+          messageStore.is_send_file = false
+        }, 500)
+      }
     )
+  }
+  /**xử lý báo lỗi khi gửi tin nhắn thất bại */
+  handleSendMessageError(error: any) {
+    switch (get(error, 'error.code')) {
+      case 10:
+        toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
+        break
+      case 551:
+        toastError($t('v1.view.main.dashboard.chat.facebook_errors.551'))
+        break
+      case 100:
+        toastError($t('v1.view.main.dashboard.chat.facebook_errors.100'))
+        break
+      case 190:
+        facebook_error.value = get(error, 'error')
+        facebook_error_ref.value?.toggleModal()
+        break
+      default:
+        toastError(error)
+        break
+    }
+  }
+  /**upload file lên server để lấy link tạm thời */
+  async getFileUrl(source: File, proceed: Cb<string>): Promise<void> {
+    try {
+      // nếu không có id trang thì thôi
+      if (!page_id.value) return
 
-    // trả về kết quả upload
-    proceed(null, RES?.url)
-  } catch (e) {
-    // báo lỗi nếu có
-    proceed(e)
+      /**loại upload */
+      let type: Uploadtype
+
+      // loại riêng cho zalo oa file khác hình ảnh
+      if (platform_type.value === 'ZALO_OA' && !source.type?.includes('image'))
+        type = 'ZALO_FILE'
+      // website thì lưu vĩnh viễn
+      else if (platform_type.value === 'WEBSITE') type = 'FULL'
+      // các loại còn lại chỉ lưu tạm thời
+      else type = 'TEMP'
+
+      /**kết quả upload */
+      const RES = await new N6StaticAppUploadFile(page_id.value).uploadTempFile(
+        type,
+        source
+      )
+
+      // trả về kết quả upload
+      proceed(null, RES?.url)
+    } catch (e) {
+      // báo lỗi nếu có
+      proceed(e)
+    }
   }
 }
+const $main = new Main()
 
-defineExpose({ input_chat_ref, sendMessage })
+defineExpose({ input_chat_ref, sendMessage: $main.sendMessage })
 </script>

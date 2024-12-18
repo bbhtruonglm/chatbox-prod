@@ -100,6 +100,7 @@
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :message
+              :message_index="index"
             />
             <!-- <FacebookPost
               v-else-if="

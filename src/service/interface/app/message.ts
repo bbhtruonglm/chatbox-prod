@@ -54,6 +54,8 @@ export interface IPost extends IPortContent {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /** Dữ liệu bình luận trả lời được tiêm thêm vào */
+  reply_comments: FacebookCommentPost[]
   /**dữ liệu của 1 bài post, tin nhắn dạng post */
   post?: IPost
   /**id của bình luận này */
@@ -126,6 +128,10 @@ export interface IReplyComment {
   root_comment_id?: string
   /**nội dung bình luận gốc */
   root_comment_message?: string
+  /**vị trí của tin nhắn chứa bình luận */
+  message_index?: number
+  /**có đang loading không */
+  is_loading?: boolean
 }
 
 /**dữ liệu AI của một phần tử */

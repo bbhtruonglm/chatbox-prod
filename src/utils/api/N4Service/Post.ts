@@ -2,6 +2,12 @@ import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { N4Serivce } from '@/utils/api/N4Serivce'
 import { singleton } from 'tsyringe'
 
+/**dữ liệu của bình luận sau khi tạo */
+interface ISendCommentRes {
+  /**id của bình luận được tạo */
+  id?: string
+}
+
 /**gọi API module page của chatbox */
 @singleton()
 export class N4SerivceAppPost extends N4Serivce {
@@ -25,5 +31,13 @@ export class N4SerivceAppPost extends N4Serivce {
       limit,
       skip,
     })
+  }
+  /**trả lời bình luận */
+  public async sendComment(
+    page_id: string,
+    target_id: string,
+    text: string
+  ): Promise<ISendCommentRes> {
+    return this.post('send_comment', { page_id, target_id, text })
   }
 }
