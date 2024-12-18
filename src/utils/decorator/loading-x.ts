@@ -6,6 +6,7 @@ import type { Ref } from 'vue'
  * hàm trang trí tính năng loading cho phương thức
  * @param is_loading ref của biến để bật tắt loading
  * @param is_block_if_loading có chặn hành động khi đang loading hay không
+ * @deprecated dùng loadingV2 thay thế
  */
 export function loading(
   is_loading: Ref<boolean | undefined | null>,

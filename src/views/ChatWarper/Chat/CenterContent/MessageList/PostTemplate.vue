@@ -123,7 +123,7 @@ import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
-import { error } from '@/utils/decorator/error'
+import { error } from '@/utils/decorator/error-x'
 
 import Loading from '@/components/Loading.vue'
 

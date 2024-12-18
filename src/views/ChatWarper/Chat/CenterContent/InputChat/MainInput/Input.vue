@@ -40,8 +40,8 @@ import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
-import { error } from '@/utils/decorator/error'
-import { loadingV2 } from '@/utils/decorator/loading'
+import { error } from '@/utils/decorator/error-x'
+import { loadingV2 } from '@/utils/decorator/loading-x'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 
 const $emit = defineEmits<{
