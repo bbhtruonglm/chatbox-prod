@@ -56,4 +56,20 @@ export class N4SerivceAppPost extends N4Serivce {
       text,
     })
   }
+  /**ẩn hiện bình luận */
+  public async toggleComment(
+    page_id: string,
+    client_id: string,
+    post_id: string,
+    target_id: string,
+    is_hidden: boolean
+  ): Promise<ISendCommentRes> {
+    return this.post('toggle_comment', {
+      page_id,
+      client_id,
+      post_id,
+      target_id,
+      is_hidden,
+    })
+  }
 }

@@ -54,6 +54,8 @@ export interface IPost extends IPortContent {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**comment của tin nhắn này có bị ẩn không */
+  is_hidden_comment?: boolean
   /**đã trả lời bí mật chưa */
   is_private_reply?: boolean
   /** Dữ liệu bình luận trả lời được tiêm thêm vào */

@@ -3,10 +3,10 @@
     id="chat__post-template"
     class="bg-white shadow-sm rounded-lg relative overflow-x-auto max-w-96"
   >
-    <!-- <Loading
+    <Loading
       v-if="is_loading"
       type="FULL"
-    /> -->
+    />
     <div class="flex gap-2 p-2 flex-col w-96">
       <div class="flex items-center justify-between">
         <small class="flex text-xxs">
@@ -66,6 +66,8 @@
         <div class="comment-item flex gap-1 justify-between">
           {{ message?.message_text }}
           <EyeSlashIcon
+            v-if="message?.is_hidden_comment"
+            @click="$main.toggleComment('SHOW')"
             class="w-5 h-5 text-slate-700 flex-shrink-0 cursor-pointer"
           />
         </div>
@@ -75,7 +77,7 @@
           class="flex flex-col"
         >
           <div class="flex items-center">
-            <CornerDownRightIcon class="w-5 h-5 text-slate-700 flex-shrink-0" />
+            <CornerDownRightIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
             <p class="flex-grow comment-item">
               {{ comment?.message }}
             </p>
@@ -99,7 +101,11 @@
           <ChatDotIcon class="icon" />
           {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
         </button>
-        <button class="btn">
+        <button
+          v-if="!message?.is_hidden_comment"
+          @click="$main.toggleComment('HIDE')"
+          class="btn"
+        >
           <EyeSlashIcon class="icon" />
           {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
         </button>
@@ -125,6 +131,7 @@ import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
 
 import Loading from '@/components/Loading.vue'
 
@@ -139,8 +146,6 @@ import type {
   MessageInfo,
 } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
-
-// import '@/utils/base/ApiV2'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -157,8 +162,8 @@ const $props = withDefaults(
   {}
 )
 
-// /** trạng is_loading bài post */
-// const is_loading = ref(false)
+/**trạng thái loading */
+const is_loading = ref(false)
 
 // onMounted(() => {
 //   // lấy dữ liệu bài viết từ quảng cáo
@@ -204,6 +209,30 @@ class Main {
     )
   ) {}
 
+  /**ẩn bình luận */
+  @loadingV2(is_loading, 'value')
+  @error()
+  async toggleComment(type: 'HIDE' | 'SHOW') {
+    if (!conversationStore.select_conversation?.fb_page_id) return
+    if (!conversationStore.select_conversation?.fb_client_id) return
+    if (!$props.message?.fb_post_id) return
+    if (!$props.message?.comment_id) return
+
+    /**trạng thái ẩn bình luận */
+    const IS_HIDDEN = type === 'HIDE' ? true : false
+
+    // ẩn hoặc hiện bình luận
+    await this.API_POST.toggleComment(
+      conversationStore.select_conversation?.fb_page_id,
+      conversationStore.select_conversation?.fb_client_id,
+      $props.message?.fb_post_id,
+      $props.message?.comment_id,
+      IS_HIDDEN
+    )
+
+    // cập nhật lại trạng thái bình luận
+    $props.message.is_hidden_comment = IS_HIDDEN
+  }
   /**lấy một số comment mới nhất */
   @error()
   async getReplyComment(): Promise<void> {
@@ -212,7 +241,6 @@ class Main {
     if (!$props.message?.comment_id) return
 
     // lấy vài comment mới nhất
-    // reply_comments.value = await this.API_POST.getMainComment(
     $props.message.reply_comments = await this.API_POST.getMainComment(
       conversationStore.select_conversation?.fb_page_id,
       conversationStore.select_conversation?.fb_client_id,
