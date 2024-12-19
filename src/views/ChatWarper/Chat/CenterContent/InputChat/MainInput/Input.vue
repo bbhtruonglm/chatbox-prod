@@ -33,16 +33,18 @@ import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
 import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
-import { container } from 'tsyringe'
+import { container, singleton } from 'tsyringe'
 import { Delay } from '@/utils/helper/Delay'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
-import { error } from '@/utils/decorator/error-x'
-import { loadingV2 } from '@/utils/decorator/loading-x'
+import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import type { IAlert } from '@/utils/helper/Alert/type'
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -77,6 +79,30 @@ const client_id = computed(
 /**loại nền tảng */
 const platform_type = computed(
   () => conversationStore.select_conversation?.platform_type
+)
+
+/**custom lại thông báo lỗi */
+@singleton()
+class ToastReplyComment extends Toast implements IAlert {
+  public error(message: any): void {
+    // lỗi đã trả lời rồi
+    if (message?.code === 10900)
+      message = $t('v1.view.main.dashboard.chat.post.already_replied')
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
+
+/**decorator xử lý khi phát sinh lỗi trả lời bình luận */
+const handleErrorReplyComment = error(
+  container.resolve(ToastReplyComment),
+  messageStore.clearReplyComment
+)
+/**decorator xử lý khi đang loading trả lời bình luận */
+const handleLoadingReplyComment = loadingV2(
+  messageStore,
+  'reply_comment.is_loading'
 )
 
 class Main {
@@ -161,8 +187,16 @@ class Main {
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
 
-    // xử lý luồng bình luận riêng
-    if (messageStore.reply_comment) return this.replyComment(PAGE_ID, TEXT)
+    // xử lý luồng bình luận riêng nếu có, và dừng tiến trình luôn
+    switch (messageStore.reply_comment?.type) {
+      // trả lời bình luận
+      case 'REPLY':
+        return this.replyComment(PAGE_ID, TEXT)
+
+      // trả lời tin nhắn bí mật
+      case 'PRIVATE_REPLY':
+        return this.privateReply(PAGE_ID, CLIENT_ID, TEXT)
+    }
 
     // gửi text
     if (TEXT) this.sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
@@ -170,9 +204,39 @@ class Main {
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
   }
+  /**luồng trả lời tin nhắn bí mật */
+  @handleLoadingReplyComment
+  @handleErrorReplyComment
+  async privateReply(page_id: string, client_id: string, text: string) {
+    // xoá dữ liệu trong input
+    this.clearInputText()
+
+    // xác thực dữ liệu
+    if (!messageStore.reply_comment?.root_comment_id) return
+    if (!messageStore.reply_comment?.post_id) return
+
+    /**gửi tin */
+    const RES = await this.API_POST.sendPrivateReply(
+      page_id,
+      client_id,
+      messageStore.reply_comment?.post_id,
+      messageStore.reply_comment?.root_comment_id,
+      text
+    )
+
+    // gắn cờ là đã trả lời bí mật cho tin nhắn
+    set(
+      messageStore.list_message,
+      [messageStore.reply_comment?.message_index || 0, 'is_private_reply'],
+      true
+    )
+
+    // xoá dữ liệu trả lời
+    messageStore.clearReplyComment()
+  }
   /**luồng trả lời bình luận */
-  @loadingV2(messageStore, 'reply_comment.is_loading')
-  @error()
+  @handleLoadingReplyComment
+  @handleErrorReplyComment
   async replyComment(page_id: string, text: string) {
     // xoá dữ liệu trong input
     this.clearInputText()
@@ -180,14 +244,14 @@ class Main {
     // xác thực dữ liệu
     if (!messageStore.reply_comment?.root_comment_id) return
 
-    // gửi bình luận
+    /**gửi bình luận */
     const RES = await this.API_POST.sendComment(
       page_id,
       messageStore.reply_comment?.root_comment_id,
       text
     )
 
-    // TODO đang xử dụng index, có thể bị bug khi có tin nhắn mới, index bị thay đổi
+    // TODO đang xử dụng index, có thể bị bug khi có tin nhắn mới, index bị thay đổi?
     // tự động thêm luôn vào danh sách bình luận
     messageStore.list_message?.[
       messageStore.reply_comment?.message_index || 0
@@ -198,8 +262,8 @@ class Main {
       createdAt: new Date().toISOString(),
     })
 
-    // xóa dữ liệu trả lời khi xong
-    messageStore.reply_comment = undefined
+    // xoá dữ liệu trả lời
+    messageStore.clearReplyComment()
   }
   /**gửi tin nhắn dạng văn bản */
   async sendText(

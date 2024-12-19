@@ -26,7 +26,7 @@ import { onMounted } from 'vue'
 import { Toast } from './utils/helper/Alert/Toast'
 import { N4SerivcePublicPartner } from './utils/api/N4Service/Partner'
 import { setItem } from './service/helper/localStorage'
-import { error } from './utils/decorator/error-x'
+import { error } from './utils/decorator/Error'
 import { container } from 'tsyringe'
 import { QueryString, type IQueryString } from './utils/helper/QueryString'
 

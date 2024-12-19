@@ -19,6 +19,11 @@ import '@/assets/css/tailwind.css'
 
 import { container } from 'tsyringe'
 import { EnvManage } from './utils/base/EnvManage'
+// import {
+//   IsDefined,
+//   IsDefined2,
+//   ValidateParameters,
+// } from './utils/decorator/validator/IsDefined'
 
 const $env_manage = container.resolve(EnvManage)
 
@@ -47,3 +52,21 @@ async function bootstrap() {
 
 // khởi tạo ứng dụng
 bootstrap()
+
+// let alo: string
+// class Bootstrap {
+//   // @IsDefined(alo)
+//   // test() {
+//   //   console.log('test')
+//   // }
+
+//   @ValidateParameters
+//   hey(@IsDefined2 alox: string = alo) {
+//     console.log('test2222222', alox)
+//   }
+// }
+
+// const $bootstrap = new Bootstrap()
+
+// // $bootstrap.test()
+// $bootstrap.hey()

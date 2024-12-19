@@ -21,7 +21,7 @@
     <Loading v-if="messageStore.reply_comment?.is_loading" />
     <CloseIcon
       v-else
-      @click="messageStore.reply_comment = undefined"
+      @click="messageStore.clearReplyComment()"
       class="h-4 w-4 text-slate-500 cursor-pointer flex-shrink-0"
     />
   </div>
@@ -41,6 +41,6 @@ const messageStore = useMessageStore()
 // xóa reply comment khi chuyển đổi conversation
 watch(
   () => conversationStore.select_conversation?.fb_client_id,
-  () => (messageStore.reply_comment = undefined)
+  () => messageStore.clearReplyComment()
 )
 </script>

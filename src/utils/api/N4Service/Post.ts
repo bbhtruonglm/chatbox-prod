@@ -40,4 +40,20 @@ export class N4SerivceAppPost extends N4Serivce {
   ): Promise<ISendCommentRes> {
     return this.post('send_comment', { page_id, target_id, text })
   }
+  /**trả lời tin nhắn bí mật */
+  public async sendPrivateReply(
+    page_id: string,
+    client_id: string,
+    post_id: string,
+    target_id: string,
+    text: string
+  ): Promise<ISendCommentRes> {
+    return this.post('private_reply', {
+      page_id,
+      client_id,
+      post_id,
+      target_id,
+      text,
+    })
+  }
 }

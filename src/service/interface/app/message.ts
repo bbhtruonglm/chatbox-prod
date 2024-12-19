@@ -54,6 +54,8 @@ export interface IPost extends IPortContent {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**đã trả lời bí mật chưa */
+  is_private_reply?: boolean
   /** Dữ liệu bình luận trả lời được tiêm thêm vào */
   reply_comments: FacebookCommentPost[]
   /**dữ liệu của 1 bài post, tin nhắn dạng post */
@@ -132,6 +134,8 @@ export interface IReplyComment {
   message_index?: number
   /**có đang loading không */
   is_loading?: boolean
+  /**id bài viết */
+  post_id?: string
 }
 
 /**dữ liệu AI của một phần tử */

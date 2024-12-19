@@ -91,7 +91,7 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center justify-between text-xs gap-2">
+      <div class="flex items-center text-xs gap-2 justify-start">
         <button
           @click="$main.replyComment('REPLY')"
           class="btn"
@@ -104,6 +104,7 @@
           {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
         </button>
         <button
+          v-if="!message?.is_private_reply"
           @click="$main.replyComment('PRIVATE_REPLY')"
           class="btn"
         >
@@ -123,7 +124,7 @@ import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
-import { error } from '@/utils/decorator/error-x'
+import { error } from '@/utils/decorator/Error'
 
 import Loading from '@/components/Loading.vue'
 
@@ -241,12 +242,16 @@ class Main {
   }
   /**kích hoạt trả lời bình luận này */
   replyComment(type: IReplyCommentType) {
+    // nếu đang loading thì không cho phép trả lời
+    if (messageStore.reply_comment?.is_loading) return
+
     // lưu thông tin bình luận
     messageStore.reply_comment = {
       type,
       root_comment_id: $props.message?.comment_id,
       root_comment_message: $props.message?.message_text,
       message_index: $props.message_index,
+      post_id: $props.message?.fb_post_id,
     }
 
     // focus vào input chat
@@ -277,7 +282,7 @@ watch(
   @apply bg-slate-100 rounded py-1 px-2 text-sm text-slate-900;
 }
 .btn {
-  @apply flex items-center justify-center rounded-md bg-slate-200 px-3 py-2 flex-grow gap-1;
+  @apply flex items-center justify-center rounded-md bg-slate-200 px-3 py-2 gap-1;
   .icon {
     @apply w-3 h-3 text-slate-900;
   }

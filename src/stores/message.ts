@@ -42,6 +42,11 @@ export const useMessageStore = defineStore('message_store', () => {
   /**dữ liệu cần thiết để trả lời bình luận */
   const reply_comment = ref<IReplyComment>()
 
+  /**xoá dữ liệu trả lời bình luận */
+  function clearReplyComment() {
+    reply_comment.value = undefined
+  }
+
   /**cập nhật giá trị của tin nhắn tạm */
   function updateTempMessage(
     id: string,
@@ -73,5 +78,6 @@ export const useMessageStore = defineStore('message_store', () => {
 
     updateTempMessage,
     removeTempMessage,
+    clearReplyComment,
   }
 })

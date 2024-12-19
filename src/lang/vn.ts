@@ -631,6 +631,7 @@ const source: Language = {
               cancel: 'Hủy',
               send_message: 'Gửi tin nhắn',
               send_message_success: 'Gửi tin thành công',
+              already_replied: 'Bình luận đã được trả lời rồi'
             },
             album: {
               title: 'Album',
