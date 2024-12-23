@@ -90,10 +90,16 @@
               />
               <UnsupportMessage v-else />
             </div>
-            <AdMessage
+            <template
               v-else-if="message.message_type === 'client' && message.ad_id"
-              :ad_id="message.ad_id"
-            />
+            >
+              <!-- <AdMessage :ad_id="message.ad_id" />
+              <br /> -->
+              <PostTemplate
+                :message
+                :message_index="index"
+              />
+            </template>
 
             <PostTemplate
               v-else-if="

@@ -1,122 +1,140 @@
 <template>
   <div
     id="chat__post-template"
-    class="bg-white shadow-sm rounded-lg relative overflow-x-auto max-w-96"
+    class="flex flex-col gap-1"
   >
-    <Loading
-      v-if="is_loading"
-      type="FULL"
-    />
-    <div class="flex gap-2 p-2 flex-col w-96">
-      <div class="flex items-center justify-between">
-        <small class="flex text-xxs">
-          <template v-if="creator_name">
-            {{ $t('v1.view.main.dashboard.chat.post.post_by') }}
-            <strong class="ml-1 font-bold">
-              {{ creator_name }}
-            </strong>
-            <span class="px-1">-</span>
-          </template>
-          {{
-            $date_handle.formatCompareCurrentYear(
-              message?.post?.content?.updated_time
-            )
-          }}
-        </small>
-        <a
-          @click="$main.openCommentOnFb()"
-          href="javascript:;"
-          class="text-xs"
-        >
-          {{ $t('v1.view.main.dashboard.chat.post.open_on_facebook') }}
-        </a>
-      </div>
-      <div class="flex items-center gap-2">
-        <img
-          v-if="
-            message?.post?.content?.attachments?.data?.[0]?.media?.image?.src
-          "
-          :src="
-            $cdn.fbPostImg(
-              conversationStore.select_conversation?.fb_page_id,
-              message?.fb_post_id
-            )
-          "
-          class="w-14 h-10 rounded flex-shrink-0 object-contain"
-        />
-        <div>
-          <p
-            :class="message?.ad_id ? 'line-clamp-1' : 'line-clamp-2'"
-            class="text-sm"
-          >
-            {{ message?.post?.content?.message }}
-          </p>
-          <small
-            v-if="message?.ad_id"
-            class="flex items-center gap-1"
-          >
-            <SpeakerIcon class="w-3 h-3 text-orange-600" />
-            <p class="text-xs text-orange-700">
-              {{ $t('v1.view.main.dashboard.chat.post.from_ad') }}
-            </p>
+    <div
+      v-if="message?.ad_id"
+      class="text-xs text-center"
+    >
+      <span class="text-slate-500 whitespace-nowrap mr-1">
+        {{ $t('v1.view.main.dashboard.chat.post.ad_from') }}
+      </span>
+      <span
+        @click="$clipboard.copy(message?.ad_id)"
+        class="text-blue-500 cursor-copy"
+        >{{ message?.ad_id }}</span
+      >
+    </div>
+    <div
+      class="bg-white shadow-sm rounded-lg relative overflow-x-auto max-w-96"
+    >
+      <Loading
+        v-if="is_loading"
+        type="FULL"
+      />
+      <div class="flex gap-2 p-2 flex-col w-96">
+        <div class="flex items-center justify-between">
+          <small class="flex text-xxs">
+            <template v-if="creator_name">
+              {{ $t('v1.view.main.dashboard.chat.post.post_by') }}
+              <strong class="ml-1 font-bold">
+                {{ creator_name }}
+              </strong>
+              <span class="px-1">-</span>
+            </template>
+            {{
+              $date_handle.formatCompareCurrentYear(post_content?.updated_time)
+            }}
           </small>
+          <a
+            @click="$main.openCommentOnFb()"
+            href="javascript:;"
+            class="text-xs"
+          >
+            {{ $t('v1.view.main.dashboard.chat.post.open_on_facebook') }}
+          </a>
         </div>
-      </div>
-      <div class="flex flex-col gap-1">
-        <div class="comment-item flex gap-1 justify-between">
-          {{ message?.message_text }}
-          <EyeSlashIcon
-            v-if="message?.is_hidden_comment"
-            @click="$main.toggleComment('SHOW')"
-            class="w-5 h-5 text-slate-700 flex-shrink-0 cursor-pointer"
+        <div class="flex items-center gap-2">
+          <img
+            v-if="post_content?.attachments?.data?.[0]?.media?.image?.src"
+            :src="
+              $cdn.fbPostImg(
+                conversationStore.select_conversation?.fb_page_id,
+                post_id
+              )
+            "
+            class="w-14 h-10 rounded flex-shrink-0 object-contain"
           />
+          <div>
+            <p
+              :class="message?.ad_id ? 'line-clamp-1' : 'line-clamp-2'"
+              class="text-sm"
+            >
+              {{ post_content?.message }}
+            </p>
+            <small
+              v-if="message?.ad_id"
+              class="flex items-center gap-1"
+            >
+              <SpeakerIcon class="w-3 h-3 text-orange-600" />
+              <p class="text-xs text-orange-700">
+                {{ $t('v1.view.main.dashboard.chat.post.from_ad') }}
+              </p>
+            </small>
+          </div>
         </div>
+        <div class="flex flex-col gap-1">
+          <div class="comment-item flex gap-1 justify-between">
+            {{ message?.message_text || ad_title }}
+            <EyeSlashIcon
+              v-if="message?.is_hidden_comment"
+              @click="$main.toggleComment('SHOW')"
+              class="w-5 h-5 text-slate-700 flex-shrink-0 cursor-pointer"
+            />
+          </div>
 
-        <div
-          v-for="comment of $props.message?.reply_comments?.slice(0, 2)"
-          class="flex flex-col"
-        >
-          <div class="flex items-center">
-            <CornerDownRightIcon class="w-5 h-5 text-slate-500 flex-shrink-0" />
-            <p class="flex-grow comment-item">
-              {{ comment?.message }}
-            </p>
-          </div>
-          <div class="flex items-center text-xxs ml-6 gap-1">
-            <p class="font-medium truncate">
-              {{ comment?.from?.name }}
-            </p>
-            <div class="w-1 h-1 flex-shrink-0 bg-black rounded-full" />
-            <p class="text-slate-700 flex-shrink-0">
-              {{ $main.commentDuration(comment?.createdAt) }}
-            </p>
+          <div
+            v-for="comment of $props.message?.reply_comments?.slice(0, 2)"
+            class="flex flex-col"
+          >
+            <div class="flex items-center">
+              <CornerDownRightIcon
+                class="w-5 h-5 text-slate-500 flex-shrink-0"
+              />
+              <p class="flex-grow comment-item">
+                {{ comment?.message }}
+              </p>
+            </div>
+            <div class="flex items-center text-xxs ml-6 gap-1">
+              <p class="font-medium truncate">
+                {{ comment?.from?.name }}
+              </p>
+              <div class="w-1 h-1 flex-shrink-0 bg-black rounded-full" />
+              <p class="text-slate-700 flex-shrink-0">
+                {{ $main.commentDuration(comment?.createdAt) }}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="flex items-center text-xs gap-2 justify-start">
-        <button
-          @click="$main.replyComment('REPLY')"
-          class="btn"
+        <div
+          v-if="!message?.ad_id"
+          class="flex items-center text-xs gap-2 justify-start"
         >
-          <ChatDotIcon class="icon" />
-          {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
-        </button>
-        <button
-          v-if="!message?.is_hidden_comment"
-          @click="$main.toggleComment('HIDE')"
-          class="btn"
-        >
-          <EyeSlashIcon class="icon" />
-          {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
-        </button>
-        <button
-          v-if="!message?.is_private_reply"
-          @click="$main.replyComment('PRIVATE_REPLY')"
-          class="btn"
-        >
-          <PaperAirplaneIcon class="icon" />
-          {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
-        </button>
+          <button
+            @click="$main.replyComment('REPLY')"
+            class="btn"
+          >
+            <ChatDotIcon class="icon" />
+            {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
+          </button>
+          <button
+            v-if="!message?.is_hidden_comment"
+            @click="$main.toggleComment('HIDE')"
+            class="btn"
+          >
+            <EyeSlashIcon class="icon" />
+            {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
+          </button>
+          <button
+            v-if="!message?.is_private_reply"
+            @click="$main.replyComment('PRIVATE_REPLY')"
+            class="btn"
+          >
+            <PaperAirplaneIcon class="icon" />
+            {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -124,7 +142,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useConversationStore, useMessageStore } from '@/stores'
-import { get_post_from_ad_id } from '@/service/api/chatbox/n4-service'
 import { Cdn } from '@/utils/helper/Cdn'
 import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
@@ -132,6 +149,7 @@ import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
+import { Clipboard } from '@/utils/helper/Clipboard'
 
 import Loading from '@/components/Loading.vue'
 
@@ -145,12 +163,12 @@ import type {
   IReplyCommentType,
   MessageInfo,
 } from '@/service/interface/app/message'
-import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const $cdn = container.resolve(Cdn)
 const $date_handle = container.resolve(DateHandle)
+const $clipboard = container.resolve(Clipboard)
 
 const $props = withDefaults(
   defineProps<{
@@ -165,31 +183,23 @@ const $props = withDefaults(
 /**trạng thái loading */
 const is_loading = ref(false)
 
-// onMounted(() => {
-//   // lấy dữ liệu bài viết từ quảng cáo
-//   if ($props.ad_id) getPostFromAdId()
-// })
-
-/** Lấy dữ liệu bài post từ ad_id  */
-// function getPostFromAdId() {
-//   get_post_from_ad_id(
-//     {
-//       page_id: conversationStore.select_conversation?.fb_page_id,
-//       ad_id: $props.ad_id,
-//     },
-//     (e, r) => {
-//       is_loading.value = false
-//       if (!r || !r.id) {
-//         is_get_post_success.value = false
-//         return
-//       }
-//       post_info.value = r
-//     }
-//   )
-// }
-
-/** Dữ liệu bình luận trả lời */
-// const reply_comments = ref<FacebookCommentPost[]>()
+/**tên người tạo bài viết này */
+const creator_name = computed(
+  () =>
+    $props.message?.post?.creator_name ||
+    $props.message?.post?.content?.admin_creator?.name ||
+    $props.message?.post?.content?.from?.name
+)
+/**nội dung bài viết */
+const post_content = computed(() => $props.message?.post?.content)
+/**id bài viết */
+const post_id = computed(
+  () => $props.message?.fb_post_id || $props.message?.post?.content?.id
+)
+/**tiêu đề quảng cáo */
+const ad_title = computed(
+  () => post_content.value?.attachments?.data?.[0]?.title
+)
 
 class Main {
   /**
@@ -264,9 +274,11 @@ class Main {
   }
   /**mở bài viết ở vị trí comment này */
   openCommentOnFb() {
-    this.SERVICE_WINDOW_ACTION.openNewTab(
-      `https://fb.com/${$props.message?.comment_id}`
-    )
+    /**id mục tiêu */
+    const TARGET_ID = $props.message?.comment_id || post_id.value
+
+    // mở tab mới
+    this.SERVICE_WINDOW_ACTION.openNewTab(`https://fb.com/${TARGET_ID}`)
   }
   /**kích hoạt trả lời bình luận này */
   replyComment(type: IReplyCommentType) {
@@ -290,14 +302,6 @@ const $main = new Main()
 
 // lấy dữ liệu bình luận khi component được mount
 onMounted(() => $main.getReplyComment())
-
-/**tên người tạo bài viết này */
-const creator_name = computed(
-  () =>
-    $props.message?.post?.creator_name ||
-    $props.message?.post?.content?.admin_creator?.name ||
-    $props.message?.post?.content?.from?.name
-)
 
 // khi có người rep lại bình luận, thì cập nhật
 watch(
