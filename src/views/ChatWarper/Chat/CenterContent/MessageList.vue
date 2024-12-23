@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!conversationStore.select_conversation"
-    class="w-full h-full flex justify-center items-center text-slate-500 gap-1"
+    class="w-full h-1/2 flex justify-center items-center text-slate-500 gap-1"
   >
     <ChatIcon class="w-5" />
     <div>

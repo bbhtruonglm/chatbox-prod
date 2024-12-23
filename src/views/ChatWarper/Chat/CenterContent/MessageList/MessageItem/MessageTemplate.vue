@@ -41,6 +41,7 @@
       </div>
       <div
         v-if="data_source?.content"
+        @click="clickCopyPhoneEmail"
         v-html="
           message_type === 'client'
             ? renderText(data_source?.content)
@@ -58,7 +59,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 import Media from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
@@ -71,7 +72,7 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
-import { renderText } from '@/service/function'
+import { clickCopyPhoneEmail, renderText } from '@/service/function'
 
 const $props = withDefaults(
   defineProps<{

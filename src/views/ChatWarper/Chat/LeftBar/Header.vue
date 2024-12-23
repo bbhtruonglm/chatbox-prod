@@ -11,10 +11,10 @@
         {{ commonStore.partner?.name }}
       </template>
     </div>
-    <Badge
+    <!-- <Badge
       v-if="count_all_unread"
       :value="count_all_unread"
-    />
+    /> -->
   </div>
   <div class="flex-shrink-0 px-2 relative">
     <SearchIcon
