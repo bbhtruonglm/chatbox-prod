@@ -469,7 +469,7 @@ const source: Language = {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
                 ai_handle: 'Nội dung được xử lý bởi AI',
-                copy_content: 'Sao chép nội dung'
+                copy_content: 'Sao chép nội dung',
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
@@ -488,7 +488,6 @@ const source: Language = {
                 phone: 'Số điện thoại',
                 sale: 'Hóa đơn mua hàng',
                 shipping: 'Phương tiện di chuyển',
-
                 place_order: 'Tạo đơn hàng',
                 create_transaction: 'Tạo giao dịch',
                 schedule_appointment: 'Lập lịch',
@@ -631,7 +630,7 @@ const source: Language = {
               cancel: 'Hủy',
               send_message: 'Gửi tin nhắn',
               send_message_success: 'Gửi tin thành công',
-              already_replied: 'Bình luận đã được trả lời rồi'
+              already_replied: 'Bình luận đã được trả lời rồi',
             },
             album: {
               title: 'Album',

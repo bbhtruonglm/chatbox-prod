@@ -27,7 +27,8 @@ import th from '@/lang/th'
 export const i18n = createI18n({
   legacy: false,
   locale: LocaleSingleton.getInst().get(),
-  fallbackLocale: 'en',
+  fallbackLocale: 'vnxxxxx',
+  // fallbackLocale: 'vn',
   messages: {
     vn,
     vi: vn,
@@ -35,4 +36,8 @@ export const i18n = createI18n({
     us: en,
     th,
   },
+  // tắt cảnh báo nếu không tìm thấy key
+  missing: (locale, key) => undefined,
+  // tắt cảnh báo nếu không tìm thấy fallback
+  fallbackWarn: false,
 })
