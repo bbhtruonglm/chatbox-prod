@@ -17,7 +17,7 @@
         }"
         class="text-left truncate text-sm flex-grow min-w-0"
       >
-        {{ source?.client_name }}
+        {{ source?.client_name || 'No name' }}
       </div>
     </div>
     <div class="flex-shrink-0 text-xs">

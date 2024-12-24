@@ -19,7 +19,7 @@
           "
           class="text-sm font-medium truncate cursor-copy"
         >
-          {{ conversationStore.select_conversation?.client_name }}
+          {{ conversationStore.select_conversation?.client_name || 'No name' }}
         </div>
         <div class="flex items-center gap-2">
           <button
