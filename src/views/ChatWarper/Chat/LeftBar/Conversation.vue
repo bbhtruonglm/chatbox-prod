@@ -462,7 +462,7 @@ function loadMoreConversation($event: UIEvent) {
 function autoRefreshPage() {
   // nếu thời gian focus vào tab dưới 3 tiếng thì thôi
   if (differenceInHours(new Date(), mounted_time.value) < 3) return
-  
+
   // reload lại trang
   location.reload()
 }

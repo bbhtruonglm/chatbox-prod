@@ -209,7 +209,6 @@ const source: Language = {
               description:
                 'Kết nối với Zalo OA cần phải là tài khoản Zalo OA Nâng cao hoặc Zalo Premium.',
               lean_more: 'Tìm hiểu thêm',
-              title: 'Kết nối với Zalo OA',
             },
             empty_invite_guild:
               'Bạn không có trang cần kích hoạt, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
@@ -349,7 +348,6 @@ const source: Language = {
                 filteration_condition: 'Điều kiện lọc:',
                 and: 'Và',
                 or: 'Hoặc',
-                find_tag: 'Tìm kiếm nhãn',
                 all_page: 'Tất cả các trang',
               },
               exclude_label: {
@@ -369,7 +367,6 @@ const source: Language = {
                 facebook_post: 'Lọc theo bài đăng',
                 filter_by_comment: 'Lọc bình luận Facebook',
                 filter_by_post: 'Lọc theo bài đăng',
-                find_id_post: 'Tìm kiếm id bài đăng',
                 filter: 'Lọc',
                 cancel_filter: 'Hủy lọc',
                 page_reply: 'Trang đã trả lời',

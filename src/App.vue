@@ -46,7 +46,9 @@ class Main {
   /**lưu lại ref được truyền ở param */
   saveRef() {
     /**mã ref */
-    const REF = this.SERVICE_QUERY_STRING.get('ref')
+    const REF =
+      this.SERVICE_QUERY_STRING.get('rf') ||
+      this.SERVICE_QUERY_STRING.get('ref')
 
     // nếu không có ref thì thôi
     if (!REF) return

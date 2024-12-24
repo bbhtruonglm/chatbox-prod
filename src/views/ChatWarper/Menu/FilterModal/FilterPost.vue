@@ -33,10 +33,8 @@
       <input
         ref="search_ref"
         type="text"
-        :placeholder="
-          $t('v1.view.main.dashboard.chat.filter.post.find_id_post')
-        "
-        class="border px-3 py-1 w-full rounded-lg focus:outline-none"
+        :placeholder="$t('Tìm kiếm id bài đăng')"
+        class="border px-3 py-1 w-full rounded-lg focus:outline-none text-sm"
         v-on:keyup="searchPost"
         v-model="search_post_id"
       />

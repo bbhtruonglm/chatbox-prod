@@ -1,6 +1,11 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Tìm kiếm id bài đăng': 'Find post ID',
+  'Tìm kiếm nhãn': 'Find label',
+  'Kết nối với Zalo OA': 'Connect with Zalo OA',
+  'gói Zalo OA của bạn đã hết hạn, bạn cần phải gia hạn để hệ thống có quyền gửi tin nhắn':
+    'Your Zalo OA package has expired, you need to renew it so the system has the right to send messages',
   name: 'English',
   v1: {
     common: {
@@ -209,7 +214,6 @@ const source: Language = {
               description:
                 'Connecting with Zalo OA requires either an Advanced or Premium Zalo OA account.',
               lean_more: 'Learn More',
-              title: 'Connect with Zalo OA',
             },
             empty_invite_guild:
               'You have no pages to activate. You can add new Pages: Facebook, Instagram, Zalo, Whatsapp, etc. from the left column.',
@@ -350,7 +354,6 @@ const source: Language = {
                 filteration_condition: 'Filtering condition:',
                 and: 'And',
                 or: 'Or',
-                find_tag: 'Find label',
                 all_page: 'All pages',
               },
               exclude_label: {
@@ -370,7 +373,6 @@ const source: Language = {
                 facebook_post: 'Filter by post',
                 filter_by_comment: 'Filter Facebook comments',
                 filter_by_post: 'Filter by post',
-                find_id_post: 'Find post ID',
                 filter: 'Filter',
                 cancel_filter: 'Cancel filter',
                 page_reply: 'Page replied',

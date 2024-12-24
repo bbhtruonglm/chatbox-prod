@@ -515,6 +515,14 @@ class Main {
   }
   /**xử lý báo lỗi khi gửi tin nhắn thất bại */
   handleSendMessageError(error: any) {
+    console.log('ak:::',error)
+    if (error?.error === -224)
+      return toastError(
+        $t(
+          'gói Zalo OA của bạn đã hết hạn, bạn cần phải gia hạn để hệ thống có quyền gửi tin nhắn'
+        )
+      )
+
     switch (get(error, 'error.code')) {
       case 10:
         toastError($t('v1.view.main.dashboard.chat.facebook_errors.10'))
