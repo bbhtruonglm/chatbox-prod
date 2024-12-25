@@ -9,7 +9,7 @@
       <div class="flex items-center">
         <StaffAvatar
           class="rounded-full mr-3 w-9 h-9"
-          :id="staff?.fb_staff_id"
+          :id="staff?.user_id || staff?.fb_staff_id"
         />
         <p
           :class="{

@@ -6,6 +6,10 @@ const source: Language = {
   'Kết nối với Zalo OA': 'Connect with Zalo OA',
   'gói Zalo OA của bạn đã hết hạn, bạn cần phải gia hạn để hệ thống có quyền gửi tin nhắn':
     'Your Zalo OA package has expired, you need to renew it so the system has the right to send messages',
+  'Ẩn toàn bộ ảnh đại diện của trang trên hội thoại':
+    'Hide all page avatars on the chat',
+  'Hiện toàn bộ ảnh đại diện của trang trên hội thoại':
+    'Show all page avatars on the chat',
   name: 'English',
   v1: {
     common: {
@@ -661,8 +665,6 @@ const source: Language = {
             text: 'Show text',
             dot_tooltip: 'Show color dot with tooltip',
             show_page_avatar: 'Show page avatar',
-            show_page_avatar_on: 'Show the page avatar for all conversations',
-            show_page_avatar_off: 'Hide the page avatar for all conversations',
             chat: 'Conversation settings',
             translate: 'Translate',
             translate_description: 'Select the language you want to translate',

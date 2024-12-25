@@ -1,7 +1,16 @@
+import type {
+  FilterConversation,
+  QueryConversationInput,
+  QueryConversationResponse,
+} from '@/service/interface/app/conversation'
 import { N4Serivce } from '@/utils/api/N4Serivce'
+import { singleton } from 'tsyringe'
 
-/**gọi API module conversation của chatbox */
-export class N4SerivceAppConversation extends N4Serivce {
+/**
+ * gọi API module conversation của chatbox
+ * @deprecated
+ */
+export class N4SerivceAppConversationBk extends N4Serivce {
   /**id trang */
   readonly #PAGE_ID: string
 
@@ -19,8 +28,11 @@ export class N4SerivceAppConversation extends N4Serivce {
   }
 }
 
-/**gọi API thao tác 1 hội thoại */
-export class N4SerivceAppOneConversation extends N4SerivceAppConversation {
+/**
+ * gọi API thao tác 1 hội thoại
+ * @deprecated
+ */
+export class N4SerivceAppOneConversation extends N4SerivceAppConversationBk {
   /**id khách hàng */
   readonly #CLIENT_ID: string
 
@@ -52,8 +64,43 @@ export class N4SerivceAppOneConversation extends N4SerivceAppConversation {
       unread_message_amount: amount,
     })
   }
+  /**
+   * tắt bật nhãn
+   * @param label_id id nhãn
+   */
   async toggleLabel(label_id: string): Promise<void> {
     // gọi api
     return this.post('toggle_label_conversation', { label_id })
+  }
+}
+
+@singleton()
+export class N4SerivceAppConversation extends N4Serivce {
+  constructor() {
+    super('app/conversation')
+  }
+
+  /**
+   * lấy danh sách hội thoại
+   * @param page_ids danh sách id trang
+   * @param filter điều kiện lọc
+   * @param limit số lượng hội thoại
+   * @param after chỉ lấy hội thoại sau id này
+   */
+  async readConversations(
+    page_ids: string[],
+    filter: FilterConversation,
+    limit?: number,
+    sort?: string,
+    after?: number[]
+  ): Promise<QueryConversationResponse> {
+    // gọi api
+    return this.post('read_conversation', {
+      page_id: page_ids,
+      limit,
+      after,
+      sort,
+      ...filter,
+    })
   }
 }

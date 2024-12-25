@@ -32,18 +32,38 @@ const chatbotUserStore = useChatbotUserStore()
 
 /**kiểm soát việc page avatar được hiển thị như thế nào */
 function controlPageAvatarVisible() {
-  if (
-    // nếu page đang thiết lập ẩn, thì luôn ẩn mà không cần quan tâm đến thiết lập của user
-    getPageInfo($props.source?.fb_page_id)?.is_hide_page_avatar ||
-    // nếu user đã thiết lập ẩn thì cũng ẩn luôn
-    (
-      // đang kích hoạt thiết lập cá nhân
-      chatbotUserStore.personal_settings?.is_enable_personal_setting &&
-      // thiết lập cá nhân: thiết lập ẩn avatar page
-      chatbotUserStore.personal_settings?.is_hide_page_avatar
-    )
-  )
-    return 'hidden group-hover:block'
+  /**thiết lập trang */
+  const PAGE_CONFIG = getPageInfo($props.source?.fb_page_id)
+  /**thiết lập cá nhân */
+  const USER_CONFIG = chatbotUserStore.personal_settings
+
+  /**code css ẩn div */
+  const HIDE_CSS = 'hidden group-hover:block'
+
+  // ưu tiên nếu user có thiết lập cá nhân
+  if (USER_CONFIG?.is_enable_personal_setting) {
+    // ẩn avatar page theo thiết lập user
+    if (USER_CONFIG?.is_hide_page_avatar) return HIDE_CSS
+
+    // không ẩn theo thiết lập user
+    return
+  }
+
+  // nếu page thiết lập ẩn thì ẩn luôn
+  if (PAGE_CONFIG?.is_hide_page_avatar) return HIDE_CSS
+
+  // không thì thôi
+
+  // if (
+  //   // nếu page đang thiết lập ẩn, thì luôn ẩn mà không cần quan tâm đến thiết lập của user
+  //   getPageInfo($props.source?.fb_page_id)?.is_hide_page_avatar ||
+  //   // nếu user đã thiết lập ẩn thì cũng ẩn luôn
+  //   // đang kích hoạt thiết lập cá nhân
+  //   (chatbotUserStore.personal_settings?.is_enable_personal_setting &&
+  //     // thiết lập cá nhân: thiết lập ẩn avatar page
+  //     chatbotUserStore.personal_settings?.is_hide_page_avatar)
+  // )
+  //   return 'hidden group-hover:block'
 
   // nếu không thì luôn hiện
 }

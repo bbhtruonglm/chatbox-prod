@@ -57,9 +57,19 @@ import type { CbError } from '@/service/interface/function'
 import type {
   ConversationList,
   ConversationInfo,
+  FilterConversation,
 } from '@/service/interface/app/conversation'
 import type { SocketEvent } from '@/service/interface/app/common'
 import { differenceInHours } from 'date-fns'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { container } from 'tsyringe'
+import { N4SerivceAppConversation } from '@/utils/api/N4Service/Conversation'
+import { error } from '@/utils/decorator/Error'
+import type { ISortConversation } from '@/service/interface/app/page'
+import {
+  CalcSpecialPageConfigs,
+  type ICalcSpecialPageConfigs,
+} from '@/utils/helper/Conversation/CalcSpecialPageConfigs'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
@@ -267,80 +277,7 @@ function loadConversationFirstTime(is_first_time?: boolean) {
   // reset trạng thái load
   is_done.value = false
 
-  getConversation(is_first_time)
-}
-/**đọc danh sách hội thoại */
-function getConversation(is_first_time?: boolean) {
-  // nếu đang mất mạng thì không cho gọi api
-  if (!commonStore.is_connected_internet) return
-
-  const DATA: {
-    current_conversation_list?: ConversationList
-  } = {}
-  flow(
-    [
-      // * bật loading
-      (cb: CbError) => {
-        is_loading.value = true
-
-        cb()
-      },
-      // * đọc dữ liệu từ api
-      (cb: CbError) =>
-        read_conversation(
-          {
-            ...{
-              page_id: keys(pageStore.selected_page_id_list),
-              limit: 40,
-              after: after.value,
-            },
-            ...conversationStore.option_filter_page_data,
-          },
-          (e, r) => {
-            if (e) return cb(e)
-
-            if (!size(r?.conversation) || !r?.after) is_done.value = true
-
-            DATA.current_conversation_list = r?.conversation
-            after.value = r?.after
-
-            cb()
-          }
-        ),
-      // * format lại response của api
-      (cb: CbError) => {
-        mapValues(DATA.current_conversation_list, (conversation, key) => {
-          // tạo ra key cho vitual scroll
-          conversation.data_key = key
-
-          // bỏ qua record của page chat cho page
-          if (conversation.fb_page_id === conversation.fb_client_id)
-            delete DATA.current_conversation_list?.[key]
-        })
-
-        cb()
-      },
-      // * thêm vào danh sách conversation
-      (cb: CbError) => {
-        conversationStore.conversation_list = {
-          ...conversationStore.conversation_list,
-          ...DATA.current_conversation_list,
-        }
-
-        cb()
-      },
-    ],
-    e => {
-      // tắt loading
-      is_loading.value = false
-
-      // tự động chọn khách hàng cho lần đầu tiên
-      if (is_first_time) selectDefaultConversation()
-
-      // khi goi api bị lỗi, thì chặn không cho gọi nữa
-      if (e) return toastError(e)
-    }
-  )
+  $main.getConversation(is_first_time)
 }
 /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
 function selectDefaultConversation() {
@@ -453,7 +390,7 @@ function loadMoreConversation($event: UIEvent) {
   )
     return
 
-  getConversation()
+  $main.getConversation()
 }
 /**
  * tự động reload lại trang nếu người dùng focus lại tab sau một khoảng thời
@@ -466,6 +403,112 @@ function autoRefreshPage() {
   // reload lại trang
   location.reload()
 }
+
+/**thiết lập đặc biết của trang cần tính toán */
+interface ISpecialPageConfigs {
+  /**sort hội thoại */
+  sort_conversation?: ISortConversation
+  /**
+   * hiện hội thoại theo nhân viên chỉ định
+   * - true: chỉ hiện hội thoại của nhân viên đó
+   * - false, undefined: hiện hội thoại của tất cả nhân viên
+   */
+  is_only_visible_client_of_staff?: boolean
+}
+
+class Main {
+  /**
+   * @param API_CONVERSATION API của hội thoại
+   * @param SERVICE_CALC_SPECIAL_PAGE_CONFIGS tính toán cấu hình trang đặc biệt
+   */
+  constructor(
+    private readonly API_CONVERSATION = container.resolve(
+      N4SerivceAppConversation
+    ),
+    private readonly SERVICE_CALC_SPECIAL_PAGE_CONFIGS: ICalcSpecialPageConfigs = container.resolve(
+      CalcSpecialPageConfigs
+    )
+  ) {}
+
+  /**đọc danh sách hội thoại */
+  @loadingV2(is_loading, 'value')
+  @error()
+  async getConversation(is_first_time?: boolean) {
+    // nếu đang mất mạng thì không cho gọi api
+    if (!commonStore.is_connected_internet) return
+
+    /**danh sách id page */
+    const PAGE_IDS = keys(pageStore.selected_page_id_list)
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
+    /**sort hội thoại */
+    const SORT =
+      SPECIAL_PAGE_CONFIG?.sort_conversation === 'UNREAD'
+        ? 'unread_message_amount:desc,last_message_time:desc'
+        : undefined
+
+    /**ghi đè 1 số lọc tin nhắn */
+    const OVERWRITE_FILTER: FilterConversation = {}
+
+    // chỉ cho hiện hội thoại của nhân viên
+    if (SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff) {
+      // tạo ra filter nhân viên
+      OVERWRITE_FILTER.staff_id = []
+
+      // thêm id mới
+      if (chatbotUserStore.chatbot_user?.user_id)
+        OVERWRITE_FILTER.staff_id?.push(chatbotUserStore.chatbot_user?.user_id)
+
+      // thêm id cũ, tránh lỗi
+      if (chatbotUserStore.chatbot_user?.fb_staff_id)
+        OVERWRITE_FILTER.staff_id?.push(
+          chatbotUserStore.chatbot_user?.fb_staff_id
+        )
+    }
+
+    /**lấy dữ liệu hội thoại */
+    const RES = await this.API_CONVERSATION.readConversations(
+      PAGE_IDS,
+      {
+        ...conversationStore.option_filter_page_data,
+        ...OVERWRITE_FILTER,
+      },
+      40,
+      SORT,
+      after.value
+    )
+
+    /**dữ liệu hội thoại */
+    const CONVERSATIONS = RES.conversation
+
+    // gắn cờ nếu đã hết dữ liệu
+    if (!size(CONVERSATIONS) || !RES.after) is_done.value = true
+
+    // lưu lại after mới
+    after.value = RES.after
+
+    // format dữ liệu trả về
+    mapValues(CONVERSATIONS, (conversation, key) => {
+      // tạo ra key cho vitual scroll
+      conversation.data_key = key
+
+      // bỏ qua record của page chat cho page
+      if (conversation.fb_page_id === conversation.fb_client_id)
+        delete CONVERSATIONS?.[key]
+    })
+
+    // thêm vào danh sách conversation
+    conversationStore.conversation_list = {
+      ...conversationStore.conversation_list,
+      ...CONVERSATIONS,
+    }
+
+    // tự động chọn khách hàng cho lần đầu tiên
+    if (is_first_time) selectDefaultConversation()
+  }
+}
+const $main = new Main()
 
 defineExpose({ loadConversationFirstTime })
 </script>

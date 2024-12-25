@@ -653,10 +653,6 @@ const source: Language = {
             text: 'Hiện văn bản',
             dot_tooltip: 'Hiện chấm màu có chú giải',
             show_page_avatar: 'Hiện ảnh đại diện của trang',
-            show_page_avatar_on:
-              'Hiện toàn bộ ảnh đại diện của trang trên hội thoại',
-            show_page_avatar_off:
-              'Ẩn toàn bộ ảnh đại diện của trang trên hội thoại',
             chat: 'Thiết lập hội thoại',
             translate: 'Dịch',
             translate_description: 'Chọn ngôn ngữ bạn muốn dịch',
