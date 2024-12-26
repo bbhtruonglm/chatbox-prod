@@ -10,6 +10,20 @@ const source: Language = {
     'Hide all page avatars on the chat',
   'Hiện toàn bộ ảnh đại diện của trang trên hội thoại':
     'Show all page avatars on the chat',
+  'Đăng nhập': 'Login',
+  'Tiếp tục với Facebook': 'Continue with Facebook',
+  'Tiếp tục sử dụng _': 'Continue to {name}',
+  'Nhập _ của bạn': 'Enter your {name}',
+  'Tiếp tục với email': 'Continue with email',
+  'Bạn mới sử dụng _': 'New to {name}?',
+  'Bắt đầu ngay': 'Get started',
+  'Chính sách': 'Policy',
+  'Điều khoản': 'Terms',
+  'Bạn chưa nhập _': 'You have not entered an {name}',
+  'Email không hợp lệ': 'Invalid email',
+  'Bạn quên mật khẩu?': 'Forgot password?',
+  'Mật khẩu': 'Password',
+  Hoặc: 'Or',
   name: 'English',
   v1: {
     common: {

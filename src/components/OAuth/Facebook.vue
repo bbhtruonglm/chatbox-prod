@@ -33,12 +33,10 @@ const $props = withDefaults(
     option?: string
     /**app id của fb */
     app_id?: string
-    /**bo viền cho button */
-    border_radius?: string
+    /**custom css thêm cho button */
+    btn_style?: string
   }>(),
-  {
-    border_radius: '50px',
-  }
+  {}
 )
 
 /**url của iframe */
@@ -96,9 +94,17 @@ function genIframeSrc() {
   }
   const FB_OPTION = JSON.stringify(login_option)
 
-  iframe_src.value = `${CROSS_LOGIN_URL}?app_id=${
-    $props.app_id || APP_ID
-  }&option=${$props.option || FB_OPTION}&text=${$props.text || ''}`
+  /**đường dẫn */
+  let url = `${CROSS_LOGIN_URL}?app_id=${$props.app_id || APP_ID}&option=${
+    $props.option || FB_OPTION
+  }&text=${$props.text || ''}`
+
+  // custom css cho button nếu có
+  if ($props.btn_style)
+    url += `&btn_style=${encodeURIComponent($props.btn_style)}`
+
+  // gán url vào iframe
+  iframe_src.value = url
 }
 
 onMounted(() => {

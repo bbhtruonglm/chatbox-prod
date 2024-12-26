@@ -17,7 +17,10 @@ export const signout = () => {
 
   // nếu là trang nội bộ, thì chuyển hướng qua trang logout khác
   if (
-    ['retion.ai', 'botbanhang.vn'].includes(commonStore.partner?.domain || '')
+    ['retion.ai', 'botbanhang.vn'].includes(
+      commonStore.partner?.domain || ''
+    ) &&
+    location.hostname !== 'localhost'
   ) {
     // chuyển hướng về xxxx/logout
     window.location.href = '/logout'

@@ -1,6 +1,10 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Tiếp tục sử dụng _': 'Tiếp tục sử dụng {name}',
+  'Bạn mới sử dụng _': 'Bạn mới sử dụng {name}?',
+  'Nhập _ của bạn': 'Nhập {name} của bạn',
+  'Bạn chưa nhập _': 'Bạn chưa nhập  {name}',
   name: 'Tiếng Việt',
   v1: {
     common: {
