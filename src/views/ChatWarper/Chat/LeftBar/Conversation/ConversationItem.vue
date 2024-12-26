@@ -1,8 +1,8 @@
 <template>
   <button
-    @click="clickConversation"
+    @click="$main.clickConversation()"
     :class="{
-      'bg-slate-200': isSelectThisClient(),
+      'bg-slate-200': $main.isSelectThisClient(),
     }"
     class="flex items-center hover:bg-slate-200 w-full group rounded-xl p-2 gap-3 mb-1"
   >
@@ -12,7 +12,7 @@
       <LastMessage :source="source" />
       <ClientSupport :source="source" />
       <hr
-        v-if="!isSelectThisClient()"
+        v-if="!$main.isSelectThisClient()"
         class="absolute w-full -bottom-3.5 group-hover:hidden"
       />
     </div>
@@ -36,6 +36,12 @@ import LastMessage from '@/views/ChatWarper/Chat/LeftBar/Conversation/LastMessag
 import ClientSupport from '@/views/ChatWarper/Chat/LeftBar/Conversation/ClientSupport.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { findIndex, keys, values, zipObject } from 'lodash'
+import {
+  CalcSpecialPageConfigs,
+  type ICalcSpecialPageConfigs,
+} from '@/utils/helper/Conversation/CalcSpecialPageConfigs'
+import { container } from 'tsyringe'
 
 const $props = withDefaults(
   defineProps<{
@@ -51,71 +57,175 @@ const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
 
-/**click chuột vào 1 khách hàng */
-function clickConversation() {
-  // nếu không có key thì không cho click
-  if (
-    !$props.source?.fb_page_id ||
-    !$props.source?.fb_client_id ||
-    !$props.source?.data_key
-  )
-    return
+class Main {
+  /**
+   * @param SERVICE_CALC_SPECIAL_PAGE_CONFIGS tính toán cấu hình trang đặc biệt
+   */
+  constructor(
+    private readonly SERVICE_CALC_SPECIAL_PAGE_CONFIGS: ICalcSpecialPageConfigs = container.resolve(
+      CalcSpecialPageConfigs
+    )
+  ) {}
 
-  // ẩn mũi tên scroll bottom
-  messageStore.is_show_to_bottom = false
+  /**tìm index của hội thoại đầu tiên đã đọc */
+  private findFirstReadMessageIndex() {
+    /**danh sách hội thoại */
+    const CONVERSATIONS = conversationStore.conversation_list
+    /**lấy key của danh sách hội thoại */
+    const CONVERSATION_KEYS = keys(CONVERSATIONS)
 
-  selectConversation($props.source)
+    /**tìm index của hội thoại đầu tiên đã đọc */
+    let index = findIndex(CONVERSATION_KEYS, key => {
+      /**số lượng tin chưa đọc */
+      const COUNT_UNREAD = CONVERSATIONS?.[key]?.unread_message_amount
 
-  // đẩy id lên param
-  setParamChat($router, $props.source?.fb_page_id, $props.source?.fb_client_id)
+      // lấy hội thoại đã đọc
+      return !COUNT_UNREAD
+    })
 
-  // lấy uid và thông tin khách hàng
-  triggerExtension()
-}
-/**gọi ext để lấy uid và thông tin khách hàng */
-function triggerExtension() {
-  // nếu không có key thì không cho click
-  if (
-    !$props.source?.fb_page_id ||
-    !$props.source?.fb_client_id ||
-    !$props.source?.data_key
-  )
-    return
+    // nếu không tìm được thì cho xuống cùng
+    if (index < 0) index = CONVERSATION_KEYS?.length
 
-  // tìm uid fb nếu chưa có và đang bật ext
-  if (
-    commonStore.extension_status === 'FOUND' &&
-    (!$props.source?.client_bio?.fb_uid || !$props.source?.client_bio?.fb_info)
+    // trả về vị trí
+    return index
+  }
+  /**thêm item vào danh sách hội thoại theo vị trí */
+  private addItemToConversationsByIndex(
+    data_key: string,
+    conversation: ConversationInfo,
+    index: number
   ) {
-    // nếu chưa có uid thì gắn cờ đang quét uid
-    if (!$props.source?.client_bio?.fb_uid)
-      extensionStore.is_find_uid[$props.source?.data_key] = true
-    // nếu chưa có thông tin khách hàng thì gắn cờ đang quét thông tin khách hàng
-    if (!$props.source?.client_bio?.fb_info)
-      extensionStore.is_find_client_info[$props.source?.data_key] = true
+    /**danh sách hội thoại */
+    const CONVERSATIONS = conversationStore.conversation_list
+    /**lấy key của danh sách hội thoại */
+    const CONVERSATION_KEYS = keys(CONVERSATIONS)
+    /**lấy value của danh sách hội thoại */
+    const CONVERSATION_VALUES = values(CONVERSATIONS)
 
-    // quá 10s thì thôi không loading nữa
-    setTimeout(() => {
-      // tắt cờ đang quét uid
-      extensionStore.is_find_uid[$props.source?.data_key!] = false
-      // tắt cờ đang quét thông tin khách hàng
-      extensionStore.is_find_client_info[$props.source?.data_key!] = false
-    }, 10000)
+    // thêm key vào vị trí index
+    CONVERSATION_KEYS.splice(index, 0, data_key)
+    // thêm value vào vị trí index
+    CONVERSATION_VALUES.splice(index, 0, conversation)
 
-    // gọi ext để lấy uid và thông tin khách hàng
-    getFbUserInfo(
-      $props.source?.platform_type,
-      $props.source?.fb_page_id,
-      $props.source?.fb_client_id,
-      pageStore?.selected_page_list_info?.[$props.source?.fb_page_id]?.page
-        ?.fb_page_token
+    // ghi đè danh sách hội thoại mới
+    conversationStore.conversation_list = zipObject(
+      CONVERSATION_KEYS,
+      CONVERSATION_VALUES
+    )
+  }
+
+  /**click chuột vào 1 khách hàng */
+  clickConversation() {
+    // nếu không có key thì không cho click
+    if (
+      !$props.source?.fb_page_id ||
+      !$props.source?.fb_client_id ||
+      !$props.source?.data_key
+    )
+      return
+
+    /**key của hội thoại */
+    const DATA_KEY = $props.source?.data_key
+    /**dữ liệu hội thoại */
+    const CONVERSATION = $props.source
+    /**hội thoại cũ */
+    const OLD_CONVERSATION = conversationStore.select_conversation
+
+    // ẩn mũi tên scroll bottom
+    messageStore.is_show_to_bottom = false
+
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
+    // thay đổi vị trí hội thoại này nếu
+    if (
+      // đang bật chế độ sắp xếp hội thoại chưa đọc lên đầu
+      SPECIAL_PAGE_CONFIG?.sort_conversation === 'UNREAD' &&
+      // hội thoại này có tin nhắn chưa đọc (đang ở trên đầu)
+      CONVERSATION?.unread_message_amount &&
+      // không phải chế độ lọc chưa đọc (vì sẽ xóa luôn)
+      !conversationStore.option_filter_page_data?.unread_message
+    ) {
+      // xóa hội thoại khỏi vị trí cũ (trên đầu)
+      delete conversationStore.conversation_list?.[DATA_KEY]
+
+      /**index của hội thoại đầu tiên đã đọc */
+      const NEW_INDEX = this.findFirstReadMessageIndex()
+
+      // đẩy hội thoại xuống vị trí mới (dưới các hội thoại chưa đọc)
+      this.addItemToConversationsByIndex(DATA_KEY, CONVERSATION, NEW_INDEX)
+    }
+
+    // logic chọn hội thoại mới
+    selectConversation(CONVERSATION)
+
+    // xóa hội thoại trước đó khỏi danh sách nếu
+    if (
+      // đang ở chế độ lọc chưa đọc
+      conversationStore.option_filter_page_data?.unread_message &&
+      // có hội thoại trước đó
+      OLD_CONVERSATION?.data_key &&
+      // không tự click vào chính mình
+      OLD_CONVERSATION?.data_key !== CONVERSATION?.data_key
+    ) {
+      // xóa hội thoại khỏi vị trí
+      delete conversationStore.conversation_list?.[OLD_CONVERSATION?.data_key]
+    }
+
+    // đẩy id lên param
+    setParamChat($router, CONVERSATION?.fb_page_id, CONVERSATION?.fb_client_id)
+
+    // lấy uid và thông tin khách hàng
+    this.triggerExtension()
+  }
+  /**gọi ext để lấy uid và thông tin khách hàng */
+  triggerExtension() {
+    // nếu không có key thì không cho click
+    if (
+      !$props.source?.fb_page_id ||
+      !$props.source?.fb_client_id ||
+      !$props.source?.data_key
+    )
+      return
+
+    // tìm uid fb nếu chưa có và đang bật ext
+    if (
+      commonStore.extension_status === 'FOUND' &&
+      (!$props.source?.client_bio?.fb_uid ||
+        !$props.source?.client_bio?.fb_info)
+    ) {
+      // nếu chưa có uid thì gắn cờ đang quét uid
+      if (!$props.source?.client_bio?.fb_uid)
+        extensionStore.is_find_uid[$props.source?.data_key] = true
+      // nếu chưa có thông tin khách hàng thì gắn cờ đang quét thông tin khách hàng
+      if (!$props.source?.client_bio?.fb_info)
+        extensionStore.is_find_client_info[$props.source?.data_key] = true
+
+      // quá 10s thì thôi không loading nữa
+      setTimeout(() => {
+        // tắt cờ đang quét uid
+        extensionStore.is_find_uid[$props.source?.data_key!] = false
+        // tắt cờ đang quét thông tin khách hàng
+        extensionStore.is_find_client_info[$props.source?.data_key!] = false
+      }, 10000)
+
+      // gọi ext để lấy uid và thông tin khách hàng
+      getFbUserInfo(
+        $props.source?.platform_type,
+        $props.source?.fb_page_id,
+        $props.source?.fb_client_id,
+        pageStore?.selected_page_list_info?.[$props.source?.fb_page_id]?.page
+          ?.fb_page_token
+      )
+    }
+  }
+  /**kiểm tra xem có đang chọn khách này không */
+  isSelectThisClient() {
+    return (
+      $props.source?.data_key ===
+      conversationStore.select_conversation?.data_key
     )
   }
 }
-/**kiểm tra xem có đang chọn khách này không */
-function isSelectThisClient() {
-  return (
-    $props.source?.data_key === conversationStore.select_conversation?.data_key
-  )
-}
+const $main = new Main()
 </script>
