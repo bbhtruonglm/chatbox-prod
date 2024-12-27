@@ -1,29 +1,29 @@
 <template>
   <div class="flex flex-col gap-1">
-    <p class="font-bold text-2xl">
+    <strong class="custom-title">
       {{ $t('Đăng ký tài khoản _', { name: commonStore.partner?.name }) }}
-    </p>
-    <p class="text-sm">
+    </strong>
+    <small class="custom-description">
       {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
-    </p>
+    </small>
   </div>
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
-      <p class="font-medium text-sm">
+      <small class="font-medium text-sm">
         {{ $t('Email') }}
-      </p>
+      </small>
       <input
         v-model="email"
         autocapitalize="off"
         autocorrect="off"
-        @keyup.enter="$main.loginEmail()"
+        @keyup.enter="$main.goRegisterDetail()"
         :placeholder="$t('Nhập _ của bạn', { name: $t('email') })"
-        class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
+        class="custom-input"
       />
     </div>
     <button
-      @click="$main.loginEmail"
-      class="rounded-md bg-black text-white shadow h-12 px-4 py-3 font-medium text-base w-full"
+      @click="$main.goRegisterDetail"
+      class="custom-btn-black"
     >
       {{
         $t('Đăng ký bằng _', {
@@ -32,16 +32,10 @@
       }}
     </button>
   </div>
-  <div class="flex items-center gap-3">
-    <span class="border-slate-200 border w-full"></span>
-    <p class="font-medium text-sm flex-shrink-0 text-slate-500">
-      {{ $t('Hoặc') }}
-    </p>
-    <span class="border-slate-200 border w-full"></span>
-  </div>
+  <Or />
   <div class="flex flex-col gap-3">
     <Facebook
-      @access_token="access_token => $main.loginChatbox(access_token)"
+      @access_token="access_token => $service_oauth.loginFb(access_token)"
       :text="
         $t('Đăng ký bằng _', {
           name: $t('Facebook'),
@@ -51,97 +45,49 @@
       class="h-12 w-full"
     />
   </div>
-  <div class="flex text-sm gap-3 items-center">
-    <span>
-      {{ $t('Bạn đã có tài khoản _', { name: commonStore.partner?.name }) }}
-    </span>
-    <div
-      @click="$router.push('/oauth')"
-      class="text-sm font-semibold flex items-center gap-1 text-blue-700 cursor-pointer"
-    >
-      {{ $t('Đăng nhập') }}
-      <ArrowRightIcon class="w-4 h-4 lucide lucide-arrow-right" />
-    </div>
-  </div>
-  <small
-    v-html="$t('Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi')"
-    class="text-xs text-slate-700"
-  />
+  <GoLogin />
 </template>
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
-import { getItem, setItem } from '@/service/helper/localStorage'
 import { useRouter } from 'vue-router'
-import { modal_input } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
-import { onMounted, ref } from 'vue'
-import { N4SerivcePublicOauthFacebok } from '@/utils/api/N4Service/Oauth'
+import { ref } from 'vue'
 import { error } from '@/utils/decorator/Error'
 import { isEmail } from 'validator'
+import { composableOAuth } from '@/views/OAuth/composable'
+import { container } from 'tsyringe'
 
 import Facebook from '@/components/OAuth/Facebook.vue'
+import GoLogin from '@/views/OAuth/GoLogin.vue'
+import Or from '@/views/OAuth/Or.vue'
 
-import { ArrowRightIcon } from '@heroicons/vue/24/solid'
-
-import { loadingV2 } from '@/utils/decorator/Loading'
+const { ServiceOAuth } = composableOAuth()
 
 const $router = useRouter()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
+const $service_oauth = container.resolve(ServiceOAuth)
 
 /**email đăng nhập */
 const email = ref<string>()
 
 class Main {
-  /**
-   * @param API_OAUTH API đăng nhập
-   */
-  constructor(private readonly API_OAUTH = new N4SerivcePublicOauthFacebok()) {}
-
-  /**login bằng token fb */
-  backDoorLoginFb() {
-    modal_input('', '', (e, r) => {
-      if (e || !r) return
-
-      this.loginChatbox(r)
-    })
-  }
-  /**nếu có token thì redirect vào dashboard */
-  isAlreadyLogin() {
-    // nếu không có token thì return
-    if (!getItem('access_token')) return
-
-    // chuyển hướng vào chat
-    $router.push('/chat')
-  }
-  /**đăng nhập chatbox bằng token fb */
-  @loadingV2(commonStore, 'is_loading_full_screen')
-  @error()
-  async loginChatbox(access_token: string) {
-    /**jwt đại diện cho người dùng */
-    const { access_token: JWT } = await this.API_OAUTH.login(
-      access_token,
-      getItem('ref')
-    )
-
-    // lưu token vào local storage
-    setItem('access_token', JWT)
-
-    // chuyển hướng vào dashboard
-    $router.push('/dashboard')
-  }
   /**đăng nhập bằng email*/
   @error()
-  async loginEmail() {
+  async goRegisterDetail() {
     // báo lỗi nếu không có email
     if (!email.value) throw $t('Bạn chưa nhập _', { name: $t('Email') })
     if (!isEmail(email.value)) throw $t('Email không hợp lệ')
 
-    // chuyển hướng vào trang đăng nhập email
-    $router.push({ path: '/oauth/login-email', query: { email: email.value } })
+    // chuyển hướng vào trang chi tiết đăng ký
+    $router.push({
+      path: '/oauth/register-detail',
+      query: { email: email.value },
+    })
   }
 }
 const $main = new Main()
-
-onMounted(() => $main.isAlreadyLogin())
 </script>
+<style scoped lang="scss">
+@import './index.scss';
+</style>

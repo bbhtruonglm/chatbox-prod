@@ -9,7 +9,7 @@
         :style="{
           backgroundImage: `url(${commonStore.partner?.logo?.full})`,
         }"
-        class="h-7 w-full bg-contain bg-no-repeat bg-left"
+        class="h-7 w-full bg-contain bg-no-repeat bg-left flex-shrink-0"
       />
       <RouterView />
       <div class="flex justify-between">

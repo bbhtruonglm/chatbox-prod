@@ -1,44 +1,44 @@
 <template>
   <div class="flex flex-col gap-1">
     <button
-      @click="$router.push('/oauth')"
-      class="font-bold text-2xl flex items-center gap-2"
+      @click="$router.back()"
+      class="custom-title"
     >
       <ArrowLeftIcon class="w-6 h-6" />
       {{ $t('Đăng nhập') }}
     </button>
-    <p class="text-sm">
+    <small class="text-sm">
       {{
         $t('Tiếp tục sử dụng _', {
           name: commonStore.partner?.name,
         })
       }}
-    </p>
+    </small>
   </div>
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
-      <p class="font-medium text-sm">
+      <small class="font-medium text-sm">
         {{ $t('Email') }}
-      </p>
+      </small>
       <input
         v-model="email"
         autocapitalize="off"
         autocorrect="off"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Email') })"
-        class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
+        class="custom-input"
       />
     </div>
     <div class="flex flex-col gap-1">
-      <p class="font-medium text-sm">
+      <small class="font-medium text-sm">
         {{ $t('Mật khẩu') }}
-      </p>
+      </small>
       <input
         v-model="password"
         autocapitalize="off"
         autocorrect="off"
         type="password"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Mật khẩu') })"
-        class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
+        class="custom-input"
       />
     </div>
     <div>
@@ -48,7 +48,7 @@
     </div>
     <button
       @click="$main.loginEmail"
-      class="rounded-md bg-black text-white shadow h-12 px-4 py-3 font-medium text-base w-full"
+      class="custom-btn-black"
     >
       {{ $t('Đăng nhập') }}
     </button>
@@ -64,14 +64,15 @@ import { ref } from 'vue'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { error } from '@/utils/decorator/Error'
 import { isEmail } from 'validator'
-
-import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { container, singleton } from 'tsyringe'
 import { loadingV2 } from '@/utils/decorator/Loading'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
+
+import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+
 import type { IAlert } from '@/utils/helper/Alert/type'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { container, singleton } from 'tsyringe'
 
 const $router = useRouter()
 const $route = useRoute()
@@ -129,3 +130,6 @@ class Main {
 }
 const $main = new Main()
 </script>
+<style scoped lang="scss">
+@import './index.scss';
+</style>

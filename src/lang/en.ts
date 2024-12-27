@@ -32,6 +32,12 @@ const source: Language = {
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'By proceeding, you agree to the <u>Terms and Conditions</u> and <u>Privacy Policy</u>',
   'Tài khoản hoặc mật khẩu không đúng': 'Incorrect username or password',
+  Họ: 'Last name',
+  Tên: 'First name',
+  'Xác nhận mật khẩu': 'Confirm password',
+  'Mật khẩu không khớp': 'Password does not match',
+  'Đăng ký tài khoản thành công': 'Successfully registered account',
+  'Tài khoản đã tồn tại': 'Account already exists',
   name: 'English',
   v1: {
     common: {

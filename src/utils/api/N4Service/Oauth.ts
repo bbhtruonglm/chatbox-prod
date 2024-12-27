@@ -1,4 +1,5 @@
 import { N4Serivce } from '@/utils/api/N4Serivce'
+import { singleton } from 'tsyringe'
 
 /**kết quả đăng nhập */
 export interface LoginRes {
@@ -21,6 +22,7 @@ export class N4SerivcePublicOauth extends N4Serivce {
 }
 
 /**gọi API xác thực truy cập của FB */
+@singleton()
 export class N4SerivcePublicOauthFacebok extends N4SerivcePublicOauth {
   constructor() {
     // gọi API module xác thực của FB
@@ -34,6 +36,7 @@ export class N4SerivcePublicOauthFacebok extends N4SerivcePublicOauth {
   }
 }
 /**gọi API xác thực truy cập email */
+@singleton()
 export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
   constructor() {
     // gọi API module xác thực của FB
@@ -44,5 +47,28 @@ export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
   public async login(email: string, password: string): Promise<LoginRes> {
     // gọi api
     return this.post('login', { email, password }, true)
+  }
+  /**api đăng ký */
+  public async register(
+    email: string,
+    password: string,
+    full_name: string,
+    first_name: string,
+    last_name: string,
+    ref?: string
+  ): Promise<LoginRes> {
+    // gọi api
+    return this.post(
+      'register',
+      {
+        email,
+        password,
+        full_name,
+        first_name,
+        last_name,
+        ref,
+      },
+      true
+    )
   }
 }

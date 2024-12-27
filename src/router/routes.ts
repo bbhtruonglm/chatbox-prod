@@ -2,11 +2,11 @@ import PageNotFound from '@/views/404.vue'
 
 import DeleteAccount from '@/views/DeleteAccount.vue'
 
-import OAuth from '@/views/OAuth.vue'
 import OAuthV2 from '@/views/OAuthV2.vue'
 import Login from '@/views/OAuth/Login.vue'
 import LoginEmail from '@/views/OAuth/LoginEmail.vue'
 import Register from '@/views/OAuth/Register.vue'
+import RegisterDetail from '@/views/OAuth/RegisterDetail.vue'
 
 import ChatShort from '@/views/ChatWarper.vue'
 
@@ -49,6 +49,7 @@ export const routes = [
       { path: 'login', component: Login },
       { path: 'login-email', component: LoginEmail },
       { path: 'register', component: Register },
+      { path: 'register-detail', component: RegisterDetail },
     ],
   },
 
