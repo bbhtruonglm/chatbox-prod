@@ -44,8 +44,8 @@
         @click="clickCopyPhoneEmail"
         v-html="
           message_type === 'client'
-            ? renderText(data_source?.content)
-            : data_source?.content
+            ? fixXss(renderText(data_source?.content))
+            : fixXss(data_source?.content)
         "
         class="enter-line"
       />
@@ -60,6 +60,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import DOMPurify from 'dompurify'
 
 import Media from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
@@ -114,5 +115,9 @@ function isHaveFileAttachment() {
       $props.data_source?.audio?.url ||
       $props.data_source?.file?.url
   )
+}
+/**làm sạch html trước khi hiển thị, tránh XSS */
+function fixXss(text?: string) {
+  return DOMPurify.sanitize(text || '')
 }
 </script>

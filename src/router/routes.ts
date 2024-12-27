@@ -52,6 +52,10 @@ export const routes = [
       { path: 'register-detail', component: RegisterDetail },
     ],
   },
+  {
+    path: '/logout',
+    redirect: '/oauth'
+  },
 
   // { path: '/chat', component: ChatShort },
   { path: '/chat', redirect: '/' },
