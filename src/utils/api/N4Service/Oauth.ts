@@ -43,6 +43,6 @@ export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
   /**api đăng nhâp */
   public async login(email: string, password: string): Promise<LoginRes> {
     // gọi api
-    return this.post('login', { email, password })
+    return this.post('login', { email, password }, true)
   }
 }

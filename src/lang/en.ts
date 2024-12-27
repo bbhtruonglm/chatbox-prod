@@ -23,7 +23,15 @@ const source: Language = {
   'Email không hợp lệ': 'Invalid email',
   'Bạn quên mật khẩu?': 'Forgot password?',
   'Mật khẩu': 'Password',
+  'Đăng ký tài khoản _': 'Register a {name} account',
+  'Một bước cuối cùng trước khi bắt đầu dùng thử':
+    'One last step before starting your free trial',
+  'Đăng ký bằng _': 'Sign up with {name}',
+  'Bạn đã có tài khoản _': 'Already have a {name} account?',
   Hoặc: 'Or',
+  'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
+    'By proceeding, you agree to the <u>Terms and Conditions</u> and <u>Privacy Policy</u>',
+  'Tài khoản hoặc mật khẩu không đúng': 'Incorrect username or password',
   name: 'English',
   v1: {
     common: {

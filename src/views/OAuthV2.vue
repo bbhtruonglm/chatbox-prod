@@ -5,12 +5,14 @@
     <div
       class="bg-white w-full max-w-[478px] shadow-xl rounded-xl flex flex-col gap-6 p-6 max-h-full overflow-y-scroll"
     >
-      <img
-        :src="commonStore.partner?.logo?.full"
-        class="h-7 w-fit object-cover"
+      <div
+        :style="{
+          backgroundImage: `url(${commonStore.partner?.logo?.full})`,
+        }"
+        class="h-7 w-full bg-contain bg-no-repeat bg-left"
       />
       <RouterView />
-      <div class="flex justify-between pt-3">
+      <div class="flex justify-between">
         <p class="flex items-center gap-3 text-xs text-slate-500">
           <button>
             {{ $t('Chính sách') }}

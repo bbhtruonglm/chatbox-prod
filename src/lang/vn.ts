@@ -5,6 +5,11 @@ const source: Language = {
   'Bạn mới sử dụng _': 'Bạn mới sử dụng {name}?',
   'Nhập _ của bạn': 'Nhập {name} của bạn',
   'Bạn chưa nhập _': 'Bạn chưa nhập  {name}',
+  'Đăng ký tài khoản _': 'Đăng ký tài khoản {name}',
+  'Đăng ký bằng _': 'Đăng ký với {name}',
+  'Bạn đã có tài khoản _': 'Bạn đã có tài khoản {name}?',
+  'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
+    'Bằng việc tiếp tục, bạn đồng ý với <u>Chính sách</u> và <u>Điều khoản</u> của chúng tôi',
   name: 'Tiếng Việt',
   v1: {
     common: {

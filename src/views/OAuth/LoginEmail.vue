@@ -22,6 +22,8 @@
       </p>
       <input
         v-model="email"
+        autocapitalize="off"
+        autocorrect="off"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Email') })"
         class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
       />
@@ -32,6 +34,8 @@
       </p>
       <input
         v-model="password"
+        autocapitalize="off"
+        autocorrect="off"
         type="password"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Mật khẩu') })"
         class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
@@ -49,6 +53,7 @@
       {{ $t('Đăng nhập') }}
     </button>
   </div>
+  <NewTo />
 </template>
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
@@ -63,6 +68,11 @@ import { isEmail } from 'validator'
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 import { loadingV2 } from '@/utils/decorator/Loading'
 
+import NewTo from '@/views/OAuth/NewTo.vue'
+import type { IAlert } from '@/utils/helper/Alert/type'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { container, singleton } from 'tsyringe'
+
 const $router = useRouter()
 const $route = useRoute()
 const commonStore = useCommonStore()
@@ -73,15 +83,31 @@ const email = ref<string>($route.query.email as string)
 /**mật khẩu đăng nhập */
 const password = ref<string>()
 
+/**toast thông báo */
+@singleton()
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    console.log('xxx', message)
+    // nếu lỗi là không có quyền truy cập thì thông báo khác
+    if (message?.message === 'COMMON.ACCESS_DENIED')
+      message.message = $t('Tài khoản hoặc mật khẩu không đúng')
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
+
 class Main {
   /**
-   * @param API_OAUTH API đăng nhập
+   * @param API_OAUTH_BASIC API đăng nhập
    */
-  constructor(private readonly API_OAUTH = new N4SerivcePublicOauthBasic()) {}
+  constructor(
+    private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic()
+  ) {}
 
   /**đăng nhập bằng email*/
   @loadingV2(commonStore, 'is_loading_full_screen')
-  @error()
+  @error(container.resolve(CustomToast))
   async loginEmail() {
     // báo lỗi nếu không có email
     if (!email.value) throw $t('Bạn chưa nhập _', { name: $t('Email') })
@@ -89,7 +115,7 @@ class Main {
     if (!password.value) throw $t('Bạn chưa nhập _', { name: $t('Mật khẩu') })
 
     /**jwt đại diện cho người dùng */
-    const { access_token: JWT } = await this.API_OAUTH.login(
+    const { access_token: JWT } = await this.API_OAUTH_BASIC.login(
       email.value,
       password.value
     )
@@ -103,9 +129,3 @@ class Main {
 }
 const $main = new Main()
 </script>
-<style lang="scss" scoped>
-.bg-gradient-secondary {
-  background: linear-gradient(180deg, hsla(0, 0%, 100%, 0) 50%, #fff, #fff),
-    linear-gradient(90deg, #fdefe3, #f3f4f3 50%, #dce5ff);
-}
-</style>

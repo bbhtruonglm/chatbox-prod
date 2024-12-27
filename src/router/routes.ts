@@ -6,6 +6,7 @@ import OAuth from '@/views/OAuth.vue'
 import OAuthV2 from '@/views/OAuthV2.vue'
 import Login from '@/views/OAuth/Login.vue'
 import LoginEmail from '@/views/OAuth/LoginEmail.vue'
+import Register from '@/views/OAuth/Register.vue'
 
 import ChatShort from '@/views/ChatWarper.vue'
 
@@ -47,6 +48,7 @@ export const routes = [
     children: [
       { path: 'login', component: Login },
       { path: 'login-email', component: LoginEmail },
+      { path: 'register', component: Register },
     ],
   },
 

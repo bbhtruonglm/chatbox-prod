@@ -1,18 +1,10 @@
 <template>
-  <div
-    @click="$main.backDoorLoginFb"
-    class="absolute w-2.5 h-2.5 top-0 right-0 cursor-pointer"
-  ></div>
   <div class="flex flex-col gap-1">
     <p class="font-bold text-2xl">
-      {{ $t('Đăng nhập') }}
+      {{ $t('Đăng ký tài khoản _', { name: commonStore.partner?.name }) }}
     </p>
     <p class="text-sm">
-      {{
-        $t('Tiếp tục sử dụng _', {
-          name: commonStore.partner?.name,
-        })
-      }}
+      {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
     </p>
   </div>
   <div class="flex flex-col gap-3">
@@ -22,9 +14,9 @@
       </p>
       <input
         v-model="email"
-        @keyup.enter="$main.loginEmail()"
         autocapitalize="off"
         autocorrect="off"
+        @keyup.enter="$main.loginEmail()"
         :placeholder="$t('Nhập _ của bạn', { name: $t('email') })"
         class="flex h-10 w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none placeholder:text-slate-500"
       />
@@ -33,7 +25,11 @@
       @click="$main.loginEmail"
       class="rounded-md bg-black text-white shadow h-12 px-4 py-3 font-medium text-base w-full"
     >
-      {{ $t('Tiếp tục với email') }}
+      {{
+        $t('Đăng ký bằng _', {
+          name: $t('Email'),
+        })
+      }}
     </button>
   </div>
   <div class="flex items-center gap-3">
@@ -46,12 +42,31 @@
   <div class="flex flex-col gap-3">
     <Facebook
       @access_token="access_token => $main.loginChatbox(access_token)"
-      :text="$t('Tiếp tục với Facebook')"
+      :text="
+        $t('Đăng ký bằng _', {
+          name: $t('Facebook'),
+        })
+      "
       btn_style="display:flex;justify-content:center;width:100%;height:100%;align-items:center;gap:0.5rem;background-color:#f1f5f9;border-radius:0.375rem;color:#0f172a;font-size:16px;font-weight:500;border-color:#e2e8f0;border-width:1px"
       class="h-12 w-full"
     />
   </div>
-  <NewTo />
+  <div class="flex text-sm gap-3 items-center">
+    <span>
+      {{ $t('Bạn đã có tài khoản _', { name: commonStore.partner?.name }) }}
+    </span>
+    <div
+      @click="$router.push('/oauth')"
+      class="text-sm font-semibold flex items-center gap-1 text-blue-700 cursor-pointer"
+    >
+      {{ $t('Đăng nhập') }}
+      <ArrowRightIcon class="w-4 h-4 lucide lucide-arrow-right" />
+    </div>
+  </div>
+  <small
+    v-html="$t('Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi')"
+    class="text-xs text-slate-700"
+  />
 </template>
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
@@ -65,7 +80,8 @@ import { error } from '@/utils/decorator/Error'
 import { isEmail } from 'validator'
 
 import Facebook from '@/components/OAuth/Facebook.vue'
-import NewTo from '@/views/OAuth/NewTo.vue'
+
+import { ArrowRightIcon } from '@heroicons/vue/24/solid'
 
 import { loadingV2 } from '@/utils/decorator/Loading'
 
@@ -78,11 +94,9 @@ const email = ref<string>()
 
 class Main {
   /**
-   * @param API_OAUTH_FB API đăng nhập
+   * @param API_OAUTH API đăng nhập
    */
-  constructor(
-    private readonly API_OAUTH_FB = new N4SerivcePublicOauthFacebok()
-  ) {}
+  constructor(private readonly API_OAUTH = new N4SerivcePublicOauthFacebok()) {}
 
   /**login bằng token fb */
   backDoorLoginFb() {
@@ -105,7 +119,7 @@ class Main {
   @error()
   async loginChatbox(access_token: string) {
     /**jwt đại diện cho người dùng */
-    const { access_token: JWT } = await this.API_OAUTH_FB.login(
+    const { access_token: JWT } = await this.API_OAUTH.login(
       access_token,
       getItem('ref')
     )
