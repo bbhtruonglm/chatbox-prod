@@ -20,7 +20,7 @@ const source: Language = {
   'Chính sách': 'Policy',
   'Điều khoản': 'Terms',
   'Bạn chưa nhập _': 'You have not entered an {name}',
-  'Email không hợp lệ': 'Invalid email',
+  '_ không hợp lệ': 'Invalid {name}',
   'Bạn quên mật khẩu?': 'Forgot password?',
   'Mật khẩu': 'Password',
   'Đăng ký tài khoản _': 'Register a {name} account',

@@ -55,15 +55,16 @@ import { modal_input } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
 import { onMounted, ref } from 'vue'
 import { error } from '@/utils/decorator/Error'
-import { isEmail } from 'validator'
-import { composableOAuth } from '@/views/OAuth/composable'
+import { composableService } from '@/views/OAuth/service'
 import { container } from 'tsyringe'
+import { composableValidate } from './validate'
 
 import Facebook from '@/components/OAuth/Facebook.vue'
 import NewTo from '@/views/OAuth/NewTo.vue'
 import Or from '@/views/OAuth/Or.vue'
 
-const { ServiceOAuth } = composableOAuth()
+const { VLD_EMAIL } = composableValidate()
+const { ServiceOAuth } = composableService()
 
 const $router = useRouter()
 const commonStore = useCommonStore()
@@ -98,9 +99,8 @@ class Main {
   /**đăng nhập bằng email*/
   @error()
   async loginEmail() {
-    // báo lỗi nếu không có email
-    if (!email.value) throw $t('Bạn chưa nhập _', { name: $t('Email') })
-    if (!isEmail(email.value)) throw $t('Email không hợp lệ')
+    // kiểm tra email
+    await VLD_EMAIL.validate({ email: email.value })
 
     // chuyển hướng vào trang đăng nhập email
     $router.push({ path: '/oauth/login-email', query: { email: email.value } })

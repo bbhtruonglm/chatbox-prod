@@ -10,6 +10,7 @@ const source: Language = {
   'Bạn đã có tài khoản _': 'Bạn đã có tài khoản {name}?',
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'Bằng việc tiếp tục, bạn đồng ý với <u>Chính sách</u> và <u>Điều khoản</u> của chúng tôi',
+  '_ không hợp lệ': '{name} không hợp lệ',
   name: 'Tiếng Việt',
   v1: {
     common: {

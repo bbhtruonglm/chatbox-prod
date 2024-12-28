@@ -21,7 +21,8 @@
         {{ $t('Email') }}
       </small>
       <input
-        v-model="email"
+        v-model="form.email"
+        @keyup.enter="$main.loginEmail()"
         autocapitalize="off"
         autocorrect="off"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Email') })"
@@ -33,7 +34,8 @@
         {{ $t('Mật khẩu') }}
       </small>
       <input
-        v-model="password"
+        v-model="form.password"
+        @keyup.enter="$main.loginEmail()"
         autocapitalize="off"
         autocorrect="off"
         type="password"
@@ -60,13 +62,13 @@ import { useCommonStore } from '@/stores'
 import { setItem } from '@/service/helper/localStorage'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { error } from '@/utils/decorator/Error'
-import { isEmail } from 'validator'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { container, singleton } from 'tsyringe'
 import { loadingV2 } from '@/utils/decorator/Loading'
+import { composableValidate } from './validate'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
 
@@ -74,21 +76,28 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
 
+const { VLD_EMAIL_PASSWORD } = composableValidate()
+
 const $router = useRouter()
 const $route = useRoute()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 
-/**email đăng nhập */
-const email = ref<string>($route.query.email as string)
-/**mật khẩu đăng nhập */
-const password = ref<string>()
+/**form đăng nhập */
+const form = ref<{
+  /**email */
+  email: string
+  /**mật khẩu */
+  password: string
+}>({
+  email: '',
+  password: '',
+})
 
 /**toast thông báo */
 @singleton()
 class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
-    console.log('xxx', message)
     // nếu lỗi là không có quyền truy cập thì thông báo khác
     if (message?.message === 'COMMON.ACCESS_DENIED')
       message.message = $t('Tài khoản hoặc mật khẩu không đúng')
@@ -110,15 +119,13 @@ class Main {
   @loadingV2(commonStore, 'is_loading_full_screen')
   @error(container.resolve(CustomToast))
   async loginEmail() {
-    // báo lỗi nếu không có email
-    if (!email.value) throw $t('Bạn chưa nhập _', { name: $t('Email') })
-    if (!isEmail(email.value)) throw $t('Email không hợp lệ')
-    if (!password.value) throw $t('Bạn chưa nhập _', { name: $t('Mật khẩu') })
+    // xác thực dữ liệu
+    await VLD_EMAIL_PASSWORD.validate(form.value)
 
     /**jwt đại diện cho người dùng */
     const { access_token: JWT } = await this.API_OAUTH_BASIC.login(
-      email.value,
-      password.value
+      form.value.email,
+      form.value.password
     )
 
     // lưu token vào local storage
@@ -129,6 +136,9 @@ class Main {
   }
 }
 const $main = new Main()
+
+// nếu có email thì gán vào form
+onMounted(() => (form.value.email = $route.query.email as string))
 </script>
 <style scoped lang="scss">
 @import './index.scss';

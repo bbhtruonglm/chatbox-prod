@@ -7,7 +7,7 @@ import { container, singleton } from 'tsyringe'
 import { useRouter } from 'vue-router'
 
 /**các hàm composable của OAuth */
-export function composableOAuth() {
+export function composableService() {
   const commonStore = useCommonStore()
   const $router = useRouter()
 

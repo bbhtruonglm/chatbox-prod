@@ -17,7 +17,7 @@
         {{ $t('Email') }}
       </small>
       <input
-        v-model="email"
+        v-model="form.email"
         autocapitalize="off"
         autocorrect="off"
         :placeholder="$t('Nhập _ của bạn', { name: $t('email') })"
@@ -35,7 +35,7 @@
           {{ $t('Họ') }}
         </small>
         <input
-          v-model="last_name"
+          v-model="form.last_name"
           :placeholder="$t('Nhập _ của bạn', { name: $t('Họ') })"
           class="custom-input"
         />
@@ -45,7 +45,7 @@
           {{ $t('Tên') }}
         </small>
         <input
-          v-model="first_name"
+          v-model="form.first_name"
           :placeholder="$t('Nhập _ của bạn', { name: $t('Tên') })"
           class="custom-input"
         />
@@ -56,7 +56,7 @@
         {{ $t('Mật khẩu') }}
       </small>
       <input
-        v-model="password"
+        v-model="form.password"
         autocapitalize="off"
         autocorrect="off"
         type="password"
@@ -69,7 +69,7 @@
         {{ $t('Xác nhận mật khẩu') }}
       </small>
       <input
-        v-model="confirm_password"
+        v-model="form.confirm_password"
         autocapitalize="off"
         autocorrect="off"
         type="password"
@@ -94,35 +94,47 @@
 import { useCommonStore } from '@/stores'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { error } from '@/utils/decorator/Error'
-import { isEmail } from 'validator'
 import { LocalStorage, type ILocalStorage } from '@/utils/helper/LocalStorage'
 import { container, singleton } from 'tsyringe'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { loadingV2 } from '@/utils/decorator/Loading'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { composableValidate } from './validate'
 
 import GoLogin from '@/views/OAuth/GoLogin.vue'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+
 import type { IAlert } from '@/utils/helper/Alert/type'
-import { Toast } from '@/utils/helper/Alert/Toast'
+
+const { VLD_EMAIL_REGISTER } = composableValidate()
 
 const $router = useRouter()
 const $route = useRoute()
 const commonStore = useCommonStore()
 const { t: $t, locale } = useI18n()
 
-/**email đăng nhập */
-const email = ref<string>($route.query.email as string)
-/**họ */
-const first_name = ref<string>()
-/**tên */
-const last_name = ref<string>()
-/**mật khẩu */
-const password = ref<string>()
-/**xác nhận mật khẩu */
-const confirm_password = ref<string>()
+/**form đăng ký */
+const form = ref<{
+  /**email */
+  email: string
+  /**tên */
+  first_name: string
+  /**họ */
+  last_name: string
+  /**mật khẩu */
+  password: string
+  /**xác nhận mật khẩu */
+  confirm_password: string
+}>({
+  email: '',
+  first_name: '',
+  last_name: '',
+  password: '',
+  confirm_password: '',
+})
 
 /**chỉnh sửa thông báo */
 @singleton()
@@ -138,6 +150,8 @@ class CustomToast extends Toast implements IAlert {
 class Main {
   /**
    * @param API_OAUTH_BASIC API đăng nhập
+   * @param SERVICE_LOCAL_STORAGE service lưu trữ
+   * @param SERVICE_TOAST service thông báo
    */
   constructor(
     private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic(),
@@ -151,24 +165,20 @@ class Main {
   @loadingV2(commonStore, 'is_loading_full_screen')
   @error(container.resolve(CustomToast))
   async register() {
-    // xác thực dữ liệu
-    if (!email.value) throw $t('Bạn chưa nhập _', { name: $t('Email') })
-    if (!isEmail(email.value)) throw $t('Email không hợp lệ')
-    if (!last_name.value) throw $t('Bạn chưa nhập _', { name: $t('Họ') })
-    if (!first_name.value) throw $t('Bạn chưa nhập _', { name: $t('Tên') })
-    if (!password.value) throw $t('Bạn chưa nhập _', { name: $t('Mật khẩu') })
-    if (!confirm_password.value)
-      throw $t('Bạn chưa nhập _', { name: $t('Xác nhận mật khẩu') })
-    if (password.value !== confirm_password.value)
+    // xác thực form
+    await VLD_EMAIL_REGISTER.validate(form.value)
+
+    // xác thực mật khẩu
+    if (form.value.password !== form.value.confirm_password)
       throw $t('Mật khẩu không khớp')
 
     // đăng ký
     await this.API_OAUTH_BASIC.register(
-      email.value,
-      password.value,
+      form.value.email,
+      form.value.password,
       full_name.value,
-      first_name.value,
-      last_name.value,
+      form.value.first_name,
+      form.value.last_name,
       this.SERVICE_LOCAL_STORAGE.getItem('ref')
     )
 
@@ -178,19 +188,23 @@ class Main {
     // đăng ký thành công thì chuyển về đăng nhập email
     $router.push({
       path: '/oauth/login-email',
-      query: { email: email.value },
+      query: { email: form.value.email },
     })
   }
 }
 const $main = new Main()
 
+// nếu có email thì gán vào form
+onMounted(() => (form.value.email = $route.query.email as string))
+
 /**tên đầy đủ */
 const full_name = computed(() => {
   // tên tiếng việt bị ngược với thế giới
-  if (locale.value === 'vn') return `${last_name.value} ${first_name.value}`
-  
+  if (locale.value === 'vn')
+    return `${form.value.last_name} ${form.value.first_name}`
+
   // tên bình thường
-  return `${first_name.value} ${last_name.value}`
+  return `${form.value.first_name} ${form.value.last_name}`
 })
 </script>
 <style scoped lang="scss">
