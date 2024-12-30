@@ -1,6 +1,11 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Email xác minh đã được gửi!': 'Verification email sent!',
+  'Gửi lại email xác minh': 'Resend verification email',
+  'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _':
+    'Please verify your email address by following the link sent to {name}',
+  'Tài khoản chưa được xác thực': 'Account not verified',
   'Tìm kiếm id bài đăng': 'Find post ID',
   'Tìm kiếm nhãn': 'Find label',
   'Kết nối với Zalo OA': 'Connect with Zalo OA',

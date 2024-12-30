@@ -1,4 +1,8 @@
 <template>
+  <div
+    @click="$main.deleteAccount"
+    class="w-2.5 h-2.5 absolute top-0 right-0"
+  />
   <div class="flex flex-col gap-1">
     <strong class="custom-title">
       {{ $t('Đăng ký tài khoản _', { name: commonStore.partner?.name }) }}
@@ -60,6 +64,10 @@ import { composableValidate } from './validate'
 import Facebook from '@/components/OAuth/Facebook.vue'
 import GoLogin from '@/views/OAuth/GoLogin.vue'
 import Or from '@/views/OAuth/Or.vue'
+import Swal from 'sweetalert2'
+import { Billing, BillingPrivate } from '@/utils/api/Billing'
+import type { IAlert } from '@/utils/helper/Alert/type'
+import { Toast } from '@/utils/helper/Alert/Toast'
 
 const { VLD_EMAIL } = composableValidate()
 const { ServiceOAuth } = composableService()
@@ -73,6 +81,15 @@ const $service_oauth = container.resolve(ServiceOAuth)
 const email = ref<string>()
 
 class Main {
+  /**
+   * @param API_BILLING API billing
+   * @param SERVICE_TOAST service toast
+   */
+  constructor(
+    private readonly API_BILLING = new BillingPrivate(),
+    private readonly SERVICE_TOAST: IAlert = container.resolve(Toast)
+  ) {}
+
   /**đăng nhập bằng email*/
   @error()
   async goRegisterDetail() {
@@ -84,6 +101,29 @@ class Main {
       path: '/oauth/register-detail',
       query: { email: email.value },
     })
+  }
+  async deleteAccount() {
+    const {
+      value: [EMAIL],
+    } = await Swal.fire({
+      title: 'xóa tài khoản',
+      html: '<input id="swal-input1" class="swal2-input" placeholder="Email">',
+      focusConfirm: false,
+      preConfirm: () => {
+        return [
+          // @ts-ignore
+          document.getElementById('swal-input1')?.value,
+        ]
+      },
+    })
+
+    if (!EMAIL) return
+
+    // xóa tài khoản
+    await this.API_BILLING.deleteAccount(EMAIL)
+
+    // thông báo
+    this.SERVICE_TOAST.success('Đã xóa tài khoản')
   }
 }
 const $main = new Main()

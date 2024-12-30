@@ -15,6 +15,33 @@
       }}
     </small>
   </div>
+  <div
+    v-if="is_redirect_from_register && form?.email"
+    class="flex items-start gap-3 border border-green-600 bg-green-50 rounded-lg text-green-600 px-4 py-3 text-sm"
+  >
+    <CheckBadgeIcon class="w-5 h-5 flex-shrink-0" />
+    <div class="flex flex-col gap-1">
+      <div>
+        {{
+          $t(
+            'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _',
+            { name: form.email }
+          )
+        }}
+      </div>
+      <div
+        @click="$main.resendVerifyEmail()"
+        class="font-medium underline cursor-pointer"
+      >
+        <template v-if="!is_resend_verify_email">
+          {{ $t('Gửi lại email xác minh') }}
+        </template>
+        <template v-else>
+          {{ $t('Email xác minh đã được gửi!') }}
+        </template>
+      </div>
+    </div>
+  </div>
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
@@ -72,7 +99,7 @@ import { composableValidate } from './validate'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
 
-import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+import { ArrowLeftIcon, CheckBadgeIcon } from '@heroicons/vue/24/solid'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
 
@@ -93,6 +120,10 @@ const form = ref<{
   email: '',
   password: '',
 })
+/**có được redirect từ trang đăng ký tài khoản không */
+const is_redirect_from_register = ref<boolean>(!!$route.query.register)
+/**đã gửi lại email xác thực chưa */
+const is_resend_verify_email = ref<boolean>(false)
 
 /**toast thông báo */
 @singleton()
@@ -101,6 +132,10 @@ class CustomToast extends Toast implements IAlert {
     // nếu lỗi là không có quyền truy cập thì thông báo khác
     if (message?.message === 'COMMON.ACCESS_DENIED')
       message.message = $t('Tài khoản hoặc mật khẩu không đúng')
+
+    // nếu lỗi là email chưa xác thực thì thông báo khác
+    if (message?.message === 'COMMON.EMAIL_NOT_VERIFY')
+      message.message = $t('Tài khoản chưa được xác thực')
 
     // thông báo lỗi
     super.error(message)
@@ -133,6 +168,19 @@ class Main {
 
     // chuyển hướng vào dashboard
     $router.push('/dashboard')
+  }
+  /**gửi lại email xác thực */
+  @loadingV2(commonStore, 'is_loading_full_screen')
+  @error(container.resolve(CustomToast))
+  async resendVerifyEmail() {
+    // nếu đã gửi email xác thực rồi thì không cho gửi lại
+    if (is_resend_verify_email.value) return
+
+    // gửi lại email xác thực
+    await this.API_OAUTH_BASIC.resendVerifyEmail(form.value?.email)
+
+    // gắn cờ là đã gửi email xác thực
+    is_resend_verify_email.value = true
   }
 }
 const $main = new Main()

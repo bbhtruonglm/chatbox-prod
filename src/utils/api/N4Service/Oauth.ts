@@ -71,4 +71,9 @@ export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
       true
     )
   }
+  /**api gửi lại mã xác thực */
+  public async resendVerifyEmail(email: string): Promise<LoginRes> {
+    // gọi api
+    return this.post('resend_verify_email', { email }, true)
+  }
 }

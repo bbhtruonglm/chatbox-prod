@@ -188,7 +188,7 @@ class Main {
     // đăng ký thành công thì chuyển về đăng nhập email
     $router.push({
       path: '/oauth/login-email',
-      query: { email: form.value.email },
+      query: { email: form.value.email, register: 'true' },
     })
   }
 }

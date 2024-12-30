@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _':
+    'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến {name}',
   'Tiếp tục sử dụng _': 'Tiếp tục sử dụng {name}',
   'Bạn mới sử dụng _': 'Bạn mới sử dụng {name}?',
   'Nhập _ của bạn': 'Nhập {name} của bạn',
