@@ -15,33 +15,30 @@
       }}
     </small>
   </div>
-  <div
-    v-if="is_redirect_from_register && form?.email"
-    class="flex items-start gap-3 border border-green-600 bg-green-50 rounded-lg text-green-600 px-4 py-3 text-sm"
-  >
-    <CheckBadgeIcon class="w-5 h-5 flex-shrink-0" />
-    <div class="flex flex-col gap-1">
-      <div>
-        {{
-          $t(
-            'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _',
-            { name: form.email }
-          )
-        }}
-      </div>
-      <div
-        @click="$main.resendVerifyEmail()"
-        class="font-medium underline cursor-pointer"
-      >
-        <template v-if="!is_resend_verify_email">
-          {{ $t('Gửi lại email xác minh') }}
-        </template>
-        <template v-else>
-          {{ $t('Email xác minh đã được gửi!') }}
-        </template>
-      </div>
+  <Alert v-if="is_redirect_from_register && form?.email">
+    <div>
+      {{
+        $t(
+          'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _',
+          { name: form.email }
+        )
+      }}
     </div>
-  </div>
+    <div
+      @click="$main.resendVerifyEmail()"
+      class="font-medium underline cursor-pointer"
+    >
+      <template v-if="!is_resend_verify_email">
+        {{ $t('Gửi lại email xác minh') }}
+      </template>
+      <template v-else>
+        {{ $t('Email xác minh đã được gửi!') }}
+      </template>
+    </div>
+  </Alert>
+  <Alert v-if="verify_code && is_verify_email">
+    {{ $t('Email _ đã được xác minh!', { name: form.email }) }}
+  </Alert>
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
@@ -98,8 +95,9 @@ import { loadingV2 } from '@/utils/decorator/Loading'
 import { composableValidate } from './validate'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
+import Alert from '@/views/OAuth/Alert.vue'
 
-import { ArrowLeftIcon, CheckBadgeIcon } from '@heroicons/vue/24/solid'
+import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
 
@@ -122,6 +120,10 @@ const form = ref<{
 })
 /**có được redirect từ trang đăng ký tài khoản không */
 const is_redirect_from_register = ref<boolean>(!!$route.query.register)
+/**mã xác thực tài khoản */
+const verify_code = ref<string>($route.query.verify_code as string)
+/**đã xác thực email thành công chưa */
+const is_verify_email = ref<boolean>(false)
 /**đã gửi lại email xác thực chưa */
 const is_resend_verify_email = ref<boolean>(false)
 
@@ -137,10 +139,26 @@ class CustomToast extends Toast implements IAlert {
     if (message?.message === 'COMMON.EMAIL_NOT_VERIFY')
       message.message = $t('Tài khoản chưa được xác thực')
 
+    // nếu lỗi là tài khoản không tồn tại thì thông báo khác
+    if (message?.message === 'COMMON.USER_NOT_FOUND')
+      message.message = $t('Tài khoản không tồn tại')
+
+    // người dùng đã xác thực rồi
+    if (message?.message === 'COMMON.USER_IS_VERIFY')
+      message.message = $t('Tài khoản đã được xác thực rồi')
+
+    // sai mã xác thực
+    if (message?.message === 'COMMON.INVALID.VERIFY_CODE')
+      message.message = $t('Mã xác thực không đúng')
+
     // thông báo lỗi
     super.error(message)
   }
 }
+/**xử lý lỗi của oauth */
+const handleErrorOauth = error(container.resolve(CustomToast))
+/**xử lý loading của oauth */
+const handleLoadingOauth = loadingV2(commonStore, 'is_loading_full_screen')
 
 class Main {
   /**
@@ -151,8 +169,8 @@ class Main {
   ) {}
 
   /**đăng nhập bằng email*/
-  @loadingV2(commonStore, 'is_loading_full_screen')
-  @error(container.resolve(CustomToast))
+  @handleLoadingOauth
+  @handleErrorOauth
   async loginEmail() {
     // xác thực dữ liệu
     await VLD_EMAIL_PASSWORD.validate(form.value)
@@ -170,8 +188,8 @@ class Main {
     $router.push('/dashboard')
   }
   /**gửi lại email xác thực */
-  @loadingV2(commonStore, 'is_loading_full_screen')
-  @error(container.resolve(CustomToast))
+  @handleLoadingOauth
+  @handleErrorOauth
   async resendVerifyEmail() {
     // nếu đã gửi email xác thực rồi thì không cho gửi lại
     if (is_resend_verify_email.value) return
@@ -182,11 +200,26 @@ class Main {
     // gắn cờ là đã gửi email xác thực
     is_resend_verify_email.value = true
   }
+  /**xác thực email */
+  @handleLoadingOauth
+  @handleErrorOauth
+  async verifyEmail() {
+    // nếu không có mã xác thực thì thôi
+    if (!verify_code.value) return
+
+    // xác thực email
+    await this.API_OAUTH_BASIC.verifyEmail(form.value.email, verify_code.value)
+
+    // gắn cờ là đã xác thực email
+    is_verify_email.value = true
+  }
 }
 const $main = new Main()
 
 // nếu có email thì gán vào form
 onMounted(() => (form.value.email = $route.query.email as string))
+// tự động xác thực email nếu có mã xác thực
+onMounted(() => $main.verifyEmail())
 </script>
 <style scoped lang="scss">
 @import './index.scss';
