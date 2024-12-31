@@ -15,6 +15,7 @@
       }}
     </small>
   </div>
+  <AlertError />
   <Alert v-if="is_redirect_from_register && form?.email">
     <div>
       {{
@@ -88,20 +89,20 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onMounted, ref } from 'vue'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
-import { error } from '@/utils/decorator/Error'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { container, singleton } from 'tsyringe'
-import { loadingV2 } from '@/utils/decorator/Loading'
 import { composableValidate } from './validate'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
 import Alert from '@/views/OAuth/Alert.vue'
+import AlertError from '@/views/OAuth/AlertError.vue'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 
-import type { IAlert } from '@/utils/helper/Alert/type'
+import { composableService } from './service'
+import { container } from 'tsyringe'
 
 const { VLD_EMAIL_PASSWORD } = composableValidate()
+const { handleLoadingOauth, handleErrorOauth, ServiceOAuth } =
+  composableService()
 
 const $router = useRouter()
 const $route = useRoute()
@@ -127,50 +128,23 @@ const is_verify_email = ref<boolean>(false)
 /**đã gửi lại email xác thực chưa */
 const is_resend_verify_email = ref<boolean>(false)
 
-/**toast thông báo */
-@singleton()
-class CustomToast extends Toast implements IAlert {
-  public error(message: any): void {
-    // nếu lỗi là không có quyền truy cập thì thông báo khác
-    if (message?.message === 'COMMON.ACCESS_DENIED')
-      message.message = $t('Tài khoản hoặc mật khẩu không đúng')
-
-    // nếu lỗi là email chưa xác thực thì thông báo khác
-    if (message?.message === 'COMMON.EMAIL_NOT_VERIFY')
-      message.message = $t('Tài khoản chưa được xác thực')
-
-    // nếu lỗi là tài khoản không tồn tại thì thông báo khác
-    if (message?.message === 'COMMON.USER_NOT_FOUND')
-      message.message = $t('Tài khoản không tồn tại')
-
-    // người dùng đã xác thực rồi
-    if (message?.message === 'COMMON.USER_IS_VERIFY')
-      message.message = $t('Tài khoản đã được xác thực rồi')
-
-    // sai mã xác thực
-    if (message?.message === 'COMMON.INVALID.VERIFY_CODE')
-      message.message = $t('Mã xác thực không đúng')
-
-    // thông báo lỗi
-    super.error(message)
-  }
-}
-/**xử lý lỗi của oauth */
-const handleErrorOauth = error(container.resolve(CustomToast))
-/**xử lý loading của oauth */
-const handleLoadingOauth = loadingV2(commonStore, 'is_loading_full_screen')
-
 class Main {
   /**
    * @param API_OAUTH_BASIC API đăng nhập
+   * @param SERVICE_OAUTH service xử lý đăng nhập
    */
   constructor(
-    private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic()
+    private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic(),
+    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth)
   ) {}
 
   /**đăng nhập bằng email*/
   @handleLoadingOauth
-  @handleErrorOauth
+  @handleErrorOauth((e: any) => {
+    // nếu lúc đăng nhập mà tk chưa xác thực, thì bật cờ lên cho phép gửi lại email
+    if (e?.message === 'COMMON.EMAIL_NOT_VERIFY')
+      is_redirect_from_register.value = true
+  })
   async loginEmail() {
     // xác thực dữ liệu
     await VLD_EMAIL_PASSWORD.validate(form.value)
@@ -185,11 +159,11 @@ class Main {
     setItem('access_token', JWT)
 
     // chuyển hướng vào dashboard
-    $router.push('/dashboard')
+    this.SERVICE_OAUTH.redirect('/dashboard')
   }
   /**gửi lại email xác thực */
   @handleLoadingOauth
-  @handleErrorOauth
+  @handleErrorOauth()
   async resendVerifyEmail() {
     // nếu đã gửi email xác thực rồi thì không cho gửi lại
     if (is_resend_verify_email.value) return
@@ -202,7 +176,7 @@ class Main {
   }
   /**xác thực email */
   @handleLoadingOauth
-  @handleErrorOauth
+  @handleErrorOauth()
   async verifyEmail() {
     // nếu không có mã xác thực thì thôi
     if (!verify_code.value) return

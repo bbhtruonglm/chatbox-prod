@@ -94,7 +94,7 @@ class Main {
     if (!getItem('access_token')) return
 
     // chuyển hướng vào chat
-    $router.push('/chat')
+    this.SERVICE_OAUTH.redirect('/chat')
   }
   /**đăng nhập bằng email*/
   @error()
@@ -103,7 +103,10 @@ class Main {
     await VLD_EMAIL.validate({ email: email.value })
 
     // chuyển hướng vào trang đăng nhập email
-    $router.push({ path: '/oauth/login-email', query: { email: email.value } })
+    this.SERVICE_OAUTH.redirect({
+      path: '/oauth/login-email',
+      query: { email: email.value },
+    })
   }
 }
 const $main = new Main()

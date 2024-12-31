@@ -11,6 +11,7 @@
       {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
     </small>
   </div>
+  <AlertError />
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
@@ -95,21 +96,23 @@ import { useCommonStore } from '@/stores'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { computed, onMounted, ref } from 'vue'
-import { error } from '@/utils/decorator/Error'
 import { LocalStorage, type ILocalStorage } from '@/utils/helper/LocalStorage'
-import { container, singleton } from 'tsyringe'
+import { container } from 'tsyringe'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
-import { loadingV2 } from '@/utils/decorator/Loading'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { composableValidate } from './validate'
 
+import AlertError from '@/views/OAuth/AlertError.vue'
 import GoLogin from '@/views/OAuth/GoLogin.vue'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
+import { composableService } from './service'
 
 const { VLD_EMAIL_REGISTER } = composableValidate()
+const { handleLoadingOauth, handleErrorOauth, ServiceOAuth } =
+  composableService()
 
 const $router = useRouter()
 const $route = useRoute()
@@ -136,17 +139,6 @@ const form = ref<{
   confirm_password: '',
 })
 
-/**chỉnh sửa thông báo */
-@singleton()
-class CustomToast extends Toast implements IAlert {
-  error(message: any): void {
-    if (message?.message === 'COMMON.EMAIL_EXISTED')
-      message = $t('Tài khoản đã tồn tại')
-
-    super.error(message)
-  }
-}
-
 class Main {
   /**
    * @param API_OAUTH_BASIC API đăng nhập
@@ -158,12 +150,13 @@ class Main {
     private readonly SERVICE_LOCAL_STORAGE: ILocalStorage = container.resolve(
       LocalStorage
     ),
-    private readonly SERVICE_TOAST: IAlert = container.resolve(Toast)
+    private readonly SERVICE_TOAST: IAlert = container.resolve(Toast),
+    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth)
   ) {}
 
   /**đăng ký */
-  @loadingV2(commonStore, 'is_loading_full_screen')
-  @error(container.resolve(CustomToast))
+  @handleLoadingOauth
+  @handleErrorOauth()
   async register() {
     // xác thực form
     await VLD_EMAIL_REGISTER.validate(form.value)
@@ -186,7 +179,7 @@ class Main {
     this.SERVICE_TOAST.success($t('Đăng ký tài khoản thành công'))
 
     // đăng ký thành công thì chuyển về đăng nhập email
-    $router.push({
+    this.SERVICE_OAUTH.redirect({
       path: '/oauth/login-email',
       query: { email: form.value.email, register: 'true' },
     })

@@ -32,7 +32,7 @@ export function error(
         service_alert.error(e)
 
         // chạy callback nếu có
-        if (callback) await callback()
+        if (callback) await callback(e)
 
         // tiếp tục ném lỗi nếu cần
         if (is_continue) throw e

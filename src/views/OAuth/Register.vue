@@ -11,6 +11,7 @@
       {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
     </small>
   </div>
+  <AlertError />
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
@@ -53,26 +54,27 @@
 </template>
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
-import { error } from '@/utils/decorator/Error'
 import { composableService } from '@/views/OAuth/service'
 import { container } from 'tsyringe'
 import { composableValidate } from './validate'
+import Swal from 'sweetalert2'
+import { BillingPrivate } from '@/utils/api/Billing'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 
 import Facebook from '@/components/OAuth/Facebook.vue'
 import GoLogin from '@/views/OAuth/GoLogin.vue'
 import Or from '@/views/OAuth/Or.vue'
-import Swal from 'sweetalert2'
-import { Billing, BillingPrivate } from '@/utils/api/Billing'
+import AlertError from '@/views/OAuth/AlertError.vue'
+
 import type { IAlert } from '@/utils/helper/Alert/type'
-import { Toast } from '@/utils/helper/Alert/Toast'
 
 const { VLD_EMAIL } = composableValidate()
-const { ServiceOAuth } = composableService()
+const { ServiceOAuth, handleLoadingOauth, handleErrorOauth } =
+  composableService()
 
-const $router = useRouter()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const $service_oauth = container.resolve(ServiceOAuth)
@@ -83,25 +85,34 @@ const email = ref<string>()
 class Main {
   /**
    * @param API_BILLING API billing
+   * @param API_OAUTH_BASIC API oauth basic
    * @param SERVICE_TOAST service toast
+   * @param SERVICE_OAUTH service oauth
    */
   constructor(
     private readonly API_BILLING = new BillingPrivate(),
-    private readonly SERVICE_TOAST: IAlert = container.resolve(Toast)
+    private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic(),
+    private readonly SERVICE_TOAST: IAlert = container.resolve(Toast),
+    private readonly SERVICE_OAUTH = $service_oauth
   ) {}
 
   /**đăng nhập bằng email*/
-  @error()
+  @handleLoadingOauth
+  @handleErrorOauth()
   async goRegisterDetail() {
     // kiểm tra email
     await VLD_EMAIL.validate({ email: email.value })
 
+    // kiểm tra email đã tồn tại trên hệ thống chưa
+    await this.API_OAUTH_BASIC.checkEmail(email.value!)
+
     // chuyển hướng vào trang chi tiết đăng ký
-    $router.push({
+    this.SERVICE_OAUTH.redirect({
       path: '/oauth/register-detail',
       query: { email: email.value },
     })
   }
+  /**xóa tài khoản */
   async deleteAccount() {
     const {
       value: [EMAIL],

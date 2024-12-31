@@ -2,7 +2,7 @@ import type { Language } from '@/service/interface/language'
 
 const source: Language = {
   'Tài khoản không tồn tại': 'Account does not exist',
-  'Tài khoản đã được xác thực rồi': 'Account has been verified',
+  'Tài khoản đã xác thực': 'Account has been verified',
   'Mã xác thực không đúng': 'Incorrect verification code',
   'Email _ đã được xác minh!': 'Email {name} has been verified!',
   'Email xác minh đã được gửi!': 'Verification email sent!',

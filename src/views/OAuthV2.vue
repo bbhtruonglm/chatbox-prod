@@ -13,13 +13,21 @@
       />
       <RouterView />
       <div class="flex justify-between">
-        <p class="flex items-center gap-3 text-xs text-slate-500">
-          <button>
+        <p class="flex items-center gap-3 text-xs">
+          <a
+            href="https://retion.ai/privacy.html"
+            target="_blank"
+            class="no-underline text-slate-500"
+          >
             {{ $t('Chính sách') }}
-          </button>
-          <button>
+          </a>
+          <a
+            href="https://retion.ai/tos.html"
+            target="_blank"
+            class="no-underline text-slate-500"
+          >
             {{ $t('Điều khoản') }}
-          </button>
+          </a>
         </p>
         <Language />
       </div>

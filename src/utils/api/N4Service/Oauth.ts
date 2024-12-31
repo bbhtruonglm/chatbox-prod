@@ -81,4 +81,9 @@ export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
     // gọi api
     return this.post('verify_email', { email, verify_code }, true)
   }
+  /**kiểm tra email chưa tạo tài khoản */
+  public async checkEmail(email: string): Promise<void> {
+    // gọi api
+    return this.post('check_email', { email }, true)
+  }
 }
