@@ -15,6 +15,7 @@ import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import { useI18n } from 'vue-i18n'
 import { ref, markRaw } from 'vue'
 import { useConnectPageStore } from '@/stores'
+import { composableService } from '@/views/Dashboard/ConnectPage/service'
 
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
@@ -23,6 +24,8 @@ import WebIcon from '@/components/Icons/Web.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
 
 import type { Component } from 'vue'
+
+const { ICON_MAP } = composableService()
 
 const { t: $t } = useI18n()
 const connectPageStore = useConnectPageStore()
@@ -48,13 +51,6 @@ function isSelectedMenu(key: string) {
 }
 /**khởi tạo danh sách menu */
 function getPlatform(): PlatformItem[] {
-  /** Icon mặc định */
-  const ICON_MAP: Record<string, Component> = {
-    FB_MESS: markRaw(FacebookIcon),
-    ZALO_OA: markRaw(ZaloIcon),
-    WEBSITE: markRaw(WebIcon),
-  }
-
   /** Menu mặc định */
   const DEFAULT_MENU: PlatformItem[] = [
     {

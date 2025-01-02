@@ -56,26 +56,18 @@
       <small class="font-medium text-sm">
         {{ $t('Mật khẩu') }}
       </small>
-      <input
+      <InputPassword
         v-model="form.password"
-        autocapitalize="off"
-        autocorrect="off"
-        type="password"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Mật khẩu') })"
-        class="custom-input"
       />
     </div>
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
         {{ $t('Xác nhận mật khẩu') }}
       </small>
-      <input
+      <InputPassword
         v-model="form.confirm_password"
-        autocapitalize="off"
-        autocorrect="off"
-        type="password"
         :placeholder="$t('Xác nhận mật khẩu')"
-        class="custom-input"
       />
     </div>
     <button
@@ -104,6 +96,7 @@ import { composableValidate } from './validate'
 
 import AlertError from '@/views/OAuth/AlertError.vue'
 import GoLogin from '@/views/OAuth/GoLogin.vue'
+import InputPassword from '@/views/OAuth/InputPassword.vue'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 

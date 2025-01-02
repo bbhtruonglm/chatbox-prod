@@ -1,13 +1,17 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Tải ứng dụng': 'Download app',
+  'Vui lòng tải ứng dụng Mobile để kết nối Trang':
+    'Please download the Mobile app to connect to the Page',
   'Đã đặt lại mật khẩu!': 'Password reset!',
   'Xác nhận mật khẩu mới': 'Confirm new password',
   'Mật khẩu mới': 'New password',
   'Đối với tài khoản _': 'For the account {name}',
   'Đặt lại mật khẩu tài khoản': 'Reset account password',
-  'Một liên kết để đặt lại mật khẩu đã được gửi qua email cho bạn.': 'A link to reset your password has been emailed to you.',
-  'Quay lại trang đăng nhập': 'Return to login', 
+  'Một liên kết để đặt lại mật khẩu đã được gửi qua email cho bạn.':
+    'A link to reset your password has been emailed to you.',
+  'Quay lại trang đăng nhập': 'Return to login',
   'Đặt lại mật khẩu': 'Reset password',
   'Chúng tôi sẽ gửi hướng dẫn qua email để đặt lại mật khẩu của bạn.':
     'We’ll email instructions to reset your password.',

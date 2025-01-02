@@ -67,14 +67,10 @@
       <small class="font-medium text-sm">
         {{ $t('Mật khẩu') }}
       </small>
-      <input
+      <InputPassword
         v-model="form.password"
-        @keyup.enter="$main.loginEmail()"
-        autocapitalize="off"
-        autocorrect="off"
-        type="password"
+        @enter="$main.loginEmail()"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Mật khẩu') })"
-        class="custom-input"
       />
     </div>
     <div>
@@ -106,6 +102,7 @@ import { composableValidate } from './validate'
 import NewTo from '@/views/OAuth/NewTo.vue'
 import Alert from '@/views/OAuth/Alert.vue'
 import AlertError from '@/views/OAuth/AlertError.vue'
+import InputPassword from '@/views/OAuth/InputPassword.vue'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
 

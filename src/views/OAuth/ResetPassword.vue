@@ -17,30 +17,22 @@
       <small class="font-medium text-sm">
         {{ $t('Mật khẩu mới') }}
       </small>
-      <input
+      <InputPassword
         v-model="form.password"
-        @keyup.enter="$main.resetPassword()"
-        autocapitalize="off"
-        autocorrect="off"
-        type="password"
+        @enter="$main.resetPassword()"
         :placeholder="$t('Nhập _ của bạn', { name: $t('Mật khẩu mới') })"
-        class="custom-input"
       />
     </div>
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
         {{ $t('Xác nhận mật khẩu mới') }}
       </small>
-      <input
+      <InputPassword
         v-model="form.confirm_password"
-        @keyup.enter="$main.resetPassword()"
-        autocapitalize="off"
-        autocorrect="off"
-        type="password"
+        @enter="$main.resetPassword()"
         :placeholder="
           $t('Nhập _ của bạn', { name: $t('Xác nhận mật khẩu mới') })
         "
-        class="custom-input"
       />
     </div>
     <button
@@ -58,6 +50,7 @@ import { onMounted, ref } from 'vue'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { composableValidate } from './validate'
 
+import InputPassword from '@/views/OAuth/InputPassword.vue'
 import AlertError from '@/views/OAuth/AlertError.vue'
 
 import { composableService } from './service'

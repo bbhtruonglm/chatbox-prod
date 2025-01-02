@@ -30,6 +30,7 @@
       />
     </template>
   </CardItem>
+  <EmptyPage v-else />
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
@@ -40,6 +41,7 @@ import { KEY_SORT_LIST_PAGE_FUNCT } from '../symbol'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import OrgTitleAction from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitleAction.vue'
 import OrgPages from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgPages.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 
