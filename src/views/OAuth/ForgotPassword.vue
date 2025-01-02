@@ -9,6 +9,7 @@
       }}
     </small>
   </div>
+  <AlertError />
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">
       <small class="font-medium text-sm">
@@ -45,6 +46,8 @@ import { ref } from 'vue'
 import { composableService } from '@/views/OAuth/service'
 import { container } from 'tsyringe'
 import { composableValidate } from './validate'
+
+import AlertError from '@/views/OAuth/AlertError.vue'
 
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 

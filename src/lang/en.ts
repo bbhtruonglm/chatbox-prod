@@ -1,6 +1,12 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Tải ngay ứng dụng cho iOS hoặc Android:': 'Download the app for iOS or Android:',
+  'Ứng dụng giúp bạn có trải nghiệm tuyệt vời khi quản lý hội thoại và tương tác với khách hàng nhanh chóng, tiện lợi.':
+    'The app helps you have a great experience when managing conversations and interacting with customers quickly and conveniently.',
+  'Để bắt đầu trò chuyện trên Trang này, vui lòng tải ứng dụng Retion.':
+    'To start chatting on this Page, please download the Retion app.',
+  'Bắt đầu Chat ngay với Retion!': 'Start chatting with Retion!',
   'Tải ứng dụng': 'Download app',
   'Vui lòng tải ứng dụng Mobile để kết nối Trang':
     'Please download the Mobile app to connect to the Page',

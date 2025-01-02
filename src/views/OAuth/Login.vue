@@ -66,7 +66,6 @@ import Or from '@/views/OAuth/Or.vue'
 const { VLD_EMAIL } = composableValidate()
 const { ServiceOAuth } = composableService()
 
-const $router = useRouter()
 const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const $service_oauth = container.resolve(ServiceOAuth)
