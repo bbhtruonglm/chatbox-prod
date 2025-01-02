@@ -4,9 +4,9 @@ const source: Language = {
   'Tài khoản không tồn tại': 'Account does not exist',
   'Tài khoản đã xác thực': 'Account has been verified',
   'Mã xác thực không đúng': 'Incorrect verification code',
-  'Email _ đã được xác minh!': 'Email {name} has been verified!',
-  'Email xác minh đã được gửi!': 'Verification email sent!',
-  'Gửi lại email xác minh': 'Resend verification email',
+  'Email _ đã được xác nhận!': 'Email {name} has been verified!',
+  'Đã gửi email xác thực!': 'Verification email sent!',
+  'Gửi lại email xác thực': 'Resend verification email',
   'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _':
     'Please verify your email address by following the link sent to {name}',
   'Tài khoản chưa được xác thực': 'Account not verified',
@@ -32,21 +32,21 @@ const source: Language = {
   '_ không hợp lệ': 'Invalid {name}',
   'Bạn quên mật khẩu?': 'Forgot password?',
   'Mật khẩu': 'Password',
-  'Đăng ký tài khoản _': 'Register a {name} account',
-  'Một bước cuối cùng trước khi bắt đầu dùng thử':
+  'Đăng ký _': 'Register a {name} account',
+  'Một bước cuối cùng trước khi bắt đầu sử dụng':
     'One last step before starting your free trial',
   'Đăng ký bằng _': 'Sign up with {name}',
   'Bạn đã có tài khoản _': 'Already have a {name} account?',
   Hoặc: 'Or',
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
-    'By proceeding, you agree to the <u>Terms and Conditions</u> and <u>Privacy Policy</u>',
+    'By proceeding, you agree to the <u id="term">Terms and Conditions</u> and <u id="privacy">Privacy Policy</u>',
   'Tài khoản hoặc mật khẩu không đúng': 'Incorrect username or password',
   Họ: 'Last name',
   Tên: 'First name',
   'Xác nhận mật khẩu': 'Confirm password',
   'Mật khẩu không khớp': 'Password does not match',
   'Đăng ký tài khoản thành công': 'Successfully registered account',
-  'Tài khoản đã tồn tại': 'Account already exists',
+  'Email đã tồn tại': 'Account already exists',
   name: 'English',
   v1: {
     common: {

@@ -15,14 +15,14 @@
       <div class="flex justify-between">
         <p class="flex items-center gap-3 text-xs">
           <a
-            href="https://retion.ai/privacy.html"
+            :href="PRIVACY"
             target="_blank"
             class="no-underline text-slate-500"
           >
             {{ $t('Chính sách') }}
           </a>
           <a
-            href="https://retion.ai/tos.html"
+            :href="TERM"
             target="_blank"
             class="no-underline text-slate-500"
           >
@@ -38,7 +38,9 @@
 import { useCommonStore } from '@/stores'
 
 import Language from '@/components/Language.vue'
+import { composableService } from './OAuth/service'
 
+const { TERM, PRIVACY } = composableService()
 const commonStore = useCommonStore()
 </script>
 <style lang="scss" scoped>

@@ -93,28 +93,31 @@
             <template
               v-else-if="message.message_type === 'client' && message.ad_id"
             >
-              <!-- <AdMessage :ad_id="message.ad_id" />
-              <br /> -->
-              <PostTemplate
+              <AdMessage :ad_id="message.ad_id" />
+              <br />
+              
+              <!-- <PostTemplate
                 :message
                 :message_index="index"
-              />
+              /> -->
+
             </template>
 
-            <PostTemplate
+            <!-- <PostTemplate
               v-else-if="
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :message
               :message_index="index"
-            />
-            <!-- <FacebookPost
+            /> -->
+
+            <FacebookPost
               v-else-if="
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :fb_post_id="message.fb_post_id"
               :message
-            /> -->
+            />
 
             <UnsupportMessage v-else />
             <DoubleCheckIcon

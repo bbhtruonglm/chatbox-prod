@@ -27,18 +27,21 @@
     </div>
     <div
       @click="$main.resendVerifyEmail()"
-      class="font-medium underline cursor-pointer"
+      :class="{
+        underline: !is_resend_verify_email,
+      }"
+      class="font-medium cursor-pointer"
     >
       <template v-if="!is_resend_verify_email">
-        {{ $t('Gửi lại email xác minh') }}
+        {{ $t('Gửi lại email xác thực') }}
       </template>
       <template v-else>
-        {{ $t('Email xác minh đã được gửi!') }}
+        {{ $t('Đã gửi email xác thực!') }}
       </template>
     </div>
   </Alert>
   <Alert v-if="verify_code && is_verify_email">
-    {{ $t('Email _ đã được xác minh!', { name: form.email }) }}
+    {{ $t('Email _ đã được xác nhận!', { name: form.email }) }}
   </Alert>
   <div class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">

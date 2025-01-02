@@ -5,10 +5,10 @@
       class="custom-title"
     >
       <ArrowLeftIcon class="w-6 h-6" />
-      {{ $t('Đăng ký tài khoản _', { name: commonStore.partner?.name }) }}
+      {{ $t('Đăng ký _', { name: commonStore.partner?.name }) }}
     </button>
     <small class="custom-description">
-      {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
+      {{ $t('Một bước cuối cùng trước khi bắt đầu sử dụng') }}
     </small>
   </div>
   <AlertError />

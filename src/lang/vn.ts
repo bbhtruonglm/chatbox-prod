@@ -1,18 +1,18 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
-  'Email _ đã được xác minh!': 'Email {name} đã được xác minh!',
+  'Email _ đã được xác nhận!': 'Email {name} đã được xác minh!',
   'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _':
     'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến {name}',
   'Tiếp tục sử dụng _': 'Tiếp tục sử dụng {name}',
   'Bạn mới sử dụng _': 'Bạn mới sử dụng {name}?',
   'Nhập _ của bạn': 'Nhập {name} của bạn',
   'Bạn chưa nhập _': 'Bạn chưa nhập  {name}',
-  'Đăng ký tài khoản _': 'Đăng ký tài khoản {name}',
+  'Đăng ký _': 'Đăng ký tài khoản {name}',
   'Đăng ký bằng _': 'Đăng ký với {name}',
   'Bạn đã có tài khoản _': 'Bạn đã có tài khoản {name}?',
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
-    'Bằng việc tiếp tục, bạn đồng ý với <u>Chính sách</u> và <u>Điều khoản</u> của chúng tôi',
+    'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
   '_ không hợp lệ': '{name} không hợp lệ',
   name: 'Tiếng Việt',
   v1: {

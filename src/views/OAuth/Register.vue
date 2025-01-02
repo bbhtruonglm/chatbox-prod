@@ -5,10 +5,10 @@
   />
   <div class="flex flex-col gap-1">
     <strong class="custom-title">
-      {{ $t('Đăng ký tài khoản _', { name: commonStore.partner?.name }) }}
+      {{ $t('Đăng ký _', { name: commonStore.partner?.name }) }}
     </strong>
     <small class="custom-description">
-      {{ $t('Một bước cuối cùng trước khi bắt đầu dùng thử') }}
+      {{ $t('Một bước cuối cùng trước khi bắt đầu sử dụng') }}
     </small>
   </div>
   <AlertError />

@@ -75,15 +75,14 @@ export function composableService() {
       return $t('Tài khoản không tồn tại')
 
     // người dùng đã xác thực rồi
-    if (message === 'COMMON.USER_IS_VERIFY')
-      return $t('Tài khoản đã xác thực')
+    if (message === 'COMMON.USER_IS_VERIFY') return $t('Tài khoản đã xác thực')
 
     // sai mã xác thực
     if (message === 'COMMON.INVALID.VERIFY_CODE')
       return $t('Mã xác thực không đúng')
 
     // email đã tồn tại
-    if (message === 'COMMON.EMAIL_EXISTED') return $t('Tài khoản đã tồn tại')
+    if (message === 'COMMON.EMAIL_EXISTED') return $t('Email đã tồn tại')
   }
 
   /**decorator xử lý loading của oauth */
@@ -112,6 +111,18 @@ export function composableService() {
   const handleErrorOauth = (callback?: Function) =>
     error(container.resolve(CustomToast), callback)
 
+  /**đường dẫn điều khoản */
+  const TERM = 'https://retion.ai/tos.html'
+  /**đường dẫn bảo mật */
+  const PRIVACY = 'https://retion.ai/privacy.html'
+
   // trả về các hàm
-  return { ServiceOAuth, customError, handleLoadingOauth, handleErrorOauth }
+  return {
+    ServiceOAuth,
+    customError,
+    handleLoadingOauth,
+    handleErrorOauth,
+    TERM,
+    PRIVACY,
+  }
 }
