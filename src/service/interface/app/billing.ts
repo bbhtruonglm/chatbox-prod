@@ -35,6 +35,8 @@ export interface OrgInfo {
   }
   /**các thiết lập của tổ chức */
   org_config?: {
+    /**chế độ hiển thị (sắp xếp) hội thoại */
+    org_sort_conversation?: 'NEWEST' | 'UNREAD'
     /**yêu cầu bảo mật nâng cao 2FA */
     org_is_active_2fa?: boolean
     /**kích hoạt AI tự động dịch en -> vn */
@@ -49,6 +51,8 @@ export interface OrgInfo {
     org_is_auto_charge?: boolean
     /**id của người kích hoạt chế độ tự động thanh toán */
     org_auto_charge_actor?: string
+    /**hiện hội thoại theo nhân viên chỉ định */
+    org_is_only_visible_client_of_staff?: boolean
   }
   /**thông số về gói hiện tại của tổ chức */
   org_package?: {

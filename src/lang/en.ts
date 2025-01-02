@@ -1,7 +1,19 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
-  'Tải ngay ứng dụng cho iOS hoặc Android:': 'Download the app for iOS or Android:',
+  'Đối với Quản trị viên vẫn xem được toàn bộ hội thoại.':
+    'For Admins, all conversations are still visible.',
+  'Khi bật chế độ này, hệ thống chỉ hiện ra hội thoại cho nhân viên được chỉ định.':
+    'When this mode is enabled, the system only displays conversations for the assigned staff.',
+  'Hiện hội thoại theo nhân viên chỉ định':
+    'Show conversations by assigned staff',
+  'Hội thoại mới nhất': 'Newest conversations',
+  'Hội thoại chưa đọc': 'Unread conversations',
+  'Thiết lập hiển thị hội thoại': 'Conversation display settings',
+  'Chế độ hiển thị hội thoại': 'Conversation display mode',
+  'Hội thoại': 'Conversations',
+  'Tải ngay ứng dụng cho iOS hoặc Android:':
+    'Download the app for iOS or Android:',
   'Ứng dụng giúp bạn có trải nghiệm tuyệt vời khi quản lý hội thoại và tương tác với khách hàng nhanh chóng, tiện lợi.':
     'The app helps you have a great experience when managing conversations and interacting with customers quickly and conveniently.',
   'Để bắt đầu trò chuyện trên Trang này, vui lòng tải ứng dụng Retion.':
