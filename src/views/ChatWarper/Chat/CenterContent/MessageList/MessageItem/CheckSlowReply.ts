@@ -37,7 +37,10 @@ export class CheckSlowReply implements ICheckSlowReply {
   #getDate(message?: MessageInfo): string | undefined {
     return message?.time || message?.createdAt
   }
-  /**tính toán thời gian giữa 2 tin nhắn */
+  /**
+   * tính toán thời gian giữa 2 tin nhắn
+   * @deprecated dùng DateHandle
+   */
   #calcDuration(current_date: IMessageDate, next_date: IMessageDate): string {
     /**locale hiện tại */
     const LOCALE = this.LOCALE_SERVICE.get()

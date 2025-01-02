@@ -162,10 +162,10 @@ import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import AvatarUpload from '@/components/Upload/AvatarUpload.vue'
 
 import type { OrgInfo } from '@/service/interface/app/billing'
-import { loading } from '@/utils/decorator/loading'
+import { loading } from '@/utils/decorator/Loading'
 import { container } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
-import { error } from '@/utils/decorator/error'
+import { error } from '@/utils/decorator/Error'
 import { BillingAppOrganization } from '@/utils/api/Billing'
 
 const orgStore = useOrgStore()

@@ -47,11 +47,16 @@ export class N4SerivceAppPage extends N4Serivce {
       const PORTAL = $env.zalo_oa.portal
       /**domain hiện tại */
       const CURRENT_HOST = origin
+
       /**path đến ui xử lý */
-      const QUERY_PATH = '/dashboard/select-page?connect_page=ZALO_OA'
+      let query_path = '/dashboard/select-page?connect_page=ZALO_OA'
+
+      // nếu là deploy ở /chat/xxx thì cần thêm
+      if (location?.pathname?.indexOf('/chat/') === 0)
+        query_path = '/chat' + query_path
 
       /**callback uri mục tiêu */
-      const FORWOARD = encodeURIComponent(`${CURRENT_HOST}${QUERY_PATH}`)
+      const FORWOARD = encodeURIComponent(`${CURRENT_HOST}${query_path}`)
 
       /**đường dẫn callback url */
       const CALLBACK_URL = `${PORTAL}?forward=${FORWOARD}`

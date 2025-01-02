@@ -1,6 +1,19 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Email _ đã được xác nhận!': 'Email {name} đã được xác minh!',
+  'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến _':
+    'Vui lòng xác minh địa chỉ email của bạn bằng cách truy cập vào liên kết được gửi đến {name}',
+  'Tiếp tục sử dụng _': 'Tiếp tục sử dụng {name}',
+  'Bạn mới sử dụng _': 'Bạn mới sử dụng {name}?',
+  'Nhập _ của bạn': 'Nhập {name} của bạn',
+  'Bạn chưa nhập _': 'Bạn chưa nhập  {name}',
+  'Đăng ký _': 'Đăng ký tài khoản {name}',
+  'Đăng ký bằng _': 'Đăng ký với {name}',
+  'Bạn đã có tài khoản _': 'Bạn đã có tài khoản {name}?',
+  'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
+    'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
+  '_ không hợp lệ': '{name} không hợp lệ',
   name: 'Tiếng Việt',
   v1: {
     common: {
@@ -209,7 +222,6 @@ const source: Language = {
               description:
                 'Kết nối với Zalo OA cần phải là tài khoản Zalo OA Nâng cao hoặc Zalo Premium.',
               lean_more: 'Tìm hiểu thêm',
-              title: 'Kết nối với Zalo OA',
             },
             empty_invite_guild:
               'Bạn không có trang cần kích hoạt, bạn có thể thêm mới Trang: Facebook, Instagram, Zalo, Whatsapp ... ở cột bên trái.',
@@ -349,7 +361,6 @@ const source: Language = {
                 filteration_condition: 'Điều kiện lọc:',
                 and: 'Và',
                 or: 'Hoặc',
-                find_tag: 'Tìm kiếm nhãn',
                 all_page: 'Tất cả các trang',
               },
               exclude_label: {
@@ -369,7 +380,6 @@ const source: Language = {
                 facebook_post: 'Lọc theo bài đăng',
                 filter_by_comment: 'Lọc bình luận Facebook',
                 filter_by_post: 'Lọc theo bài đăng',
-                find_id_post: 'Tìm kiếm id bài đăng',
                 filter: 'Lọc',
                 cancel_filter: 'Hủy lọc',
                 page_reply: 'Trang đã trả lời',
@@ -469,7 +479,7 @@ const source: Language = {
                 title: 'Chi tiết tập tin đính kèm',
                 image_to_text: 'Ảnh sang chữ',
                 ai_handle: 'Nội dung được xử lý bởi AI',
-                copy_content: 'Sao chép nội dung'
+                copy_content: 'Sao chép nội dung',
               },
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
@@ -488,7 +498,6 @@ const source: Language = {
                 phone: 'Số điện thoại',
                 sale: 'Hóa đơn mua hàng',
                 shipping: 'Phương tiện di chuyển',
-
                 place_order: 'Tạo đơn hàng',
                 create_transaction: 'Tạo giao dịch',
                 schedule_appointment: 'Lập lịch',
@@ -625,10 +634,13 @@ const source: Language = {
               open_message: 'Xem bình luận',
               get_more_comments: 'Xem thêm phản hồi...',
               reply_comment: 'Trả lời',
-              private_inbox: 'Inbox',
+              reply_comment_full: 'Trả lời bình luận bài viết',
+              hide_comment: 'Ẩn bình luận',
+              private_inbox: 'Gửi tin trả lời',
               cancel: 'Hủy',
               send_message: 'Gửi tin nhắn',
               send_message_success: 'Gửi tin thành công',
+              already_replied: 'Bình luận đã được trả lời rồi',
             },
             album: {
               title: 'Album',
@@ -654,10 +666,6 @@ const source: Language = {
             text: 'Hiện văn bản',
             dot_tooltip: 'Hiện chấm màu có chú giải',
             show_page_avatar: 'Hiện ảnh đại diện của trang',
-            show_page_avatar_on:
-              'Hiện toàn bộ ảnh đại diện của trang trên hội thoại',
-            show_page_avatar_off:
-              'Ẩn toàn bộ ảnh đại diện của trang trên hội thoại',
             chat: 'Thiết lập hội thoại',
             translate: 'Dịch',
             translate_description: 'Chọn ngôn ngữ bạn muốn dịch',
@@ -907,6 +915,8 @@ const source: Language = {
               chatbot_ai_enterprise: 'Chatbot AI Enterprise',
               chatbot_unlimited_n_year: 'Chatbot Unlimited',
               chatbot_unlimited_1_year: 'Chatbot Unlimited 1 năm',
+              chatbot_loyalty_1_year: 'Chatbot Loyalty 1 năm',
+              chatbot_marketing_1_year: 'Chatbot Marketing 1 năm',
               account: 'Tài khoản',
               balance: 'Số dư tài khoản',
               pack_info: 'Thông tin gói cước',

@@ -53,8 +53,8 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import { loading } from '@/utils/decorator/loading'
-import { error } from '@/utils/decorator/error'
+import { loading } from '@/utils/decorator/Loading'
+import { error } from '@/utils/decorator/Error'
 import { container } from 'tsyringe'
 import { read_link_org } from '@/service/api/chatbox/billing'
 

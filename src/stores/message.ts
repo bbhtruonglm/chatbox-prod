@@ -5,6 +5,7 @@ import { remove } from 'lodash'
 import type {
   AttachmentCacheList,
   AttachmentInfo,
+  IReplyComment,
   MessageInfo,
   TempSendMessage,
 } from '@/service/interface/app/message'
@@ -38,6 +39,14 @@ export const useMessageStore = defineStore('message_store', () => {
   /**gắn cờ hiện nút đi scroll xuống bottom */
   const is_show_to_bottom = ref(false)
 
+  /**dữ liệu cần thiết để trả lời bình luận */
+  const reply_comment = ref<IReplyComment>()
+
+  /**xoá dữ liệu trả lời bình luận */
+  function clearReplyComment() {
+    reply_comment.value = undefined
+  }
+
   /**cập nhật giá trị của tin nhắn tạm */
   function updateTempMessage(
     id: string,
@@ -65,8 +74,10 @@ export const useMessageStore = defineStore('message_store', () => {
     is_send_file,
     is_show_to_bottom,
     is_input_run_ai,
+    reply_comment,
 
     updateTempMessage,
     removeTempMessage,
+    clearReplyComment,
   }
 })

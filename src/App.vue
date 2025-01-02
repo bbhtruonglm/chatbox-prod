@@ -23,66 +23,90 @@ import Loading from '@/components/Loading.vue'
 import Network from './components/Network.vue'
 import AdBlocker from './components/AdBlocker.vue'
 import { onMounted } from 'vue'
-import { ToastSingleton } from './utils/helper/Alert/Toast'
+import { Toast } from './utils/helper/Alert/Toast'
 import { N4SerivcePublicPartner } from './utils/api/N4Service/Partner'
 import { setItem } from './service/helper/localStorage'
+import { error } from './utils/decorator/Error'
+import { container } from 'tsyringe'
+import { QueryString, type IQueryString } from './utils/helper/QueryString'
 
 const commonStore = useCommonStore()
-const $toast = ToastSingleton.getInst()
+const $toast = container.resolve(Toast)
 
-onMounted(() => {
-  // lấy token từ param nếu có
-  getParamToken()
+class Main {
+  /**
+   * @param SERVICE_QUERY_STRING query string service
+   */
+  constructor(
+    private readonly SERVICE_QUERY_STRING: IQueryString = container.resolve(
+      QueryString
+    )
+  ) {}
 
-  // lấy thông tin đối tác
-  getPartnerInfo()
-})
+  /**lưu lại ref được truyền ở param */
+  saveRef() {
+    /**mã ref */
+    const REF =
+      this.SERVICE_QUERY_STRING.get('rf') ||
+      this.SERVICE_QUERY_STRING.get('ref')
 
-/**ghi đè lại token lấy từ param, phục vụ cho trường hợp mở từ app mobile */
-function getParamToken() {
-  /**query param */
-  const ROUTE_QUERY = new URLSearchParams(new URL(window.location.href)?.search)
+    // nếu không có ref thì thôi
+    if (!REF) return
 
-  /**mã xác thực */
-  const ACCESS_TOKEN = ROUTE_QUERY.get('access_token') || ROUTE_QUERY.get('token')
+    // lưu ref vào local storage
+    setItem('ref', REF)
+  }
+  /**ghi đè lại token lấy từ param, phục vụ cho trường hợp mở từ app mobile */
+  getParamToken() {
+    /**mã xác thực */
+    const ACCESS_TOKEN =
+      this.SERVICE_QUERY_STRING.get('access_token') ||
+      this.SERVICE_QUERY_STRING.get('token')
 
-  // nếu không có token thì thôi
-  if (!ACCESS_TOKEN) return
+    // nếu không có token thì thôi
+    if (!ACCESS_TOKEN) return
 
-  // lưu token vào local storage
-  setItem('access_token', ACCESS_TOKEN)
-}
-
-/**Lấy thông tin đối tác */
-async function getPartnerInfo() {
-  try {
+    // lưu token vào local storage
+    setItem('access_token', ACCESS_TOKEN)
+  }
+  /**Lấy thông tin đối tác */
+  @error($toast)
+  async getPartnerInfo() {
     // lấy thông tin đối tác
     commonStore.partner = await new N4SerivcePublicPartner().readPartner()
 
     // nếu không có thông tin đối tác thì báo lỗi
     if (!commonStore.partner) throw 'NOT_FOUND.PARTNER'
 
+    // thay đổi title
     document.title = commonStore.partner?.name || ''
 
     // thay đổi favicon
-    setFavicon()
-  } catch (e) {
-    // báo lỗi
-    $toast.error(e)
+    $main.setFavicon()
+  }
+  /**Thay đổi favicon */
+  setFavicon() {
+    /**thẻ link */
+    const LINK = document.createElement('link')
+
+    // thêm thông tin cho thẻ link
+    LINK.id = 'favicon'
+    LINK.rel = 'icon'
+    LINK.href = commonStore.partner?.logo?.icon || ''
+
+    // thêm vào head
+    document.head.appendChild(LINK)
   }
 }
-function setFavicon() {
-  /**thẻ link */
-  const LINK = document.createElement('link')
+const $main = new Main()
 
-  // thêm thông tin cho thẻ link
-  LINK.id = 'favicon'
-  LINK.rel = 'icon'
-  LINK.href = commonStore.partner?.logo?.icon || ''
+// lấy token từ param nếu có
+$main.getParamToken()
+// lưu lại ref để dùng sau
+$main.saveRef()
 
-  // thêm vào head
-  document.head.appendChild(LINK)
-}
+// lấy thông tin đối tác khi component được mount
+onMounted($main.getPartnerInfo)
 </script>
 
 <style lang="scss">

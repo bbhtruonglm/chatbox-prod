@@ -5,9 +5,14 @@
     </template>
     <template #title>
       {{ $t('v1.common.page') }}
-      ({{ orgStore.selected_org_info?.org_package?.org_current_page }}/{{
-        orgStore.selected_org_info?.org_package?.org_quota_page
-      }})
+      (
+      {{ orgStore.selected_org_info?.org_package?.org_current_page }}
+      /
+      <template v-if="orgStore.isUnlimitedPage()"> ∞ </template>
+      <template v-else>
+        {{ orgStore.selected_org_info?.org_package?.org_quota_page }}
+      </template>
+      )
     </template>
     <template #action>
       <button

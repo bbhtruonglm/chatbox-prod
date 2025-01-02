@@ -74,6 +74,7 @@
             </div>
           </div>
           <button
+            v-if="input.data_source?.ocr?.original_text"
             @click="$clipboard.copy(input.data_source?.ocr?.original_text)"
             class="py-2 px-4 rounded-md text-white bg-slate-700 w-fit"
           >

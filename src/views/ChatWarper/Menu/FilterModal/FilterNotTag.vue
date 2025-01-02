@@ -26,8 +26,8 @@
       <input
         ref="search_ref"
         type="text"
-        :placeholder="$t('v1.view.main.dashboard.chat.filter.label.find_tag')"
-        class="border px-3 py-1 rounded-lg focus:outline-none w-full"
+        :placeholder="$t('Tìm kiếm nhãn')"
+        class="border px-3 py-1 rounded-lg focus:outline-none w-full text-sm"
         v-on:keyup="searchLabel"
         v-model="label_search_name"
       />

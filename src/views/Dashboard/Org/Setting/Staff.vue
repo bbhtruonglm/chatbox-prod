@@ -5,9 +5,14 @@
     </template>
     <template #title>
       {{ $t('v1.view.main.dashboard.org.setting.member') }}
-      ({{ orgStore.selected_org_info?.org_package?.org_current_staff }}/{{
-        orgStore.selected_org_info?.org_package?.org_quota_staff
-      }})
+      (
+      {{ orgStore.selected_org_info?.org_package?.org_current_staff }}
+      /
+      <template v-if="orgStore.isUnlimitedStaff()"> ∞ </template>
+      <template v-else>
+        {{ orgStore.selected_org_info?.org_package?.org_quota_staff }}
+      </template>
+      )
     </template>
     <template #action>
       <button

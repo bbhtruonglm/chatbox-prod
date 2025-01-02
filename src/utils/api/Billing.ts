@@ -8,10 +8,26 @@ import type {
 import type { IBankAccount } from './N4Service/Partner'
 
 /**gọi API lên server của billing */
-class Billing extends Botx {
+export class Billing extends Botx {
   constructor(path: string) {
     // gọi API lên server
     super(`${$env.host.billing}/${path}`)
+  }
+}
+
+/**api bí mật của tổ chức */
+export class BillingPrivate extends Botx {
+  constructor() {
+    // gọi API lên server
+    super(`${$env.host.billing}/private`)
+  }
+
+  /**
+   * xóa tài khoản - dùng để test tính năng tạo tk = email
+   * @param email email tài khoản cần xóa
+   */
+  deleteAccount(email: string) {
+    return this.post('chatbot_user/delete_chatbox_user', { email })
   }
 }
 

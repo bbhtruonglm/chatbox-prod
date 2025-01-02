@@ -89,6 +89,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')"
       />
       <NavItem
+        v-if="$main.isShowStaffFilter()"
         :is_disable_tooltip="true"
         @mouseover="filter_staff?.filter_popover_ref?.mouseover"
         @mouseleave="filter_staff?.filter_popover_ref?.mouseleave"
@@ -108,7 +109,7 @@
       />
       <NavItem
         v-if="isFilterActive()"
-        @click="clearAllFilter()"
+        @click="$main.clearAllFilter()"
         :icon="CloseBoldIcon"
         class_icon="text-red-600"
         :title="$t('v1.view.main.dashboard.chat.filter.un_filter')"
@@ -163,6 +164,11 @@ import UsersIcon from '@/components/Icons/Users.vue'
 import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
 import { Domain } from '@/utils/helper/Domain'
+import {
+  CalcSpecialPageConfigs,
+  type ICalcSpecialPageConfigs,
+} from '@/utils/helper/Conversation/CalcSpecialPageConfigs'
+import { container } from 'tsyringe'
 
 const conversationStore = useConversationStore()
 const orgStore = useOrgStore()
@@ -187,16 +193,36 @@ const filter_staff = ref<InstanceType<typeof FilterStaff>>()
 /** Lọc theo bài post */
 const filter_post = ref<InstanceType<typeof FilterPost>>()
 
-/** Xóa toàn bộ lọc đã chọn */
-function clearAllFilter() {
-  filter_interact.value?.clearThisFilter()
-  filter_message.value?.clearThisFilter()
-  filter_phone.value?.clearThisFilter()
-  filter_date.value?.clearThisFilter()
-  filter_tag.value?.clearThisFilter()
-  filter_not_tag.value?.clearThisFilter()
-  filter_staff.value?.clearThisFilter()
-  filter_post.value?.clearThisFilter()
-  resetConversationFilter()
+class Main {
+  /**
+   * @param SERVICE_CALC_SPECIAL_PAGE_CONFIGS tính toán cấu hình trang đặc biệt
+   */
+  constructor(
+    private readonly SERVICE_CALC_SPECIAL_PAGE_CONFIGS: ICalcSpecialPageConfigs = container.resolve(
+      CalcSpecialPageConfigs
+    )
+  ) {}
+
+  /**có hiện lọc nhân viên không */
+  isShowStaffFilter() {
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
+    // nếu chỉ cho nv xem của mình thì không hiện lọc nhân viên
+    return !SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff
+  }
+  /** Xóa toàn bộ lọc đã chọn */
+  clearAllFilter() {
+    filter_interact.value?.clearThisFilter()
+    filter_message.value?.clearThisFilter()
+    filter_phone.value?.clearThisFilter()
+    filter_date.value?.clearThisFilter()
+    filter_tag.value?.clearThisFilter()
+    filter_not_tag.value?.clearThisFilter()
+    filter_staff.value?.clearThisFilter()
+    filter_post.value?.clearThisFilter()
+    resetConversationFilter()
+  }
 }
+const $main = new Main()
 </script>

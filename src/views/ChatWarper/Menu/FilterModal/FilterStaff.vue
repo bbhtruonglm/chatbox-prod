@@ -13,7 +13,7 @@
         ref="search_ref"
         type="text"
         :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-        class="border px-3 py-1 w-full rounded-lg focus:outline-none"
+        class="border px-3 py-1 w-full rounded-lg focus:outline-none text-sm"
         v-on:keyup="searchStaff"
         v-model="search_staff_name"
       />
@@ -27,7 +27,7 @@
         <div class="flex items-center">
           <StaffAvatar
             class="rounded-full w-6 h-6 mr-3"
-            :id="staff.fb_staff_id"
+            :id="staff?.user_id || staff?.fb_staff_id"
           />
           <p
             :class="{

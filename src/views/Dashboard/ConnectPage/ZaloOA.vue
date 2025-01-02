@@ -20,7 +20,7 @@
     <template #button>
       <ZaloOA
         @done="connectPageStore.selectMenu('PAGE')"
-        :text="$t('v1.view.main.dashboard.select_platform.zalo_oa.title')"
+        :text="$t('Kết nối với Zalo OA')"
       />
     </template>
   </EmptyPage>

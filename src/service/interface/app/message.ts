@@ -1,14 +1,69 @@
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
- /**kích thước của file */
+/**kích thước của file */
 export interface AttachmentSize {
   /**độ rộng */
   width?: number
   /**độ cao */
   height?: number
 }
+export interface IPortContent {
+  /**id bài viết */
+  id?: string
+  /**tên người tạo */
+  creator_name?: string
+  /**dữ liệu của admin */
+  admin_creator?: {
+    /**tên */
+    name: string
+  }
+  /**dữ liệu người tạo */
+  from?: {
+    /**tên */
+    name: string
+  }
+  /**file đính kèm */
+  attachments?: {
+    /**dữ liệu */
+    data?: [
+      {
+        /**đa phương tiện */
+        media?: {
+          /**hình ảnh chính */
+          image?: {
+            /**đường dẫn */
+            src?: string
+          }
+        }
+        /**tiêu đề bài viết */
+        title?: string
+      }
+    ]
+  }
+  /**nội dung thông điệp */
+  message?: string
+  /**đường dẫn của bài viết */
+  permalink_url?: string
+  /**thời gian cập nhật bài vieets */
+  updated_time?: string
+}
+/**dữ liệu của 1 bài post */
+export interface IPost extends IPortContent {
+  /**nội dung bài viết */
+  content?: IPortContent
+}
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**comment của tin nhắn này có bị ẩn không */
+  is_hidden_comment?: boolean
+  /**đã trả lời bí mật chưa */
+  is_private_reply?: boolean
+  /** Dữ liệu bình luận trả lời được tiêm thêm vào */
+  reply_comments: FacebookCommentPost[]
+  /**dữ liệu của 1 bài post, tin nhắn dạng post */
+  post?: IPost
+  /**id của bình luận này */
+  comment_id?: string
   /**cảm xúc thả tim của tin nhắn */
   reaction?: {
     /**loại reaction */
@@ -60,6 +115,29 @@ export interface MessageInfo {
   snap_replay_message?: MessageInfo
   /**dữ liệu của AI */
   ai?: MessageAiData[]
+}
+
+/**
+ * loại trả lời
+ * - REPLY: trả lời bình luận bình thường
+ * - PRIVATE_REPLY: trả lời tin nhắn riêng
+ */
+export type IReplyCommentType = 'REPLY' | 'PRIVATE_REPLY'
+
+/**dữ liệu cần thiết để trả lời bình luận */
+export interface IReplyComment {
+  /**loại trả lời */
+  type?: IReplyCommentType
+  /**id của bình luận gốc */
+  root_comment_id?: string
+  /**nội dung bình luận gốc */
+  root_comment_message?: string
+  /**vị trí của tin nhắn chứa bình luận */
+  message_index?: number
+  /**có đang loading không */
+  is_loading?: boolean
+  /**id bài viết */
+  post_id?: string
 }
 
 /**dữ liệu AI của một phần tử */

@@ -93,6 +93,9 @@ onMounted(() => {
 function letterToColorCode() {
   let character = $props.conversation?.client_name
 
+  // nếu không có tên thì trả về màu mặc định
+  if (!character) return 'rgb(212, 219, 255)'
+
   // lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường
   const INPUT = character?.charAt(0).toLowerCase()
 

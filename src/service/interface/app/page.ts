@@ -144,6 +144,8 @@ export interface IPageTriggerConfig {
   /**thiết lập trigger chatbot */
   config?: IPageTriggerChatbotConfig
 }
+/**thiết lập sắp xếp hội thoại */
+export type ISortConversation = 'NEWEST' | 'UNREAD'
 /**thiết lập chung > hội thoại */
 export interface IPageGeneralConversationConfig {
   /**
@@ -151,7 +153,7 @@ export interface IPageGeneralConversationConfig {
    * - NEWEST: hiện hội thoại mới nhất
    * - UNREAD: hiện hội thoại chưa đọc
    */
-  sort_conversation?: 'NEWEST' | 'UNREAD'
+  sort_conversation?: ISortConversation
   /**
    * chế độ hiển thị gắn nhãn
    * - ICON_TOOLTIP: Hiện chấm màu có chú giải

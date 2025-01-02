@@ -1,7 +1,7 @@
 <template>
     <div>
         <input ref="search_ref" type="text" :placeholder="$t('v1.view.main.dashboard.chat.filter.staff.find_staff')"
-            class="border px-3 py-1 w-full rounded-lg focus:outline-none"
+            class="border px-3 py-1 w-full rounded-lg focus:outline-none text-sm"
             v-on:keyup="$emit('search_staff', search_staff_name)" v-model="search_staff_name">
     </div>
 </template>

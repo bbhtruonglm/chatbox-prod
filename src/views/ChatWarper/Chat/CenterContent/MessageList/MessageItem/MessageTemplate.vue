@@ -41,10 +41,11 @@
       </div>
       <div
         v-if="data_source?.content"
+        @click="clickCopyPhoneEmail"
         v-html="
           message_type === 'client'
-            ? renderText(data_source?.content)
-            : data_source?.content
+            ? fixXss(renderText(data_source?.content))
+            : fixXss(data_source?.content)
         "
         class="enter-line"
       />
@@ -58,7 +59,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import DOMPurify from 'dompurify'
 
 import Media from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
@@ -71,7 +73,7 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
-import { renderText } from '@/service/function'
+import { clickCopyPhoneEmail, renderText } from '@/service/function'
 
 const $props = withDefaults(
   defineProps<{
@@ -113,5 +115,9 @@ function isHaveFileAttachment() {
       $props.data_source?.audio?.url ||
       $props.data_source?.file?.url
   )
+}
+/**làm sạch html trước khi hiển thị, tránh XSS */
+function fixXss(text?: string) {
+  return DOMPurify.sanitize(text || '')
 }
 </script>

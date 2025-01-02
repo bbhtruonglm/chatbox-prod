@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <div class="w-5 h-5 rounded-full mr-3" :style="{ 'background': label?.bg_color }">
             </div>
-            <div class="w-[calc(100%_-_52px)] truncate">
+            <div class="w-[calc(100%_-_52px)] truncate text-sm">
                 {{ label?.title }}
             </div>
             <div class="w-5 h-5">

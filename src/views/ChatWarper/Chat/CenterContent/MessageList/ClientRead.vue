@@ -15,7 +15,7 @@ const $emit = defineEmits(['change_last_read_message'])
 const $props = withDefaults(
   defineProps<{
     /**thời gian của tin nhắn */
-    time?: string
+    time?: string | number
   }>(),
   {}
 )

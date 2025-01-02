@@ -1,5 +1,4 @@
 <template>
-  <!-- v-if="!fb_post_ref?.is_get_post_success" -->
   <div class="text-xs text-center">
     <span class="text-slate-500 whitespace-nowrap mr-1">
       {{ $t('v1.view.main.dashboard.chat.post.ad_from') }}

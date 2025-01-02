@@ -5,7 +5,6 @@ import { waterfall } from 'async'
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import {
-  loadEnv,
   loadLib,
   loadApp,
   loadLanguage,
@@ -16,6 +15,7 @@ import {
 import type { CbError } from '@/service/interface/function'
 
 import '@/assets/css/tailwind.css'
+import '@/utils/helper/Validate'
 
 import { container } from 'tsyringe'
 import { EnvManage } from './utils/base/EnvManage'

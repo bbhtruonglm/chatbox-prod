@@ -7,23 +7,36 @@
     />
 
     <div class="h-[500px] overflow-y-auto flex flex-col gap-2">
-      <button
+      <div
         v-for="page of pages"
-        @click="selected_page = page"
-        class="flex items-center gap-2"
+        class="flex gap-4"
       >
-        <img
-          :src="`https://graph.facebook.com/${page?.id}/picture`"
-          class="w-8 h-8 rounded-full"
-        />
-        {{ page?.name }}
-      </button>
+        <button
+          @click="selected_page = page"
+          class="flex items-center gap-2 bg-slate-100 w-[400px]"
+        >
+          <img
+            :src="`https://graph.facebook.com/${page?.id}/picture`"
+            class="w-8 h-8 rounded-full"
+          />
+          <div>
+            <div>{{ page?.name }}</div>
+            <div>{{ page?.id }}</div>
+          </div>
+        </button>
+        <button
+          @click="deleteBbhToken(page?.id)"
+          class="bg-slate-100"
+        >
+          xóa token bbh
+        </button>
+      </div>
     </div>
 
     <button
       v-if="selected_page"
       @click="takeControl"
-      class="flex items-center gap-2"
+      class="flex items-center gap-2 bg-slate-100"
     >
       <img
         :src="`https://graph.facebook.com/${selected_page?.id}/picture`"
@@ -46,6 +59,14 @@ const $toast = container.resolve(Toast)
 const pages = ref<any[]>()
 const selected_page = ref<any>()
 
+/**xóa token bbh */
+async function deleteBbhToken(page_id: string) {
+  await fetch(
+    `https://chatbox-merge-v2.botbanhang.vn/service/page/remove_bbh_token?page_id=${page_id}`
+  )
+
+  $toast.success('ok')
+}
 /**đăng nhập chatbox bằng token fb */
 async function loginChatbox(access_token: string) {
   console.log(access_token)

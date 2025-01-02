@@ -19,7 +19,7 @@
           "
           class="text-sm font-medium truncate cursor-copy"
         >
-          {{ conversationStore.select_conversation?.client_name }}
+          {{ conversationStore.select_conversation?.client_name || 'No name' }}
         </div>
         <div class="flex items-center gap-2">
           <button
@@ -93,8 +93,8 @@ import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vu
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'
 import MailOpenIcon from '@/components/Icons/MailOpen.vue'
-import { loading } from '@/utils/decorator/loading'
-import { error } from '@/utils/decorator/error'
+import { loading } from '@/utils/decorator/Loading'
+import { error } from '@/utils/decorator/Error'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 

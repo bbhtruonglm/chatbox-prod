@@ -1,7 +1,7 @@
 <template>
   <div
     id="chat__center-content"
-    class="h-full w-full flex flex-col overflow-hidden"
+    class="h-full flex flex-col flex-grow min-w-0"
   >
     <UserInfo />
     <MessageList />

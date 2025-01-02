@@ -43,6 +43,13 @@ export const useConversationStore = defineStore('conversation_store', () => {
     // trả về kết quả kiểm tra
     return pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id)
   }
+  /**lấy dữ liệu trang của hội thoại này */
+  function getPage() {
+    const pageStore = usePageStore()
+
+    // trả về dữ liệu trang
+    return pageStore.getPage(select_conversation.value?.fb_page_id)?.page
+  }
   /**lấy danh sách nhãn của trang của hội thoại này */
   function getLabels(): Record<string, ILabel> | undefined {
     const pageStore = usePageStore()
@@ -51,7 +58,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     return pageStore.getLabels(select_conversation.value?.fb_page_id)
   }
   /**
-   * danh sách các id nhãn đang kích hoạt của hội thoại 
+   * danh sách các id nhãn đang kích hoạt của hội thoại
    * - đã lọc ra các id nhãn đã bị xóa
    */
   function getActiveLabelIds() {
@@ -118,5 +125,6 @@ export const useConversationStore = defineStore('conversation_store', () => {
     isCurrentStaffAdmin,
     getLabels,
     getActiveLabelIds,
+    getPage,
   }
 })

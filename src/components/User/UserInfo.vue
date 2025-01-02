@@ -38,7 +38,7 @@
               </div>
               <div class="flex items-center gap-3">
                 <StaffAvatar
-                  :id="chatbotUserStore.chatbot_user?.fb_staff_id"
+                  :id="chatbotUserStore.chatbot_user?.user_id"
                   class="rounded-oval w-11 h-11"
                 />
                 <div>
@@ -125,8 +125,8 @@
                   :title="$t('v1.view.main.dashboard.user.show_page_avatar')"
                   :description="
                     chatbotUserStore.personal_settings.is_hide_page_avatar
-                      ? $t('v1.view.main.dashboard.user.show_page_avatar_on')
-                      : $t('v1.view.main.dashboard.user.show_page_avatar_off')
+                      ? $t('Ẩn toàn bộ ảnh đại diện của trang trên hội thoại')
+                      : $t('Hiện toàn bộ ảnh đại diện của trang trên hội thoại')
                   "
                 >
                   <Toggle
