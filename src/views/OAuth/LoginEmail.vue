@@ -16,6 +16,12 @@
     </small>
   </div>
   <AlertError />
+  <Alert v-if="is_redirect_from_reset_password">
+    {{ $t('Đã đặt lại mật khẩu!') }}
+  </Alert>
+  <Alert v-if="is_redirect_from_forgot_password">
+    {{ $t('Một liên kết để đặt lại mật khẩu đã được gửi qua email cho bạn.') }}
+  </Alert>
   <Alert v-if="is_redirect_from_register && form?.email">
     <div>
       {{
@@ -72,8 +78,11 @@
       />
     </div>
     <div>
-      <button class="font-medium text-sm text-blue-700">
-        {{ $t('Bạn quên mật khẩu?') }}
+      <button
+        @click="$main.forgotPassword()"
+        class="font-medium text-sm text-blue-700"
+      >
+        {{ $t('Quên mật khẩu?') }}
       </button>
     </div>
     <button
@@ -130,6 +139,14 @@ const verify_code = ref<string>($route.query.verify_code as string)
 const is_verify_email = ref<boolean>(false)
 /**đã gửi lại email xác thực chưa */
 const is_resend_verify_email = ref<boolean>(false)
+/**đã gửi lại email xác thực chưa */
+const is_redirect_from_forgot_password = ref<boolean>(
+  !!$route.query.forgot_password
+)
+/**đã gửi lại email xác thực chưa */
+const is_redirect_from_reset_password = ref<boolean>(
+  !!$route.query.reset_password
+)
 
 class Main {
   /**
@@ -189,6 +206,13 @@ class Main {
 
     // gắn cờ là đã xác thực email
     is_verify_email.value = true
+  }
+  /**quên mật khẩu */
+  forgotPassword() {
+    this.SERVICE_OAUTH.redirect({
+      path: '/oauth/forgot-password',
+      query: { email: form.value.email },
+    })
   }
 }
 const $main = new Main()

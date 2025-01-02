@@ -86,4 +86,18 @@ export class N4SerivcePublicOauthBasic extends N4SerivcePublicOauth {
     // gọi api
     return this.post('check_email', { email }, true)
   }
+  /**gửi mail reset mật khẩu */
+  public async forgotPassword(email: string): Promise<void> {
+    // gọi api
+    return this.post('forgot_password', { email }, true)
+  }
+  /**đặt lại mật khẩu */
+  public async ressetPassword(
+    email: string,
+    password: string,
+    verify_code: string
+  ): Promise<void> {
+    // gọi api
+    return this.post('reset_password', { email, password, verify_code }, true)
+  }
 }

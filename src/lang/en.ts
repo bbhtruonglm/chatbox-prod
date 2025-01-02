@@ -1,6 +1,17 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Đã đặt lại mật khẩu!': 'Password reset!',
+  'Xác nhận mật khẩu mới': 'Confirm new password',
+  'Mật khẩu mới': 'New password',
+  'Đối với tài khoản _': 'For the account {name}',
+  'Đặt lại mật khẩu tài khoản': 'Reset account password',
+  'Một liên kết để đặt lại mật khẩu đã được gửi qua email cho bạn.': 'A link to reset your password has been emailed to you.',
+  'Quay lại trang đăng nhập': 'Return to login', 
+  'Đặt lại mật khẩu': 'Reset password',
+  'Chúng tôi sẽ gửi hướng dẫn qua email để đặt lại mật khẩu của bạn.':
+    'We’ll email instructions to reset your password.',
+  'Bạn quên mật khẩu?': 'Forgot your password?',
   'Tài khoản không tồn tại': 'Account does not exist',
   'Tài khoản đã xác thực': 'Account has been verified',
   'Mã xác thực không đúng': 'Incorrect verification code',
@@ -30,7 +41,7 @@ const source: Language = {
   'Điều khoản': 'Terms',
   'Bạn chưa nhập _': 'You have not entered an {name}',
   '_ không hợp lệ': 'Invalid {name}',
-  'Bạn quên mật khẩu?': 'Forgot password?',
+  'Quên mật khẩu?': 'Forgot password?',
   'Mật khẩu': 'Password',
   'Đăng ký _': 'Register a {name} account',
   'Một bước cuối cùng trước khi bắt đầu sử dụng':

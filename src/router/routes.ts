@@ -7,6 +7,8 @@ import Login from '@/views/OAuth/Login.vue'
 import LoginEmail from '@/views/OAuth/LoginEmail.vue'
 import Register from '@/views/OAuth/Register.vue'
 import RegisterDetail from '@/views/OAuth/RegisterDetail.vue'
+import ForgotPassword from '@/views/OAuth/ForgotPassword.vue'
+import ResetPassword from '@/views/OAuth/ResetPassword.vue'
 
 import ChatShort from '@/views/ChatWarper.vue'
 
@@ -50,6 +52,8 @@ export const routes = [
       { path: 'login-email', component: LoginEmail },
       { path: 'register', component: Register },
       { path: 'register-detail', component: RegisterDetail },
+      { path: 'forgot-password', component: ForgotPassword },
+      { path: 'reset-password', component: ResetPassword },
     ],
   },
   {

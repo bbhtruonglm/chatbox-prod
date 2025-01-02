@@ -104,7 +104,7 @@ export function composableService() {
       }
 
       // thông báo lỗi
-      super.error(message?.message)
+      super.error(message?.message || message)
     }
   }
   /**decorator xử lý lỗi của oauth */
