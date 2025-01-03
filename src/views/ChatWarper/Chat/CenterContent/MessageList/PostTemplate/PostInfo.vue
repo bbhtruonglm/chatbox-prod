@@ -68,7 +68,7 @@ import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 
-import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/FacebookCommentModal.vue'
+import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
 
 import SpeakerIcon from '@/components/Icons/Speaker.vue'
 

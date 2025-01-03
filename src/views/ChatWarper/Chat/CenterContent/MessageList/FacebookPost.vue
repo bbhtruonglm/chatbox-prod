@@ -84,7 +84,7 @@ import { openNewTab } from '@/service/function'
 import { SingletonCdn } from '@/utils/helper/Cdn'
 
 import Loading from '@/components/Loading.vue'
-import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/FacebookCommentModal.vue'
+import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
 
 import SpeakerIcon from '@/components/Icons/Speaker.vue'
 
