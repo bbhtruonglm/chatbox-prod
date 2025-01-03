@@ -531,5 +531,5 @@ watch(
   }
 )
 
-defineExpose({ loadConversationFirstTime: $main.loadConversationFirstTime })
+defineExpose({ loadConversationFirstTime: $main.loadConversationFirstTime.bind($main) })
 </script>

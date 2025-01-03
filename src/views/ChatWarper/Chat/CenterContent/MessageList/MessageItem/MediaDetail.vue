@@ -232,7 +232,7 @@ watch(
 )
 
 // xuất phương thức
-defineExpose({ toggleModal: $main.toggleModal })
+defineExpose({ toggleModal: $main.toggleModal.bind($main) })
 </script>
 <style lang="scss" scoped>
 .custom-btn {

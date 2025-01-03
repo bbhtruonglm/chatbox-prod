@@ -1,19 +1,26 @@
 <template>
-  <div
-    ref="input_chat_ref"
-    id="chat-text-input-message"
-    @input="$main.calcIsTyping"
-    @keydown.enter="$main.submitInput"
-    @paste="$main.onPasteImage"
-    @keyup="$emit('keyup', $event)"
-    class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word mb-1.5"
-    contenteditable="true"
-    :placeholder="
-      $t('v1.view.main.dashboard.chat.send_to', {
-        name: conversationStore.select_conversation?.client_name,
-      })
-    "
-  />
+  <div class="w-full h-full relative mb-1">
+    <div
+      ref="input_chat_ref"
+      id="chat-text-input-message"
+      @input="$main.calcIsTyping"
+      @keydown.enter="$main.submitInput"
+      @paste="$main.onPasteImage"
+      @keyup="$emit('keyup', $event)"
+      class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word"
+      contenteditable="true"
+    />
+    <span
+      v-if="is_show_placeholder"
+      class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2"
+    >
+      {{
+        $t('v1.view.main.dashboard.chat.send_to', {
+          name: conversationStore.select_conversation?.client_name,
+        })
+      }}
+    </span>
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref, toRef } from 'vue'
@@ -67,6 +74,8 @@ const facebook_error = ref<{
   code?: number
   message?: string
 }>()
+/**có hiển thị placeholder không */
+const is_show_placeholder = ref(true)
 
 /**id trang */
 const page_id = computed(
@@ -123,6 +132,9 @@ class Main {
 
     // gắn cờ input có dữ liệu
     commonStore.is_typing = !!INPUT_VALUE
+
+    // hiện placeholder nếu không có dữ liệu
+    is_show_placeholder.value = !INPUT_VALUE
   }
   /**lấy ảnh khi được ctrl + v vào input */
   onPasteImage() {
@@ -515,7 +527,7 @@ class Main {
   }
   /**xử lý báo lỗi khi gửi tin nhắn thất bại */
   handleSendMessageError(error: any) {
-    console.log('ak:::',error)
+    console.log('ak:::', error)
     if (error?.error === -224)
       return toastError(
         $t(
@@ -575,5 +587,5 @@ class Main {
 }
 const $main = new Main()
 
-defineExpose({ input_chat_ref, sendMessage: $main.sendMessage })
+defineExpose({ input_chat_ref, sendMessage: $main.sendMessage.bind($main) })
 </script>
