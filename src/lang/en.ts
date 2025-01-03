@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Gửi tin trả lời': 'Send private reply',
+  'Bình luận với vai trò _': 'Comment as {name}',
   'Xem bài viết': 'View post',
   'Xem bình luận bài viết': 'View post comments',
   'Đối với Quản trị viên vẫn xem được toàn bộ hội thoại.':

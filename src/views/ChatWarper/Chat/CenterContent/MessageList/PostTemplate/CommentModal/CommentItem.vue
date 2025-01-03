@@ -1,9 +1,16 @@
 <template>
-  <div class="flex px-3 gap-3">
+  <div class="flex gap-3">
+    <PageAvatar
+      v-if="is_from_page"
+      :page_info="conversationStore.getPage()"
+      class="w-10 h-10 flex-shrink-0"
+    />
     <ClientAvatar
+      v-else
       :conversation="conversationStore.select_conversation"
       class="w-10 h-10 flex-shrink-0"
     />
+
     <div class="min-w-0 flex-grow flex flex-col gap-3">
       <div class="flex flex-col gap-0.5">
         <div class="rounded-xl bg-slate-100 py-1 px-3 text-sm">
@@ -26,19 +33,15 @@
           "
         />
         <div class="font-medium text-sm flex items-center gap-5">
-          <button @click="focusInput(comment?.comment_id)">
+          <button @click="$main.focusInput({ type: 'REPLY' })">
             {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
           </button>
-          <button @click="focusInput(comment?.comment_id)">
+          <button>
             {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
           </button>
           <button
-            @click="
-              openPrivateInbox({
-                target_id: comment?.comment_id,
-                target_name: comment?.from?.name,
-              })
-            "
+            v-if="!is_from_page && !comment?.is_private_reply"
+            @click="$main.focusInput({ type: 'PRIVATE_REPLY' })"
           >
             {{ $t('v1.view.main.dashboard.chat.post.private_inbox') }}
           </button>
@@ -46,107 +49,104 @@
       </div>
 
       <CommentItem
-        v-for="(chil_comment, chil_index) in comment?.child_comments"
-        :page_id
-        :client_id
-        :target_id
+        v-for="(child_comment, child_index) in comment?.child_comments"
+        @focus_input="$event => $main.focusInput($event)"
+        :post_id
         :message
         :message_index
-        :comment="chil_comment"
-        :index="chil_index"
+        :comment="child_comment"
+        :comment_index="child_index"
+        is_child_comment
       />
 
       <LoadMoreBtn
-        v-if="!comment?.done_load_comment"
-        @click="getFbPostChildComments(comment)"
-        class=""
-        :count="13"
+        v-if="!is_child_comment && !comment?.done_load_comment"
+        @click="$main.getFbPostChildComments(comment)"
+        :count="0"
       />
 
-      <div class="flex relative">
+      <div
+        v-if="!is_child_comment && reply_type"
+        class="flex relative"
+      >
         <input
-          v-if="comment"
-          v-model="comment.new_comment"
-          :id="`input_${comment?.comment_id}`"
-          class="w-full py-3.5 px-5 border rounded-full text-sm placeholder:text-slate-500"
-          :placeholder="`Bình luận với vai trò ${pageStore.selected_page_list_info?.[conversationStore.select_conversation?.fb_page_id as string]?.page?.name}`"
-          v-on:keyup.enter="
-            sendPostComment(
-              comment?.new_comment as string,
-              comment?.comment_id,
-              index
-            )
+          v-model="reply_text"
+          ref="ref_input"
+          :placeholder="
+            reply_type === 'REPLY'
+              ? $t('Bình luận với vai trò _', {
+                  name: conversationStore.getPage()?.name,
+                })
+              : $t('Gửi tin trả lời')
           "
+          @keyup.enter="$main.sendMesage()"
+          class="w-full py-3.5 px-5 border rounded-full text-sm placeholder:text-slate-500"
         />
         <div class="absolute right-2 top-1/2 -translate-y-1/2">
           <ArrowUpCircleIcon
-            v-if="!comment?.sending_message"
-            @click="
-              sendPostComment(
-                comment?.new_comment as string,
-                comment?.comment_id,
-                index
-              )
+            v-if="!is_replying"
+            @click="$main.sendMesage()"
+            :class="
+              reply_text?.trim()?.length ? 'text-black' : 'text-slate-500'
             "
-            class="w-10 h-10 cursor-pointer text-slate-500"
+            class="w-10 h-10 cursor-pointer"
           />
           <Loading
-            v-if="comment?.sending_message"
+            v-if="is_replying"
             class=""
           />
         </div>
       </div>
     </div>
   </div>
-
-  <PrivateInboxModal
-    ref="private_inbox_ref"
-    :page_id="conversationStore?.select_conversation?.fb_page_id"
-    :client_id="conversationStore?.select_conversation?.fb_client_id"
-    :target_id="target_private_inbox?.target_id"
-    :target_name="target_private_inbox?.target_name"
-  />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, nextTick, ref, type Ref } from 'vue'
 import { waterfall } from 'async'
-import {
-  useConversationStore,
-  useChatbotUserStore,
-  usePageStore,
-} from '@/stores'
-import { toast, toastError } from '@/service/helper/alert'
+import { useConversationStore } from '@/stores'
+import { toastError } from '@/service/helper/alert'
 import { SingletonCdn } from '@/utils/helper/Cdn'
-import {
-  get_fb_post_comments,
-  send_post_comment,
-} from '@/service/api/chatbox/n4-service'
-import { container } from 'tsyringe'
+import { get_fb_post_comments } from '@/service/api/chatbox/n4-service'
+import { container, singleton } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
 
 import CommentItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/CommentItem.vue'
-import PrivateInboxModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/PrivateInboxModal.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import LoadMoreBtn from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/LoadMoreBtn.vue'
+import Loading from '@/components/Loading.vue'
 
 import { ArrowUpCircleIcon } from '@heroicons/vue/24/solid'
 
-import type { ComponentRef } from '@/service/interface/vue'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { CbError } from '@/service/interface/function'
-import type { MessageInfo } from '@/service/interface/app/message'
+import type {
+  IReplyCommentType,
+  MessageInfo,
+} from '@/service/interface/app/message'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import type { IAlert } from '@/utils/helper/Alert/type'
+import { useI18n } from 'vue-i18n'
 
-interface TargetPrivateInbox {
-  target_id?: string
-  target_name?: string
+/**dữ liệu của sự kiện focus */
+interface IFocusInputPayload {
+  /**loại trả lời */
+  type: IReplyCommentType
+  /**id của bình luận con */
+  comment_id?: string
 }
 
-// * Props
+/**loading của bài post */
+const main_loading = defineModel('main_loading')
+
+const $emit = defineEmits(['focus_input'])
 const $props = withDefaults(
   defineProps<{
-    page_id?: string
-    client_id?: string
-    target_id?: string
+    /**id của bài post */
+    post_id: string
 
     /**dữ liệu tin nhắn */
     message?: MessageInfo
@@ -154,124 +154,198 @@ const $props = withDefaults(
     message_index?: number
 
     /**dữ liệu của bình luận này */
-    comment?: FacebookCommentPost
+    comment: FacebookCommentPost
     /**vị trí của bình luận này */
-    index?: number
+    comment_index: number
+
+    /**không hiện btn xem thêm - vì là comemnt lớp con */
+    is_child_comment?: boolean
   }>(),
   {}
 )
 
-// * Use store
 const conversationStore = useConversationStore()
-const pageStore = usePageStore()
 const $cdn = SingletonCdn.getInst()
 const $date_handle = container.resolve(DateHandle)
+const { t: $t } = useI18n()
 
 /**giới hạn số bản ghi */
 const LIMIT_RECORD = 3
 
-/** Ref của modal private inbox */
-const private_inbox_ref = ref<ComponentRef>()
-/** Comments trong bài post */
-const post_comments = ref<FacebookCommentPost[]>([])
+/**nội dung trả lời bình luận */
+const reply_text = ref<string>()
+/**có đang trả lời bình luận không */
+const is_replying = ref(false)
+/**Ref của input trả lời bình luận */
+const ref_input = ref<HTMLInputElement>()
+/**loại trả lời bình luận */
+const reply_type = ref<IReplyCommentType>()
 /**bật loading */
 const is_loading = ref(false)
-/** Đối tượng private_inbox */
-const target_private_inbox = ref<TargetPrivateInbox>({})
+/**id của bình luận con được chọn */
+const select_child_comment_id = ref<string>()
 
-/** Tạo bình luận phụ vào 1 bình luận trong bài post */
-function sendPostComment(
-  comment: string,
-  target_id?: string,
-  comment_index?: number
-) {
-  if (!comment_index) return
+/**id của page */
+const page_id = computed(
+  () => conversationStore.select_conversation?.fb_page_id
+)
+/**id của client */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
+/**có phải từ page không */
+const is_from_page = computed(() => page_id.value === $props.comment?.from?.id)
 
-  if (post_comments.value[comment_index].sending_message) return
-  post_comments.value[comment_index].sending_message = true
+/**custom lại thông báo lỗi */
+@singleton()
+class ToastReplyComment extends Toast implements IAlert {
+  public error(message: any): void {
+    // lỗi đã trả lời rồi
+    if (message?.code === 10900)
+      message = $t('v1.view.main.dashboard.chat.post.already_replied')
 
-  send_post_comment(
-    {
-      page_id: conversationStore.select_conversation?.fb_page_id,
-      text: comment,
-      target_id,
-    },
-    (e, r) => {
-      post_comments.value[comment_index].sending_message = false
-      post_comments.value[comment_index].new_comment = ''
-      if (e) return toast('error', 'Gửi bình luận không thành công')
-      toast('success', 'Gửi bình luận thành công')
+    // thông báo lỗi
+    super.error(message)
+  }
+}
 
-      post_comments.value[comment_index].child_comments?.push({
-        comment_id: r.id,
-        from: {
-          id: conversationStore.select_conversation?.fb_page_id,
-          name: pageStore.selected_page_list_info?.[
-            conversationStore.select_conversation?.fb_page_id as string
-          ]?.page?.name,
-        },
-        message: comment,
-        createdAt: new Date().toLocaleString(),
+class Main {
+  /**
+   * @param API_POST API của bài post
+   */
+  constructor(
+    private readonly API_POST = container.resolve(N4SerivceAppPost)
+  ) {}
+
+  /** Lấy bình luận phụ từ bình luận chính của fb */
+  @loadingV2(main_loading, 'value')
+  @error()
+  async getFbPostChildComments(comment?: FacebookCommentPost) {
+    // kiểm tra dữ liệu
+    if (!page_id.value) return
+    if (!client_id.value) return
+    if (!comment?.comment_id) return
+
+    /**dữ liệu bình luận con */
+    const COMMENTS = await this.API_POST.getChildComment(
+      page_id.value,
+      client_id.value,
+      comment?.comment_id,
+      comment?.skip_comment,
+      LIMIT_RECORD
+    )
+
+    if ((!COMMENTS?.length || COMMENTS?.length < LIMIT_RECORD) && comment)
+      comment.done_load_comment = true
+
+    if (COMMENTS) comment?.child_comments?.push(...COMMENTS)
+
+    if (comment)
+      comment.skip_comment = (comment?.skip_comment || 0) + LIMIT_RECORD
+  }
+  /**gửi tin nhắn trả lời */
+  sendMesage() {
+    /**id của bình luận được chọn */
+    const COMMENT_ID =
+      select_child_comment_id.value || $props.comment?.comment_id
+
+    // kiểm tra dữ liệu
+    if (!COMMENT_ID) return
+    if (!reply_text.value) return
+    if (!page_id.value) return
+    if (!client_id.value) return
+
+    // gửi tin nhắn theo từng loại
+    switch (reply_type.value) {
+      case 'REPLY':
+        this.replyComment(page_id.value, COMMENT_ID, reply_text.value)
+        break
+      case 'PRIVATE_REPLY':
+        this.privateReplyComment(
+          page_id.value,
+          client_id.value,
+          COMMENT_ID,
+          reply_text.value
+        )
+        break
+    }
+  }
+  /**trả lời bình luận */
+  @loadingV2(is_replying, 'value')
+  @error()
+  async replyComment(page_id: string, comment_id: string, text: string) {
+    /**kết quả */
+    const RES = await this.API_POST.sendComment(page_id, comment_id, text)
+
+    // thêm  vào mảng bình luận
+    $props.comment.child_comments?.unshift({
+      comment_id: RES?.id || '',
+      from: {
+        id: page_id,
+        name: conversationStore.getPage()?.name,
+      },
+      message: text,
+      createdAt: new Date().toLocaleString(),
+    })
+
+    // làm sạch dữ liệu input
+    this.clearInput()
+  }
+  /**trả lời bình luận */
+  @loadingV2(is_replying, 'value')
+  @error(container.resolve(ToastReplyComment))
+  async privateReplyComment(
+    page_id: string,
+    client_id: string,
+    comment_id: string,
+    text: string
+  ) {
+    // gửi tin nhắn private
+    await this.API_POST.sendPrivateReply(
+      page_id,
+      client_id,
+      $props.post_id,
+      comment_id,
+      text
+    )
+
+    // làm sạch dữ liệu input
+    this.clearInput()
+  }
+  /**làm sạch dữ liệu input sau khi xong */
+  clearInput() {
+    // xóa nội dung trả lời
+    reply_text.value = undefined
+    // xóa id bình luận con được chọn
+    select_child_comment_id.value = undefined
+    // ẩn input
+    reply_type.value = undefined
+  }
+  /** Focus vào input của bình luận */
+  async focusInput({ type, comment_id }: IFocusInputPayload) {
+    // nếu là bình luận con thì focus vào input cha
+    if ($props.is_child_comment)
+      return $emit('focus_input', {
+        type,
+        comment_id: $props.comment?.comment_id,
       })
-    }
-  )
+
+    // nếu là bình luận cha
+
+    // lưu id bình luận con được chọn nếu có
+    if (comment_id) select_child_comment_id.value = comment_id
+
+    // gắn cờ loại trả lời
+    reply_type.value = type
+
+    // chờ vue render xong
+    await nextTick()
+
+    // focus vào input
+    ref_input.value?.focus()
+  }
 }
-/** Lấy bình luận phụ từ bình luận chính của fb */
-function getFbPostChildComments(comment?: FacebookCommentPost) {
-  if (is_loading.value) return
-
-  waterfall(
-    [
-      // * bật loading
-      (cb: CbError) => {
-        is_loading.value = true
-
-        cb()
-      },
-      // * đọc danh sách comment
-      (cb: CbError) =>
-        get_fb_post_comments(
-          {
-            client_id: $props.client_id,
-            page_id: $props.page_id,
-            target_id: comment?.comment_id,
-            limit: LIMIT_RECORD,
-            skip: comment?.skip_comment,
-          },
-          (e, r) => {
-            if (e) return cb(e)
-
-            if (!r?.length && comment) comment.done_load_comment = true
-
-            if (r) comment?.child_comments?.push(...r)
-            cb()
-          }
-        ),
-      // * next
-      (cb: CbError) => {
-        if (comment)
-          comment.skip_comment = (comment?.skip_comment || 0) + LIMIT_RECORD
-
-        cb()
-      },
-    ],
-    e => {
-      is_loading.value = false
-
-      if (e) return toastError(e)
-    }
-  )
-}
-/** Dùng để bật tắt modal private inbox */
-function openPrivateInbox(target: TargetPrivateInbox) {
-  target_private_inbox.value = target
-  private_inbox_ref.value?.toggleModal()
-}
-/** Focus vào input của bình luận */
-function focusInput(comment_id?: string) {
-  let input = document.getElementById(`input_${comment_id}`)
-  if (input) input.focus()
-}
+const $main = new Main()
 </script>
 <style lang="scss" scoped>
 @import '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/style.scss';

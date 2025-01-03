@@ -1,5 +1,7 @@
 /**dữ liệu của một bình luận */
 export interface FacebookCommentPost {
+    /**đã trả lời bí mật rồi */
+    is_private_reply?: boolean
     comment_id: string
     from?: {
         id?: string

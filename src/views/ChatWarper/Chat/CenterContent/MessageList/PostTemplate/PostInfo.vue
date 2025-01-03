@@ -51,11 +51,10 @@
       </button>
     </div>
   </div>
-  <FacebookCommentModal
+  <CommentModal
+    v-if="post_id"
     ref="fb_cmt_ref"
-    :page_id="conversationStore.select_conversation?.fb_page_id"
-    :client_id="conversationStore.select_conversation?.fb_client_id"
-    :target_id="post_id"
+    :post_id
     :message
     :message_index
   />
@@ -68,7 +67,7 @@ import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 
-import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
+import CommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
 
 import SpeakerIcon from '@/components/Icons/Speaker.vue'
 
@@ -91,7 +90,7 @@ const $props = withDefaults(
 )
 
 /** ref của modal */
-const fb_cmt_ref = ref<InstanceType<typeof FacebookCommentModal>>()
+const fb_cmt_ref = ref<InstanceType<typeof CommentModal>>()
 
 /**tên người tạo bài viết này */
 const creator_name = computed(

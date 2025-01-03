@@ -32,6 +32,22 @@ export class N4SerivceAppPost extends N4Serivce {
       skip,
     })
   }
+  /** Lấy bình luận con */
+  public async getChildComment(
+    page_id: string,
+    client_id: string,
+    comment_id: string,
+    skip?: number,
+    limit?: number
+  ): Promise<FacebookCommentPost[]> {
+    return this.post('get_comment', {
+      page_id,
+      client_id,
+      target_id: comment_id,
+      limit,
+      skip,
+    })
+  }
   /**trả lời bình luận */
   public async sendComment(
     page_id: string,

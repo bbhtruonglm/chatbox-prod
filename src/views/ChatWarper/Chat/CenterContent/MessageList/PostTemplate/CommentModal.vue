@@ -29,14 +29,14 @@
       </div>
       <div class="overflow-y-auto flex flex-col gap-3">
         <CommentItem
-          v-for="(comment, index) in post_comments"
-          :page_id
-          :client_id
-          :target_id
+          v-for="(comment, comment_index) in post_comments"
+          v-model:main_loading="is_loading"
+          :post_id
           :message
           :message_index
           :comment
-          :index
+          :comment_index
+          class="px-3"
         />
         <LoadMoreBtn
           v-if="!done_load_comment"
@@ -49,10 +49,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
 import { get_fb_post_comments } from '@/service/api/chatbox/n4-service'
+import { useConversationStore } from '@/stores'
 
 import MainComment from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/MainComment.vue'
 import Modal from '@/components/Modal.vue'
@@ -70,10 +71,8 @@ import type { MessageInfo } from '@/service/interface/app/message'
 
 const $props = withDefaults(
   defineProps<{
-    page_id?: string
-    client_id?: string
-    target_id?: string
-
+    /**id của bài post */
+    post_id: string
     /**dữ liệu tin nhắn */
     message?: MessageInfo
     /**vị trí của tin nhắn */
@@ -81,6 +80,8 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+const conversationStore = useConversationStore()
 
 /**giới hạn số bản ghi */
 const LIMIT_RECORD = 3
@@ -95,6 +96,15 @@ const done_load_comment = ref<boolean>()
 const skip_comment = ref(0)
 /**bật loading */
 const is_loading = ref(false)
+
+/**id của page */
+const page_id = computed(
+  () => conversationStore.select_conversation?.fb_page_id
+)
+/**id của client */
+const client_id = computed(
+  () => conversationStore.select_conversation?.fb_client_id
+)
 
 /**xoá dữ liệu khi modal tắt */
 function onCloseModal() {
@@ -128,9 +138,9 @@ function getFbPostComments() {
       (cb: CbError) =>
         get_fb_post_comments(
           {
-            client_id: $props.client_id,
-            page_id: $props.page_id,
-            target_id: $props.target_id,
+            client_id: client_id.value,
+            page_id: page_id.value,
+            target_id: $props.post_id,
             limit: LIMIT_RECORD,
             skip: skip_comment.value,
           },
