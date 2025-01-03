@@ -11,7 +11,7 @@
       contenteditable="true"
     />
     <span
-      v-if="is_show_placeholder"
+      v-if="!commonStore.is_typing"
       class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2"
     >
       {{
@@ -74,8 +74,6 @@ const facebook_error = ref<{
   code?: number
   message?: string
 }>()
-/**có hiển thị placeholder không */
-const is_show_placeholder = ref(true)
 
 /**id trang */
 const page_id = computed(
@@ -132,9 +130,6 @@ class Main {
 
     // gắn cờ input có dữ liệu
     commonStore.is_typing = !!INPUT_VALUE
-
-    // hiện placeholder nếu không có dữ liệu
-    is_show_placeholder.value = !INPUT_VALUE
   }
   /**lấy ảnh khi được ctrl + v vào input */
   onPasteImage() {

@@ -633,7 +633,7 @@ const source: Language = {
               cannot_get_post: 'Không lấy được dữ liệu bài viết...',
               open_on_facebook: 'Mở trên Facebook',
               open_message: 'Xem bình luận',
-              get_more_comments: 'Xem thêm phản hồi...',
+              get_more_comments: 'Xem thêm bình luận',
               reply_comment: 'Trả lời',
               reply_comment_full: 'Trả lời bình luận bài viết',
               hide_comment: 'Ẩn bình luận',

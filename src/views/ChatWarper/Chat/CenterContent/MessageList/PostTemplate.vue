@@ -24,66 +24,17 @@
         type="FULL"
       />
       <div class="flex gap-2 p-2 flex-col w-96">
-        <div class="flex items-center justify-between">
-          <small class="flex text-xxs">
-            <template v-if="creator_name">
-              {{ $t('v1.view.main.dashboard.chat.post.post_by') }}
-              <strong class="ml-1 font-bold">
-                {{ creator_name }}
-              </strong>
-              <span class="px-1">-</span>
-            </template>
-            {{
-              $date_handle.formatCompareCurrentYear(post_content?.updated_time)
-            }}
-          </small>
-          <a
-            @click="$main.openCommentOnFb()"
-            href="javascript:;"
-            class="text-xs"
-          >
-            {{ $t('v1.view.main.dashboard.chat.post.open_on_facebook') }}
-          </a>
-        </div>
-        <div class="flex items-center gap-2">
-          <img
-            v-if="post_content?.attachments?.data?.[0]?.media?.image?.src"
-            :src="
-              $cdn.fbPostImg(
-                conversationStore.select_conversation?.fb_page_id,
-                post_id
-              )
-            "
-            class="w-14 h-10 rounded flex-shrink-0 object-contain"
-          />
-          <div>
-            <p
-              :class="message?.ad_id ? 'line-clamp-1' : 'line-clamp-2'"
-              class="text-sm"
-            >
-              {{ post_content?.message }}
-            </p>
-            <small
-              v-if="message?.ad_id"
-              class="flex items-center gap-1"
-            >
-              <SpeakerIcon class="w-3 h-3 text-orange-600" />
-              <p class="text-xs text-orange-700">
-                {{ $t('v1.view.main.dashboard.chat.post.from_ad') }}
-              </p>
-            </small>
-          </div>
-        </div>
+        <PostInfo
+          :message
+          :message_index
+          is_show_btn_comment
+        />
         <div class="flex flex-col gap-1">
-          <div class="comment-item flex gap-1 justify-between">
-            {{ message?.message_text || ad_title }}
-            <EyeSlashIcon
-              v-if="message?.is_hidden_comment"
-              @click="$main.toggleComment('SHOW')"
-              class="w-5 h-5 text-slate-700 flex-shrink-0 cursor-pointer"
-            />
-          </div>
-
+          <MainComment
+            :message
+            :message_index
+            v-model:is_loading="is_loading"
+          />
           <div
             v-for="comment of $props.message?.reply_comments?.slice(0, 2)"
             class="flex flex-col"
@@ -140,20 +91,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useConversationStore, useMessageStore } from '@/stores'
-import { Cdn } from '@/utils/helper/Cdn'
 import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
-import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { Clipboard } from '@/utils/helper/Clipboard'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
 
 import Loading from '@/components/Loading.vue'
+import PostInfo from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/PostInfo.vue'
+import MainComment from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/MainComment.vue'
 
-import SpeakerIcon from '@/components/Icons/Speaker.vue'
 import EyeSlashIcon from '@/components/Icons/EyeSlash.vue'
 import CornerDownRightIcon from '@/components/Icons/CornerDownRight.vue'
 import ChatDotIcon from '@/components/Icons/ChatDot.vue'
@@ -164,10 +115,10 @@ import type {
   MessageInfo,
 } from '@/service/interface/app/message'
 
+const { PostService } = composableService()
+
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
-const $cdn = container.resolve(Cdn)
-const $date_handle = container.resolve(DateHandle)
 const $clipboard = container.resolve(Clipboard)
 
 const $props = withDefaults(
@@ -183,29 +134,11 @@ const $props = withDefaults(
 /**trạng thái loading */
 const is_loading = ref(false)
 
-/**tên người tạo bài viết này */
-const creator_name = computed(
-  () =>
-    $props.message?.post?.creator_name ||
-    $props.message?.post?.content?.admin_creator?.name ||
-    $props.message?.post?.content?.from?.name
-)
-/**nội dung bài viết */
-const post_content = computed(() => $props.message?.post?.content)
-/**id bài viết */
-const post_id = computed(
-  () => $props.message?.fb_post_id || $props.message?.post?.content?.id
-)
-/**tiêu đề quảng cáo */
-const ad_title = computed(
-  () => post_content.value?.attachments?.data?.[0]?.title
-)
-
 class Main {
   /**
    * @param API_POST API lấy dữ liệu bài post
    * @param SERVICE_DATE_HANDLE xử lý thời gian
-   * @param SERVICE_WINDOW_ACTION xử lý logic mở tab mới
+   * @param SERVICE_POST xử lý logic bài viết
    */
   constructor(
     private readonly API_POST: N4SerivceAppPost = container.resolve(
@@ -214,34 +147,15 @@ class Main {
     private readonly SERVICE_DATE_HANDLE: DateHandle = container.resolve(
       DateHandle
     ),
-    private readonly SERVICE_WINDOW_ACTION: IWindowAction = container.resolve(
-      WindowAction
-    )
+    private readonly SERVICE_POST = container.resolve(PostService)
   ) {}
 
   /**ẩn bình luận */
   @loadingV2(is_loading, 'value')
   @error()
   async toggleComment(type: 'HIDE' | 'SHOW') {
-    if (!conversationStore.select_conversation?.fb_page_id) return
-    if (!conversationStore.select_conversation?.fb_client_id) return
-    if (!$props.message?.fb_post_id) return
-    if (!$props.message?.comment_id) return
-
-    /**trạng thái ẩn bình luận */
-    const IS_HIDDEN = type === 'HIDE' ? true : false
-
-    // ẩn hoặc hiện bình luận
-    await this.API_POST.toggleComment(
-      conversationStore.select_conversation?.fb_page_id,
-      conversationStore.select_conversation?.fb_client_id,
-      $props.message?.fb_post_id,
-      $props.message?.comment_id,
-      IS_HIDDEN
-    )
-
-    // cập nhật lại trạng thái bình luận
-    $props.message.is_hidden_comment = IS_HIDDEN
+    // thực thi
+    await this.SERVICE_POST.toggleComment(type, $props.message)
   }
   /**lấy một số comment mới nhất */
   @error()
@@ -271,14 +185,6 @@ class Main {
       // thêm ago vào cuối
       { addSuffix: true }
     )
-  }
-  /**mở bài viết ở vị trí comment này */
-  openCommentOnFb() {
-    /**id mục tiêu */
-    const TARGET_ID = $props.message?.comment_id || post_id.value
-
-    // mở tab mới
-    this.SERVICE_WINDOW_ACTION.openNewTab(`https://fb.com/${TARGET_ID}`)
   }
   /**kích hoạt trả lời bình luận này */
   replyComment(type: IReplyCommentType) {
@@ -310,13 +216,5 @@ watch(
 )
 </script>
 <style lang="scss" scoped>
-.comment-item {
-  @apply bg-slate-100 rounded py-1 px-2 text-sm text-slate-900;
-}
-.btn {
-  @apply flex items-center justify-center rounded-md bg-slate-200 px-3 py-2 gap-1;
-  .icon {
-    @apply w-3 h-3 text-slate-900;
-  }
-}
+@import '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/style.scss';
 </style>

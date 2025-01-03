@@ -1,5 +1,5 @@
 import { useCommonStore } from '@/stores'
-import { useOAuthStore } from '@/stores/oauth'
+import { useOAuthStore } from '@/views/OAuth/store'
 import { N4SerivcePublicOauthFacebok } from '@/utils/api/N4Service/Oauth'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'

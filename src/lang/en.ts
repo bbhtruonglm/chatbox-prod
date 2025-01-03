@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Xem bài viết': 'View post',
+  'Xem bình luận bài viết': 'View post comments',
   'Đối với Quản trị viên vẫn xem được toàn bộ hội thoại.':
     'For Admins, all conversations are still visible.',
   'Khi bật chế độ này, hệ thống chỉ hiện ra hội thoại cho nhân viên được chỉ định.':
