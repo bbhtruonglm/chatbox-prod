@@ -36,7 +36,7 @@
           <button @click="$main.focusInput({ type: 'REPLY' })">
             {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
           </button>
-          <button>
+          <button @click="$main.toggleComment()">
             {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
           </button>
           <button
@@ -49,7 +49,7 @@
       </div>
 
       <CommentItem
-        v-for="(child_comment, child_index) in comment?.child_comments"
+        v-for="(child_comment, child_index) in child_comments"
         @focus_input="$event => $main.focusInput($event)"
         :post_id
         :message
@@ -60,8 +60,8 @@
       />
 
       <LoadMoreBtn
-        v-if="!is_child_comment && !comment?.done_load_comment"
-        @click="$main.getFbPostChildComments(comment)"
+        v-if="!is_child_comment && !is_done && !main_loading"
+        @click="$main.getFbPostChildComments()"
         :count="0"
       />
 
@@ -101,17 +101,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, ref, type Ref } from 'vue'
-import { waterfall } from 'async'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useConversationStore } from '@/stores'
-import { toastError } from '@/service/helper/alert'
 import { SingletonCdn } from '@/utils/helper/Cdn'
-import { get_fb_post_comments } from '@/service/api/chatbox/n4-service'
-import { container, singleton } from 'tsyringe'
+import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
+import { useI18n } from 'vue-i18n'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
 
 import CommentItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/CommentItem.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
@@ -122,14 +121,11 @@ import Loading from '@/components/Loading.vue'
 import { ArrowUpCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { FacebookCommentPost } from '@/service/interface/app/post'
-import type { CbError } from '@/service/interface/function'
 import type {
   IReplyCommentType,
   MessageInfo,
 } from '@/service/interface/app/message'
-import { Toast } from '@/utils/helper/Alert/Toast'
 import type { IAlert } from '@/utils/helper/Alert/type'
-import { useI18n } from 'vue-i18n'
 
 /**dữ liệu của sự kiện focus */
 interface IFocusInputPayload {
@@ -138,6 +134,8 @@ interface IFocusInputPayload {
   /**id của bình luận con */
   comment_id?: string
 }
+
+const { ToastReplyComment } = composableService()
 
 /**loading của bài post */
 const main_loading = defineModel('main_loading')
@@ -180,10 +178,14 @@ const is_replying = ref(false)
 const ref_input = ref<HTMLInputElement>()
 /**loại trả lời bình luận */
 const reply_type = ref<IReplyCommentType>()
-/**bật loading */
-const is_loading = ref(false)
 /**id của bình luận con được chọn */
 const select_child_comment_id = ref<string>()
+/**phân trang: bình luận con */
+const skip = ref<number>(0)
+/**đã hết bình luận con */
+const is_done = ref<boolean>()
+/**dữ liệu bình luận con của bình luận này */
+const child_comments = ref<FacebookCommentPost[]>([])
 
 /**id của page */
 const page_id = computed(
@@ -196,52 +198,64 @@ const client_id = computed(
 /**có phải từ page không */
 const is_from_page = computed(() => page_id.value === $props.comment?.from?.id)
 
-/**custom lại thông báo lỗi */
-@singleton()
-class ToastReplyComment extends Toast implements IAlert {
-  public error(message: any): void {
-    // lỗi đã trả lời rồi
-    if (message?.code === 10900)
-      message = $t('v1.view.main.dashboard.chat.post.already_replied')
-
-    // thông báo lỗi
-    super.error(message)
-  }
-}
-
 class Main {
   /**
    * @param API_POST API của bài post
+   * @param SERVICE_TOAST thông báo
    */
   constructor(
-    private readonly API_POST = container.resolve(N4SerivceAppPost)
+    private readonly API_POST = container.resolve(N4SerivceAppPost),
+    private readonly SERVICE_TOAST: IAlert = container.resolve(
+      ToastReplyComment
+    )
   ) {}
 
-  /** Lấy bình luận phụ từ bình luận chính của fb */
+  /**ẩn hiện bình luận */
   @loadingV2(main_loading, 'value')
-  @error()
-  async getFbPostChildComments(comment?: FacebookCommentPost) {
+  @error(container.resolve(ToastReplyComment))
+  async toggleComment() {
     // kiểm tra dữ liệu
     if (!page_id.value) return
     if (!client_id.value) return
-    if (!comment?.comment_id) return
+
+    // ẩn hiện bình luận
+    await this.API_POST.toggleComment(
+      page_id.value,
+      client_id.value,
+      $props.post_id,
+      $props.comment.comment_id,
+      true
+    )
+
+    // thông báo thành công
+    this.SERVICE_TOAST.success($t('Đã ẩn bình luận'))
+  }
+  /** Lấy bình luận phụ từ bình luận chính của fb */
+  @loadingV2(main_loading, 'value', false)
+  @error()
+  async getFbPostChildComments() {
+    // kiểm tra dữ liệu
+    if (!page_id.value) return
+    if (!client_id.value) return
+    if (!$props.comment?.comment_id) return
 
     /**dữ liệu bình luận con */
     const COMMENTS = await this.API_POST.getChildComment(
       page_id.value,
       client_id.value,
-      comment?.comment_id,
-      comment?.skip_comment,
+      $props.comment?.comment_id,
+      skip.value,
       LIMIT_RECORD
     )
 
-    if ((!COMMENTS?.length || COMMENTS?.length < LIMIT_RECORD) && comment)
-      comment.done_load_comment = true
+    // nếu hết, hoặc ít hơn limit thì báo là đã hết dữ liệu
+    if ((COMMENTS?.length || 0) < LIMIT_RECORD) is_done.value = true
 
-    if (COMMENTS) comment?.child_comments?.push(...COMMENTS)
+    // thêm vào mảng bình luận con
+    child_comments.value?.push(...COMMENTS)
 
-    if (comment)
-      comment.skip_comment = (comment?.skip_comment || 0) + LIMIT_RECORD
+    // tăng số lượng bản ghi đã lấy
+    skip.value += LIMIT_RECORD
   }
   /**gửi tin nhắn trả lời */
   sendMesage() {
@@ -278,7 +292,7 @@ class Main {
     const RES = await this.API_POST.sendComment(page_id, comment_id, text)
 
     // thêm  vào mảng bình luận
-    $props.comment.child_comments?.unshift({
+    child_comments.value?.unshift({
       comment_id: RES?.id || '',
       from: {
         id: page_id,
@@ -290,6 +304,9 @@ class Main {
 
     // làm sạch dữ liệu input
     this.clearInput()
+
+    // thông báo thành công
+    this.SERVICE_TOAST.success($t('Đã trả lời bình luận'))
   }
   /**trả lời bình luận */
   @loadingV2(is_replying, 'value')
@@ -309,8 +326,14 @@ class Main {
       text
     )
 
+    // đánh dấu là đã trả lời riêng
+    $props.comment.is_private_reply = true
+
     // làm sạch dữ liệu input
     this.clearInput()
+
+    // thông báo thành công
+    this.SERVICE_TOAST.success($t('Đã gửi tin nhắn trả lời'))
   }
   /**làm sạch dữ liệu input sau khi xong */
   clearInput() {
@@ -346,6 +369,9 @@ class Main {
   }
 }
 const $main = new Main()
+
+// tự động lấy bình luận con khi mở modal
+onMounted(() => $main.getFbPostChildComments())
 </script>
 <style lang="scss" scoped>
 @import '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/style.scss';

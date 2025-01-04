@@ -1,6 +1,6 @@
 <template>
   <Modal
-    @close_modal="onCloseModal"
+    @close_modal="$main.onCloseModal()"
     ref="modal_ref"
     class_header="!text-base"
     class_modal="h-3/4 gap-2"
@@ -40,7 +40,7 @@
         />
         <LoadMoreBtn
           v-if="!done_load_comment"
-          @click="getFbPostComments"
+          @click="$main.getFbPostComments()"
           class="pl-3"
         />
       </div>
@@ -50,10 +50,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { waterfall } from 'async'
-import { toastError } from '@/service/helper/alert'
-import { get_fb_post_comments } from '@/service/api/chatbox/n4-service'
 import { useConversationStore } from '@/stores'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
 
 import MainComment from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/MainComment.vue'
 import Modal from '@/components/Modal.vue'
@@ -68,6 +66,12 @@ import type { ComponentRef } from '@/service/interface/vue'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { CbError } from '@/service/interface/function'
 import type { MessageInfo } from '@/service/interface/app/message'
+import { error } from '@/utils/decorator/Error'
+import { container } from 'tsyringe'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+
+const { ToastReplyComment } = composableService()
 
 const $props = withDefaults(
   defineProps<{
@@ -106,82 +110,65 @@ const client_id = computed(
   () => conversationStore.select_conversation?.fb_client_id
 )
 
-/**xoá dữ liệu khi modal tắt */
-function onCloseModal() {
-  post_comments.value = []
+class Main {
+  /**
+   * @param API_POST API của bài post
+   */
+  constructor(
+    private readonly API_POST = container.resolve(N4SerivceAppPost)
+  ) {}
 
-  skip_comment.value = 0
+  /**xoá dữ liệu khi modal tắt */
+  onCloseModal() {
+    // danh sách bình luận
+    post_comments.value = []
 
-  done_load_comment.value = false
+    // phân trang bình luận
+    skip_comment.value = 0
 
-  is_loading.value = false
+    // cờ đã load hết bình luận
+    done_load_comment.value = false
+
+    // tắt loading
+    is_loading.value = false
+  }
+  /** Dùng để bật modal */
+  toggleModal() {
+    // lấy dữ liệu bình luận chính
+    this.getFbPostComments()
+
+    // bật modal
+    modal_ref.value?.toggleModal()
+  }
+  /** Lấy bình luận chính từ bài post của fb */
+  @loadingV2(is_loading, 'value')
+  @error(container.resolve(ToastReplyComment))
+  async getFbPostComments() {
+    // xác thực dữ liệu
+    if (!page_id.value || !client_id.value) return
+
+    /**dữ liệu bình luận */
+    const COMMENTS = await this.API_POST.getMainComment(
+      page_id.value,
+      client_id.value,
+      $props.post_id,
+      skip_comment.value,
+      LIMIT_RECORD
+    )
+
+    // kiểm tra xem đã load hết bình luận chưa
+    if ((COMMENTS?.length || 0) < LIMIT_RECORD) done_load_comment.value = true
+
+    // thêm dữ liệu vào mảng
+    post_comments.value.push(...COMMENTS)
+
+    // tăng số bản ghi
+    skip_comment.value += LIMIT_RECORD
+  }
 }
-/** Dùng để bật modal */
-function toggleModal() {
-  getFbPostComments()
+const $main = new Main()
 
-  modal_ref.value?.toggleModal()
-}
-/** Lấy bình luận chính từ bài post của fb */
-function getFbPostComments() {
-  if (is_loading.value) return
-
-  waterfall(
-    [
-      // * bật loading
-      (cb: CbError) => {
-        is_loading.value = true
-
-        cb()
-      },
-      // * gọi api lấy danh sách comment
-      (cb: CbError) =>
-        get_fb_post_comments(
-          {
-            client_id: client_id.value,
-            page_id: page_id.value,
-            target_id: $props.post_id,
-            limit: LIMIT_RECORD,
-            skip: skip_comment.value,
-          },
-          (e, r) => {
-            if (e) return cb(e)
-
-            if (!r?.length) done_load_comment.value = true
-
-            // thêm field cho comment gốc
-            if (r)
-              post_comments.value.push(
-                ...r.map((comment: FacebookCommentPost) => {
-                  comment.child_comments = []
-                  comment.done_load_comment = false
-                  comment.skip_comment = 0
-                  comment.new_comment = ''
-                  comment.sending_message = false
-
-                  return comment
-                })
-              )
-
-            cb()
-          }
-        ),
-      // * next
-      (cb: CbError) => {
-        skip_comment.value += LIMIT_RECORD
-
-        cb()
-      },
-    ],
-    e => {
-      is_loading.value = false
-
-      if (e) return toastError(e)
-    }
-  )
-}
-
-defineExpose({ toggleModal })
+defineExpose({ toggleModal: $main.toggleModal.bind($main) })
 </script>
 <style lang="scss" scoped>
 @import '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/style.scss';

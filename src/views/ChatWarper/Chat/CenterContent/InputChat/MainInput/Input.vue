@@ -23,7 +23,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, toRef } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useConversationStore,
@@ -35,23 +35,24 @@ import {
 import { send_message } from '@/service/api/chatbox/n4-service'
 import { map, get, size, uniqueId, partition, set } from 'lodash'
 import { srcImageToFile } from '@/service/helper/file'
-import { getPageInfo, scrollToBottomMessage } from '@/service/function'
+import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
 import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
-import { container, singleton } from 'tsyringe'
+import { container } from 'tsyringe'
 import { Delay } from '@/utils/helper/Delay'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
+import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
-import { error } from '@/utils/decorator/Error'
-import { loadingV2 } from '@/utils/decorator/Loading'
-import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import type { IAlert } from '@/utils/helper/Alert/type'
+
+const { ToastReplyComment } = composableService()
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -87,19 +88,6 @@ const client_id = computed(
 const platform_type = computed(
   () => conversationStore.select_conversation?.platform_type
 )
-
-/**custom lại thông báo lỗi */
-@singleton()
-class ToastReplyComment extends Toast implements IAlert {
-  public error(message: any): void {
-    // lỗi đã trả lời rồi
-    if (message?.code === 10900)
-      message = $t('v1.view.main.dashboard.chat.post.already_replied')
-
-    // thông báo lỗi
-    super.error(message)
-  }
-}
 
 /**decorator xử lý khi phát sinh lỗi trả lời bình luận */
 const handleErrorReplyComment = error(

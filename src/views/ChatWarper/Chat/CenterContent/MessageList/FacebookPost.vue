@@ -63,13 +63,13 @@
       </a>
     </div>
   </div>
-  <FacebookCommentModal
+  <!-- <FacebookCommentModal
     ref="fb_cmt_ref"
     :page_id="conversationStore.select_conversation?.fb_page_id"
     :client_id="conversationStore.select_conversation?.fb_client_id"
     :target_id="post_info?.id"
     :post_title="post_info.attachments?.data?.[0]?.title"
-  />
+  /> -->
 </template>
 
 <script setup lang="ts">
