@@ -1,6 +1,9 @@
 <template>
-  <div class="comment-item flex gap-1 justify-between">
-    {{ message?.message_text || ad_title }}
+  <div
+    v-if="text"
+    class="comment-item flex gap-1 justify-between"
+  >
+    {{ text }}
     <EyeSlashIcon
       v-if="message?.is_hidden_comment"
       @click="$main.toggleComment('SHOW')"
@@ -40,6 +43,8 @@ const ad_title = computed(
 )
 /**nội dung bài viết */
 const post_content = computed(() => $props.message?.post?.content)
+/**nội dung bình luận */
+const text = computed(() => $props.message?.message_text || ad_title.value)
 
 class Main {
   /**

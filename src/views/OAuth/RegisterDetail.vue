@@ -151,6 +151,13 @@ class Main {
   @handleLoadingOauth
   @handleErrorOauth()
   async register() {
+    // xóa khoảng trắng
+    form.value.email = form.value.email.trim()
+    form.value.first_name = form.value.first_name?.trim()
+    form.value.last_name = form.value.last_name?.trim()
+    form.value.password = form.value.password.trim()
+    form.value.confirm_password = form.value.confirm_password.trim()
+
     // xác thực form
     await VLD_EMAIL_REGISTER.validate(form.value)
 

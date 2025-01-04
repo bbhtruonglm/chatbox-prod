@@ -59,7 +59,7 @@
           </div>
         </div>
         <div
-          v-if="!message?.ad_id"
+          v-if="!message?.ad_id && message?.comment_id"
           class="flex items-center text-xs gap-2 justify-start"
         >
           <button
