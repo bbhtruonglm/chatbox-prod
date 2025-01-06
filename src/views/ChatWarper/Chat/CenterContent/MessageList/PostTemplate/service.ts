@@ -4,8 +4,9 @@ import { container, singleton } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { useI18n } from 'vue-i18n'
 
-import type { MessageInfo } from '@/service/interface/app/message'
+import type { IPost, MessageInfo } from '@/service/interface/app/message'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
 
 /**dịch vụ của bài post */
 export function composableService() {
@@ -13,12 +14,17 @@ export function composableService() {
   const { t: $t } = useI18n()
 
   /**dịch vụ của bài post */
+  @singleton()
   class PostService {
     /**
      * @param API_POST API của bài post
+     * @param SERVICE_WINDOW_ACTION dịch vụ của cửa sổ
      */
     constructor(
-      private readonly API_POST = container.resolve(N4SerivceAppPost)
+      private readonly API_POST = container.resolve(N4SerivceAppPost),
+      private readonly SERVICE_WINDOW_ACTION: IWindowAction = container.resolve(
+        WindowAction
+      )
     ) {}
 
     /**ẩn bình luận */
@@ -43,6 +49,22 @@ export function composableService() {
 
       // cập nhật lại trạng thái bình luận
       message.is_hidden_comment = IS_HIDDEN
+    }
+    /**tên người tạo bài viết */
+    getCreatorName(post?: IPost) {
+      return (
+        post?.creator_name ||
+        post?.content?.admin_creator?.name ||
+        post?.content?.from?.name
+      )
+    }
+    /**mở bài viết ở vị trí comment này */
+    openCommentOnFb(post_id?: string, comment_id?: string) {
+      /**id mục tiêu */
+      const TARGET_ID = comment_id || post_id
+
+      // mở tab mới
+      this.SERVICE_WINDOW_ACTION.openNewTab(`https://fb.com/${TARGET_ID}`)
     }
   }
 

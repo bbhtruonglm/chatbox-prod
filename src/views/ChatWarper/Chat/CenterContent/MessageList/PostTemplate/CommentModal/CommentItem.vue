@@ -52,8 +52,6 @@
         v-for="(child_comment, child_index) in child_comments"
         @focus_input="$event => $main.focusInput($event)"
         :post_id
-        :message
-        :message_index
         :comment="child_comment"
         :comment_index="child_index"
         is_child_comment
@@ -145,11 +143,6 @@ const $props = withDefaults(
   defineProps<{
     /**id của bài post */
     post_id: string
-
-    /**dữ liệu tin nhắn */
-    message?: MessageInfo
-    /**vị trí của tin nhắn */
-    message_index?: number
 
     /**dữ liệu của bình luận này */
     comment: FacebookCommentPost

@@ -66,6 +66,7 @@ import { Cdn } from '@/utils/helper/Cdn'
 import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { WindowAction, type IWindowAction } from '@/utils/helper/Navigation'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
 
 import CommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
 
@@ -73,9 +74,12 @@ import SpeakerIcon from '@/components/Icons/Speaker.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 
+const { PostService } = composableService()
+
 const conversationStore = useConversationStore()
 const $cdn = container.resolve(Cdn)
 const $date_handle = container.resolve(DateHandle)
+const $post_service = container.resolve(PostService)
 
 const $props = withDefaults(
   defineProps<{
@@ -93,11 +97,8 @@ const $props = withDefaults(
 const fb_cmt_ref = ref<InstanceType<typeof CommentModal>>()
 
 /**tên người tạo bài viết này */
-const creator_name = computed(
-  () =>
-    $props.message?.post?.creator_name ||
-    $props.message?.post?.content?.admin_creator?.name ||
-    $props.message?.post?.content?.from?.name
+const creator_name = computed(() =>
+  $post_service.getCreatorName($props.message?.post)
 )
 /**nội dung bài viết */
 const post_content = computed(() => $props.message?.post?.content)
@@ -108,13 +109,9 @@ const post_id = computed(
 
 class Main {
   /**
-   * @param SERVICE_WINDOW_ACTION xử lý logic mở tab mới
+   * @param SERVICE_POST post service
    */
-  constructor(
-    private readonly SERVICE_WINDOW_ACTION: IWindowAction = container.resolve(
-      WindowAction
-    )
-  ) {}
+  constructor(private readonly SERVICE_POST = $post_service) {}
 
   /** Dùng để bật tắt modal comment */
   toggleModal() {
@@ -122,11 +119,7 @@ class Main {
   }
   /**mở bài viết ở vị trí comment này */
   openCommentOnFb() {
-    /**id mục tiêu */
-    const TARGET_ID = $props.message?.comment_id || post_id.value
-
-    // mở tab mới
-    this.SERVICE_WINDOW_ACTION.openNewTab(`https://fb.com/${TARGET_ID}`)
+    this.SERVICE_POST.openCommentOnFb(post_id.value, $props.message?.comment_id)
   }
 }
 const $main = new Main()

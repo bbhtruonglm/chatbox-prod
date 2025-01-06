@@ -1,3 +1,4 @@
+import type { IPost } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { N4Serivce } from '@/utils/api/N4Serivce'
 import { singleton } from 'tsyringe'
@@ -27,6 +28,20 @@ export class N4SerivceAppPost extends N4Serivce {
     return this.post('get_comment', {
       page_id,
       client_id,
+      target_id: post_id,
+      limit,
+      skip,
+    })
+  }
+  /** Lấy bình luận chính của bài post với tòa bộ khách hàng */
+  public async getPostComment(
+    page_id: string,
+    post_id: string,
+    skip?: number,
+    limit?: number
+  ): Promise<FacebookCommentPost[]> {
+    return this.post('get_comment', {
+      page_id,
       target_id: post_id,
       limit,
       skip,
@@ -86,6 +101,18 @@ export class N4SerivceAppPost extends N4Serivce {
       post_id,
       target_id,
       is_hidden,
+    })
+  }
+  /**đọc info 1 bài post */
+  public async getPost(
+    page_id: string,
+    post_id?: string,
+    ad_id?: string
+  ): Promise<IPost> {
+    return this.post('get_post', {
+      page_id,
+      post_id,
+      ad_id,
     })
   }
 }
