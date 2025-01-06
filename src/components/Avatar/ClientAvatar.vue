@@ -1,5 +1,10 @@
 <template>
+  <PageAvatar
+    v-if="conversation?.conversation_type === 'POST'"
+    :page_info="conversationStore.getPage()"
+  />
   <div
+    v-else
     :class="animate_pulse"
     class="overflow-hidden bg-slate-200 rounded-oval"
   >
@@ -12,7 +17,6 @@
     >
       {{ nameToLetter(conversation?.client_name) }}
     </div>
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
@@ -21,7 +25,6 @@
       :src="loadImageUrl()"
       class="w-full h-full"
     />
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
@@ -30,7 +33,6 @@
       :src="loadImageUrl()"
       class="w-full h-full"
     />
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
@@ -52,9 +54,11 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useChatbotUserStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 import { nameToLetter } from '@/service/helper/format'
 import { SingletonCdn } from '@/utils/helper/Cdn'
+
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 
@@ -72,7 +76,7 @@ const $props = withDefaults(
   }
 )
 
-const chatbotUserStore = useChatbotUserStore()
+const conversationStore = useConversationStore()
 
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
