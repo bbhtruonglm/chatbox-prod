@@ -1,6 +1,7 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Bài viết': 'Posts',
   'Bình luận đã được ẩn rồi': 'Comment has been hidden',
   'Đã gửi tin nhắn trả lời': 'Sent private reply message',
   'Đã trả lời bình luận': 'Replied to comment',
