@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Bình luận dưới tên _': 'Comment as {name}',
+  'Tổng quan bài viết': 'Post overview',
   'Bài viết': 'Posts',
   'Bình luận đã được ẩn rồi': 'Comment has been hidden',
   'Đã gửi tin nhắn trả lời': 'Sent private reply message',

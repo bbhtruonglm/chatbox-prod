@@ -19,6 +19,11 @@
     >
       {{ $t('v1.view.main.dashboard.org.lock_free_page_over_quota') }}
     </div>
+    <FullPost
+      v-else-if="
+        conversationStore.select_conversation.conversation_type === 'POST'
+      "
+    />
     <div
       v-else
       @scroll="onScrollMessage"
@@ -95,12 +100,11 @@
             >
               <!-- <AdMessage :ad_id="message.ad_id" />
               <br /> -->
-              
+
               <PostTemplate
                 :message
                 :message_index="index"
               />
-
             </template>
 
             <PostTemplate
@@ -177,6 +181,7 @@ import { toastError } from '@/service/helper/alert'
 import { getPageInfo, scrollToBottomMessage } from '@/service/function'
 import { debounce, findLastIndex, remove, size } from 'lodash'
 
+import FullPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FullPost.vue'
 import Loading from '@/components/Loading.vue'
 import TimeSplit from '@/views/ChatWarper/Chat/CenterContent/MessageList/TimeSplit.vue'
 import UnsupportMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnsupportMessage.vue'

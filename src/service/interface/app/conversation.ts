@@ -1,6 +1,8 @@
 import type { PageType } from './page'
 
 export interface FilterConversation {
+    /**loại hội thoại */
+    conversation_type?: 'CHAT'| 'POST'
     /**lọc hội thoại chưa đọc */
     unread_message?: 'true' | 'false'
     /**tìm kiếm hội thoại theo tên | sdt | email */

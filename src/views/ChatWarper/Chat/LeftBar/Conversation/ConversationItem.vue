@@ -180,6 +180,9 @@ class Main {
   }
   /**gọi ext để lấy uid và thông tin khách hàng */
   triggerExtension() {
+    // không chạy với dạng hội thoại post
+    if ($props.source?.conversation_type === 'POST') return
+
     // nếu không có key thì không cho click
     if (
       !$props.source?.fb_page_id ||

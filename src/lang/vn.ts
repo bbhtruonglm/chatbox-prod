@@ -1,6 +1,7 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Bình luận dưới tên _': 'Bình luận dưới tên {name}',
   'Bình luận với vai trò _': 'Bình luận với vai trò {name}',
   'Đối với tài khoản _': 'Đối với tài khoản {name}',
   'Email _ đã được xác nhận!': 'Email {name} đã được xác minh!',

@@ -22,7 +22,10 @@
         <button
           @click="$main.activeTab('CHAT')"
           :class="{
-            'font-semibold border-b-2 border-black': active_tab === 'CHAT',
+            'font-semibold border-b-2 border-black':
+              !conversationStore.option_filter_page_data.conversation_type ||
+              conversationStore.option_filter_page_data.conversation_type ===
+                'CHAT',
           }"
           class="h-full"
         >
@@ -31,7 +34,9 @@
         <button
           @click="$main.activeTab('POST')"
           :class="{
-            'font-semibold border-b-2 border-black': active_tab === 'POST',
+            'font-semibold border-b-2 border-black':
+              conversationStore.option_filter_page_data.conversation_type ===
+              'POST',
           }"
           class="h-ful"
         >
@@ -88,8 +93,6 @@ const search_conversation = ref<string>()
 const is_search = ref<boolean>(false)
 /**tham chiếu đến ô tìm kiếm */
 const ref_search_conversation = ref<HTMLInputElement>()
-/**tab đang kích hoạt */
-const active_tab = ref<IActiveTab>('CHAT')
 
 /**delay tìm kiếm hội thoại */
 const onSearchConversation = debounce(($event: Event) => {
@@ -104,7 +107,7 @@ class Main {
   /**chuyển đổi tab đang kích hoạt */
   activeTab(tab: IActiveTab) {
     // thay đổi cờ
-    active_tab.value = tab
+    conversationStore.option_filter_page_data.conversation_type = tab
   }
   /**chuyển đổi trạng thái tìm kiếm */
   async toggleSearch() {

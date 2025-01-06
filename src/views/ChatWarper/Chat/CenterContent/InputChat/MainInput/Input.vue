@@ -14,11 +14,24 @@
       v-if="!commonStore.is_typing"
       class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2"
     >
-      {{
-        $t('v1.view.main.dashboard.chat.send_to', {
-          name: conversationStore.select_conversation?.client_name,
-        })
-      }}
+      <template
+        v-if="
+          conversationStore.select_conversation?.conversation_type === 'POST'
+        "
+      >
+        {{
+          $t('Bình luận dưới tên _', {
+            name: conversationStore.getPage()?.name,
+          })
+        }}
+      </template>
+      <template v-else>
+        {{
+          $t('v1.view.main.dashboard.chat.send_to', {
+            name: conversationStore.select_conversation?.client_name,
+          })
+        }}
+      </template>
     </span>
   </div>
 </template>

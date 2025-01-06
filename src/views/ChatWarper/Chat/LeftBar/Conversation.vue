@@ -134,10 +134,14 @@ class Main {
     Object.assign(conversationStore.select_conversation, UPDATED_VALUE)
   }
 
-  /**đọc danh sách hội thoại */
+  /**
+   * đọc danh sách hội thoại
+   * @param is_first_time có phải lần đầu tiên không
+   * @param is_pick_first có chọn hội thoại đầu tiên không
+   */
   @loadingV2(is_loading, 'value')
   @error()
-  async getConversation(is_first_time?: boolean) {
+  async getConversation(is_first_time?: boolean, is_pick_first?: boolean) {
     // nếu đang mất mạng thì không cho gọi api
     if (!commonStore.is_connected_internet) return
 
@@ -209,15 +213,13 @@ class Main {
     }
 
     // tự động chọn khách hàng cho lần đầu tiên
-    if (is_first_time) $main.selectDefaultConversation()
+    if (is_first_time) $main.selectDefaultConversation(is_pick_first)
   }
   /**xử lý socket conversation */
   onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // nếu không có dữ liệu thì thôi
     if (!detail) return
 
-    /**cấu hình trang đặc biệt */
-    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
     // nạp dữ liệu
     let { conversation, event } = detail
     /**danh sách hội thoại */
@@ -225,15 +227,31 @@ class Main {
 
     // nếu không có dữ liệu hội thoại thì thôi
     if (!conversation) return
+
+    // nếu không đúng tab thì bỏ qua
+    if (
+      conversation?.conversation_type !==
+      (conversationStore.option_filter_page_data?.conversation_type || 'CHAT')
+    )
+      return
+
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
     // lọc các hội thoại không phải của nv này nếu cần
     if (
+      // chỉ chạy với dạng chat
+      conversationStore.option_filter_page_data?.conversation_type !== 'POST' &&
+      // phải bật thiết lập
       SPECIAL_PAGE_CONFIG?.is_only_visible_client_of_staff &&
+      // dùng cả id cũ và mới
       !(
         conversation?.user_id === chatbotUserStore.chatbot_user?.user_id ||
         conversation?.fb_staff_id === chatbotUserStore.chatbot_user?.fb_staff_id
       )
     )
       return
+
     // bỏ qua record của page chat cho page
     if (conversation.fb_page_id === conversation.fb_client_id) return
 
@@ -307,7 +325,10 @@ class Main {
     )
   }
   /**đọc danh sách hội thoại lần đầu tiên */
-  loadConversationFirstTime(is_first_time?: boolean) {
+  async loadConversationFirstTime(
+    is_first_time?: boolean,
+    is_pick_first?: boolean
+  ) {
     // reset data
     conversationStore.conversation_list = {}
 
@@ -317,10 +338,10 @@ class Main {
     // reset trạng thái load
     is_done.value = false
 
-    this.getConversation(is_first_time)
+    await this.getConversation(is_first_time, is_pick_first)
   }
   /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
-  selectDefaultConversation() {
+  selectDefaultConversation(is_pick_first?: boolean) {
     // nếu ở chế độ lọc chưa đọc thì thôi
     if (conversationStore.option_filter_page_data?.unread_message) return
 
@@ -331,8 +352,26 @@ class Main {
     }, 500)
 
     // lấy id hội thoại trên param
-    let page_id = ($route.query?.p || $route.query?.page_id) as string
-    let user_id = $route.query?.u || $route.query?.user_id
+    let page_id: string
+    let user_id: string
+
+    // chọn hội thoại đầu tiên
+    if (is_pick_first) {
+      // lấy phần tử đầu tiên của hội thoại từ store
+      const FIRST_CONVERSATION = map(conversationStore.conversation_list)?.[0]
+
+      // nạp id
+      page_id = FIRST_CONVERSATION?.fb_page_id
+      user_id = FIRST_CONVERSATION?.fb_client_id
+
+      // đặt lại param
+      setParamChat($router, page_id, user_id)
+    }
+    // chọn hội thoại theo param
+    else {
+      page_id = ($route.query?.p || $route.query?.page_id) as string
+      user_id = ($route.query?.u || $route.query?.user_id) as string
+    }
 
     // nếu id page của hội thoại không được chọn thì thôi
     if (page_id && !pageStore.selected_page_id_list?.[page_id]) return
@@ -484,7 +523,7 @@ onUnmounted(() => {
 // khi thay đổi giá trị lọc tin nhắn thì load lại dữ liệu
 watch(
   () => conversationStore.option_filter_page_data,
-  () => $main.loadConversationFirstTime(),
+  () => $main.loadConversationFirstTime(true, true),
   { deep: true }
 )
 // khi có data page được chọn thì tính toán danh sách conversation
@@ -531,5 +570,7 @@ watch(
   }
 )
 
-defineExpose({ loadConversationFirstTime: $main.loadConversationFirstTime.bind($main) })
+defineExpose({
+  loadConversationFirstTime: $main.loadConversationFirstTime.bind($main),
+})
 </script>

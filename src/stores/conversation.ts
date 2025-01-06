@@ -17,6 +17,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
   const option_filter_page_data = ref<FilterConversation>(
     getLocal('option_filter_page_data', {
       is_spam_fb: 'NO',
+      conversation_type: 'CHAT'
     })
   )
   // lưu dữ liệu xuống local

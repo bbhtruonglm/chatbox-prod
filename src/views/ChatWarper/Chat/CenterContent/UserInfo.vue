@@ -21,7 +21,19 @@
         >
           {{ conversationStore.select_conversation?.client_name || 'No name' }}
         </div>
-        <div class="flex items-center gap-2">
+        <div
+          v-if="
+            conversationStore.select_conversation?.conversation_type === 'POST'
+          "
+          class="text-xs text-slate-500"
+        >
+          {{ $t('ID:') }}
+          {{ conversationStore.select_conversation?.fb_client_id }}
+        </div>
+        <div
+          v-else
+          class="flex items-center gap-2"
+        >
           <button
             v-tooltip.bottom="
               $t('v1.view.main.dashboard.chat.assign_staff.title')
@@ -49,7 +61,10 @@
         </div>
       </div>
     </div>
-    <div class="flex items-center flex-shrink-0 gap-3.5">
+    <div
+      v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
+      class="flex items-center flex-shrink-0 gap-3.5"
+    >
       <button
         @click="$main.unreadConversation"
         v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_unread')"
