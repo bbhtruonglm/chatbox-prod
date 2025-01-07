@@ -9,13 +9,15 @@
     <ReplyComment v-if="messageStore.reply_comment?.root_comment_id" />
     <ListLabel v-else />
     <PreviewAttachment />
-    <MainInput />
+    <MainInput
+      v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
+    />
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { size } from 'lodash'
-import { useMessageStore } from '@/stores'
+import { useConversationStore, useMessageStore } from '@/stores'
 import { onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -29,6 +31,7 @@ import type { ComponentRef } from '@/service/interface/vue'
 import type { WidgetEventData } from '@/service/interface/app/widget'
 
 const messageStore = useMessageStore()
+const conversationStore = useConversationStore()
 const $route = useRoute()
 
 /**ref của input chat */

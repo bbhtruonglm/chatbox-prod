@@ -37,7 +37,10 @@
           <button @click="$main.focusInput({ type: 'REPLY' })">
             {{ $t('v1.view.main.dashboard.chat.post.reply_comment') }}
           </button>
-          <button @click="$main.toggleComment()">
+          <button
+            v-if="!is_from_page"
+            @click="$main.toggleComment()"
+          >
             {{ $t('v1.view.main.dashboard.chat.post.hide_comment') }}
           </button>
           <button
@@ -302,7 +305,7 @@ class Main {
     // thông báo thành công
     this.SERVICE_TOAST.success($t('Đã trả lời bình luận'))
   }
-  /**trả lời bình luận */
+  /**gửi tin nhắn bí mật */
   @loadingV2(is_replying, 'value')
   @error(container.resolve(ToastReplyComment))
   async privateReplyComment(
