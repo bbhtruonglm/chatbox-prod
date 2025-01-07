@@ -32,8 +32,6 @@
           v-for="(comment, comment_index) in post_comments"
           v-model:main_loading="is_loading"
           :post_id
-          :message
-          :message_index
           :comment
           :comment_index
           class="px-3"

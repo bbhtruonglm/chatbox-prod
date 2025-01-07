@@ -32,19 +32,22 @@
             </button>
           </div>
           <span class="text-xs">
-            {{ $t('Người đăng:') }}
+            {{ $t('Người đăng') }}:
             <span class="font-medium">{{ creator_name }}</span>
           </span>
         </div>
       </div>
       <div class="py-2 px-3 text-xs">
         <span class="whitespace-pre-line line-clamp-5">
-          {{ post?.content?.message }}
+          {{ conversationStore.select_conversation_post?.content?.message }}
         </span>
         <!-- <span class="font-bold cursor-pointer hover:underline">Xem thêm</span> -->
       </div>
       <img
-        v-if="post?.content?.attachments?.data?.[0]?.media?.image?.src"
+        v-if="
+          conversationStore.select_conversation_post?.content?.attachments
+            ?.data?.[0]?.media?.image?.src
+        "
         :src="$cdn.fbPostImg(page_id, post_id)"
         class="w-full border-y"
       />
@@ -53,15 +56,15 @@
       </p> -->
       <div class="py-1 px-3 text-sm grid grid-cols-3 gap-2.5">
         <span>
-          {{ $t('Reaction:') }}
+          {{ $t('Reaction') }}:
           <span class="font-medium">14.882</span>
         </span>
         <span>
-          {{ $t('Bình luận:') }}
+          {{ $t('Bình luận') }}:
           <span class="font-medium">14.882</span>
         </span>
         <span>
-          {{ $t('Chia sẻ:') }}
+          {{ $t('Chia sẻ') }}:
           <span class="font-medium">14.882</span>
         </span>
       </div>
@@ -84,137 +87,6 @@
           class="pl-3"
         />
       </div>
-
-      <!-- <div class="flex flex-col gap-2">
-        <div class="flex flex-col gap-2">
-          <div class="flex items-start px-3 gap-3">
-            <img
-              alt="profile picture"
-              loading="lazy"
-              width="200"
-              height="200"
-              decoding="async"
-              data-nimg="1"
-              class="size-10 rounded-full object-contain"
-              style="color: transparent"
-            />
-            <div class="flex flex-col gap-0.5 w-full">
-              <div
-                class="py-1 px-2 rounded-xl flex flex-col gap-0 bg-slate-100"
-              >
-                <p class="flex items-center">
-                  <span
-                    class="text-sm font-bold flex-auto cursor-pointer hover:underline"
-                    >Trần Minh Tiến</span
-                  ><span class="text-xs text-slate-700">13:42 15/12/2024</span>
-                </p>
-                <span class="text-sm">ib</span>
-              </div>
-              <div class="text-sm flex items-center gap-5">
-                <span class="hover:underline cursor-pointer">Trả lời</span
-                ><span class="hover:underline cursor-pointer"
-                  >Ẩn bình luận</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <div class="flex items-start px-3 gap-3">
-            <img
-              alt="profile picture"
-              loading="lazy"
-              width="200"
-              height="200"
-              decoding="async"
-              data-nimg="1"
-              class="size-10 rounded-full object-contain"
-              style="color: transparent"
-            />
-            <div class="flex flex-col gap-0.5 w-full">
-              <div
-                class="py-1 px-2 rounded-xl flex flex-col gap-0 bg-slate-100"
-              >
-                <p class="flex items-center">
-                  <span
-                    class="text-sm font-bold flex-auto cursor-pointer hover:underline"
-                    >Trần Minh Tiến</span
-                  ><span class="text-xs text-slate-700">2 tiếng trước</span>
-                </p>
-                <span class="text-sm">ib</span>
-              </div>
-              <div class="text-sm flex items-center gap-5">
-                <span class="hover:underline cursor-pointer">Trả lời</span
-                ><span class="hover:underline cursor-pointer"
-                  >Ẩn bình luận</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="flex items-start px-3 gap-3 ml-12">
-            <img
-              alt="profile picture"
-              loading="lazy"
-              width="200"
-              height="200"
-              decoding="async"
-              data-nimg="1"
-              class="size-10 rounded-full object-contain"
-              style="color: transparent"
-            />
-            <div class="flex flex-col gap-0.5 w-full">
-              <div
-                class="py-1 px-2 rounded-xl flex flex-col gap-0 bg-slate-100"
-              >
-                <p class="flex items-center">
-                  <span
-                    class="text-sm font-bold flex-auto cursor-pointer hover:underline"
-                    >Trần Minh Tiến</span
-                  ><span class="text-xs text-slate-700">5 giây trước</span>
-                </p>
-                <span class="text-sm">ib</span>
-              </div>
-              <div class="text-sm flex items-center gap-5">
-                <span class="hover:underline cursor-pointer">Trả lời</span
-                ><span class="hover:underline cursor-pointer"
-                  >Ẩn bình luận</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="flex items-start px-3 gap-3 ml-12">
-            <img
-              alt="profile picture"
-              loading="lazy"
-              width="200"
-              height="200"
-              decoding="async"
-              data-nimg="1"
-              class="size-10 rounded-full object-contain"
-              style="color: transparent"
-            />
-            <div class="flex flex-col gap-0.5 w-full">
-              <div
-                class="py-1 px-2 rounded-xl flex flex-col gap-0 bg-slate-100"
-              >
-                <p class="flex items-center">
-                  <span
-                    class="text-sm font-bold flex-auto cursor-pointer hover:underline"
-                    >Trần Minh Tiến</span
-                  ><span class="text-xs text-slate-700">10 giây trước</span>
-                </p>
-                <span class="text-sm">ib</span>
-              </div>
-              <div class="text-sm flex items-center gap-5">
-                <span class="hover:underline cursor-pointer">Trả lời</span
-                ><span class="hover:underline cursor-pointer"
-                  >Ẩn bình luận</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -247,8 +119,6 @@ const LIMIT_RECORD = 3
 
 /**đang tải dữ liệu */
 const is_loading = ref<boolean>(false)
-/**dữ liệu bài post */
-const post = ref<IPost>()
 /** Comments trong bài post */
 const post_comments = ref<FacebookCommentPost[]>([])
 /** gắn cờ đã load hết bình luận chính */
@@ -266,7 +136,9 @@ const page_id = computed(
 )
 
 /**tên người tạo bài viết này */
-const creator_name = computed(() => $post_service.getCreatorName(post.value))
+const creator_name = computed(() =>
+  $post_service.getCreatorName(conversationStore.select_conversation_post)
+)
 
 class Main {
   /**
@@ -284,7 +156,10 @@ class Main {
     if (!post_id.value) return
 
     /**lấy dữ liệu bài post */
-    post.value = await this.API_POST.getPost(page_id.value, post_id.value)
+    conversationStore.select_conversation_post = await this.API_POST.getPost(
+      page_id.value,
+      post_id.value
+    )
   }
   /** Lấy bình luận chính từ bài post của fb */
   @loadingV2(is_loading, 'value')
@@ -313,7 +188,7 @@ class Main {
   /**xoá dữ liệu cũ */
   clearData() {
     // xoá dữ liệu bài viết cũ
-    post.value = undefined
+    conversationStore.select_conversation_post = undefined
     // xoá dữ liệu bình luận cũ
     post_comments.value = []
     // cờ đã load hết bình luận

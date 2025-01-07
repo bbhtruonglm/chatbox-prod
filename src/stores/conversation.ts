@@ -11,13 +11,14 @@ import { usePageStore } from './page'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { ClientInfo } from '@/utils/api/Chatbot'
 import type { ILabel } from '@/service/interface/app/label'
+import type { IPost } from '@/service/interface/app/message'
 
 export const useConversationStore = defineStore('conversation_store', () => {
   /**lưu dữ liệu lọc hội thoại */
   const option_filter_page_data = ref<FilterConversation>(
     getLocal('option_filter_page_data', {
       is_spam_fb: 'NO',
-      conversation_type: 'CHAT'
+      conversation_type: 'CHAT',
     })
   )
   // lưu dữ liệu xuống local
@@ -25,6 +26,8 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
   /**dữ liệu của 1 khách hàng khi được chọn */
   const select_conversation = ref<ConversationInfo>()
+  /**dữ liệu bài post của hội thoại dạng post đang được chọn */
+  const select_conversation_post = ref<IPost>()
 
   /**lấy thông tin nhân viên được gán cho hội thoại này */
   function getAssignStaff() {
@@ -115,6 +118,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
   return {
     option_filter_page_data,
     select_conversation,
+    select_conversation_post,
     conversation_list,
     select_widget,
     list_widget_token,

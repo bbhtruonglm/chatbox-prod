@@ -8,6 +8,7 @@
     <ClientAvatar
       v-else
       :conversation="conversationStore.select_conversation"
+      :comment
       class="w-10 h-10 flex-shrink-0"
     />
 
@@ -229,13 +230,13 @@ class Main {
   async getFbPostChildComments() {
     // kiểm tra dữ liệu
     if (!page_id.value) return
-    if (!client_id.value) return
+    // if (!client_id.value) return
     if (!$props.comment?.comment_id) return
 
     /**dữ liệu bình luận con */
     const COMMENTS = await this.API_POST.getChildComment(
       page_id.value,
-      client_id.value,
+      // client_id.value,
       $props.comment?.comment_id,
       skip.value,
       LIMIT_RECORD

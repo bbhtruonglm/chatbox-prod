@@ -1,10 +1,17 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
-  'Reaction:': 'Reaction:',
-  'Bình luận:': 'Comment:',
-  'Chia sẻ:': 'Share:',
-  'Người đăng:': 'Posted by:',
+  'Cảm xúc': 'Emotion',
+  'Thống kê chung': 'General statistics',
+  'ID bài viết': 'Post ID',
+  'Ngày tạo': 'Created date',
+  'Người tạo': 'Created by',
+  'Ngày cập nhật': 'Updated date',
+  'Người cập nhật': 'Updated by',
+  'Thông tin bài viết': 'Post information',
+  'Bình luận': 'Comment',
+  'Chia sẻ': 'Share',
+  'Người đăng': 'Posted by',
   'Xem trên Facebook': 'View on Facebook',
   'Bình luận dưới tên _': 'Comment as {name}',
   'Tổng quan bài viết': 'Post overview',

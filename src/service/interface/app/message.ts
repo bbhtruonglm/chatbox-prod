@@ -49,8 +49,16 @@ export interface IPortContent {
 }
 /**dữ liệu của 1 bài post */
 export interface IPost extends IPortContent {
+  /**thời gian tạo bài viết */
+  createdAt?: string
   /**nội dung bài viết */
   content?: IPortContent
+  /**loại nền tảng */
+  post_platform?: 'FB'
+  /**id trang */
+  page_id?: string
+  /**id bài viết */
+  post_id?: string
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
