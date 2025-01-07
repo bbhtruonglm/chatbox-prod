@@ -82,7 +82,7 @@
               : $t('Gửi tin trả lời')
           "
           @keyup.enter="$main.sendMesage()"
-          class="w-full py-3.5 px-5 border rounded-full text-sm placeholder:text-slate-500"
+          class="w-full py-3.5 px-5 pr-12 border rounded-full text-sm placeholder:text-slate-500"
         />
         <div class="absolute right-2 top-1/2 -translate-y-1/2">
           <ArrowUpCircleIcon

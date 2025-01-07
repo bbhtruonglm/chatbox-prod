@@ -1,6 +1,22 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Lên đơn': 'Order',
+  'Lập lịch': 'Schedule',
+  'Số điện thoại': 'Phone number',
+  Email: 'Email',
+  'Đường dẫn': 'Link',
+  'Địa chỉ': 'Address',
+  'Vận chuyển': 'Shipping',
+  'Giao dịch': 'Transaction',
+  'Bán hàng': 'Sale',
+  'Tài liệu': 'Document',
+  Thích: 'Like',
+  'Yêu thích': 'Love',
+  Wow: 'Wow',
+  Haha: 'Haha',
+  Buồn: 'Sad',
+  'Giận dữ': 'Angry',
   'Cảm xúc': 'Emotion',
   'Thống kê chung': 'General statistics',
   'ID bài viết': 'Post ID',

@@ -1,5 +1,76 @@
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
+/**dữ liệu phân tích của bài viết */
+export interface IPostAnalyticData {
+  // dữ liệu có sẵn quét từ FB
+  /**tổng số lượt reaction */
+  // total_reactions?: number
+  /**tổng số lượt bình luận */
+  total_comment?: number
+  /**tổng số lượt chia sẻ */
+  total_share?: number
+  /**tổng số lượt reaction like */
+  total_reaction_like?: number
+  /**tổng số lượt reaction love */
+  total_reaction_love?: number
+  /**tổng số lượt reaction wow */
+  total_reaction_wow?: number
+  /**tổng số lượt reaction haha */
+  total_reaction_haha?: number
+  /**tổng số lượt reaction sorry */
+  total_reaction_sorry?: number
+  /**tổng số lượt reaction anger */
+  total_reaction_anger?: number,
+
+  // phân loại cảm xúc
+  /**tổng số lượt cảm xúc tích cực */
+  total_emotion_positive?: number
+  /**tổng số lượt cảm xúc tiêu cực */
+  total_emotion_negative?: number
+  /**tổng số lượt cảm xúc trung lập */
+  total_emotion_neutral?: number
+
+  // dữ liệu phân tích cảm xúc
+  /**tổng số lượt thích */
+  total_emotion_like?: number
+  /**tổng số lượt cảm thấy vui */
+  total_emotion_happy?: number
+  /**tổng số lượt cảm thấy buồn */
+  total_emotion_sad?: number
+  /**tổng số lượt cảm thấy tức giận */
+  total_emotion_angry?: number
+
+  // dữ liệu phân tích CTA
+  /**tổng số lượt cta địa chỉ */
+  total_cta_address?: number
+  /**tổng số lượt cta tài liệu */
+  total_cta_document?: number
+  /**tổng số lượt cta email */
+  total_cta_email?: number
+  /**tổng số lượt cta link */
+  total_cta_link?: number
+  /**tổng số lượt cta số điện thoại */
+  total_cta_phone?: number
+  /**tổng số lượt cta đặt hàng */
+  total_cta_place_order?: number
+  /**tổng số lượt cta sale */
+  total_cta_sale?: number
+  /**tổng số lượt cta giao hàng */
+  total_cta_shipping?: number
+  /**tổng số lượt cta thời gian */
+  total_cta_time?: number
+  /**tổng số lượt cta giao dịch */
+  total_cta_transaction?: number
+}
+/**bài viết */
+export interface IPostAnalytic {
+  /**id trang */
+  page_id?: string
+  /**id bài viết */
+  post_id?: string
+  /**dữ liệu phân tích của bài viết */
+  post_analytic_data?: IPostAnalyticData
+}
 /**kích thước của file */
 export interface AttachmentSize {
   /**độ rộng */

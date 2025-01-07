@@ -1,4 +1,4 @@
-import type { IPost } from '@/service/interface/app/message'
+import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { N4Serivce } from '@/utils/api/N4Serivce'
 import { singleton } from 'tsyringe'
@@ -110,6 +110,18 @@ export class N4SerivceAppPost extends N4Serivce {
     ad_id?: string
   ): Promise<IPost> {
     return this.post('get_post', {
+      page_id,
+      post_id,
+      ad_id,
+    })
+  }
+  /**đọc thống kê 1 bài post */
+  public async getPostAnalytic(
+    page_id: string,
+    post_id?: string,
+    ad_id?: string
+  ): Promise<IPostAnalytic> {
+    return this.post('get_post_analytic', {
       page_id,
       post_id,
       ad_id,
