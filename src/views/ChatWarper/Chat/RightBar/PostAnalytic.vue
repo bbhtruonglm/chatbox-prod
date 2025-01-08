@@ -1,6 +1,8 @@
 <template>
   <div class="bg-white rounded-lg h-full flex flex-col">
-    <div class="py-2 px-3 border-b flex-shrink-0 flex gap-1 items-center">
+    <div
+      class="py-2 px-3 border-b flex-shrink-0 flex gap-1 items-center text-sm font-semibold"
+    >
       <ChartBarIcon class="size-5" />
       {{ $t('Thống kê bài viết') }}
     </div>
@@ -16,7 +18,7 @@
       <div class="flex flex-col gap-1">
         <div class="text-sm font-medium">{{ $t('Thống kê chung') }}:</div>
         <div class="flex flex-col gap-3">
-          <div class="grid grid-cols-2 gap-3">
+          <!-- <div class="grid grid-cols-2 gap-3">
             <InsightItem
               :icon="UserGroupIcon"
               :title="$t('Số người tiếp cận')"
@@ -27,7 +29,7 @@
               :title="$t('Lượt click vào link')"
               :amount="123.2323"
             />
-          </div>
+          </div> -->
           <div class="grid grid-cols-3 gap-3">
             <InsightItem
               :icon="FireIcon"
@@ -80,7 +82,7 @@
       </div>
       <div class="flex flex-col gap-1">
         <div class="text-sm font-medium">
-          {{ $t('Thống kê Cảm xúc từ Bình luận') }}:
+          {{ $t('Thống kê Cảm xúc từ Bình luận (AI)') }}:
         </div>
         <div class="flex flex-col gap-3">
           <div class="grid grid-cols-2 gap-3">
@@ -109,7 +111,7 @@
       </div>
       <div class="flex flex-col gap-1">
         <div class="text-sm font-medium">
-          {{ $t('Thống kê Chuyển đổi từ Bình luận') }}:
+          {{ $t('Thống kê Chuyển đổi từ Bình luận (AI)') }}:
         </div>
         <div class="flex flex-col gap-3">
           <div class="grid grid-cols-3 gap-3">
@@ -207,8 +209,6 @@ import AngryIcon from '@/components/Icons/Angry.vue'
 import {
   ChartBarIcon,
   FireIcon,
-  UserGroupIcon,
-  CursorArrowRaysIcon,
   ChatBubbleLeftRightIcon,
   ArrowUpOnSquareIcon,
   ShoppingBagIcon,

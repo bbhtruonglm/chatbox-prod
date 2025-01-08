@@ -1,6 +1,6 @@
 <template>
   <button
-    :class="{ 'bg-slate-100': is_selected }"
+    :class="{ 'bg-slate-200': is_selected }"
     class="flex gap-3 items-center py-1.5 px-2 text-sm font-medium hover:bg-slate-100 rounded-md w-full"
   >
     <div

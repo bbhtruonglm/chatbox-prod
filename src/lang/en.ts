@@ -3,9 +3,9 @@ import type { Language } from '@/service/interface/language'
 const source: Language = {
   'SĐT': 'Phone number',
   'Liên kết': 'Link',
-  'Thống kê Chuyển đổi từ Bình luận': 'Comment Conversion Statistics',
+  'Thống kê Chuyển đổi từ Bình luận (AI)': 'Comment Conversion Statistics',
   'Vui vẻ': 'Happy',
-  'Thống kê Cảm xúc từ Bình luận': 'Comment Emotion Statistics',
+  'Thống kê Cảm xúc từ Bình luận (AI)': 'Comment Emotion Statistics',
   'Thống kê Cảm xúc từ Facebook': 'Facebook Emotion Statistics',
   'Lượt click vào link': 'Link click',
   'Số người tiếp cận': 'Reach',

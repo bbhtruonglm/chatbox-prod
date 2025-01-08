@@ -57,15 +57,21 @@
       <div class="py-1 px-3 text-sm grid grid-cols-3 gap-2.5">
         <span>
           {{ $t('Reaction') }}:
-          <span class="font-medium">14.882</span>
+          <span class="font-medium">
+            {{ $format.numberToString(total_reaction) }}
+          </span>
         </span>
         <span>
           {{ $t('Bình luận') }}:
-          <span class="font-medium">14.882</span>
+          <span class="font-medium">
+            {{ $format.numberToString(analytic?.total_comment) }}
+          </span>
         </span>
         <span>
           {{ $t('Chia sẻ') }}:
-          <span class="font-medium">14.882</span>
+          <span class="font-medium">
+            {{ $format.numberToString(analytic?.total_share) }}
+          </span>
         </span>
       </div>
 
@@ -99,13 +105,14 @@ import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
 import { Cdn } from '@/utils/helper/Cdn'
+import { sum } from 'lodash'
+import { Format } from '@/utils/helper/Format'
 
 import CommentItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/CommentItem.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import LoadMoreBtn from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/LoadMoreBtn.vue'
 
-import type { IPost } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 const { PostService } = composableService()
@@ -113,6 +120,7 @@ const { PostService } = composableService()
 const $post_service = container.resolve(PostService)
 const conversationStore = useConversationStore()
 const $cdn = container.resolve(Cdn)
+const $format = container.resolve(Format)
 
 /**giới hạn số bản ghi */
 const LIMIT_RECORD = 3
@@ -139,6 +147,21 @@ const page_id = computed(
 const creator_name = computed(() =>
   $post_service.getCreatorName(conversationStore.select_conversation_post)
 )
+/**thống kê của bài viết */
+const analytic = computed(
+  () => conversationStore.select_conversation_post_analytic?.post_analytic_data
+)
+/**tổng số lượng reaction */
+const total_reaction = computed(() => {
+  return sum([
+    analytic.value?.total_reaction_like,
+    analytic.value?.total_reaction_love,
+    analytic.value?.total_reaction_wow,
+    analytic.value?.total_reaction_haha,
+    analytic.value?.total_reaction_sorry,
+    analytic.value?.total_reaction_anger,
+  ])
+})
 
 class Main {
   /**
