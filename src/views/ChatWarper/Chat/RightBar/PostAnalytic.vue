@@ -1,10 +1,15 @@
 <template>
   <div class="bg-white rounded-lg h-full flex flex-col">
     <div
-      class="py-2 px-3 border-b flex-shrink-0 flex gap-1 items-center text-sm font-semibold"
+      class="py-2 px-3 border-b flex-shrink-0 text-sm font-semibold flex items-center justify-between"
     >
-      <ChartBarIcon class="size-5" />
-      {{ $t('Thống kê bài viết') }}
+      <div class="flex items-center gap-1">
+        <ChartBarIcon class="size-5" />
+        {{ $t('Thống kê bài viết') }}
+      </div>
+      <button @click="$main.getPostAnalytic(true)">
+        <ArrowPathIcon class="size-4" />
+      </button>
     </div>
     <div
       class="flex-grow min-h-0 overflow-y-auto p-3 flex flex-col gap-8 relative"
@@ -217,6 +222,7 @@ import {
   PhoneIcon,
   MapPinIcon,
   EnvelopeIcon,
+  ArrowPathIcon,
 } from '@heroicons/vue/24/solid'
 import { sum } from 'lodash'
 
@@ -269,13 +275,18 @@ class Main {
   /**đọc thống kê của bài viết này */
   @loadingV2(is_loading, 'value')
   @error()
-  async getPostAnalytic() {
+  async getPostAnalytic(is_refresh_cache?: boolean) {
     // xấc thực dữ liệu
     if (!page_id.value || !post_id.value) return
 
     // lấy dữ liệu
     conversationStore.select_conversation_post_analytic =
-      await this.API_POST.getPostAnalytic(page_id.value, post_id.value)
+      await this.API_POST.getPostAnalytic(
+        page_id.value,
+        post_id.value,
+        undefined,
+        is_refresh_cache
+      )
   }
 }
 const $main = new Main()

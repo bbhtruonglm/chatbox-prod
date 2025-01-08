@@ -14,14 +14,47 @@
 
     <div class="min-w-0 flex-grow flex flex-col gap-3">
       <div class="flex flex-col gap-0.5">
-        <div class="rounded-xl bg-slate-100 py-1 px-3 text-sm">
-          <div class="flex justify-between">
-            <strong class="font-semibold">{{ comment?.from?.name }}</strong>
-            <small class="text-slate-700">
-              {{ $date_handle.formatCompareCurrentYear(comment?.createdAt) }}
-            </small>
+        <div
+          class="rounded-xl bg-slate-100 py-1 px-2 text-sm flex flex-col gap-2"
+        >
+          <div>
+            <div class="flex justify-between">
+              <strong class="font-semibold">{{ comment?.from?.name }}</strong>
+              <div class="flex items-center gap-2">
+                <small class="text-slate-700">
+                  {{
+                    $date_handle.formatCompareCurrentYear(comment?.createdAt)
+                  }}
+                </small>
+                <template v-if="emotion">
+                  <LikeIcon
+                    v-if="emotion === 'like'"
+                    class="size-5"
+                  />
+                  <HahaIcon
+                    v-else-if="emotion === 'happy'"
+                    class="size-5"
+                  />
+                  <SadIcon
+                    v-else-if="emotion === 'sad'"
+                    class="size-5"
+                  />
+                  <AngryIcon
+                    v-else-if="emotion === 'angry'"
+                    class="size-5"
+                  />
+                </template>
+              </div>
+            </div>
+            <p>{{ comment?.message }}</p>
           </div>
-          <p>{{ comment?.message }}</p>
+          <Action
+            v-if="message_source?.list_button?.length"
+            :list_button="message_source?.list_button"
+            :ai="message_source?.ai"
+            :comment_id="comment?._id"
+            class="w-fit"
+          />
         </div>
         <img
           v-if="comment?.photo"
@@ -54,6 +87,7 @@
 
       <CommentItem
         v-for="(child_comment, child_index) in child_comments"
+        :key="child_comment.comment_id"
         @focus_input="$event => $main.focusInput($event)"
         :post_id
         :comment="child_comment"
@@ -103,7 +137,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useConversationStore } from '@/stores'
 import { SingletonCdn } from '@/utils/helper/Cdn'
 import { container } from 'tsyringe'
@@ -113,19 +147,26 @@ import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { useI18n } from 'vue-i18n'
 import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
+import { composableService as composableServiceMessage } from '@/views/ChatWarper/Chat/CenterContent/MessageList/service'
 
+import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
 import CommentItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/CommentItem.vue'
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import LoadMoreBtn from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/LoadMoreBtn.vue'
 import Loading from '@/components/Loading.vue'
 
+import LikeIcon from '@/components/Icons/Like.vue'
+import HahaIcon from '@/components/Icons/Haha.vue'
+import SadIcon from '@/components/Icons/Sad.vue'
+import AngryIcon from '@/components/Icons/Angry.vue'
 import { ArrowUpCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type {
   IReplyCommentType,
   MessageInfo,
+  MessageTemplateInput,
 } from '@/service/interface/app/message'
 import type { IAlert } from '@/utils/helper/Alert/type'
 
@@ -136,8 +177,18 @@ interface IFocusInputPayload {
   /**id của bình luận con */
   comment_id?: string
 }
+/**dữ liệu từ socket */
+interface CustomEvent extends Event {
+  /**bình luận */
+  detail?: FacebookCommentPost
+}
+/**dữ liệu từ socket */
+interface CustomEventMessage extends Event {
+  detail?: MessageInfo
+}
 
 const { ToastReplyComment } = composableService()
+const { MessageService } = composableServiceMessage()
 
 /**loading của bài post */
 const main_loading = defineModel('main_loading')
@@ -159,6 +210,7 @@ const $props = withDefaults(
   {}
 )
 
+const $mesage_service = container.resolve(MessageService)
 const conversationStore = useConversationStore()
 const $cdn = SingletonCdn.getInst()
 const $date_handle = container.resolve(DateHandle)
@@ -194,6 +246,16 @@ const client_id = computed(
 )
 /**có phải từ page không */
 const is_from_page = computed(() => page_id.value === $props.comment?.from?.id)
+/**cảm xúc của bình luận này */
+const emotion = computed(() => $props.comment?.ai?.[0]?.emotion)
+/**dữ liệu nhắn tin nâng cao của bình luận này */
+const message_source = computed<MessageTemplateInput>(
+  () =>
+    $mesage_service.genMessageSource(
+      $props.comment?.ai,
+      $props.comment?.message_attachments
+    )?.[0]
+)
 
 class Main {
   /**
@@ -364,11 +426,84 @@ class Main {
     // focus vào input
     ref_input.value?.focus()
   }
+  /**cập nhật bình luận khi có socket */
+  socketUpdateComment({ detail }: CustomEvent) {
+    // nếu không có dữ liệu thì thoát
+    if (!detail) return
+
+    // nếu không phải bình luận này thì thoát
+    if ($props.comment?.comment_id !== detail?.comment_id) return
+
+    // nạp dữ liệu mới của AI
+    $props.comment.ai = detail.ai
+    $props.comment.message_attachments = detail.message_attachments
+  }
+  /**xử lý khi có bình luận mới ngoài luồng */
+  async socketNewMessage({ detail }: CustomEventMessage) {
+    await nextTick()
+    /**bình luận */
+    const COMMENT = detail?.comment
+
+    // nếu không có bình luận thì thoát
+    if (!COMMENT) return
+
+    if (COMMENT?.parent_id !== $props.comment?.comment_id) return
+
+    // bỏ qua bình luận của bài post lớp ngoài cùng
+    if (COMMENT?.parent_id === $props.comment?.post_id) return
+    // nếu là bình luận cha thì thoát
+    if ($props.comment?.parent_id === COMMENT?.comment_id) return
+
+    // nếu là chính bình luận này thì thoát
+    if ($props.comment?.comment_id === COMMENT?.comment_id) return
+
+    // thêm bình luận lên đầu mảng nếu chưa tồn tại
+    if (
+      !child_comments.value.find(item => item.comment_id === COMMENT.comment_id)
+    )
+      child_comments.value.unshift(COMMENT)
+  }
 }
 const $main = new Main()
 
 // tự động lấy bình luận con khi mở modal
 onMounted(() => $main.getFbPostChildComments())
+
+// lắng nghe sự kiện từ socket khi component được tạo ra
+onMounted(() => {
+  // cập nhật tin nhắn
+  window.addEventListener(
+    'chatbox_socket_update_comment',
+    $main.socketUpdateComment.bind($main)
+  )
+})
+
+// hủy lắng nghe sự kiện từ socket khi component bị hủy
+onUnmounted(() => {
+  // cập nhật tin nhắn
+  window.removeEventListener(
+    'chatbox_socket_update_comment',
+    $main.socketUpdateComment.bind($main)
+  )
+})
+
+// lắng nghe sự kiện từ socket khi component được tạo ra
+onMounted(() => {
+  // tin nhắn mới
+  window.addEventListener(
+    'chatbox_socket_message',
+    $main.socketNewMessage.bind($main)
+  )
+})
+
+// hủy lắng nghe sự kiện từ socket khi component bị hủy
+onUnmounted(() => {
+  // tin nhắn mới
+  window.removeEventListener(
+    'chatbox_socket_message',
+    $main.socketNewMessage.bind($main)
+  )
+})
 </script>
 <style lang="scss" scoped>
 @import '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/style.scss';

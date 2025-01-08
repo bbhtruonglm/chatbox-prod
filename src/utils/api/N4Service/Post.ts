@@ -119,12 +119,14 @@ export class N4SerivceAppPost extends N4Serivce {
   public async getPostAnalytic(
     page_id: string,
     post_id?: string,
-    ad_id?: string
+    ad_id?: string,
+    is_refresh_cache?: boolean
   ): Promise<IPostAnalytic> {
     return this.post('get_post_analytic', {
       page_id,
       post_id,
       ad_id,
+      is_refresh_cache,
     })
   }
 }

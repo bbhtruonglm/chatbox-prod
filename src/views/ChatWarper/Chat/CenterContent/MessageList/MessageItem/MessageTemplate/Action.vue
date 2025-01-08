@@ -18,12 +18,12 @@
         />
       </button>
     </template>
+    <Widget
+      ref="modal_widget_ref"
+      :selected_widget
+      :ai="ai"
+    />
   </div>
-  <Widget
-    ref="modal_widget_ref"
-    :selected_widget
-    :ai="ai"
-  />
 </template>
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
@@ -51,6 +51,8 @@ const $props = withDefaults(
     ai?: MessageAiData
     /**id của tin nhắn */
     message_id?: string
+    /**id của bình luận */
+    comment_id?: string
   }>(),
   {}
 )
@@ -165,6 +167,7 @@ function onClickBtn(button?: MessageTemplateButton) {
         ]?.partner_token,
       client_id: conversationStore.select_conversation?.fb_client_id,
       message_id: $props.message_id,
+      comment_id: $props.comment_id,
     })
 
     /**dữ liệu của widget được cài */
@@ -193,7 +196,7 @@ function onClickBtn(button?: MessageTemplateButton) {
       if (selected_widget.value)
         selected_widget.value.url =
           getIframeUrl(selected_widget.value) +
-          `&message_id=${$props.message_id}`
+          `&message_id=${$props.message_id}&comment_id=${$props.comment_id}`
     }
 
     // mở modal

@@ -270,7 +270,7 @@ onMounted(() => {
   window.addEventListener('chatbox_socket_message', socketNewMessage)
 
   // cập nhật tin nhắn
-  window.addEventListener('chatbox_socket_update_message', socketUpdatêMssage)
+  window.addEventListener('chatbox_socket_update_message', socketUpdateMssage)
 })
 
 // hủy lắng nghe sự kiện từ socket khi component bị hủy
@@ -281,7 +281,7 @@ onUnmounted(() => {
   // cập nhật tin nhắn
   window.removeEventListener(
     'chatbox_socket_update_message',
-    socketUpdatêMssage
+    socketUpdateMssage
   )
 })
 
@@ -346,7 +346,7 @@ function socketNewMessage({ detail }: CustomEvent) {
   scrollToBottomMessage()
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
-function socketUpdatêMssage({ detail }: CustomEvent) {
+function socketUpdateMssage({ detail }: CustomEvent) {
   // nếu không có dữ liệu thì thôi
   if (!detail) return
 

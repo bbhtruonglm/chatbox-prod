@@ -75,6 +75,7 @@ import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { User } from '@/utils/helper/User'
 import type { IAlert } from '@/utils/helper/Alert/type'
 import { LocalStorage } from '@/utils/helper/LocalStorage'
+import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -404,6 +405,8 @@ function onSocketFromChatboxServer() {
       event?: SocketEvent
       /**dữ liệu tin nhắn cần cập nhật */
       update_message?: MessageInfo
+      /**dữ liệu comment cập nhật */
+      update_comment?: FacebookCommentPost
     } = {}
 
     // cố gắng giải mã dữ liệu
@@ -413,7 +416,8 @@ function onSocketFromChatboxServer() {
 
     if (!size(socket_data)) return
 
-    let { conversation, message, update_message, event } = socket_data
+    let { conversation, message, update_message, update_comment, event } =
+      socket_data
 
     // gửi thông điệp đến component xử lý danh sách hội thoại
     if (validateConversation(conversation, message))
@@ -437,6 +441,14 @@ function onSocketFromChatboxServer() {
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_update_message', {
           detail: update_message,
+        })
+      )
+
+    // gửi thông điệp cập nhật comment
+    if (size(update_comment))
+      window.dispatchEvent(
+        new CustomEvent('chatbox_socket_update_comment', {
+          detail: update_comment,
         })
       )
 

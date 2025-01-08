@@ -81,6 +81,7 @@
       >
         <CommentItem
           v-for="(comment, comment_index) in post_comments"
+          :key="comment.comment_id"
           v-model:main_loading="is_loading"
           :post_id
           :comment
@@ -98,7 +99,7 @@
 </template>
 <script setup lang="ts">
 import { useConversationStore } from '@/stores'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { container } from 'tsyringe'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
@@ -114,6 +115,12 @@ import Loading from '@/components/Loading.vue'
 import LoadMoreBtn from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal/LoadMoreBtn.vue'
 
 import type { FacebookCommentPost } from '@/service/interface/app/post'
+import type { MessageInfo } from '@/service/interface/app/message'
+
+/**dữ liệu từ socket */
+interface CustomEventMessage extends Event {
+  detail?: MessageInfo
+}
 
 const { PostService } = composableService()
 
@@ -230,11 +237,46 @@ class Main {
     // tự động load bình luận
     await this.getFbPostComments()
   }
+  /**xử lý khi có bình luận mới ngoài luồng */
+  socketNewMessage({ detail }: CustomEventMessage) {
+    /**bình luận */
+    const COMMENT = detail?.comment
+
+    // nếu không có bình luận thì thoát
+    if (!COMMENT) return
+
+    // chỉ tính bình luận của bài post lớp ngoài cùng
+    if (COMMENT?.parent_id !== post_id.value) return
+
+    // thêm bình luận lên đầu mảng nếu chưa tồn tại
+    if (
+      !post_comments.value.find(item => item.comment_id === COMMENT.comment_id)
+    )
+      post_comments.value.unshift(COMMENT)
+  }
 }
 const $main = new Main()
 
 // lấy dữ liệu bài post khi component được tạo
 onMounted(() => $main.getPostData())
+
+// lắng nghe sự kiện từ socket khi component được tạo ra
+onMounted(() => {
+  // tin nhắn mới
+  window.addEventListener(
+    'chatbox_socket_message',
+    $main.socketNewMessage.bind($main)
+  )
+})
+
+// hủy lắng nghe sự kiện từ socket khi component bị hủy
+onUnmounted(() => {
+  // tin nhắn mới
+  window.removeEventListener(
+    'chatbox_socket_message',
+    $main.socketNewMessage.bind($main)
+  )
+})
 
 // lấy dữ liệu bài post khi conversation thay đổi
 watch(
