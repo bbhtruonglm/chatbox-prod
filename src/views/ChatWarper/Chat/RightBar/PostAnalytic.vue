@@ -1,69 +1,155 @@
 <template>
-  <div class="bg-white rounded-lg h-full flex flex-col text-sm font-semibold">
-    <div class="py-2 px-3 border-b flex-shrink-0">
-      {{ $t('Tổng quan bài viết') }}
+  <div class="bg-white rounded-lg h-full flex flex-col">
+    <div class="py-2 px-3 border-b flex-shrink-0 flex gap-1 items-center">
+      <ChartBarIcon class="size-5" />
+      {{ $t('Thống kê bài viết') }}
     </div>
-    <div class="flex-grow min-h-0 overflow-y-auto p-3 flex flex-col gap-8">
-      <ul class="list-disc list-inside">
-        {{
-          $t('Thống kê chung')
-        }}:
-        <li>{{ $t('Bình luận') }}: {{ analytic?.total_comment || 0 }}</li>
-        <li>{{ $t('Chia sẻ') }}: {{ analytic?.total_share || 0 }}</li>
-        <li>{{ $t('Thích') }}: {{ analytic?.total_reaction_like || 0 }}</li>
-        <li>{{ $t('Yêu thích') }}: {{ analytic?.total_reaction_love || 0 }}</li>
-        <li>{{ $t('Wow') }}: {{ analytic?.total_reaction_wow || 0 }}</li>
-        <li>{{ $t('Haha') }}: {{ analytic?.total_reaction_haha || 0 }}</li>
-        <li>{{ $t('Buồn') }}: {{ analytic?.total_reaction_sorry || 0 }}</li>
-        <li>{{ $t('Giận dữ') }}: {{ analytic?.total_reaction_anger || 0 }}</li>
-      </ul>
-      <ol class="list-decimal list-inside">
-        {{
-          $t('Thống kê AI')
-        }}:
-        <li>
-          {{ $t('Cảm xúc') }}
-          <ul class="list-disc list-inside">
-            <li>{{ $t('Thích') }}: {{ analytic?.total_emotion_like || 0 }}</li>
-            <li>
-              {{ $t('Vui vẻ') }}: {{ analytic?.total_emotion_happy || 0 }}
-            </li>
-            <li>{{ $t('Buồn') }}: {{ analytic?.total_emotion_sad || 0 }}</li>
-            <li>
-              {{ $t('Giận dữ') }}: {{ analytic?.total_emotion_angry || 0 }}
-            </li>
-          </ul>
-        </li>
-        <li>
-          {{ $t('CTA') }}
-          <ul class="list-disc list-inside">
-            <li>
-              {{ $t('Lên đơn') }}: {{ analytic?.total_cta_place_order || 0 }}
-            </li>
-            <li>{{ $t('Lập lịch') }}: {{ analytic?.total_cta_time || 0 }}</li>
-            <li>
-              {{ $t('Số điện thoại') }}: {{ analytic?.total_cta_phone || 0 }}
-            </li>
-            <li>{{ $t('Email') }}: {{ analytic?.total_cta_email || 0 }}</li>
-            <li>{{ $t('Đường dẫn') }}: {{ analytic?.total_cta_link || 0 }}</li>
-            <li>{{ $t('Địa chỉ') }}: {{ analytic?.total_cta_address || 0 }}</li>
-            <li>
-              {{ $t('Vận chuyển') }}: {{ analytic?.total_cta_shipping || 0 }}
-            </li>
-            <li>
-              {{ $t('Giao dịch') }}: {{ analytic?.total_cta_transaction || 0 }}
-            </li>
-            <li>{{ $t('Bán hàng') }}: {{ analytic?.total_cta_sale || 0 }}</li>
-            <li>
-              {{ $t('Tài liệu') }}: {{ analytic?.total_cta_document || 0 }}
-            </li>
-          </ul>
-        </li>
-      </ol>
-      <ul class="list-disc list-inside">
-        {{
-          $t('Thông tin bài viết')
-        }}
+    <div
+      class="flex-grow min-h-0 overflow-y-auto p-3 flex flex-col gap-8 relative"
+    >
+      <div
+        v-if="is_loading"
+        class="absolute inset-0 flex items-center justify-center bg-slate-200 bg-opacity-50 z-10"
+      >
+        <Loading />
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="text-sm font-medium">{{ $t('Thống kê chung') }}:</div>
+        <div class="flex flex-col gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <InsightItem
+              :icon="UserGroupIcon"
+              :title="$t('Số người tiếp cận')"
+              :amount="123.2323"
+            />
+            <InsightItem
+              :icon="CursorArrowRaysIcon"
+              :title="$t('Lượt click vào link')"
+              :amount="123.2323"
+            />
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <InsightItem
+              :icon="FireIcon"
+              :title="$t('Reaction')"
+              :amount="total_reaction"
+            />
+            <InsightItem
+              :icon="ChatBubbleLeftRightIcon"
+              :title="$t('Bình luận')"
+              :amount="analytic?.total_comment"
+            />
+            <InsightItem
+              :icon="ArrowUpOnSquareIcon"
+              :title="$t('Chia sẻ')"
+              :amount="analytic?.total_share"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="text-sm font-medium">
+          {{ $t('Thống kê Cảm xúc từ Facebook') }}:
+        </div>
+        <div class="flex items-center justify-between">
+          <FbEmotionInsightItem
+            :icon="LikeIcon"
+            :amount="analytic?.total_reaction_like"
+          />
+          <FbEmotionInsightItem
+            :icon="LoveIcon"
+            :amount="analytic?.total_reaction_love"
+          />
+          <FbEmotionInsightItem
+            :icon="WowIcon"
+            :amount="analytic?.total_reaction_wow"
+          />
+          <FbEmotionInsightItem
+            :icon="HahaIcon"
+            :amount="analytic?.total_reaction_haha"
+          />
+          <FbEmotionInsightItem
+            :icon="SadIcon"
+            :amount="analytic?.total_reaction_sorry"
+          />
+          <FbEmotionInsightItem
+            :icon="AngryIcon"
+            :amount="analytic?.total_reaction_anger"
+          />
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="text-sm font-medium">
+          {{ $t('Thống kê Cảm xúc từ Bình luận') }}:
+        </div>
+        <div class="flex flex-col gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <InsightItem
+              :icon="LikeIcon"
+              :title="$t('Thích')"
+              :amount="analytic?.total_emotion_like"
+            />
+            <InsightItem
+              :icon="HahaIcon"
+              :title="$t('Vui vẻ')"
+              :amount="analytic?.total_emotion_happy"
+            />
+            <InsightItem
+              :icon="SadIcon"
+              :title="$t('Buồn')"
+              :amount="analytic?.total_emotion_sad"
+            />
+            <InsightItem
+              :icon="AngryIcon"
+              :title="$t('Giận dữ')"
+              :amount="analytic?.total_emotion_angry"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="text-sm font-medium">
+          {{ $t('Thống kê Chuyển đổi từ Bình luận') }}:
+        </div>
+        <div class="flex flex-col gap-3">
+          <div class="grid grid-cols-3 gap-3">
+            <InsightItem
+              :icon="ShoppingBagIcon"
+              :title="$t('Lên đơn')"
+              :amount="analytic?.total_cta_place_order"
+            />
+            <InsightItem
+              :icon="CalendarDaysIcon"
+              :title="$t('Lập lịch')"
+              :amount="analytic?.total_cta_time"
+            />
+            <InsightItem
+              :icon="LinkIcon"
+              :title="$t('Liên kết')"
+              :amount="analytic?.total_cta_link"
+            />
+            <InsightItem
+              :icon="PhoneIcon"
+              :title="$t('SĐT')"
+              :amount="analytic?.total_cta_phone"
+            />
+            <InsightItem
+              :icon="MapPinIcon"
+              :title="$t('Địa chỉ')"
+              :amount="analytic?.total_cta_address"
+            />
+            <InsightItem
+              :icon="EnvelopeIcon"
+              :title="$t('Email')"
+              :amount="analytic?.total_cta_email"
+            />
+          </div>
+        </div>
+      </div>
+      <ul class="list-disc list-inside text-sm">
+        <span class="font-medium">
+          {{ $t('Thông tin bài viết') }}
+        </span>
         <li>
           {{ $t('ID bài viết') }}:
           {{ conversationStore.select_conversation_post?.post_id }}
@@ -108,6 +194,32 @@ import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 
+import InsightItem from '@/views/ChatWarper/Chat/RightBar/PostAnalytic/InsightItem.vue'
+import FbEmotionInsightItem from '@/views/ChatWarper/Chat/RightBar/PostAnalytic/FbEmotionInsightItem.vue'
+import Loading from '@/components/Loading.vue'
+
+import LikeIcon from '@/components/Icons/Like.vue'
+import LoveIcon from '@/components/Icons/Love.vue'
+import WowIcon from '@/components/Icons/Wow.vue'
+import HahaIcon from '@/components/Icons/Haha.vue'
+import SadIcon from '@/components/Icons/Sad.vue'
+import AngryIcon from '@/components/Icons/Angry.vue'
+import {
+  ChartBarIcon,
+  FireIcon,
+  UserGroupIcon,
+  CursorArrowRaysIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowUpOnSquareIcon,
+  ShoppingBagIcon,
+  CalendarDaysIcon,
+  LinkIcon,
+  PhoneIcon,
+  MapPinIcon,
+  EnvelopeIcon,
+} from '@heroicons/vue/24/solid'
+import { sum } from 'lodash'
+
 const { PostService } = composableService()
 
 const $post_service = container.resolve(PostService)
@@ -133,6 +245,17 @@ const post_id = computed(
 const analytic = computed(
   () => conversationStore.select_conversation_post_analytic?.post_analytic_data
 )
+/**tổng số lượng reaction */
+const total_reaction = computed(() => {
+  return sum([
+    analytic.value?.total_reaction_like,
+    analytic.value?.total_reaction_love,
+    analytic.value?.total_reaction_wow,
+    analytic.value?.total_reaction_haha,
+    analytic.value?.total_reaction_sorry,
+    analytic.value?.total_reaction_anger,
+  ])
+})
 
 class Main {
   /**

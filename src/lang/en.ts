@@ -1,6 +1,14 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'SĐT': 'Phone number',
+  'Liên kết': 'Link',
+  'Thống kê Chuyển đổi từ Bình luận': 'Comment Conversion Statistics',
+  'Vui vẻ': 'Happy',
+  'Thống kê Cảm xúc từ Bình luận': 'Comment Emotion Statistics',
+  'Thống kê Cảm xúc từ Facebook': 'Facebook Emotion Statistics',
+  'Lượt click vào link': 'Link click',
+  'Số người tiếp cận': 'Reach',
   'Lên đơn': 'Order',
   'Lập lịch': 'Schedule',
   'Số điện thoại': 'Phone number',
@@ -30,7 +38,7 @@ const source: Language = {
   'Người đăng': 'Posted by',
   'Xem trên Facebook': 'View on Facebook',
   'Bình luận dưới tên _': 'Comment as {name}',
-  'Tổng quan bài viết': 'Post overview',
+  'Thống kê bài viết': 'Post overview',
   'Bài viết': 'Posts',
   'Bình luận đã được ẩn rồi': 'Comment has been hidden',
   'Đã gửi tin nhắn trả lời': 'Sent private reply message',

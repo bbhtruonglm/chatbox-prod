@@ -230,7 +230,7 @@ class Main {
 
     // nếu không đúng tab thì bỏ qua
     if (
-      conversation?.conversation_type !==
+      (conversation?.conversation_type || 'CHAT') !==
       (conversationStore.option_filter_page_data?.conversation_type || 'CHAT')
     )
       return
