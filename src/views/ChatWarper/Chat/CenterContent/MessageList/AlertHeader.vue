@@ -6,7 +6,7 @@
   >
     <BellAlertIcon class="w-5 h-5 flex-shrink-0" />
     <div class="flex-grow">
-      <div class="font-medium text-[10px] flex items-center gap-1">
+      <div class="font-medium text-xxs flex items-center gap-1">
         {{ $t('v1.view.main.dashboard.chat.message.header.note') }}
         <Badge :value="2" />
       </div>

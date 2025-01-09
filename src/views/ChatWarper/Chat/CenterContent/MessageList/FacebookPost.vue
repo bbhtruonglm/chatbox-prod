@@ -7,7 +7,7 @@
       v-if="is_loading"
       type="FULL"
     />
-    <div class="text-[10px]">
+    <div class="text-xxs">
       {{ $t('v1.view.main.dashboard.chat.post.post_by') }}
       <span class="font-bold">
         {{ post_info?.admin_creator?.name || post_info?.from?.name }}

@@ -1,7 +1,7 @@
 <template>
   <div
     id="chat__message-date"
-    class="text-[10px] text-slate-500 absolute group-hover:block hidden w-max z-10 -top-3.5"
+    class="text-xxs text-slate-500 absolute group-hover:block hidden w-max z-10 -top-3.5"
   >
     <span
       v-if="parserStaffName()"
