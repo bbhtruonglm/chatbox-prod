@@ -33,8 +33,9 @@ export function initRequireData() {
           read_me_chatbot_user((e, r) => {
             // * call api
             if (e) {
+              console.log(e)
               // nếu call api thất bại thì redirect qua login
-              signout()
+              // signout()
 
               return cb(e)
             }

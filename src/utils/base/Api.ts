@@ -1,3 +1,5 @@
+import { getItem } from '@/service/helper/localStorage'
+
 /**quản lý API của ứng dụng */
 export class ApiManager {
   /**đường dẫn cần gọi */
@@ -46,6 +48,13 @@ export class ApiManager {
         // thiết lập header kiểu json
         OPTIONS.headers = { 'Content-Type': 'application/json' }
       }
+
+      // mặc định dùng token của chatbox, để fix lỗi contructor không tự new zzz
+      // vì đang sử dụng container nên bị bug
+      // @ts-ignore
+      if (!this.#HEADERS?.Authorization)
+        // @ts-ignore
+        this.#HEADERS.Authorization = getItem('access_token')
 
       // thêm header custom nếu có
       if (this.#HEADERS)
@@ -96,7 +105,15 @@ export class ApiManager {
     body?: Record<string, any>,
     is_raw_error?: boolean
   ): Promise<any> {
-    return this.#request(true, false, path, 'POST', undefined, body, is_raw_error)
+    return this.#request(
+      true,
+      false,
+      path,
+      'POST',
+      undefined,
+      body,
+      is_raw_error
+    )
   }
   /**gọi API dạng form upload */
   protected upload(
