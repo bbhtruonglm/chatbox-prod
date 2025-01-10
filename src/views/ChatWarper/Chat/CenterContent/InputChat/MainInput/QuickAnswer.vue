@@ -79,7 +79,7 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { computed, inject, nextTick, ref } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import {
   useConversationStore,
   useMessageStore,
@@ -106,6 +106,7 @@ import CogIcon from '@/components/Icons/Cog.vue'
 
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
 import type { SourceChat } from '@/service/interface/app/ai'
+import type { WidgetEventData } from '@/service/interface/app/widget'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -293,7 +294,6 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
   content = replaceTemplateMessage(content)
 
   // gán giá trị vào input
-  // INPUT_CHAT.innerText = content
   setInputText(content)
 
   // nếu trả lời nhanh có ảnh thì thêm vào danh sách tập tin đính kèm
@@ -391,6 +391,9 @@ function setInputText(text: string) {
 
   // nếu không có input chat thì thôi
   if (!INPUT_CHAT) return
+
+  // đánh dấu đang gõ
+  commonStore.is_typing = true
 
   // thay đổi nội dung chat
   INPUT_CHAT.innerText = text
@@ -494,21 +497,49 @@ function replaceTemplateMessage(content: string) {
   /**dữ liệu hội thoại đang được chọn */
   const CONVERSATION = conversationStore.select_conversation
 
+  // loại bỏ các template chưa xử lý được
+  content = content
+    .replace(/#{{FIRST_NAME}}/g, '')
+    .replace(/#{{LAST_NAME}}/g, '')
+    .replace(/#{{STAFF_FIRST_NAME}}/g, '')
+    .replace(/#{{STAFF_LAST_NAME}}/g, '')
+    .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+    .replace(/#\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+    .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
+
+  /**tên khách hàng */
+  const CLIENT_NAME = CONVERSATION?.client_name || ''
+  /**tên nhân viên */
+  const STAFF_NAME =
+    getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''
+  /**số điện thoại khách hàng */
+  const PHONE = CONVERSATION?.client_phone || ''
+  /**email khách hàng */
+  const EMAIL = CONVERSATION?.client_email || ''
+  /**tên trang */
+  const PAGE_NAME = getPageInfo(page_id.value)?.name || ''
+
   return (
     content
       // tên khách hàng
-      .replace(/#{FULL_NAME}/g, CONVERSATION?.client_name || '')
+      .replace(/#{FULL_NAME}/g, CLIENT_NAME)
+      .replace(/#{{FULL_NAME}}/g, CLIENT_NAME)
+
       // tên nhân viên chăm sóc
-      .replace(
-        /#{STAFF_NAME}/g,
-        getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''
-      )
+      .replace(/#{STAFF_NAME}/g, STAFF_NAME)
+      .replace(/#{{STAFF_NAME}}/g, STAFF_NAME)
+
       // số điện thoại khách hàng
-      .replace(/#{PHONE}/g, CONVERSATION?.client_phone || '')
+      .replace(/#{PHONE}/g, PHONE)
+      .replace(/#{{PHONE}}/g, PHONE)
+
       // email khách hàng
-      .replace(/#{EMAIL}/g, CONVERSATION?.client_email || '')
+      .replace(/#{EMAIL}/g, EMAIL)
+      .replace(/#{{EMAIL}}/g, EMAIL)
+
       // tên trang
-      .replace(/#{PAGE_NAME}/g, getPageInfo(page_id.value)?.name || '')
+      .replace(/#{PAGE_NAME}/g, PAGE_NAME)
+      .replace(/#{{PAGE_NAME}}/g, PAGE_NAME)
   )
 }
 /**cuộn tới vị trí trả lời nhanh đang chọn */
@@ -598,6 +629,24 @@ function setDefaultQuickAnswer() {
   selected_answer_id.value = list_answer.value?.[0]?.id || ''
   // tự động đặt vị trí thành đầu tiên
   selected_answer_index.value = 0
+}
+
+onMounted(() => window.addEventListener('message', onWidgetEvent))
+onUnmounted(() => window.removeEventListener('message', onWidgetEvent))
+
+/**xử lý dữ liệu widget truyền vào */
+function onWidgetEvent($event: MessageEvent<WidgetEventData>) {
+  // lấy ra các dữ liệu cần thiết
+  let { _type, content, list_images } = $event?.data
+
+  // chỉ xử lý dữ liệu từ widget
+  if (_type !== 'WIDGET') return true
+
+  /**nội dung văn bản, đã lọc bỏ cú pháp hình ảnh cũ */
+  const CONTENT = content?.split('\n\n##attachment##')?.[0]
+
+  // chạy logic chung vơi trả lời nhanh nội bộ
+  selectQuickAnswer({ content: CONTENT, list_images })
 }
 
 defineExpose({ toggleModal, handleChatValue })
