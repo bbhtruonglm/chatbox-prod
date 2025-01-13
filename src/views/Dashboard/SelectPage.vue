@@ -11,13 +11,21 @@
           'LOCK_FEATURE',
         ]"
       />
-      <div class="grid grid-cols-2 gap-2 md:flex md:justify-between flex-shrink-0">
-        <Search
-          class="md:w-72"
-          v-model="selectPageStore.search"
-          :placeholder="$t('v1.common.page_search_placeholder')"
-        />
-        <SelectOrg is_allow_all />
+      <div
+        class="gap-2 flex flex-col md:flex-row md:justify-between flex-shrink-0"
+      >
+        <div class="text-lg font-semibold flex items-center gap-2">
+          <FlagIcon class="size-5" />
+          {{ $t('Trình quản lý Trang') }}
+        </div>
+        <div class="grid grid-cols-2 gap-2 md:flex md:justify-between">
+          <Search
+            class="md:w-52"
+            v-model="selectPageStore.search"
+            :placeholder="$t('v1.common.page_search_placeholder')"
+          />
+          <SelectOrg is_allow_all />
+        </div>
       </div>
       <div
         v-if="selectPageStore.is_loading"
@@ -31,7 +39,7 @@
       </template>
       <template v-else>
         <EmptyPage
-          v-if="!pageStore.countActivePage()"
+          v-if="!pageStore.countActivePage() && !selectPageStore.is_loading"
           tab="PAGE"
         />
         <div
@@ -41,12 +49,13 @@
           }"
           class="overflow-y-auto flex flex-col gap-3"
         >
-          <GroupPage
+          <SkeletonGroupPage v-if="selectPageStore.is_loading" />
+          <!-- <GroupPage
             filter="RECENT"
             :icon="ClockIcon"
             :title="$t('v1.common.recent')"
             tab="PAGE"
-          />
+          /> -->
           <GroupPage
             filter="FB_MESS"
             :icon="FacebookIcon"
@@ -93,6 +102,7 @@ import { preGoToChat } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { map } from 'lodash'
 
+import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
@@ -104,6 +114,7 @@ import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import HotAlert from '@/components/HotAlert.vue'
 import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
 
+import { FlagIcon } from '@heroicons/vue/24/solid'
 import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'

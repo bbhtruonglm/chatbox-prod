@@ -61,11 +61,11 @@ function getPlatform(): PlatformItem[] {
       title: $t('v1.common.all'),
       icon: markRaw(SquareIcon),
     },
-    {
-      key: 'RECENT',
-      title: $t('v1.common.recent'),
-      icon: markRaw(ClockIcon),
-    },
+    // {
+    //   key: 'RECENT',
+    //   title: $t('v1.common.recent'),
+    //   icon: markRaw(ClockIcon),
+    // },
   ]
 
   /** Danh sách nền tảng */

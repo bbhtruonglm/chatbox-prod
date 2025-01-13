@@ -15,8 +15,8 @@
     />
     <MenuItem
       @click="$router.push('/dashboard/select-page')"
-      :icon="SelectPageIcon"
-      :title="$t('v1.view.main.dashboard.nav.select_page')"
+      :icon="FlagIcon"
+      :title="$t('Trình quản lý Trang')"
     />
     <hr class="my-1" />
     <MenuTitle :title="$t('v1.common.page')" />
@@ -88,6 +88,7 @@ import Dropdown from '@/components/Dropdown.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 
+import { FlagIcon } from '@heroicons/vue/24/solid'
 import ChatIcon from '@/components/Icons/Chat.vue'
 import SelectPageIcon from '@/components/Icons/SelectPage.vue'
 import AnalyticIcon from '@/components/Icons/Analytic.vue'

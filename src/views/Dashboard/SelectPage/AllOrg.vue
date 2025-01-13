@@ -3,7 +3,7 @@
     id="select-page__all-org"
     class="overflow-y-auto flex flex-col gap-6 pb-16"
   >
-    <GroupPage
+    <!-- <GroupPage
       v-if="!selectPageStore.is_group_page_mode"
       @select_page="$main.triggerSelectPage"
       filter="RECENT"
@@ -11,7 +11,7 @@
       :title="$t('v1.common.recent')"
       tab="PAGE"
       :advancedFilter="$main.filterOrgPageOnly"
-    />
+    /> -->
     <template v-if="selectPageStore.current_menu !== 'RECENT'">
       <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
         <Org
@@ -20,7 +20,10 @@
           :org_id="org?.org_id"
         />
       </template>
-      <EmptyPage v-if="$main.isVisibleEmptyPage()" />
+      <EmptyPage
+        v-if="$main.isVisibleEmptyPage() && !selectPageStore.is_loading"
+      />
+      <SkeletonGroupPage v-if="selectPageStore.is_loading" />
     </template>
   </div>
 </template>
@@ -34,6 +37,7 @@ import {
 } from './symbol'
 import { KEY_GET_ALL_ORG_AND_PAGE_FN } from '../symbol'
 
+import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 import Org from '@/views/Dashboard/SelectPage/AllOrg/Org.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'

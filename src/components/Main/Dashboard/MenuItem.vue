@@ -1,12 +1,17 @@
 <template>
   <button
-    :class="{ 'bg-slate-200': is_selected }"
+    :class="{ 'bg-slate-800 text-white hover:bg-slate-800': is_selected }"
     class="flex gap-3 items-center py-1.5 px-2 text-sm font-medium hover:bg-slate-100 rounded-md w-full"
   >
     <div
-      class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0"
+      :class="{ 'bg-gray-800': is_selected }"
+      class="w-8 h-8 rounded-full flex items-center bg-slate-100 justify-center flex-shrink-0"
     >
-      <component :is="icon" :class="class_icon" />
+      <component
+        :is="icon"
+        :class="class_icon"
+        class=""
+      />
     </div>
     <div class="flex-grow text-left">
       {{ title }}
@@ -31,7 +36,7 @@ const $props = withDefaults(
     class_icon?: string
   }>(),
   {
-    class_icon: 'w-5 h-5'
+    class_icon: 'w-5 h-5',
   }
 )
 </script>

@@ -125,6 +125,9 @@ class Main {
     map(MAP_LABELS, (label: ICustomLabel) => {
       // đánh dấu các nhãn đã được chọn
       label.is_active = this.isActiveLabel(label._id)
+
+      // chuyển description sang dạng số
+      label.description = Number(label?.description)
     })
 
     // sắp xếp

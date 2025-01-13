@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Trình quản lý Trang': 'Page Management',
+  'Quay lại Trình quản lý Trang': 'Back to Page Management',
   'SĐT': 'Phone number',
   'Liên kết': 'Link',
   'Thống kê Chuyển đổi từ Bình luận (AI)': 'Comment Conversion Statistics',

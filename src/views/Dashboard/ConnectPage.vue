@@ -39,9 +39,7 @@
           </template>
           <div class="flex items-center gap-2.5">
             <Search
-              v-if="
-                ['PAGE', 'MEMBER'].includes(connectPageStore.current_menu)
-              "
+              v-if="['PAGE', 'MEMBER'].includes(connectPageStore.current_menu)"
               :placeholder="
                 connectPageStore.current_menu === 'MEMBER'
                   ? $t('v1.common.search')
@@ -65,7 +63,10 @@
             @close="toggleModal"
           />
           <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
-          <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
+          <Website
+            v-else-if="connectPageStore.current_menu === 'WEBSITE'"
+            @done="$emit('done')"
+          />
           <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
           <div
             v-else

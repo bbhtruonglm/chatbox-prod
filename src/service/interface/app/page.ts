@@ -574,8 +574,13 @@ export interface PageList {
 }
 
 export interface PageWebsiteCreate {
+  /**id tổ chức */
+  org_id: string
+  /**tên trang */
   name: string
+  /**hình ảnh của trang */
   avatar?: string
+  /**mô tả */
   description?: string
 }
 
