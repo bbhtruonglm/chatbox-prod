@@ -60,6 +60,7 @@ import InjectScript from '@/views/Dashboard/ConnectPage/Website/InjectScript.vue
 import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import WebIcon from '@/components/Icons/Web.vue'
+import type { IAlert } from '@/utils/helper/Alert/type'
 
 const $emit = defineEmits(['done'])
 
@@ -77,15 +78,25 @@ const name = ref<string>()
 /**ref của modal hướng dẫn nhúng script */
 const inject_script_ref = ref<InstanceType<typeof InjectScript>>()
 /**ref của modal thông báo hết quota */
-const alert_reach_quota_page_ref =
-  ref<InstanceType<typeof AlertRechQuota>>()
+const alert_reach_quota_page_ref = ref<InstanceType<typeof AlertRechQuota>>()
 /**id trang sau khi tạo */
 const page_id = ref<string>()
+
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // nếu lỗi là không có quyền truy cập thì thông báo khác
+    if (message?.message === 'REACH_QUOTA.PAGE')
+      return alert_reach_quota_page_ref.value?.toggleModal()
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
 
 class Main {
   /**tạo mới page web */
   @loading(toRef(commonStore, 'is_loading_full_screen'))
-  @error($toast)
+  @error(new CustomToast())
   async createWebsite() {
     // nếu chưa nhập tên thì không thực hiện
     if (!name.value) return

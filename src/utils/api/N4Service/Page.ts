@@ -107,6 +107,6 @@ export class N4SerivceAppPage extends N4Serivce {
    */
   public async createWebsite(body: PageWebsiteCreate): Promise<IPage> {
     // gọi api
-    return this.post('create_website_page', body)
+    return this.post('create_website_page', body, true)
   }
 }

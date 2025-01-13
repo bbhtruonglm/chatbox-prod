@@ -4,8 +4,8 @@
     class="flex gap-3 items-center py-1.5 px-2 text-sm font-medium hover:bg-slate-100 rounded-md w-full"
   >
     <div
-      :class="{ 'bg-gray-800': is_selected }"
-      class="w-8 h-8 rounded-full flex items-center bg-slate-100 justify-center flex-shrink-0"
+      :class="is_selected ? 'bg-gray-800' : 'bg-slate-100'"
+      class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
     >
       <component
         :is="icon"
