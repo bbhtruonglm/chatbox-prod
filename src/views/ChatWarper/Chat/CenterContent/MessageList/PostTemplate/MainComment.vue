@@ -1,13 +1,17 @@
 <template>
   <div
     v-if="text"
+    :class="{
+      'opacity-60': message?.is_hidden_comment,
+    }"
     class="comment-item flex gap-1 justify-between"
   >
     {{ text }}
     <EyeSlashIcon
       v-if="message?.is_hidden_comment"
+      v-tooltip="$t('Đã ẩn bình luận')"
       @click="$main.toggleComment('SHOW')"
-      class="w-5 h-5 text-slate-700 flex-shrink-0 cursor-pointer"
+      class="size-4 text-slate-700 flex-shrink-0 cursor-pointer"
     />
   </div>
 </template>

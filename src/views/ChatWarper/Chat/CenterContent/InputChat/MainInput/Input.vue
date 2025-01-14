@@ -46,7 +46,7 @@ import {
   useOrgStore,
 } from '@/stores'
 import { send_message } from '@/service/api/chatbox/n4-service'
-import { map, get, size, uniqueId, partition, set } from 'lodash'
+import { map, get, size, uniqueId, partition, set, remove } from 'lodash'
 import { srcImageToFile } from '@/service/helper/file'
 import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
@@ -259,19 +259,30 @@ class Main {
       text
     )
 
-    // TODO đang xử dụng index, có thể bị bug khi có tin nhắn mới, index bị thay đổi?
-    // tự động thêm luôn vào danh sách bình luận
-    messageStore.list_message?.[
-      messageStore.reply_comment?.message_index || 0
-    ]?.reply_comments?.unshift({
+    /**bình luận được trả lời */
+    const COMMENT =
+      messageStore.list_message?.[
+        messageStore.reply_comment?.message_index || 0
+      ]
+
+    // tiêm dữ liệu trả lời vào bình luận này
+    COMMENT?.reply_comments?.unshift({
       comment_id: RES.id || '',
       message: text,
       from: { name: conversationStore.getPage()?.name },
       createdAt: new Date().toISOString(),
     })
 
+    // loại bỏ comment này khỏi danh sách
+    remove(messageStore.list_message, message => message._id === COMMENT._id)
+
+    // thêm lại vào cuối
+    messageStore.list_message.push(COMMENT)
+
     // xoá dữ liệu trả lời
     messageStore.clearReplyComment()
+
+    scrollToBottomMessage()
   }
   /**gửi tin nhắn dạng văn bản */
   async sendText(

@@ -37,6 +37,7 @@
           />
           <div
             v-for="comment of $props.message?.reply_comments?.slice(0, 2)"
+            :key="comment.comment_id"
             class="flex flex-col"
           >
             <div class="flex items-center">
@@ -159,10 +160,13 @@ class Main {
   }
   /**lấy một số comment mới nhất */
   @error()
-  async getReplyComment(): Promise<void> {
+  async getReplyComment(is_force?: boolean): Promise<void> {
     if (!conversationStore.select_conversation?.fb_page_id) return
     if (!conversationStore.select_conversation?.fb_client_id) return
     if (!$props.message?.comment_id) return
+
+    // nếu đã có dữ liệu thì không cần lấy nữa
+    if ($props.message.reply_comments?.length && !is_force) return
 
     // lấy vài comment mới nhất
     $props.message.reply_comments = await this.API_POST.getMainComment(
@@ -212,7 +216,7 @@ onMounted(() => $main.getReplyComment())
 // khi có người rep lại bình luận, thì cập nhật
 watch(
   () => $props.message?.comment?.comment_id,
-  () => $main.getReplyComment()
+  () => $main.getReplyComment(true)
 )
 </script>
 <style lang="scss" scoped>

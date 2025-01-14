@@ -41,6 +41,7 @@
       <!-- <HeaderChat /> -->
       <div
         v-for="(message, index) of messageStore.list_message"
+        :key="message._id"
         class="relative"
       >
         <div class="flex flex-col gap-2">
@@ -312,10 +313,6 @@ function isLastPageMessage(message: MessageInfo, index: number) {
 
   // nếu là tin nhắn cuối cùng của nhân viên gửi
   return index === last_client_message_index.value
-}
-/**phân tích tên nv từ meta */
-function parserStaffName(meta?: string) {
-  return meta?.split('__')?.[1] || ''
 }
 /**xử lý socket tin nhắn mới */
 function socketNewMessage({ detail }: CustomEvent) {

@@ -113,12 +113,14 @@ export const scrollToBottomMessage = () => {
 
   // html được render thì mới cuộn
   nextTick(() => {
-    LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
+    setTimeout(() => {
+      LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
+    }, 200)
   })
 }
 
 /**
- * lấy danh sách nhãn của trang 
+ * lấy danh sách nhãn của trang
  * @deprecated dùng hàm của store thay thế
  */
 export const getPageLabel = (page_id?: string) => {
@@ -188,7 +190,7 @@ export const getILabel = (page_id?: string, label_id?: string) => {
 }
 
 /**
- * lọc các nhãn chưa bị xoá 
+ * lọc các nhãn chưa bị xoá
  * @deprecated dùng hàm của store thay thế
  */
 export const getLabelValid = (page_id?: string, label_list?: string[]) => {
