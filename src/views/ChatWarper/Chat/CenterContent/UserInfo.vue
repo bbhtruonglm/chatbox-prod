@@ -25,7 +25,10 @@
           v-if="
             conversationStore.select_conversation?.conversation_type === 'POST'
           "
-          class="text-xs text-slate-500"
+          @click="
+            $clipboard.copy(conversationStore.select_conversation?.fb_client_id)
+          "
+          class="text-xs text-slate-500 cursor-copy"
         >
           {{ $t('ID:') }}
           {{ conversationStore.select_conversation?.fb_client_id }}

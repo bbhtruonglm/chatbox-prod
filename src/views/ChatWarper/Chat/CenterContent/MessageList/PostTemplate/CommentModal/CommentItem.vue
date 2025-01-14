@@ -29,24 +29,28 @@
                 <template v-if="emotion">
                   <LikeIcon
                     v-if="emotion === 'like'"
+                    v-tooltip="$t('Thích')"
                     class="size-5"
                   />
                   <HahaIcon
                     v-else-if="emotion === 'happy'"
+                    v-tooltip="$t('Vui vẻ')"
                     class="size-5"
                   />
                   <SadIcon
                     v-else-if="emotion === 'sad'"
+                    v-tooltip="$t('Buồn')"
                     class="size-5"
                   />
                   <AngryIcon
                     v-else-if="emotion === 'angry'"
+                    v-tooltip="$t('Giận dữ')"
                     class="size-5"
                   />
                 </template>
               </div>
             </div>
-            <p>{{ comment?.message }}</p>
+            <p class="enter-line">{{ comment?.message }}</p>
           </div>
           <Action
             v-if="message_source?.list_button?.length"

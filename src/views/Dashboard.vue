@@ -7,7 +7,7 @@
             @click="$main.toggleDropdown"
             class="btn-custom text-sm font-semibold py-2 px-3 bg-slate-200"
           >
-            <PlusCircleIcon class="w-3 h-3" />
+            <PlusCircleIcon class="size-4" />
             {{ $t('v1.view.main.dashboard.nav.select_platform') }}
             <ChevronDownIcon class="size-3" />
           </button>
@@ -16,7 +16,7 @@
             @click="$main.toggleModelGroupPage()"
             class="btn-custom text-sm font-semibold py-2 px-3 bg-slate-200"
           >
-            <SquaresPlusIcon class="w-3 h-3" />
+            <SquaresPlusIcon class="size-4" />
             {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
           </button>
         </template>

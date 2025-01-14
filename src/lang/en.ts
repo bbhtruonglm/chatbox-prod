@@ -1,6 +1,7 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Làm mới dữ liệu': 'Refresh data',
   'Chọn Tổ chức cần kết nối': 'Select the organization to connect',
   'Kích hoạt Trang': 'Activate Page',
   'Kết nối Trang Facebook': 'Connect Facebook Page',

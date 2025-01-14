@@ -50,7 +50,7 @@
             </div>
           </button>
         </div>
-        <div class="px-3">
+        <div class="px-3 py-1">
           <hr />
         </div>
         <div class="p-1 flex flex-col gap-1">

@@ -7,7 +7,10 @@
         <ChartBarIcon class="size-5" />
         {{ $t('Thống kê bài viết') }}
       </div>
-      <button @click="$main.getPostAnalytic(true)">
+      <button
+        v-tooltip.left="$t('Làm mới dữ liệu')"
+        @click="$main.getPostAnalytic(true)"
+      >
         <ArrowPathIcon class="size-4" />
       </button>
     </div>
@@ -61,26 +64,32 @@
         <div class="flex items-center justify-between">
           <FbEmotionInsightItem
             :icon="LikeIcon"
+            v-tooltip="$t('Thích')"
             :amount="analytic?.total_reaction_like"
           />
           <FbEmotionInsightItem
             :icon="LoveIcon"
+            v-tooltip="$t('Yêu thích')"
             :amount="analytic?.total_reaction_love"
           />
           <FbEmotionInsightItem
             :icon="WowIcon"
+            v-tooltip="$t('Wow')"
             :amount="analytic?.total_reaction_wow"
           />
           <FbEmotionInsightItem
             :icon="HahaIcon"
+            v-tooltip="$t('Haha')"
             :amount="analytic?.total_reaction_haha"
           />
           <FbEmotionInsightItem
             :icon="SadIcon"
+            v-tooltip="$t('Buồn')"
             :amount="analytic?.total_reaction_sorry"
           />
           <FbEmotionInsightItem
             :icon="AngryIcon"
+            v-tooltip="$t('Giận dữ')"
             :amount="analytic?.total_reaction_anger"
           />
         </div>
