@@ -1,9 +1,20 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Chọn Tổ chức cần kết nối': 'Select the organization to connect',
+  'Kích hoạt Trang': 'Activate Page',
+  'Kết nối Trang Facebook': 'Connect Facebook Page',
+  'Kết nối Trang Instagram': 'Connect Instagram Page',
+  'Kết nối Trang WhatsApp Business và Cá nhân':
+    'Connect WhatsApp Business and Personal Page',
+  'Kết nối Website': 'Connect Website',
+  'Kết nối Zalo OA và Zalo cá nhân': 'Connect Zalo OA and Personal Zalo',
+  'Quản lý Trang và Thành viên': 'Page and Member Management',
+  'Chọn nền tảng cần kết nối': 'Select the platform to connect',
+  'Tổ chức': 'Organization',
   'Trình quản lý Trang': 'Page Management',
   'Quay lại Trình quản lý Trang': 'Back to Page Management',
-  'SĐT': 'Phone number',
+  SĐT: 'Phone number',
   'Liên kết': 'Link',
   'Thống kê Chuyển đổi từ Bình luận (AI)': 'Comment Conversion Statistics',
   'Vui vẻ': 'Happy',

@@ -18,7 +18,7 @@
           <FlagIcon class="size-5" />
           {{ $t('Trình quản lý Trang') }}
         </div>
-        <div class="grid grid-cols-2 gap-2 md:flex md:justify-between">
+        <div class="grid grid-cols-2 gap-5 md:flex md:justify-between">
           <Search
             class="md:w-52"
             v-model="selectPageStore.search"

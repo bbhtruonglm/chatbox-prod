@@ -21,6 +21,11 @@
         <template v-if="is_allow_all && orgStore.is_selected_all_org">
           {{ $t('v1.view.main.dashboard.select_page.all_org') }}
         </template>
+        <template v-else-if="!orgStore.is_first_select_org && is_require_select">
+          <span class="text-gray-400 text-sm">
+            {{ $t('v1.view.main.dashboard.select_page.select_org') }}
+          </span>
+        </template>
         <template v-else>
           <Badge
             v-if="
@@ -119,6 +124,8 @@ const $props = withDefaults(
   defineProps<{
     /**có cho phép chọn tất cả tổ chức không */
     is_allow_all?: boolean
+    /**bắt buộc phải chọn 1 tổ chức */
+    is_require_select?: boolean
   }>(),
   {}
 )
@@ -191,6 +198,9 @@ function clickOutSide($event: MouseEvent) {
 function selectOption(org: OrgInfo) {
   // bỏ chọn toàn bộ tổ chức nếu đang ở chế độ cho phép chọn tất cả
   if ($props.is_allow_all) orgStore.is_selected_all_org = false
+
+  // gán giá trị đã chọn lần đầu
+  orgStore.is_first_select_org = true
 
   // gán tổ chức được chọn
   orgStore.selected_org_id = org?.org_id

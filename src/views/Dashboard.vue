@@ -4,16 +4,17 @@
       <template #right>
         <template v-if="$main.isShowSelectPageButton()">
           <button
-            @click="$main.toggleModalConnectPage?.('PAGE')"
-            class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
+            @click="$main.toggleDropdown"
+            class="btn-custom text-sm font-semibold py-2 px-3 bg-slate-200"
           >
             <PlusCircleIcon class="w-3 h-3" />
             {{ $t('v1.view.main.dashboard.nav.select_platform') }}
+            <ChevronDownIcon class="size-3" />
           </button>
           <button
             v-if="size(pageStore.active_page_list)"
             @click="$main.toggleModelGroupPage()"
-            class="btn-custom h-7 text-xs font-medium py-1.5 px-2 bg-slate-200"
+            class="btn-custom text-sm font-semibold py-2 px-3 bg-slate-200"
           >
             <SquaresPlusIcon class="w-3 h-3" />
             {{ $t('v1.view.main.dashboard.select_page.group_page.title') }}
@@ -25,11 +26,17 @@
     <div class="overflow-hidden h-full">
       <RouterView />
     </div>
+    <DropdownPickConnectPlatform
+      @done="$main.reloadPageData()"
+      ref="ref_dropdown_pick_connect_platform"
+      :position
+      :back
+    />
+    <ConnectPage
+      @done="$main.reloadPageData()"
+      ref="connect_page_ref"
+    />
   </div>
-  <ConnectPage
-    @done="$main.reloadPageData()"
-    ref="connect_page_ref"
-  />
 </template>
 
 <script setup lang="ts">
@@ -40,6 +47,7 @@ import {
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
   KEY_GET_ORG_PAGES_FN,
   KEY_GET_ALL_ORG_AND_PAGE_FN,
+  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
 } from '@/views/Dashboard/symbol'
 import { usePageStore, useSelectPageStore, useOrgStore } from '@/stores'
 import { keys, size } from 'lodash'
@@ -47,16 +55,19 @@ import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { Toast, ToastSingleton } from '@/utils/helper/Alert/Toast'
 import { useRoute } from 'vue-router'
 
+import DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPickConnectPlatform.vue'
 import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
 import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
 import { container } from 'tsyringe'
 import { read_link_org } from '@/service/api/chatbox/billing'
+import type { ModalPosition } from '@/service/interface/vue'
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
@@ -69,6 +80,13 @@ const { getMeChatbotUser } = initRequireData()
 
 /**ref của modal kết nối nền tảng */
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
+/**ref của dropdown tiền chọn nền tảng để kết nối */
+const ref_dropdown_pick_connect_platform =
+  ref<InstanceType<typeof DropdownPickConnectPlatform>>()
+/**vị trí của dropdown */
+const position = ref<ModalPosition>()
+/**lùi lại bao nhiêu */
+const back = ref<number>()
 
 class Main {
   /**nạp lại dữ liệu trang */
@@ -136,6 +154,15 @@ class Main {
     // lấy dữ liệu mapping tổ chức và trang
     pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
   }
+  /**ẩn hiện dropdown */
+  toggleDropdown($event?: MouseEvent, _position?: ModalPosition, _back?: number) {
+    // truyền vị trí và lùi lại
+    position.value = _position || 'BOTTOM'
+    back.value = _back || 236
+
+    // sử dùng hàm của dropdown
+    ref_dropdown_pick_connect_platform.value?.toggleDropdown($event)
+  }
 }
 const $main = new Main()
 
@@ -144,11 +171,15 @@ provide(KEY_GET_CHATBOT_USER_FUNCT, getMeChatbotUser)
 provide(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT, $main.toggleModalConnectPage)
 provide(KEY_GET_ORG_PAGES_FN, $main.getOrgPages)
 provide(KEY_GET_ALL_ORG_AND_PAGE_FN, $main.getALlOrgAndPage)
+provide(
+  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
+  $main.toggleDropdown.bind($main)
+)
 </script>
 <style scoped lang="scss">
 .dashboard-header {
   .btn-custom {
-    @apply rounded items-center gap-1 hidden md:flex;
+    @apply rounded items-center gap-2 hidden md:flex;
   }
 }
 </style>

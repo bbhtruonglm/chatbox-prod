@@ -18,7 +18,7 @@
       </div>
     </div>
     <button
-      @click="$main.openConnectPage(tab)"
+      @click="$main.openConnectPage"
       class="text-white bg-blue-600 rounded-md py-2 px-4 gap-2 flex items-center hover:brightness-90"
     >
       <template v-if="$device.isDesktop()">
@@ -37,7 +37,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT } from '@/views/Dashboard/symbol'
+import { KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM } from '@/views/Dashboard/symbol'
 import { inject } from 'vue'
 import { container } from 'tsyringe'
 import { useRouter } from 'vue-router'
@@ -57,8 +57,10 @@ const $props = withDefaults(
 const $router = useRouter()
 const $device = container.resolve(Device)
 
-/**hàm toggle modal kết nối nền tảng */
-const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
+/**hàm mở dropdown tiền chọn nền tảng kết nối */
+const toggleDropdownPickConnectPlatform = inject(
+  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM
+)
 
 class Main {
   /**
@@ -71,12 +73,12 @@ class Main {
    * mở trang kết nối page
    * @param tab tab được chọn khi mở modal kết nối page
    */
-  openConnectPage(tab?: string) {
+  openConnectPage($event?: MouseEvent) {
     // nếu là thiết bị di động thì chuyển hướng sang trang download app
     if (this.SERVICE_DEVICE.isMobile()) return $router.push('/download-app')
 
-    // mở modal kết nối page
-    toggleModalConnectPage?.(tab)
+    // mở dropdown tiền chọn nền tảng kết nối
+    toggleDropdownPickConnectPlatform?.($event, 'RIGHT', )
   }
 }
 const $main = new Main()

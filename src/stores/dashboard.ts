@@ -17,10 +17,11 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   /** -------------- STAGE -------------- */
   /**menu đang chọn */
   const current_menu = ref<ISelectPlatform>(
-    getLocal('current_selected_tab', 'ALL_PLATFORM')
+    'ALL_PLATFORM'
+    // getLocal('current_selected_tab', 'ALL_PLATFORM')
   )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(current_menu, 'current_selected_tab')
+  // saveLocal(current_menu, 'current_selected_tab')
 
   /**tìm kiếm danh sách page theo tên hoặc id */
   const search = ref('')
@@ -29,9 +30,12 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   const is_loading = ref(false)
 
   /**có đang ở chế độ gộp trang không */
-  const is_group_page_mode = ref<boolean>(getLocal('is_group_page_mode', false))
+  const is_group_page_mode = ref<boolean>(
+    false
+    // getLocal('is_group_page_mode', false)
+  )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(is_group_page_mode, 'is_group_page_mode')
+  // saveLocal(is_group_page_mode, 'is_group_page_mode')
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
@@ -95,14 +99,17 @@ export const useOrgStore = defineStore('org_store', () => {
   saveLocal(selected_org_id, 'selected_org_id')
   /**có đang chọn toàn bộ tổ chức không */
   const is_selected_all_org = ref<boolean>(
-    getLocal('is_selected_all_org', true)
+    true
+    // getLocal('is_selected_all_org', true)
   )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(is_selected_all_org, 'is_selected_all_org')
+  // saveLocal(is_selected_all_org, 'is_selected_all_org')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
   /**đếm số thông báo */
   const count_noti = ref()
+  /**đã chọn lần đầu chưa */
+  const is_first_select_org = ref<boolean>(false)
 
   /** -------------- MUTATION / ACTION -------------- */
   /**có phải là gói không giới hạn thời gian không */
@@ -191,6 +198,7 @@ export const useOrgStore = defineStore('org_store', () => {
     selected_org_info,
     count_noti,
     is_selected_all_org,
+    is_first_select_org,
 
     isFreePack,
     isTrialPack,
@@ -204,7 +212,7 @@ export const useOrgStore = defineStore('org_store', () => {
     isReachPageQuota,
     isUnlimitedTime,
     isUnlimitedPage,
-    isUnlimitedStaff
+    isUnlimitedStaff,
   }
 })
 
