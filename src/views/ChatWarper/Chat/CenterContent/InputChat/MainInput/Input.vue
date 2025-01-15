@@ -5,6 +5,7 @@
       id="chat-text-input-message"
       @input="$main.calcIsTyping"
       @keydown.enter="$main.submitInput"
+      @keydown.tab="$main.handleTab"
       @paste="$main.onPasteImage"
       @keyup="$emit('keyup', $event)"
       class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word"
@@ -59,13 +60,16 @@ import { composableService } from '@/views/ChatWarper/Chat/CenterContent/Message
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
+import { N4SerivceAppConversation } from '@/utils/api/N4Service/Conversation'
 
 const { ToastReplyComment } = composableService()
+const { InputService } = inputComposableService()
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -118,9 +122,30 @@ class Main {
    * @param API_POST API của bài viết
    */
   constructor(
-    private readonly API_POST = container.resolve(N4SerivceAppPost)
+    private readonly API_POST = container.resolve(N4SerivceAppPost),
+    private readonly SERVICE_INPUT = container.resolve(InputService),
+    private readonly API_CONVERSATION = container.resolve(
+      N4SerivceAppConversation
+    )
   ) {}
 
+  /**xử lý sự kiện tab */
+  async handleTab($event: KeyboardEvent) {
+    // nếu không có câu trả lời của ai thì thôi
+    if (!conversationStore.select_conversation?.ai_answer) return
+    if (!page_id.value || !client_id.value) return
+
+    // chặn sự kiện mặc định của tab
+    $event.preventDefault()
+
+    // ghi đè nội dung vào ô chat
+    this.SERVICE_INPUT.setInputText(
+      conversationStore.select_conversation?.ai_answer
+    )
+
+    // xóa câu trả lời của ai hiện tại
+    conversationStore.select_conversation.ai_answer = ''
+  }
   /**tính toán xem ô input có dữ liệu không */
   async calcIsTyping($event: Event) {
     /**thẻ div input */
@@ -178,7 +203,7 @@ class Main {
     else this.sendMessage()
   }
   /**gửi tin nhắn */
-  sendMessage() {
+  async sendMessage() {
     // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
     if (messageStore.is_send_file) return
 
@@ -211,6 +236,16 @@ class Main {
 
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
+
+    // xóa câu trả lời ai trong danh sách hội thoại
+    set(
+      conversationStore.conversation_list,
+      [conversationStore.select_conversation?.data_key || '', 'ai_answer'],
+      ''
+    )
+
+    // xóa câu trả lời ai trên server
+    await this.API_CONVERSATION.clearAiAnswer(page_id.value, client_id.value)
   }
   /**luồng trả lời tin nhắn bí mật */
   @handleLoadingReplyComment
@@ -293,12 +328,6 @@ class Main {
   ) {
     // xoá dữ liệu trong input
     this.clearInputText()
-
-    // xoá dữ liệu trong input
-    // input.innerHTML = ''
-
-    // đánh dấu là input đã hết text
-    // commonStore.is_typing = false
 
     // scroll xuống cuối trang
     scrollToBottomMessage()

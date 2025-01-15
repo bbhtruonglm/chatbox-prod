@@ -72,7 +72,7 @@ const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 /**lọc theo nền tảng */
 const selected_platform = ref<ISelectPlatform>('ALL_PLATFORM')
 /**danh sách page sau khi được lọc */
-const active_page_list = ref<PageData[]>()
+const active_page_list = defineModel<PageData[]>('active_page_list')
 
 class Main {
   /**sắp xếp page gắn sao lên đầu */

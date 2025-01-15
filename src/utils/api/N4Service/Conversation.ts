@@ -103,4 +103,8 @@ export class N4SerivceAppConversation extends N4Serivce {
       ...filter,
     })
   }
+  /**xóa câu trả lời ai của hội thoại */
+  async clearAiAnswer(page_id: string, client_id: string): Promise<void> {
+    return this.post('clear_ai_answer', { page_id, client_id })
+  }
 }

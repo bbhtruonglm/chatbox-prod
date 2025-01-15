@@ -127,6 +127,8 @@ export interface ConversationInfo {
     createdAt?: string
     /**thời gian cập nhật */
     updatedAt?: string
+    /**nội dung câu trả lời */
+    ai_answer?: string
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
