@@ -21,7 +21,9 @@
         <template v-if="is_allow_all && orgStore.is_selected_all_org">
           {{ $t('v1.view.main.dashboard.select_page.all_org') }}
         </template>
-        <template v-else-if="!orgStore.is_first_select_org && is_require_select">
+        <template
+          v-else-if="!orgStore.is_first_select_org && is_require_select"
+        >
           <span class="text-gray-400 text-sm">
             {{ $t('v1.view.main.dashboard.select_page.select_org') }}
           </span>
@@ -74,7 +76,11 @@
         >
           {{ $t('v1.view.main.dashboard.select_page.all_org') }}
         </div>
-        <template v-for="org of orgStore.list_org">
+        <template
+          v-for="org of is_filter_admin
+            ? orgStore.admin_orgs
+            : orgStore.list_org"
+        >
           <div
             v-if="filterOrg(org)"
             @click="selectOption(org)"
@@ -90,9 +96,9 @@
             <Badge v-if="org?.org_package?.org_package_type !== 'FREE'" />
           </div>
         </template>
-        <span class="text-gray-400 text-sm">
+        <!-- <span class="text-gray-400 text-sm">
           {{ $t('v1.view.main.dashboard.select_page.select_org') }}
-        </span>
+        </span> -->
       </div>
     </div>
     <div
@@ -126,6 +132,8 @@ const $props = withDefaults(
     is_allow_all?: boolean
     /**bắt buộc phải chọn 1 tổ chức */
     is_require_select?: boolean
+    /**chỉ hiện ra các tổ chức mà user là admin */
+    is_filter_admin?: boolean
   }>(),
   {}
 )

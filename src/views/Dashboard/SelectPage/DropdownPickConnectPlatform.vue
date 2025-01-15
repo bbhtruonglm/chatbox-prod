@@ -7,36 +7,43 @@
     :position="position"
     :back="back"
     :distance="10"
-    class_content="flex flex-col overflow-hidden overflow-y-auto !py-2 !px-0"
+    class_content="flex flex-col overflow-hidden overflow-y-auto !py-2 !px-0 max-h-[413px]"
   >
-    <div :class="is_require_select ? 'h-[270px]' : 'h-[429px]'">
+    <div>
       <div
         v-if="is_require_select"
-        class="flex flex-col items-center gap-2 py-1 px-2"
+        class="flex flex-col gap-1 py-1 px-2"
       >
-        <div class="text-sm">
+        <div class="text-xs font-medium text-slate-500 p-1.5">
           {{ $t('Chọn Tổ chức cần kết nối') }}
         </div>
-        <SelectOrg
-          class="border rounded-lg w-full"
-          is_require_select
+        <MenuItem
+          v-for="org of orgStore.admin_orgs"
+          @click="$main.selectOrg(org)"
+          :icon="BriefcaseIcon"
+          :img="org?.org_info?.org_avatar"
+          :title="org?.org_info?.org_name || ''"
+          class_icon="size-5 rounded-oval"
         />
       </div>
       <template v-else>
         <div class="flex items-center gap-2 py-1 px-2">
-          <div class="text-sm">
+          <div class="text-sm flex-shrink-0">
             {{ $t('Tổ chức') }}
           </div>
-          <SelectOrg class="border rounded-lg flex-auto" />
+          <SelectOrg
+            is_filter_admin
+            class="border rounded-lg min-w-0 flex-grow"
+          />
         </div>
         <div class="p-1">
           <div class="text-xs font-medium text-slate-500 py-0.5 px-2">
             {{ $t('Chọn nền tảng cần kết nối') }}:
           </div>
-          <button
+          <div
             v-for="platform of LIST_PLATFORM"
             @click="$main.toggleModalConnectPage?.(platform.key)"
-            class="py-1.5 px-2 gap-3 flex items-center text-left w-full"
+            class="py-1.5 px-2 gap-3 flex items-center text-left w-full hover:bg-slate-100 hover:rounded-lg cursor-pointer"
           >
             <component
               :is="platform.icon"
@@ -48,7 +55,7 @@
                 {{ platform.description }}
               </div>
             </div>
-          </button>
+          </div>
         </div>
         <div class="px-3 py-1">
           <hr />
@@ -87,10 +94,11 @@ import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
 
-import { ClockIcon, UsersIcon } from '@heroicons/vue/24/solid'
+import { ClockIcon, UsersIcon, BriefcaseIcon } from '@heroicons/vue/24/solid'
 
 import type { ModalPosition } from '@/service/interface/vue'
 import { gt } from 'lodash'
+import type { OrgInfo } from '@/service/interface/app/billing'
 
 /** một phần tử của nền tảng */
 interface PlatformItem {
@@ -150,8 +158,20 @@ const ref_dropdown = ref<InstanceType<typeof Dropdown>>()
 const is_require_select = computed(
   () => !orgStore.is_first_select_org && gt(orgStore.list_org?.length, 1)
 )
+// /**các tổ chức mà người dùng là admin */
+// const admin_orgs = computed(() =>
+//   orgStore.list_org?.filter(org => org?.current_ms?.ms_role === 'ADMIN')
+// )
 
 class Main {
+  /**chọn tổ chức */
+  selectOrg(org: OrgInfo) {
+    // đánh dấu là đã chọn tổ chức lần đầu
+    orgStore.is_first_select_org = true
+
+    // chọn tổ chức
+    orgStore.selected_org_id = org?.org_id
+  }
   /**bật tắt dropdown */
   toggleDropdown($event?: MouseEvent) {
     // sử dùng hàm của dropdown

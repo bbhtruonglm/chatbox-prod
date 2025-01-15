@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="labels?.length"
     id="chat__select-label"
     :class="is_expand_label ? 'max-h-40 min-h-6' : 'h-6'"
     class="flex gap-1 group"

@@ -6,7 +6,9 @@
     }"
     class="comment-item flex gap-1 justify-between"
   >
-    {{ text }}
+    <div class="enter-line flex-grow min-w-0">
+      {{ text }}
+    </div>
     <EyeSlashIcon
       v-if="message?.is_hidden_comment"
       v-tooltip="$t('Đã ẩn bình luận')"

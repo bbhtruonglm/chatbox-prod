@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import { format as date_format, differenceInDays } from 'date-fns'
 
@@ -111,6 +111,11 @@ export const useOrgStore = defineStore('org_store', () => {
   /**đã chọn lần đầu chưa */
   const is_first_select_org = ref<boolean>(false)
 
+  /**các tổ chức mà người dùng là admin */
+  const admin_orgs = computed(() =>
+    list_org.value?.filter(org => org?.current_ms?.ms_role === 'ADMIN')
+  )
+
   /** -------------- MUTATION / ACTION -------------- */
   /**có phải là gói không giới hạn thời gian không */
   function isUnlimitedTime() {
@@ -199,6 +204,8 @@ export const useOrgStore = defineStore('org_store', () => {
     count_noti,
     is_selected_all_org,
     is_first_select_org,
+
+    admin_orgs,
 
     isFreePack,
     isTrialPack,

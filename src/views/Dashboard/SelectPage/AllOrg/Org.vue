@@ -11,7 +11,15 @@
     class="group/org-item"
   >
     <template #icon>
-      <BriefCaseIcon class="w-5 h-5 text-slate-700" />
+      <img
+        v-if="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+        :src="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+        class="w-5 h-5 rounded-oval"
+      />
+      <BriefCaseIcon
+        v-else
+        class="w-5 h-5 text-slate-700"
+      />
     </template>
     <template #title>
       {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}

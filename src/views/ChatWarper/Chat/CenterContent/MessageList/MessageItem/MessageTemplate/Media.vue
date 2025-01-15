@@ -9,7 +9,11 @@
       :style="initSize()"
     >
       <img
-        :src="getFbUrl() || data_source?.image?.url"
+        :src="
+          platform_type === 'FB_MESS'
+            ? getFbUrl() || data_source?.image?.url
+            : data_source?.image?.url
+        "
         class="w-full h-full object-contain"
       />
     </div>
@@ -24,14 +28,22 @@
         preload="metadata"
       >
         <source
-          :src="getFbUrl() || data_source?.video?.url"
+          :src="
+            platform_type === 'FB_MESS'
+              ? getFbUrl() || data_source?.video?.url
+              : data_source?.video?.url
+          "
           type="video/mp4"
         />
       </video>
     </div>
     <Audio
       v-if="data_source?.audio?.url"
-      :src="getFbUrl() || ''"
+      :src="
+        platform_type === 'FB_MESS'
+          ? getFbUrl() || data_source?.audio?.url
+          : data_source?.audio?.url
+      "
       class="min-w-52"
     />
     <div
@@ -49,13 +61,20 @@
   <MediaDetail
     ref="media_detail_ref"
     :data_source
-    :url="getFbUrl()"
+    :url="
+      platform_type === 'FB_MESS'
+        ? getFbUrl()
+        : data_source?.image?.url ||
+          data_source?.video?.url ||
+          data_source?.audio?.url ||
+          data_source?.file?.url
+    "
     :message_id="message?._id"
     :message
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { last } from 'lodash'
 import { FitSize } from '@/utils/helper/Attachment'
 
@@ -70,6 +89,7 @@ import type {
   MessageTemplateInput,
 } from '@/service/interface/app/message'
 import { SingletonCdn } from '@/utils/helper/Cdn'
+import { useConversationStore } from '@/stores'
 
 const $props = withDefaults(
   defineProps<{
@@ -84,9 +104,15 @@ const $props = withDefaults(
 )
 
 const $cdn = SingletonCdn.getInst()
+const conversationStore = useConversationStore()
 
 /**ref của component MediaDetail */
 const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
+
+/**loại nền tảng */
+const platform_type = computed(
+  () => conversationStore.select_conversation?.platform_type
+)
 
 /**lấy tên của file */
 function getFileName(url: string) {
