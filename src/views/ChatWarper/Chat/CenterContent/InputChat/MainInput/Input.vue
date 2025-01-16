@@ -237,15 +237,18 @@ class Main {
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
 
-    // xóa câu trả lời ai trong danh sách hội thoại
-    set(
-      conversationStore.conversation_list,
-      [conversationStore.select_conversation?.data_key || '', 'ai_answer'],
-      ''
-    )
-
-    // xóa câu trả lời ai trên server
-    await this.API_CONVERSATION.clearAiAnswer(page_id.value, client_id.value)
+    // nếu có câu trả lời ai thì xóa
+    if ( conversationStore.select_conversation?.ai_answer) {
+      // xóa câu trả lời ai trong danh sách hội thoại
+      set(
+        conversationStore.conversation_list,
+        [conversationStore.select_conversation?.data_key || '', 'ai_answer'],
+        ''
+      )
+  
+      // xóa câu trả lời ai trên server
+      await this.API_CONVERSATION.clearAiAnswer(page_id.value, client_id.value)
+    }
   }
   /**luồng trả lời tin nhắn bí mật */
   @handleLoadingReplyComment

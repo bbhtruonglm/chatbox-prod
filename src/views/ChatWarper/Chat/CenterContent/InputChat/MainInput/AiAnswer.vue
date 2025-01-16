@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      '!flex': ai_answer,
+      '!flex': ai_answer || is_loading,
       '!hidden': !is_loading && !ai_answer,
     }"
     class="hidden group-hover:flex items-center gap-2 overflow-hidden"
@@ -82,7 +82,7 @@ class Main {
   ) {}
 
   /**hàm debounce để tránh spam ai quá nhiều */
-  debounceGenAnswer = debounce(() => this.complete(), 300)
+  debounceGenAnswer = debounce(() => this.complete(), 1000)
   /**
    * lắng nghe dữ liệu tin nhắn để tính toán câu trả lời
    * - chỉ xử lý nếu là câu trả lời của khách hàng
@@ -138,8 +138,8 @@ class Main {
       client_id: client_id.value,
     })
 
-    // cập nhật câu trả lời
-    ai_answer.value = RES?.text
+    // cập nhật câu trả lời nếu có
+    if (RES?.text) ai_answer.value = RES?.text
   }
   /**chọn câu trả lời */
   selectAiAnswer() {
