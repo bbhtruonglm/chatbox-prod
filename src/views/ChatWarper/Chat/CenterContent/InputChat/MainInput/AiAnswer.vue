@@ -133,7 +133,8 @@ class Main {
     // gọi api tạo nội dung
     const RES = await gen_answer({
       source: SOURCE,
-      current: text,
+      // sử dụng thủ thuật để làm ai luôn trả ra nội dung
+      current: text || '  ',
       page_id: page_id.value,
       client_id: client_id.value,
     })

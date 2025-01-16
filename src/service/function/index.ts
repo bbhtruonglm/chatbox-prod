@@ -82,7 +82,10 @@ export const resetConversationFilter = () => {
 }
 
 /**chọn một hội thoại */
-export const selectConversation = (conversation: ConversationInfo) => {
+export const selectConversation = (
+  conversation: ConversationInfo,
+  is_disable_focus?: boolean
+) => {
   if (!conversation) return
 
   const conversationStore = useConversationStore()
@@ -102,7 +105,8 @@ export const selectConversation = (conversation: ConversationInfo) => {
   )
 
   // tự động focus vào input chat
-  document.getElementById('chat-text-input-message')?.focus()
+  if (!is_disable_focus)
+    document.getElementById('chat-text-input-message')?.focus()
 }
 
 /**cuộn xuống cuối trang */

@@ -357,14 +357,18 @@ async function transalate() {
     /**nội dung chat */
     let text = INPUT_CHAT?.innerText
 
-    // nếu không có nội dung thì thôi
-    if (!text) throw 'DONE'
+    // nếu chỉ có '/' thì xóa luôn để tránh lỗi
+    if (text?.trim() === '/') text = ''
 
     // xóa dấu /dich ở cuối câu, loại bỏ khoảng trắng
-    text = text.replace(/\/(?:d(?:ich|ic|i)?|\/)?$/, '').trim()
+    text = text?.trim()?.replace(/\/(?:d(?:ich|ic|i)?|\/)?$/, '')
 
     // cập nhật lại input trước 1 lần
     $input_service.setInputText(text)
+
+    // check lại nếu không có nội dung thì thôi
+    if (!text) throw 'DONE'
+
 
     // gọi api dịch
     const RES = await text_translate({

@@ -44,6 +44,7 @@ import {
   useCommonStore,
   usePageStore,
   useChatbotUserStore,
+  useMessageStore,
 } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
@@ -347,9 +348,9 @@ class Main {
 
     // tự động focus vào input chat
     // đơi nửa giây cho div được render
-    setTimeout(() => {
-      document.getElementById('chat-text-input-message')?.focus()
-    }, 500)
+    // setTimeout(() => {
+    //   document.getElementById('chat-text-input-message')?.focus()
+    // }, 500)
 
     // lấy id hội thoại trên param
     let page_id: string
@@ -451,7 +452,11 @@ class Main {
           )
         }
 
-        selectConversation(target_conversation)
+        selectConversation(
+          target_conversation,
+          // nếu đang tìm kiếm thì không tự động select input chat nữa
+          !!conversationStore.option_filter_page_data?.search
+        )
       }
     )
   }

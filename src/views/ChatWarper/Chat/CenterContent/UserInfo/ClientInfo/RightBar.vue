@@ -15,9 +15,14 @@
             ? 'text-white bg-blue-700'
             : 'text-blue-700 bg-blue-100'
         "
-        class="rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
+        class="rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center"
       >
-        {{ $t('v1.view.main.dashboard.chat.client.edit') }}
+        <template v-if="conversationStore.is_edit_info">
+          {{ $t('Lưu') }}
+        </template>
+        <template v-else>
+          {{ $t('v1.view.main.dashboard.chat.client.edit') }}
+        </template>
       </button>
     </div>
     <div class="p-2 flex flex-col gap-2.5 flex-grow min-h-0 overflow-y-auto">

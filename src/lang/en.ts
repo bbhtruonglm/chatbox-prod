@@ -1,6 +1,7 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Lưu': 'Save',
   'Ấn Tab để sử dụng': 'Press Tab to use',
   'Làm mới dữ liệu': 'Refresh data',
   'Chọn Tổ chức cần kết nối': 'Select the organization to connect',
