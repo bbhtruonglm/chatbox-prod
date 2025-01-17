@@ -33,10 +33,10 @@
 import { useConversationStore, useMessageStore } from '@/stores'
 import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { ArrowPathIcon } from '@heroicons/vue/24/solid'
-import { debounce, set } from 'lodash'
+import { debounce, last, set } from 'lodash'
 import type { MessageInfo } from '@/service/interface/app/message'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
@@ -175,4 +175,29 @@ onUnmounted(() => {
     $main.onSocketMessage.bind($main)
   )
 })
+
+watch(
+  () => messageStore.list_message,
+  async (new_val, old_val) => {
+    setTimeout(() => {
+      // bỏ qua nếu
+      if (
+        // danh sách tin nhắn trước đó có dữ liệu
+        old_val?.length &&
+        // là của cùng 1 hội thoại
+        last(old_val)?.fb_client_id === last(new_val)?.fb_client_id
+      )
+        return
+
+      // nếu đã có câu trả lời thì thôi
+      if (conversationStore.select_conversation?.ai_answer) return
+
+      // chỉ xử lý khi tin cuối cùng là của khách hàng
+      if (last(new_val)?.message_type !== 'client') return
+
+      // tạo câu trả lời
+      $main.complete()
+    }, 1000)
+  }
+)
 </script>
