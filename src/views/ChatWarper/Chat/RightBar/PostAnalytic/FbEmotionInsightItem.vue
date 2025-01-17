@@ -7,7 +7,7 @@
       />
     </div>
     <div class="text-xs text-blue-700 font-semibold">
-      {{ $format.numberToString(amount) }}
+      {{ $format.numberToString(amount, true) }}
     </div>
   </div>
 </template>

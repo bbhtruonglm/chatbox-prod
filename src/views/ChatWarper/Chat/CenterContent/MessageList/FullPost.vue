@@ -58,19 +58,19 @@
         <span>
           {{ $t('Reaction') }}:
           <span class="font-medium">
-            {{ $format.numberToString(total_reaction) }}
+            {{ $format.numberToString(total_reaction, true) }}
           </span>
         </span>
         <span>
           {{ $t('Bình luận') }}:
           <span class="font-medium">
-            {{ $format.numberToString(analytic?.total_comment) }}
+            {{ $format.numberToString(analytic?.total_comment, true) }}
           </span>
         </span>
         <span>
           {{ $t('Chia sẻ') }}:
           <span class="font-medium">
-            {{ $format.numberToString(analytic?.total_share) }}
+            {{ $format.numberToString(analytic?.total_share, true) }}
           </span>
         </span>
       </div>

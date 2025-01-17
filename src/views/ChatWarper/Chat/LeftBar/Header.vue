@@ -17,7 +17,7 @@
     /> -->
   </div>
   <div class="flex-shrink-0 flex items-center justify-between">
-    <!-- <template v-if="!is_search">
+    <template v-if="!is_search">
       <div class="text-sm gap-3 flex items-center h-8">
         <button
           @click="$main.activeTab('CHAT')"
@@ -50,8 +50,8 @@
         <SearchIcon class="w-4 h-4 text-slate-500" />
       </button>
     </template>
-    v-else -->
     <div
+      v-else
       class="relative w-full"
     >
       <SearchIcon

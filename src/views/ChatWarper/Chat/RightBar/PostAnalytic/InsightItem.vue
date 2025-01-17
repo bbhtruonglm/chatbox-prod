@@ -11,7 +11,7 @@
     <div class="text-xs">
       <div class="font-medium">{{ title }}</div>
       <div class="text-blue-700 font-semibold">
-        {{ $format.numberToString(amount) }}
+        {{ $format.numberToString(amount, true) }}
       </div>
     </div>
   </div>
