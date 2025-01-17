@@ -87,6 +87,7 @@ const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
+const messageStore = useMessageStore()
 
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
@@ -358,6 +359,12 @@ class Main {
 
     // chọn hội thoại đầu tiên
     if (is_pick_first) {
+      // reset lại hội thoại đang chọn
+      conversationStore.select_conversation = undefined
+
+      // reset lại widget
+      pageStore.widget_list = []
+      
       // lấy phần tử đầu tiên của hội thoại từ store
       const FIRST_CONVERSATION = map(conversationStore.conversation_list)?.[0]
 

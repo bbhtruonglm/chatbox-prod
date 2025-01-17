@@ -59,22 +59,27 @@
       />
       <input
         v-model="search_conversation"
-        @keyup="onSearchConversation"
         @blur="$main.toggleSearch()"
         ref="ref_search_conversation"
-        class="w-full bg-slate-100 placeholder-slate-500 py-1.5 px-3 pl-9 text-sm rounded-full"
+        class="w-full bg-slate-100 placeholder-slate-500 py-1.5 pl-9 pr-8 text-sm rounded-full"
         type="text"
         :placeholder="$t('v1.common.search')"
+      />
+      <XCircleIcon
+        @click="search_conversation = undefined"
+        v-if="search_conversation"
+        class="absolute top-1/2 right-2 -translate-y-1/2 size-5 text-red-500 cursor-pointer"
       />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import { debounce } from 'lodash'
 import { useI18n } from 'vue-i18n'
 
+import { XCircleIcon } from '@heroicons/vue/24/solid'
 import SearchIcon from '@/components/Icons/Search.vue'
 
 /**tab đang kích hoạt */
@@ -90,18 +95,18 @@ const version = npm_package_version
 /**giá trị của ô tìm kiếm hội thoại */
 const search_conversation = ref<string>()
 /**trạng thái tìm kiếm */
-const is_search = ref<boolean>(false)
+const is_search = ref<boolean>(!!conversationStore.option_filter_page_data.search)
 /**tham chiếu đến ô tìm kiếm */
 const ref_search_conversation = ref<HTMLInputElement>()
 
 /**delay tìm kiếm hội thoại */
-const onSearchConversation = debounce(($event: Event) => {
-  /**lấy giá trị ô tìm kiếm */
-  const INPUT = $event.target as HTMLInputElement
-
+const onSearchConversation = debounce((value?: string) => {
   // lưu giá trị search vào biến
-  conversationStore.option_filter_page_data.search = INPUT.value
+  conversationStore.option_filter_page_data.search = value
 }, 300)
+
+// theo dõi giá trị ô tìm kiếm
+watch(() => search_conversation.value, onSearchConversation)
 
 class Main {
   /**chuyển đổi tab đang kích hoạt */

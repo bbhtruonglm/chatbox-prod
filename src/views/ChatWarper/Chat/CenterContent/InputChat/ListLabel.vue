@@ -132,7 +132,7 @@ class Main {
     })
 
     // sắp xếp
-    labels.value = sortBy(MAP_LABELS, 'is_active', 'description')
+    labels.value = sortBy(MAP_LABELS, ['is_active', 'index', 'title'])
 
     // đếm số nhãn bị ẩn
     this.countHiddenLabel()

@@ -409,6 +409,10 @@ function getListMessage(is_scroll?: boolean) {
   // nếu đang mất mạng thì không cho gọi api
   if (!commonStore.is_connected_internet) return
 
+  // nếu chưa chọn khách hàng thì thôi
+  if (!conversationStore.select_conversation?.fb_page_id) return
+  if (!conversationStore.select_conversation?.fb_client_id) return
+
   /**id tin nhắn trên đầu của lần loading trước */
   let old_first_message_id = messageStore.list_message?.[0]?._id
 

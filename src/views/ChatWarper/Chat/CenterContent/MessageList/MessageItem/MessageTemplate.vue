@@ -42,11 +42,7 @@
       <div
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
-        v-html="
-          message_type === 'client'
-            ? fixXss(renderText(data_source?.content))
-            : fixXss(data_source?.content)
-        "
+        v-html="fixXss(renderText(data_source?.content))"
         class="enter-line"
       />
     </div>
