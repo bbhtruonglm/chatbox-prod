@@ -79,6 +79,8 @@ export interface AttachmentSize {
   height?: number
 }
 export interface IPortContent {
+  /**thời gian tạo */
+  created_time?: string
   /**id bài viết */
   id?: string
   /**tên người tạo */

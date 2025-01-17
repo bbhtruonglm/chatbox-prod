@@ -379,7 +379,6 @@ const source: Language = {
               un_filter: 'Xoá lọc',
               post: {
                 title: 'Lọc bình luận',
-                comment: 'Lọc bình luận Facebook',
                 facebook_post: 'Lọc theo bài đăng',
                 filter_by_comment: 'Lọc bình luận Facebook',
                 filter_by_post: 'Lọc theo bài đăng',

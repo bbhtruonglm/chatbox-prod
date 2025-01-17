@@ -45,13 +45,13 @@
     >
       <div
         class="w-full flex items-center justify-between py-2.5 border-b cursor-pointer hover:bg-orange-100 px-2"
-        v-for="(post, index) in fb_post"
+        v-for="(post, index) in posts"
         @click="selectPost(index)"
       >
         <div class="flex justify-between items-center w-full">
           <div class="mr-3">
             <object
-              :data="post?.attachments?.data[0]?.media?.image?.src"
+              :data="$cdn.fbPostImg(post?.page_id, post?.post_id)"
               type="image/png"
               class="min-w-[64px] w-[64px] h-[64px] rounded-lg object-cover"
             >
@@ -63,11 +63,11 @@
           </div>
           <div class="w-full">
             <div class="flex justify-between w-full mb-2">
-              <div class="text-orange-600 text-xs">{{ post.content.id }}</div>
+              <div class="text-orange-600 text-xs">{{ post?.post_id }}</div>
               <div class="text-xs text-gray-500">
                 {{
                   format(
-                    new Date(post.content.updated_time),
+                    new Date(post?.content?.created_time || 0),
                     'HH:mm dd/MM/yyyy'
                   )
                 }}
@@ -247,11 +247,13 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { map, debounce } from 'lodash'
-import { get_post_list } from '@/service/api/chatbox/n4-service'
+import { ref, onMounted, computed } from 'vue'
+import { debounce, keys } from 'lodash'
 import { useConversationStore, usePageStore } from '@/stores'
 import { format } from 'date-fns'
+import { container } from 'tsyringe'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+import { Cdn } from '@/utils/helper/Cdn'
 
 import Popover from '@/components/Popover.vue'
 import FilterDateOfPost from '@/components/Main/Dashboard/FilterDateOfPost.vue'
@@ -260,17 +262,24 @@ import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
 
 import type { ComponentRef } from '@/service/interface/vue'
-import type { FacebookPost } from '@/service/interface/app/post'
+import type { IPost } from '@/service/interface/app/message'
+
+/** Interface của bài post */
+interface IFilterPost extends IPost {
+  /** Trạng thái đã được chọn hay chưa */
+  is_selected?: boolean
+}
 
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
+const $cdn = container.resolve(Cdn)
 
 /**ref của dropdown */
-const filter_popover_ref = ref<ComponentRef>()
+const filter_popover_ref = ref<InstanceType<typeof Popover>>()
 /** ref của date picker */
 const date_picket_ref = ref<ComponentRef>()
 /** Danh sách bài post */
-const fb_post = ref<FacebookPost[]>([])
+const posts = ref<IFilterPost[]>([])
 /** Trạng thái lọc theo comment */
 const filter_post = ref<boolean>(false)
 /** Biến tạm lưu id bài đăng cần tìm kiếm */
@@ -294,59 +303,17 @@ const filter_times = ref<{
 // * Trạng thái có lọc theo bài post hay không
 const filter_timerange = ref<boolean>(false)
 
-onMounted(() => {
-  getPostList()
-})
+onMounted(() => $main.getPostList())
 
-/** Hiển thị dropdown */
-function toggle($event?: MouseEvent) {
-  filter_popover_ref.value?.toggleDropdown($event)
-}
 /** Xoá lọc */
 function clearThisFilter() {
   cancelFilter()
 }
-/** Lấy danh sách bài post */
-function getPostList() {
-  let page_ids: string[] = []
-  // * Tạo mảng danh sách id page đã chọn
-  map(pageStore.selected_page_id_list, (value, key) => {
-    page_ids.push(key)
-  })
-
-  // * Gọi api lấy danh sách post
-  get_post_list(
-    {
-      fb_page_id: { $in: page_ids },
-      sort: '-created_time',
-      search: search_post_id.value,
-    },
-    (e, r) => {
-      // * Lưu thông tin bài post
-      fb_post.value = r?.fb_post || []
-
-      // * Lấy thông tin bài post đã chọn và lưu vào store
-      let post_selected = conversationStore.option_filter_page_data.post_id
-
-      // * Check từng bài post xem đã đươc đánh dấu hay chưa?
-      fb_post.value = fb_post.value.map(item => {
-        /** Nếu bài post được chọn thì đánh dấu là active */
-        if (post_selected?.includes(item.content.id)) {
-          item.is_selected = true
-        }
-
-        return item
-      })
-    }
-  )
-}
 /** Tìm kiếm bài post */
-const searchPost = debounce(() => {
-  getPostList()
-}, 100)
+const searchPost = debounce(() => $main.getPostList(), 100)
 /** Lựa chọn bài post */
 function selectPost(index: number) {
-  fb_post.value[index].is_selected = !fb_post.value[index].is_selected
+  posts.value[index].is_selected = !posts.value[index].is_selected
 }
 /** Cập nhật lại thời gian filter */
 function updateFilterTime(start_time: number, end_time: number) {
@@ -368,7 +335,7 @@ function cancelFilter() {
     ...filter_keys.value,
     ...{ post_id: '', time_range: undefined },
   }
-  fb_post.value = fb_post.value.map(item => {
+  posts.value = posts.value.map(item => {
     item.is_selected = false
     return item
   })
@@ -394,7 +361,7 @@ function filterPost() {
       },
     }
 
-    return toggle()
+    return
   }
 
   // * Lọc theo toàn bộ lựa chọn đang có
@@ -411,17 +378,47 @@ function filterPost() {
         : {},
     },
   }
-
-  toggle()
 }
 /** Gom bài post đã chọn thành 1 string để filter */
 function mergePostSelect(): string {
   let post_selected: string[] = []
-  fb_post.value.map(item => {
-    if (item.is_selected) post_selected.push(item.content.id)
+  posts.value.map(item => {
+    if (item.is_selected) post_selected.push(item.post_id || '')
   })
   return post_selected.join(' ')
 }
+
+class Main {
+  /**
+   * @param API_POST API lấy danh sách bài post
+   */
+  constructor(
+    private readonly API_POST = container.resolve(N4SerivceAppPost)
+  ) {}
+  /** Lấy danh sách bài post */
+  async getPostList() {
+    // * Gọi api lấy danh sách post
+    posts.value = await this.API_POST.getPosts(
+      { $in: keys(pageStore.selected_page_id_list) },
+      0,
+      5,
+      search_post_id.value
+    )
+
+    /**id bài viết đã được chọn trước đó */
+    const POST_ID = conversationStore.option_filter_page_data.post_id
+
+    // * Check từng bài post xem đã đươc đánh dấu hay chưa?
+    posts.value = posts.value.map(post => {
+      /** Nếu bài post được chọn thì đánh dấu là active */
+      if (POST_ID?.includes(post?.post_id || '')) post.is_selected = true
+
+      // Trả về bài post đã được đánh dấu
+      return post
+    })
+  }
+}
+const $main = new Main()
 
 defineExpose({ filter_popover_ref, clearThisFilter })
 </script>

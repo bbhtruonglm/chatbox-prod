@@ -129,4 +129,18 @@ export class N4SerivceAppPost extends N4Serivce {
       is_refresh_cache,
     })
   }
+  /**đọc danh sách bài post */
+  public async getPosts(
+    page_id: string | Object,
+    skip: number,
+    limit: number,
+    search?: string
+  ): Promise<IPost[]> {
+    return this.post('get_posts', {
+      page_id,
+      skip,
+      limit,
+      search
+    })
+  }
 }
