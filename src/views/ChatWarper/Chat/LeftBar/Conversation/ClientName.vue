@@ -54,13 +54,18 @@ const force_render_key = ref(0)
 /**id của interval */
 const interval_id = ref<number | null>(null)
 
+class Main {
+  /**render lại thời gian */
+  refreshTime() {
+    force_render_key.value++
+  }
+}
+const $main = new Main()
+
 // tạo interval khi component được mount
 onMounted(() => {
   // lưu id của interval
-  interval_id.value = setInterval(() => {
-    // tăng giá trị của key để bắt buộc render lại
-    force_render_key.value++
-  }, 1000 * 30)
+  interval_id.value = setInterval(() => $main.refreshTime(), 1000 * 30)
 })
 
 // xóa interval khi component bị unmount
@@ -70,5 +75,18 @@ onUnmounted(() => {
 
   // xóa interval
   clearInterval(interval_id.value)
+})
+
+onMounted(() => {
+  window.addEventListener(
+    'chatbox_conversation_refresh_time',
+    $main.refreshTime
+  )
+})
+onUnmounted(() => {
+  window.removeEventListener(
+    'chatbox_conversation_refresh_time',
+    $main.refreshTime
+  )
 })
 </script>

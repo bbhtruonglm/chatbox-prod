@@ -43,9 +43,10 @@ export class DateHandle implements IDateHandle {
     private readonly SERVICE_LOCALE: ILocale = container.resolve(Locale)
   ) {}
 
-  /**20 giây trước, 2 ngày trước, ... */
+  /**20 phút trước, 2 ngày trước, ... */
   private genAgoDate(date: Date) {
     return formatDistanceToNow(date, {
+      includeSeconds: true,
       addSuffix: true,
       locale: viLocale,
     })

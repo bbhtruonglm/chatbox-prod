@@ -35,7 +35,7 @@ import {
   useOrgStore,
 } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
-import { difference, intersection, keys, map, size } from 'lodash'
+import { debounce, difference, intersection, keys, map, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import {
@@ -349,6 +349,11 @@ function getPageInfoToChat() {
     true
   )
 }
+/**giảm tải việc làm mới thời gian liên tục */
+const debounceRefreshConversationTime = debounce(() => {
+  // thông báo cho component cập nhật lại thời gian
+  window.dispatchEvent(new CustomEvent('chatbox_conversation_refresh_time'))
+}, 1000 * 5)
 /**lắng nghe sự kiện từ socket */
 function onSocketFromChatboxServer() {
   /**tạo kết nối đến socket */
@@ -431,10 +436,15 @@ function onSocketFromChatboxServer() {
       )
 
     // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
-    if (size(message))
+    if (size(message)) {
+      // socket tin nhắn mới cho các component
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_message', { detail: message })
       )
+
+      // render lại thời gian của hội thoại
+      debounceRefreshConversationTime()
+    }
 
     // gửi thông điệp cập nhật tin nhắn đã có
     if (size(update_message))
