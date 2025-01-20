@@ -42,7 +42,9 @@ import { loadingV2 } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
 import type { SourceChat } from '@/service/interface/app/ai'
 import { gen_answer } from '@/service/api/chatbox/ai'
-import { container } from 'tsyringe'
+import { container, singleton } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import type { IAlert } from '@/utils/helper/Alert/type'
 
 /**dữ liệu từ socket */
 interface ISocketMessagePayload extends Event {
@@ -76,6 +78,13 @@ const ai_answer = computed({
   },
 })
 
+@singleton()
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // TODO tạm thời chặn không báo lỗi
+    return
+  }
+}
 class Main {
   constructor(
     private readonly SERVICE_INPUT = container.resolve(InputService)
@@ -105,7 +114,7 @@ class Main {
   }
   /**hoàn thành câu */
   @loadingV2(is_loading, 'value')
-  @error()
+  @error(container.resolve(CustomToast))
   async complete() {
     // nếu không có id của page hoặc khách hàng thì thôi
     if (!page_id.value || !client_id.value) return

@@ -1,7 +1,15 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
-  'Lưu': 'Save',
+  'Hiện chấm màu có chú giải': 'Show color dot with tooltip',
+  'Chỉ hiện chấm màu': 'Show color dot only',
+  'Hiện văn bản': 'Show text',
+  'Chế độ hiển thị gắn nhãn': 'Label display mode',
+  'Thiết lập chế độ hiển thị gắn nhãn trên hội thoại':
+    'Set the label display mode on the chat',
+  'Ẩn ảnh đại diện của trang trên hội thoại': 'Show page avatar on chat',
+  'Ẩn ảnh đại diện của trang': 'Show page avatar',
+  Lưu: 'Save',
   'Ấn Tab để sử dụng': 'Press Tab to use',
   'Làm mới dữ liệu': 'Refresh data',
   'Chọn Tổ chức cần kết nối': 'Select the organization to connect',

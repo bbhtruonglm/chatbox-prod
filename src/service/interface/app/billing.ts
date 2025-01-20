@@ -35,6 +35,15 @@ export interface OrgInfo {
   }
   /**các thiết lập của tổ chức */
   org_config?: {
+    /**
+     * chế độ hiển thị gắn nhãn
+     * - ICON_TOOLTIP: Hiện chấm màu có chú giải
+     * - ICON: Chỉ hiện chấm màu
+     * - FULL: Hiện văn bản
+     */
+    org_display_label_type?: 'ICON_TOOLTIP' | 'ICON' | 'FULL'
+    /**cài đặt ẩn ảnh của trang trong danh sách conversation, hover vào mới hiện */
+    org_is_hide_page_avatar?: boolean
     /**chế độ hiển thị (sắp xếp) hội thoại */
     org_sort_conversation?: 'NEWEST' | 'UNREAD'
     /**yêu cầu bảo mật nâng cao 2FA */
