@@ -114,6 +114,8 @@ function isHaveFileAttachment() {
 }
 /**làm sạch html trước khi hiển thị, tránh XSS */
 function fixXss(text?: string) {
-  return DOMPurify.sanitize(text || '')
+  return DOMPurify.sanitize(text || '', {
+    ADD_ATTR: ['target']
+  })
 }
 </script>

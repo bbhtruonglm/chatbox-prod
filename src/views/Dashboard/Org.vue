@@ -110,7 +110,7 @@ class Main {
         from: 'parent-app',
         user_name: chatbotUserStore.chatbot_user?.full_name,
         user_email: chatbotUserStore.chatbot_user?.email,
-        user_id: chatbotUserStore.chatbot_user?.user_id,
+        client_id: chatbotUserStore.chatbot_user?.user_id,
         user_phone: '',
       },
       '*'

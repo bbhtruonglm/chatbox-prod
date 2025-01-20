@@ -3,7 +3,7 @@
     id="main_input_chat"
     :class="{
       'pr-3': isVisibleSendBtn(),
-      '!rounded-xl': ai_answer || is_loading_ai_answer,
+      '!rounded-xl': is_visible_ai_answer || is_loading_ai_answer,
       'hover:rounded-xl': is_loading_ai_answer,
     }"
     class="flex flex-col gap-1 bg-white rounded-3xl group py-2 px-4 transition-all"
@@ -73,6 +73,10 @@ const is_loading_ai_answer = ref<boolean>(false)
 const conversation = computed(() => conversationStore.select_conversation)
 /**câu trả lời hiện tại */
 const ai_answer = computed(() => conversation.value?.ai_answer)
+/**câu trả lời tồn tại và không phải là khoảng trắng */
+const is_visible_ai_answer = computed(
+  () => ai_answer.value && ai_answer.value !== ' '
+)
 
 /**có hiển thị nút gửi tin không */
 function isVisibleSendBtn() {

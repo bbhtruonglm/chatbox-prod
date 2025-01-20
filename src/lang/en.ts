@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  "Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.":
+    'Send a message to {name}. Use "/" to reply quickly.',
   'Hiện chấm màu có chú giải': 'Show color dot with tooltip',
   'Chỉ hiện chấm màu': 'Show color dot only',
   'Hiện văn bản': 'Show text',

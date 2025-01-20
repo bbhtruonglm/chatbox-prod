@@ -13,7 +13,7 @@
     />
     <span
       v-if="!commonStore.is_typing"
-      class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2"
+      class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2 truncate w-full"
     >
       <template
         v-if="
@@ -28,7 +28,7 @@
       </template>
       <template v-else>
         {{
-          $t('v1.view.main.dashboard.chat.send_to', {
+          $t("Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.", {
             name: conversationStore.select_conversation?.client_name,
           })
         }}
@@ -143,6 +143,15 @@ class Main {
       conversationStore.select_conversation?.ai_answer
     )
 
+    // xóa câu trả lời của ai
+    await this.clearAiAnswer()
+  }
+  /**loại bỏ dữ liệu câu trả lời của AI */
+  async clearAiAnswer() {
+    // nếu không có câu trả lời của ai thì thôi
+    if (!conversationStore.select_conversation?.ai_answer) return
+    if (!page_id.value || !client_id.value) return
+
     // xóa câu trả lời của ai hiện tại
     conversationStore.select_conversation.ai_answer = ''
 
@@ -246,6 +255,9 @@ class Main {
 
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
+
+    // xóa câu trả lời của ai
+    await this.clearAiAnswer()
   }
   /**luồng trả lời tin nhắn bí mật */
   @handleLoadingReplyComment

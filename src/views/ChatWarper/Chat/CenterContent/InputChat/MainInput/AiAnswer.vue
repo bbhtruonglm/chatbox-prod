@@ -1,13 +1,13 @@
 <template>
   <div
     :class="{
-      '!flex': ai_answer || is_loading,
-      '!hidden': !is_loading && !ai_answer,
+      '!flex': is_visible_ai_answer || is_loading,
+      '!hidden': !is_loading && !is_visible_ai_answer,
     }"
     class="hidden group-hover:flex items-center gap-2 overflow-hidden"
   >
     <button
-      v-if="is_loading || !ai_answer"
+      v-if="is_loading || !is_visible_ai_answer"
       class="rounded-full border p-1 w-fit flex-shrink-0"
     >
       <ArrowPathIcon
@@ -18,7 +18,7 @@
       />
     </button>
     <button
-      v-if="ai_answer"
+      v-if="is_visible_ai_answer"
       @click="$main.selectAiAnswer()"
       class="border py-1 px-2 rounded-full text-xs whitespace-nowrap"
     >
@@ -77,6 +77,10 @@ const ai_answer = computed({
     )
   },
 })
+/**câu trả lời tồn tại và không phải là khoảng trắng */
+const is_visible_ai_answer = computed(
+  () => ai_answer.value && ai_answer.value !== ' '
+)
 
 @singleton()
 class CustomToast extends Toast implements IAlert {
@@ -189,6 +193,10 @@ watch(
   () => messageStore.list_message,
   async (new_val, old_val) => {
     setTimeout(() => {
+      // phải bật thiết lập thì mới cho chạy
+      if (!conversationStore.getPage()?.quick_reply?.is_complete_sentence)
+        return
+
       // bỏ qua nếu
       if (
         // danh sách tin nhắn trước đó có dữ liệu
@@ -204,8 +212,8 @@ watch(
       // chỉ xử lý khi tin cuối cùng là của khách hàng
       if (last(new_val)?.message_type !== 'client') return
 
-      // tạo câu trả lời
-      $main.complete()
+      // xử lý trường hợp khách nhắn tin dồn dập, để tránh spam ai quá nhiều
+      $main.debounceGenAnswer()
     }, 1000)
   }
 )
