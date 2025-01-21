@@ -78,7 +78,8 @@ export const preGoToChat = (proceed: Cb) => {
 export const resetConversationFilter = () => {
   const conversationStore = useConversationStore()
 
-  conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
+  conversationStore.option_filter_page_data.is_spam_fb = 'NO'
+  // conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
 }
 
 /**chọn một hội thoại */
@@ -299,8 +300,11 @@ export function isActiveMessageFilter() {
 export function isFilterActive() {
   const conversationStore = useConversationStore()
 
-  // đọc lấy dữ liệu lọc không có search
-  let filter = omit(conversationStore.option_filter_page_data, ['search'])
+  // đọc lấy dữ liệu lọc sẽ bỏ qua
+  let filter = omit(conversationStore.option_filter_page_data, [
+    'search', // tìm kiếm
+    'conversation_type', // loại hội thoại
+  ])
 
   // loại bỏ các giá trị bị undefied trong object
   filter = pickBy(filter, identity)

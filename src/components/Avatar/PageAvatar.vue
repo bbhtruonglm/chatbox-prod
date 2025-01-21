@@ -4,9 +4,16 @@
     class="overflow-hidden bg-slate-200 rounded-oval"
   >
     <img
+      v-if="page_info?.avatar"
       @load="removeAnimatePulse"
       loading="lazy"
-      v-if="page_info?.type === 'FB_MESS'"
+      :src="page_info?.avatar"
+      class="w-full h-full object-contain"
+    />
+    <img
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-else-if="page_info?.type === 'FB_MESS'"
       :src="loadImageUrl()"
       class="w-full h-full"
     />
