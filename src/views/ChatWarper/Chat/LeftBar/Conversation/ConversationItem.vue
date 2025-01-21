@@ -43,6 +43,12 @@ import {
 } from '@/utils/helper/Conversation/CalcSpecialPageConfigs'
 import { container } from 'tsyringe'
 
+/**dữ liệu của item */
+interface IConversationItem extends ConversationInfo {
+  /**đánh dấu hội thoại này sẽ bị đẩy xuống ở lần tới */
+  is_go_down?: boolean
+}
+
 const $props = withDefaults(
   defineProps<{
     source?: ConversationInfo
@@ -124,12 +130,11 @@ class Main {
     )
       return
 
-    /**key của hội thoại */
-    const DATA_KEY = $props.source?.data_key
     /**dữ liệu hội thoại */
-    const CONVERSATION = $props.source
+    const CONVERSATION: IConversationItem = $props.source
     /**hội thoại cũ */
-    const OLD_CONVERSATION = conversationStore.select_conversation
+    const OLD_CONVERSATION: IConversationItem | undefined =
+      conversationStore.select_conversation
 
     // ẩn mũi tên scroll bottom
     messageStore.is_show_to_bottom = false
@@ -137,7 +142,7 @@ class Main {
     /**cấu hình trang đặc biệt */
     const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
 
-    // thay đổi vị trí hội thoại này nếu
+    // đánh dấu hội thoại này sẽ bị đẩy xuống vào lần tới nếu
     if (
       // đang bật chế độ sắp xếp hội thoại chưa đọc lên đầu
       SPECIAL_PAGE_CONFIG?.sort_conversation === 'UNREAD' &&
@@ -146,14 +151,27 @@ class Main {
       // không phải chế độ lọc chưa đọc (vì sẽ xóa luôn)
       !conversationStore.option_filter_page_data?.unread_message
     ) {
+      // gắn cờ
+      CONVERSATION.is_go_down = true
+    }
+
+    // nếu hội thoại trước đó được gắn cờ đi xuống
+    if (OLD_CONVERSATION?.is_go_down && OLD_CONVERSATION?.data_key) {
+      // xóa cờ
+      delete OLD_CONVERSATION.is_go_down
+
       // xóa hội thoại khỏi vị trí cũ (trên đầu)
-      delete conversationStore.conversation_list?.[DATA_KEY]
+      delete conversationStore.conversation_list?.[OLD_CONVERSATION?.data_key]
 
       /**index của hội thoại đầu tiên đã đọc */
       const NEW_INDEX = this.findFirstReadMessageIndex()
 
       // đẩy hội thoại xuống vị trí mới (dưới các hội thoại chưa đọc)
-      this.addItemToConversationsByIndex(DATA_KEY, CONVERSATION, NEW_INDEX)
+      this.addItemToConversationsByIndex(
+        OLD_CONVERSATION?.data_key,
+        OLD_CONVERSATION,
+        NEW_INDEX
+      )
     }
 
     // logic chọn hội thoại mới

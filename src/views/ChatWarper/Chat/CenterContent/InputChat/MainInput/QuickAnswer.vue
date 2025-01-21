@@ -12,6 +12,7 @@
   >
     <div
       id="chat__quick-answer__modal"
+      v-show="list_answer?.length"
       @click="toggleModal(true)"
       class="absolute top-0 left-0 w-screen h-screen z-20"
     >
@@ -123,6 +124,7 @@ const $input_service = container.resolve(InputService)
 const CACHE_LIST_ANSWER = new Map<string, QuickAnswerInfo[]>()
 /**số câu trả lời tối đa sẽ lấy */
 const MAX_ANSWER = 200
+/**các tính năng AI */
 const AI_FEATURE: QuickAnswerInfo[] = [
   {
     id: 'translate',
