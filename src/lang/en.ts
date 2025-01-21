@@ -1,6 +1,20 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Làm mới trang': 'Refresh page',
+  'Sau khi cài đặt xong thì ấn F5 hoặc ấn Làm mới trang để tải lại trang.': 'After installation, press F5 or press Refresh to reload the page.',
+  'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Click "<b>Load unpacked</b>" and select the extracted folder in Step 2.',
+  'Bật chế độ Developer mode ở trên cùng góc phải.': 'Turn on "<b>Developer mode</b>" at the top right corner.',
+  'Truy cập': 'Access',
+  'Giải nén file đã tải về và có thư mục Retion-x.y': 'Extract the downloaded file and have the Retion-x.y folder',
+  'Tải Extension': 'Download Extension',
+  'Bước _': 'Step {name}',
+  'Tải Extension. Lưu ý: Extension chỉ hỗ trợ Chrome.': 'Download Extension. Note: Extension only supports Chrome.',
+  'Hoặc thực hiện theo hướng dẫn bên dưới': 'Or follow the instructions below',
+  'Hướng dẫn cài đặt': 'Installation guide',
+  'Đóng': 'Close',
+  'Bạn chưa cài đặt Extension.': 'You have not installed the Extension.',
+  'Cài đặt Extension': 'Install Extension',
   "Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.":
     'Send a message to {name}. Use "/" to reply quickly.',
   'Hiện chấm màu có chú giải': 'Show color dot with tooltip',

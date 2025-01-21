@@ -101,9 +101,6 @@ class Main {
    * - chỉ xử lý nếu là câu trả lời của khách hàng
    */
   onSocketMessage({ detail: message }: ISocketMessagePayload) {
-    // phải bật thiết lập thì mới cho chạy
-    if (!conversationStore.getPage()?.quick_reply?.is_complete_sentence) return
-
     // nếu không có dữ liệu thì thôi
     if (!message) return
 
@@ -120,6 +117,9 @@ class Main {
   @loadingV2(is_loading, 'value')
   @error(container.resolve(CustomToast))
   async complete() {
+    // phải bật thiết lập thì mới cho chạy
+    if (!conversationStore.getPage()?.quick_reply?.is_complete_sentence) return
+
     // nếu không có id của page hoặc khách hàng thì thôi
     if (!page_id.value || !client_id.value) return
 
@@ -193,10 +193,6 @@ watch(
   () => messageStore.list_message,
   async (new_val, old_val) => {
     setTimeout(() => {
-      // phải bật thiết lập thì mới cho chạy
-      if (!conversationStore.getPage()?.quick_reply?.is_complete_sentence)
-        return
-
       // bỏ qua nếu
       if (
         // danh sách tin nhắn trước đó có dữ liệu

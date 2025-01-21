@@ -57,6 +57,7 @@
       class="w-4 h-4 text-slate-500 cursor-pointer"
     />
   </div>
+  <GuildInstallExt ref="ref_guild_install_ext_modal" />
 </template>
 <script setup lang="ts">
 import {
@@ -71,6 +72,7 @@ import { get, keys, map, set, size } from 'lodash'
 import { toastError } from '@/service/helper/alert'
 import { getFbUserInfo } from '@/service/helper/ext'
 
+import GuildInstallExt from '@/components/GuildInstallExt.vue'
 import EditItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItem.vue'
 import InfoItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/InfoItem.vue'
 import EditItemGroup from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItemGroup.vue'
@@ -91,6 +93,8 @@ const { t: $t } = useI18n()
 
 /**danh sách liên lạc */
 const list_contact = ref<ContactInfo[]>([])
+/**ref của modal hướng dẫn cài đặt */
+const ref_guild_install_ext_modal = ref<InstanceType<typeof GuildInstallExt>>()
 
 /**id của trang */
 const page_id = computed(
@@ -163,6 +167,15 @@ function isFindClientInfo() {
 }
 /**làm mới thông tin khách hàng */
 function reloadClientInfo() {
+  // nếu chưa cài đặt ext thì mở hướng dẫn cài đặt
+  if (commonStore.extension_status !== 'FOUND') {
+    // mở modal hướng dẫn cài đặt
+    ref_guild_install_ext_modal.value?.toggleModal?.()
+
+    // dừng
+    return
+  }
+
   // nếu thiếu key thì không làm gì cả
   if (
     !conversationStore.select_conversation?.fb_page_id ||
