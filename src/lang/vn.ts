@@ -1,6 +1,7 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Đã để lại cảm xúc lúc _': 'Đã để lại cảm xúc lúc {name}',
   'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Ấn nút "<b>Load unpacked</b>" và chọn thư mục đã giải nén ở Bước 2.',
   'Bật chế độ Developer mode ở trên cùng góc phải.': 'Bật chế độ "<b>Developer mode</b>" ở trên cùng góc phải.',
   'Bước _': 'Bước {name}',

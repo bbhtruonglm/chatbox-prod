@@ -4,22 +4,23 @@
     :id
     @click="$main.toggleModal"
     :class="class_modal"
-    class="rounded-xl bg-gradient-primary p-2 shadow-lg max-w-[95%] max-h-[95%] [&[open]]:flex flex-col"
+    class="rounded-xl p-2 shadow-lg max-w-[95%] max-h-[95%] [&[open]]:flex flex-col"
   >
     <header
       v-if="$slots.header"
       @click.stop
-      class="flex-shrink-0 flex items-center justify-between gap-2"
+      class="flex-shrink-0 flex items-center justify-between gap-2 relative"
     >
       <h2
         :class="class_header"
-        class="text-lg font-medium flex-shrink-0"
+        class="text-lg font-medium flex-shrink-0 w-full"
       >
         <slot name="header" />
       </h2>
       <button
         @click="$main.toggleModal"
-        class="bg-slate-100 rounded-lg p-1"
+        :class="class_close"
+        class="p-1 absolute right-0"
       >
         <XMarkIcon class="size-5" />
       </button>
@@ -54,6 +55,8 @@ const $props = withDefaults(
     class_modal?: string
     /**class cho header */
     class_header?: string
+    /**class cho close button */
+    class_close?: string
     /**class cho body */
     class_body?: string
     /**class cho footer */

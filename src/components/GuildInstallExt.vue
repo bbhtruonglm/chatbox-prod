@@ -1,7 +1,8 @@
 <template>
   <BaseModal
     ref="ref_guild_install_ext_modal"
-    class_modal="w-[881px] h-[630px] gap-2 text-sm font-medium"
+    class_modal="w-[881px] h-[630px] gap-2 text-sm font-medium bg-gradient-primary"
+    class_close="rounded-lg bg-slate-100"
     class_body="bg-white rounded-md grid grid-cols-2 gap-1"
     class_footer="flex justify-end"
   >

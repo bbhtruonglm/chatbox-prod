@@ -151,6 +151,8 @@ export interface MessageInfo {
     reaction?: string
     /**icon đại diện */
     emoji?: string
+    /**thời gian cập nhật */
+    updatedAt?: string
   }
   /**tin nhắn này có phải bị sửa không */
   is_edit?: boolean

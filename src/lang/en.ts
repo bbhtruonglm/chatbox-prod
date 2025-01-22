@@ -1,6 +1,11 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Xem chi tiết': 'View details',
+  'Đã để lại cảm xúc lúc _': 'Emotion left at {name}',
+  'AI tự động nhận dạng cảm xúc': 'AI automatically recognizes emotions',
+  'Phát hiện cảm xúc AI': 'AI Emotion Detection',
+  'Các cảm xúc': 'Emotions',
   'Làm mới trang': 'Refresh page',
   'Sau khi cài đặt xong thì ấn F5 hoặc ấn Làm mới trang để tải lại trang.': 'After installation, press F5 or press Refresh to reload the page.',
   'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Click "<b>Load unpacked</b>" and select the extracted folder in Step 2.',
