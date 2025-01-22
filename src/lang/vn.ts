@@ -492,8 +492,8 @@ const source: Language = {
               file: 'Tệp đính kèm',
               back: 'Quay trở lại',
               reply_time_basic: 'Phản hồi tin nhắn',
-              reply_time: 'AI: Phản hồi chậm',
-              reply_time_not_rep: 'AI: Chưa trả lời',
+              reply_time: 'Trả lời chậm',
+              reply_time_not_rep: 'Chưa trả lời',
               header: {
                 note: 'Ghim - Nhắc lịch - Cảnh báo',
                 alert: 'Cảnh báo',

@@ -7,7 +7,7 @@
         '-right-5': position === 'RIGHT',
         '-left-5': position === 'LEFT',
       }"
-      class="px-1 gap-1 flex items-center bg-white rounded-full w-fit shadow absolute z-20 -bottom-2.5"
+      class="px-1 gap-1 flex items-center bg-white rounded-full w-fit shadow absolute z-20 -top-2.5"
     >
       <span
         v-if="ai_emotion_icon"

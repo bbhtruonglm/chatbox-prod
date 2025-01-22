@@ -9,18 +9,6 @@
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
       :message_type="message?.message_type"
     /> -->
-    <MessageDate
-      :class="{
-        'right-0': message_type !== 'client',
-      }"
-      :time="message_time"
-      :meta="meta"
-      :is_edit="message?.is_edit"
-      :duration="CHECK_SLOW_REPLY.getDuration()"
-      :is_show_duration="
-        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
-      "
-    />
     <ReplyMessage
       v-if="reply_message"
       :message="reply_message"
@@ -61,10 +49,23 @@
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
       :message
     />
+    <MessageDate
+      :class="{
+        'right-0': message_type !== 'client',
+      }"
+      :time="message_time"
+      :meta="meta"
+      :is_edit="message?.is_edit"
+      :duration="CHECK_SLOW_REPLY.getDuration()"
+      :is_show_duration="
+        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
+      "
+    />
     <SlowReply
       v-if="CHECK_SLOW_REPLY.isSlowReply()"
       :duration="CHECK_SLOW_REPLY.getDuration()"
       :next_message="messageStore.list_message?.[message_index + 1]"
+      :time="message_time"
     />
   </div>
 </template>

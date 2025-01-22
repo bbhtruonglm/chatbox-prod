@@ -644,8 +644,8 @@ const source: Language = {
               file: 'Attached file',
               back: 'Back',
               reply_time_basic: 'Reply time',
-              reply_time: 'AI: Slow reply',
-              reply_time_not_rep: 'AI: Not replied',
+              reply_time: 'Slow reply',
+              reply_time_not_rep: 'Not replied',
               header: {
                 note: 'Pin - Reminders - Alerts',
                 alert: 'Alert',
