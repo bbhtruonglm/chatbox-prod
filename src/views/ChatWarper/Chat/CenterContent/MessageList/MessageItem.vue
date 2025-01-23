@@ -49,7 +49,14 @@
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
       :message
     />
+    <SlowReply
+      v-if="CHECK_SLOW_REPLY.isSlowReply()"
+      :duration="CHECK_SLOW_REPLY.getDuration()"
+      :next_message="messageStore.list_message?.[message_index + 1]"
+      :time="message_time"
+    />
     <MessageDate
+      v-else
       :class="{
         'right-0': message_type !== 'client',
       }"
@@ -60,12 +67,6 @@
       :is_show_duration="
         CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
       "
-    />
-    <SlowReply
-      v-if="CHECK_SLOW_REPLY.isSlowReply()"
-      :duration="CHECK_SLOW_REPLY.getDuration()"
-      :next_message="messageStore.list_message?.[message_index + 1]"
-      :time="message_time"
     />
   </div>
 </template>

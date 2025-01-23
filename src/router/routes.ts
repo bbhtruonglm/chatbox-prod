@@ -38,6 +38,7 @@ import OrgPayReCharge from '@/views/Dashboard/Org/Pay/ReCharge.vue'
 import Template from '@/views/Template.vue'
 import DownloadApp from '@/views/DownloadApp.vue'
 import TakeControl from '@/views/TakeControl.vue'
+import PostAnalyticIframe from '@/views/PostAnalyticIframe.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },
@@ -110,6 +111,7 @@ export const routes = [
   { path: '/download-app', component: DownloadApp },
   { path: '/take-control', component: TakeControl },
   { path: '/delete-account', component: DeleteAccount },
+  { path: '/post-analytic', component: PostAnalyticIframe },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },
 ]

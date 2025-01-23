@@ -3,9 +3,12 @@
     id="chat__right-bar"
     class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-2"
   >
-    <PostAnalytic
+    <PostRightBar
       v-if="conversationStore.select_conversation?.conversation_type === 'POST'"
     />
+    <!-- <PostAnalytic
+      v-if="conversationStore.select_conversation?.conversation_type === 'POST'"
+    /> -->
     <template v-else>
       <AlertHeader />
       <template v-for="widget of pageStore.widget_list">
@@ -57,6 +60,7 @@ import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
 
 import PostAnalytic from '@/views/ChatWarper/Chat/RightBar/PostAnalytic.vue'
+import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
 import AlertHeader from '@/views/ChatWarper/Chat/CenterContent/MessageList/AlertHeader.vue'
 

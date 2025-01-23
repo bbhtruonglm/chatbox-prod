@@ -1,4 +1,5 @@
 import type {
+  ConversationInfo,
   FilterConversation,
   QueryConversationInput,
   QueryConversationResponse,
@@ -102,6 +103,32 @@ export class N4SerivceAppConversation extends N4Serivce {
       sort,
       ...filter,
     })
+  }
+  /**
+   * lấy dữ liệu 1 hội thoại
+   * @param page_id id trang
+   * @param client_id id khách hàng
+   */
+  async readConversation(
+    page_id: string,
+    client_id: string
+  ): Promise<ConversationInfo | undefined> {
+    /**dữ liệu hội thoại */
+    const RES: QueryConversationResponse = await this.post(
+      'read_conversation',
+      {
+        page_id: [page_id],
+        client_id,
+        limit: 1,
+        conversation_type: 'POST',
+      }
+    )
+
+    /**id hội thoai */
+    const KEY = `${page_id}_${client_id}`
+
+    // trả về hội thoại tìm thấy
+    return RES?.conversation?.[KEY]
   }
   /**xóa câu trả lời ai của hội thoại */
   async clearAiAnswer(page_id: string, client_id: string): Promise<void> {
