@@ -43,7 +43,7 @@
       @load="removeAnimatePulse"
       loading="lazy"
       v-if="conversation?.platform_type === 'FB_INSTAGRAM'"
-      :src="loadImageUrl()"
+      :src="conversation?.client_avatar"
       class="w-full h-full"
     />
     <img

@@ -1,6 +1,7 @@
 import PageNotFound from '@/views/404.vue'
 
 import DeleteAccount from '@/views/DeleteAccount.vue'
+import DeauthorizeInstagram from '@/views/DeauthorizeInstagram.vue'
 
 import OAuthV2 from '@/views/OAuthV2.vue'
 import Login from '@/views/OAuth/Login.vue'
@@ -39,6 +40,7 @@ import Template from '@/views/Template.vue'
 import DownloadApp from '@/views/DownloadApp.vue'
 import TakeControl from '@/views/TakeControl.vue'
 import PostAnalyticIframe from '@/views/PostAnalyticIframe.vue'
+import InstagramRedirectUri from '@/views/InstagramRedirectUri.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },
@@ -59,7 +61,7 @@ export const routes = [
   },
   {
     path: '/logout',
-    redirect: '/oauth'
+    redirect: '/oauth',
   },
 
   // { path: '/chat', component: ChatShort },
@@ -111,7 +113,9 @@ export const routes = [
   { path: '/download-app', component: DownloadApp },
   { path: '/take-control', component: TakeControl },
   { path: '/delete-account', component: DeleteAccount },
+  { path: '/deauthorize-instagram', component: DeauthorizeInstagram },
   { path: '/post-analytic', component: PostAnalyticIframe },
+  { path: '/instagram-redirect-uri', component: InstagramRedirectUri },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },
 ]

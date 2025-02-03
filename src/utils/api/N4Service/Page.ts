@@ -7,6 +7,7 @@ import type {
 } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { LocationQueryValue } from 'vue-router'
+import { singleton } from 'tsyringe'
 
 /**dữ liệu của trang hiện tại kích hoạt */
 export interface CurrentPageData {
@@ -17,6 +18,7 @@ export interface CurrentPageData {
 }
 
 /**gọi API module page của chatbox */
+@singleton()
 export class N4SerivceAppPage extends N4Serivce {
   constructor() {
     // gọi API module page của chatbot
@@ -108,5 +110,14 @@ export class N4SerivceAppPage extends N4Serivce {
   public async createWebsite(body: PageWebsiteCreate): Promise<IPage> {
     // gọi api
     return this.post('create_website_page', body, true)
+  }
+  /**kết nối, tái đồng bộ tài khoản IG */
+  public async syncInstagramPage(
+    code: string,
+    redirect_uri: string,
+    org_id?: string
+  ): Promise<void> {
+    // gọi api
+    return this.post('sync_instagram_page', { code, redirect_uri, org_id })
   }
 }

@@ -87,6 +87,16 @@ const ENV: IEnv = {
     zalo_oa: {
         portal: 'https://chatbox-service-v3.botbanhang.vn/public/callback'
     },
+    instagram: {
+        redirect_uri: 'https://retion.ai/chat/instagram-redirect-uri',
+        app_id: '1112081206912962',
+        scope: [
+          'instagram_business_basic',
+          'instagram_business_manage_messages',
+          'instagram_business_manage_comments',
+          'instagram_business_content_publish,instagram_business_manage_insights',
+        ]
+      },
     platform: ['FB_MESS', 'WEBSITE', 'ZALO_OA'],
     img_host: 'https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar',
     ai: {

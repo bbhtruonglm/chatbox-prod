@@ -1,23 +1,32 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Kết nối với Instagram': 'Connect with Instagram',
+  'Kết nối với Instagram để chat nhiều Trang tự động với AI, tối ưu chi phí Marketing  với CAPI, tự động tích hợp các ứng dụng của Doanh nghiệp.':
+    'Connect with Instagram to chat with multiple Pages automatically using AI, optimize Marketing costs with CAPI, and seamlessly integrate with business apps.',
+  'Kết nối _ với Trang _': 'Connect {partner} with Page {platform}',
   'Xem chi tiết': 'View details',
   'Đã để lại cảm xúc lúc _': 'Emotion left at {name}',
   'AI tự động nhận dạng cảm xúc': 'AI automatically recognizes emotions',
   'Phát hiện cảm xúc AI': 'AI Emotion Detection',
   'Các cảm xúc': 'Emotions',
   'Làm mới trang': 'Refresh page',
-  'Sau khi cài đặt xong thì ấn F5 hoặc ấn Làm mới trang để tải lại trang.': 'After installation, press F5 or press Refresh to reload the page.',
-  'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Click "<b>Load unpacked</b>" and select the extracted folder in Step 2.',
-  'Bật chế độ Developer mode ở trên cùng góc phải.': 'Turn on "<b>Developer mode</b>" at the top right corner.',
+  'Sau khi cài đặt xong thì ấn F5 hoặc ấn Làm mới trang để tải lại trang.':
+    'After installation, press F5 or press Refresh to reload the page.',
+  'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.':
+    'Click "<b>Load unpacked</b>" and select the extracted folder in Step 2.',
+  'Bật chế độ Developer mode ở trên cùng góc phải.':
+    'Turn on "<b>Developer mode</b>" at the top right corner.',
   'Truy cập': 'Access',
-  'Giải nén file đã tải về và có thư mục Retion-x.y': 'Extract the downloaded file and have the Retion-x.y folder',
+  'Giải nén file đã tải về và có thư mục Retion-x.y':
+    'Extract the downloaded file and have the Retion-x.y folder',
   'Tải Extension': 'Download Extension',
   'Bước _': 'Step {name}',
-  'Tải Extension. Lưu ý: Extension chỉ hỗ trợ Chrome.': 'Download Extension. Note: Extension only supports Chrome.',
+  'Tải Extension. Lưu ý: Extension chỉ hỗ trợ Chrome.':
+    'Download Extension. Note: Extension only supports Chrome.',
   'Hoặc thực hiện theo hướng dẫn bên dưới': 'Or follow the instructions below',
   'Hướng dẫn cài đặt': 'Installation guide',
-  'Đóng': 'Close',
+  Đóng: 'Close',
   'Bạn chưa cài đặt Extension.': 'You have not installed the Extension.',
   'Cài đặt Extension': 'Install Extension',
   "Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.":

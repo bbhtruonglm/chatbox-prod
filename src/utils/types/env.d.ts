@@ -61,6 +61,15 @@ declare global {
       /**callback url trung gian */
       portal: string
     }
+    /**cài đặt cho IG */
+    instagram: {
+      /**đường dẫn chuyển hướng */
+      redirect_uri: string
+      /**id ứng dụng riêng của IG */
+      app_id: string
+      /**các quyền của IG */
+      scope: string[]
+    }
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: IPageType[]
     /**host của url link ảnh */

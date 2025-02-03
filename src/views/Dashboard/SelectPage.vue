@@ -179,17 +179,17 @@ onMounted(() => {
    */
   getMeChatbotUser?.()
 
-  // kích hoạt zalo nếu phát hiện
-  triggerConnectZalo()
+  // kích hoạt tự động mở kết nối nền tảng nếu cần
+  triggerConnectPlatform()
 })
 
-/**kích hoạt oauth zalo redirect nếu phát hiện */
-function triggerConnectZalo() {
-  // nếu không có cờ zalo thì thôi
-  if ($route.query.connect_page !== 'ZALO_OA') return
+/**kích hoạt tự động mở kết nối nền tảng nếu cần */
+function triggerConnectPlatform() {
+  // nếu không có cờ thì thôi
+  if (!$route.query.connect_page) return
 
   // mở modal connect zalo
-  toggleModalConnectPage?.('ZALO_OA')
+  toggleModalConnectPage?.($route.query.connect_page)
 }
 /**chuyển đến trang chat */
 function goToChat() {

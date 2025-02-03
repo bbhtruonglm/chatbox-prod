@@ -1,7 +1,7 @@
 <template>
   <template v-if="$main.countEmotion()">
     <button
-      v-tooltip.bottom="$t('Xem chi tiết')"
+      v-tooltip.top="$t('Xem chi tiết')"
       @click="ref_emotion_modal?.toggleModal()"
       :class="{
         '-right-5': position === 'RIGHT',

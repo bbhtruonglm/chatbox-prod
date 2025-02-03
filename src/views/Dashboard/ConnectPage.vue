@@ -68,6 +68,9 @@
             @done="$emit('done')"
           />
           <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
+          <Instagram
+            v-else-if="connectPageStore.current_menu === 'FB_INSTAGRAM'"
+          />
           <div
             v-else
             class="p-2"
@@ -95,6 +98,7 @@ import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
 import Search from '@/views/Dashboard/ConnectPage/Search.vue'
+import Instagram from '@/components/OAuth/Instagram.vue'
 
 const $emit = defineEmits(['done'])
 
