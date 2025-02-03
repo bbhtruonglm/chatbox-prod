@@ -165,7 +165,7 @@ export interface MessageInfo {
   /**id bản ghi mongo */
   _id: string
   /**tin nhắn này thuộc loại gì */
-  platform_type?: 'FB_MESS' | 'FB_POST'
+  platform_type?: 'FB_MESS' | 'FB_POST' | 'WEBSITE'
   /**id trang */
   fb_page_id: string
   /**id khách hàng */

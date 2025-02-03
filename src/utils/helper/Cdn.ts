@@ -37,6 +37,7 @@ export interface ICdn {
    * @param index index của media
    */
   fbMessageMedia(page_id?: string, message_id?: string, index?: number): string
+  webMessageMedia(page_id?: string, message_id?: string, index?: number): string
 }
 
 /**quản lý các đường dẫn của media */
@@ -62,6 +63,9 @@ export class Cdn implements ICdn {
   }
   fbMessageMedia(page_id?: string, message_id?: string, index?: number) {
     return `${this.HOST}/media/fb/${page_id}/message/${message_id}/${index}`
+  }
+  webMessageMedia(page_id?: string, message_id?: string, index?: number) {
+    return `${this.HOST}/media/web/${page_id}/message/${message_id}/${index}`
   }
 }
 

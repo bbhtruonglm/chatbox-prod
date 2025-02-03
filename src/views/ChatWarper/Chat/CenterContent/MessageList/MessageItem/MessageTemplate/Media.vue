@@ -10,8 +10,8 @@
     >
       <img
         :src="
-          platform_type === 'FB_MESS'
-            ? getFbUrl() || data_source?.image?.url
+          isUseNewCdn()
+            ? getCdnUrl() || data_source?.image?.url
             : data_source?.image?.url
         "
         class="w-full h-full object-contain"
@@ -29,8 +29,8 @@
       >
         <source
           :src="
-            platform_type === 'FB_MESS'
-              ? getFbUrl() || data_source?.video?.url
+            isUseNewCdn()
+              ? getCdnUrl() || data_source?.video?.url
               : data_source?.video?.url
           "
           type="video/mp4"
@@ -40,8 +40,8 @@
     <Audio
       v-if="data_source?.audio?.url"
       :src="
-        platform_type === 'FB_MESS'
-          ? getFbUrl() || data_source?.audio?.url
+        isUseNewCdn()
+          ? getCdnUrl() || data_source?.audio?.url
           : data_source?.audio?.url
       "
       class="min-w-52"
@@ -62,8 +62,8 @@
     ref="media_detail_ref"
     :data_source
     :url="
-      platform_type === 'FB_MESS'
-        ? getFbUrl()
+      isUseNewCdn()
+        ? getCdnUrl()
         : data_source?.image?.url ||
           data_source?.video?.url ||
           data_source?.audio?.url ||
@@ -114,6 +114,11 @@ const platform_type = computed(
   () => conversationStore.select_conversation?.platform_type
 )
 
+/**có sử dụng cnd mới không */
+function isUseNewCdn() {
+  // các nền tảng sử dụng cdn mới
+  return ['FB_MESS', 'WEBSITE'].includes(platform_type.value || '')
+}
 /**lấy tên của file */
 function getFileName(url: string) {
   try {
@@ -142,7 +147,7 @@ function initSize() {
   ).toCss()
 }
 /**đọc dữ liệu mới của tập tin */
-function getFbUrl(): string | undefined {
+function getCdnUrl(): string | undefined {
   // nếu là slider thực thì dùng luôn
   if ($props.message?.message_attachments?.[0]?.type === 'template') return
 
@@ -151,6 +156,9 @@ function getFbUrl(): string | undefined {
 
   // nếu không có id thì không cần xử lý
   if (!TARGET_ID) return
+
+  if (platform_type.value === 'WEBSITE')
+    return $cdn.webMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 
   return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 }
