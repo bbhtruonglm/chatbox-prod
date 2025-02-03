@@ -317,12 +317,12 @@ class Main {
     if (!conversationStore.select_conversation) return
 
     // nếu không có id nhân viên hiện tại thì thôi
-    if (!chatbotUserStore.chatbot_user?.fb_staff_id) return
+    if (!chatbotUserStore.chatbot_user?.user_id) return
 
     // nạp thời gian đọc tin nhắn mới
     set(
       conversationStore.select_conversation,
-      ['staff_read', chatbotUserStore.chatbot_user?.fb_staff_id],
+      ['staff_read', chatbotUserStore.chatbot_user?.user_id],
       new Date().getTime()
     )
   }
