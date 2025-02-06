@@ -16,6 +16,7 @@
   />
 
   <ZaloIcon v-else-if="page_type === 'ZALO_OA'" />
+  <ZaloIcon v-else-if="page_type === 'ZALO_PERSONAL'" />
 
   <div v-else />
 </template>

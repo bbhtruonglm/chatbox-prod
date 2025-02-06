@@ -8,6 +8,7 @@ export type PageType =
   | 'WEBSITE'
   | 'FB_WHATSAPP'
   | 'FB_INSTAGRAM'
+  | 'ZALO_PERSONAL'
 
 /**@deprecated IPage */
 export interface PageInfo {

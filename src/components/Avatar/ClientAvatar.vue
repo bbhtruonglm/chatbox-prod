@@ -56,6 +56,16 @@
       :src="conversation?.client_avatar"
       class="w-full h-full"
     />
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-if="
+        conversation?.platform_type === 'ZALO_PERSONAL' && conversation?.client_avatar
+      "
+      :src="conversation?.client_avatar"
+      class="w-full h-full"
+    />
     <div
       v-else
       :style="{ background: letterToColorCode() }"
