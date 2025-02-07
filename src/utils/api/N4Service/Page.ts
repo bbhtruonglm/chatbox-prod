@@ -120,4 +120,9 @@ export class N4SerivceAppPage extends N4Serivce {
     // gọi api
     return this.post('sync_instagram_page', { code, redirect_uri, org_id })
   }
+  /**kết nối tài khoản zalo cá nhân */
+  public async syncZaloPersonalPage(org_id?: string): Promise<string> {
+    // gọi api
+    return this.post('sync_zalo_personal_page', { org_id })
+  }
 }

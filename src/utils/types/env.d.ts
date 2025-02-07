@@ -30,6 +30,10 @@ declare global {
       n8_merge_v2: string
       /**host của cdn tập tin */
       media_cdn: string
+      /**api quản lý zalo cá nhân */
+      n13_zalo_personal: string
+      /**socket lắng nghe mã qr số 2 */
+      n13_zalo_personal_socket: string
     }
     external_link: IExternalLink
     /**cài đặt cho riêng facebook */

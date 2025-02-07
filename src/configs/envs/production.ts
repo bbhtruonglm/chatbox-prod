@@ -18,6 +18,8 @@ const ENV: IEnv = {
         widget: 'https://chatbox-widget.botbanhang.vn',
         n8_merge_v2: 'https://chatbox-merge-v2.botbanhang.vn',
         media_cdn: 'https://cdn.botbanhang.vn',
+        n13_zalo_personal: 'https://chatbox-zalo-personal.botbanhang.vn',
+        n13_zalo_personal_socket: 'wss://chatbox-zalo-personal.botbanhang.vn/zalo-personal-qr'
     },
     external_link: {
         setting: 'https://setting.retion.ai',

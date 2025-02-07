@@ -47,7 +47,8 @@
     "vue-virtual-scroller": "2.0.0-beta.8",
     "vue3-virtual-scroll-list": "^0.2.1",
     "vuedraggable": "^4.1.0",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "zca-js": "2.0.0-beta.8"
   },
   "devDependencies": {
     "@types/async": "^3.2.16",

@@ -136,6 +136,7 @@ const DESCRIPTION_MAP: Record<string, string> = {
   FB_WHATSAPP: $t('Kết nối Trang WhatsApp Business và Cá nhân'),
   WEBSITE: $t('Kết nối Website'),
   ZALO_OA: $t('Kết nối Zalo OA và Zalo cá nhân'),
+  ZALO_PERSONAL: $t('Kết nối Zalo OA và Zalo cá nhân'),
 }
 /** Danh sách nền tảng */
 const LIST_PLATFORM: PlatformItem[] = $env.platform?.map(platform_key => ({

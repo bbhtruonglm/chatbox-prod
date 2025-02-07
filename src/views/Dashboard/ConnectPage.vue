@@ -68,6 +68,9 @@
             @done="$emit('done')"
           />
           <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
+          <ZaloPersonal
+            v-else-if="connectPageStore.current_menu === 'ZALO_PERSONAL'"
+          />
           <Instagram
             v-else-if="connectPageStore.current_menu === 'FB_INSTAGRAM'"
           />
@@ -97,6 +100,7 @@ import Member from '@/views/Dashboard/ConnectPage/Member.vue'
 import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
+import ZaloPersonal from '@/views/Dashboard/ConnectPage/ZaloPersonal.vue'
 import Search from '@/views/Dashboard/ConnectPage/Search.vue'
 import Instagram from '@/components/OAuth/Instagram.vue'
 
