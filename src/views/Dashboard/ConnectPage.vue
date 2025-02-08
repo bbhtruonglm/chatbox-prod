@@ -70,6 +70,7 @@
           <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
           <ZaloPersonal
             v-else-if="connectPageStore.current_menu === 'ZALO_PERSONAL'"
+            @done="$emit('done')"
           />
           <Instagram
             v-else-if="connectPageStore.current_menu === 'FB_INSTAGRAM'"

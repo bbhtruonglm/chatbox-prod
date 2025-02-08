@@ -31,6 +31,16 @@
         >
           <Loading class="size-7" />
         </div>
+        <div
+          v-if="orgStore.isReachPageQuota()"
+          class="text-sm text-slate-500 grid place-items-center size-full text-center"
+        >
+          {{
+            $t(
+              'Tổ chức của bạn hiện đã đạt giới hạn sử dụng. Vui lòng liên hệ Quản trị viên'
+            )
+          }}
+        </div>
       </div>
     </div>
     <div class="flex flex-col flex-1 items-center gap-2">
@@ -253,6 +263,9 @@ class Main {
   @loadingV2(is_loading, 'value')
   @error()
   async getQrCode() {
+    // nếu tổ chức hiện tại đã hết quota thì thôi
+    if (orgStore.isReachPageQuota()) return
+
     // lắng nghe socket
     this.listenSocket()
 
