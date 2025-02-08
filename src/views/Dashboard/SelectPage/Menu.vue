@@ -1,5 +1,6 @@
 <template>
   <MenuItem
+    id="dashboard__menu-left"
     @click="selectPageStore.selectMenu(key)"
     v-for="{ key, title, icon, class_icon } of list_platform"
     :icon="icon ?? SquareIcon"
@@ -51,6 +52,7 @@ function getPlatform(): PlatformItem[] {
   const ICON_MAP: Record<string, Component> = {
     FB_MESS: markRaw(FacebookIcon),
     ZALO_OA: markRaw(ZaloIcon),
+    ZALO_PERSONAL: markRaw(ZaloIcon),
     WEBSITE: markRaw(WebIcon),
   }
 

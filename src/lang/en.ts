@@ -1,6 +1,14 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.': 'After logging in to Zalo on {name}, please do not scan the QR code to log in to Zalo on the Website version (https://chat.zalo.me) to avoid affecting the synchronization of messages to the Sales Bot.',
+  'Trên mục': 'In section',
+  'biểu tượng QR': 'QR code',
+  ', ấn vào': ', press',
+  'Tìm kiếm': 'Search',
+  'trên điện thoại.': 'on mobile',
+  'Mở ứng dụng': 'Open app',
+  'Kết nối _ với Zalo cá nhân': 'Connect {name} with Personal Zalo',
   'Kết nối với Instagram': 'Connect with Instagram',
   'Kết nối với Instagram để chat nhiều Trang tự động với AI, tối ưu chi phí Marketing  với CAPI, tự động tích hợp các ứng dụng của Doanh nghiệp.':
     'Connect with Instagram to chat with multiple Pages automatically using AI, optimize Marketing costs with CAPI, and seamlessly integrate with business apps.',
@@ -184,6 +192,7 @@ const source: Language = {
   name: 'English',
   v1: {
     common: {
+      zalo_personal: 'Zalo Personal',
       vn: 'Vietnamese',
       selected: 'Selected',
       deselect: 'Deselect',

@@ -1,42 +1,100 @@
 <template>
-  <div>
-    <img
-      v-if="qr_code_url"
-      :src="qr_code_url"
-      class="size-64"
-    />
-    <button
-      @click="$main.getQrCode()"
-      class="bg-blue-600 text-white"
-    >
-      lấy qr code
-    </button>
-  </div>
-  <!-- <EmptyPage
-    :icon="ZaloIcon"
-    :guild="$t('v1.view.main.dashboard.select_platform.zalo_oa.guild', {
-        partner: commonStore.partner?.name,
-      })"
-    :description="
-      $t('v1.view.main.dashboard.select_platform.zalo_oa.description')
-    "
-    class_guild="w-[482px]"
-  >
-    <template #after-description>
-      <span class="cursor-pointer relative">
-        <span class="text-sm font-medium decoration underline">
-          {{ $t('v1.view.main.dashboard.select_platform.zalo_oa.lean_more') }}
+  <div class="flex-1 flex items-center w-full p-2">
+    <div class="flex-1 grid place-items-center">
+      <div class="size-[260px] relative p-1">
+        <div
+          class="custom-qr-border top-0 left-0 border-t-2 border-l-2 rounded-tl-lg"
+        />
+        <div
+          class="custom-qr-border top-0 right-0 border-t-2 border-r-2 rounded-tr-lg"
+        />
+        <div
+          class="custom-qr-border bottom-0 left-0 border-b-2 border-l-2 rounded-bl-lg"
+        />
+        <div
+          class="custom-qr-border bottom-0 right-0 border-b-2 border-r-2 rounded-br-lg"
+        />
+        <img
+          v-if="qr_code_url"
+          :src="qr_code_url"
+          class="size-full"
+        />
+        <div
+          v-if="qr_code_url"
+          class="size-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-0.5 rounded-lg bg-white"
+        >
+          <ZaloIcon class="size-full" />
+        </div>
+        <div
+          v-if="is_loading"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
+          <Loading class="size-7" />
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col flex-1 items-center gap-2">
+      <div class="flex flex-col items-center gap-1">
+        <div class="flex items-center gap-5">
+          <img
+            class="size-10"
+            :src="commonStore.partner?.logo?.icon"
+          />
+          <ArrowPathIcon class="size-5 text-slate-500" />
+          <ZaloIcon class="size-10" />
+        </div>
+        <span class="font-semibold text-base leading-6">
+          {{
+            $t('Kết nối _ với Zalo cá nhân', {
+              name: commonStore.partner?.name,
+            })
+          }}
         </span>
-        <NewTabIcon class="w-4 h-4 text-gray-500 absolute top-0 -right-5" />
-      </span>
-    </template>
-    <template #button>
-      <ZaloOA
-        @done="connectPageStore.selectMenu('PAGE')"
-        :text="$t('Kết nối với Zalo OA')"
-      />
-    </template>
-  </EmptyPage> -->
+      </div>
+      <div class="text-slate-500 text-xs">
+        <ul class="list-decimal pb-2 pl-4 border-b border-slate-200">
+          <li>
+            <div class="flex items-center gap-1">
+              {{ $t('Mở ứng dụng') }}
+              <b>Zalo</b>
+              <ZaloIcon class="size-3" />
+              {{ $t('trên điện thoại.') }}
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center gap-1">
+              {{ $t('Trên mục') }}
+              <b>
+                {{ $t('Tìm kiếm') }}
+              </b>
+              <SearchIcon class="size-3" />
+              {{ $t(', ấn vào') }}
+              <b>
+                {{ $t('biểu tượng QR') }}
+              </b>
+              <QrCodeIcon class="size-3" />
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center gap-1">
+              <span><b>Quét mã QR</b> để đăng nhập.</span>
+            </div>
+          </li>
+        </ul>
+        <div class="pt-2 flex gap-2.5">
+          <ExclamationCircleIcon class="size-3 flex-shrink-0" />
+          <span>
+            {{
+              $t(
+                'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.',
+                { name: commonStore.partner?.name }
+              )
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 import {
@@ -45,22 +103,26 @@ import {
   useConnectPageStore,
   useOrgStore,
 } from '@/stores'
+import { container } from 'tsyringe'
+import { onMounted, ref } from 'vue'
+import { N13ZaloPersonalAppPage } from '@/utils/api/N13ZaloPersonal/Page'
 
-import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
-import ZaloOA from '@/components/OAuth/ZaloOA.vue'
+import Loading from '@/components/Loading.vue'
 
 import ZaloIcon from '@/components/Icons/Zalo.vue'
-import NewTabIcon from '@/components/Icons/NewTab.vue'
-import { container } from 'tsyringe'
-import { ref } from 'vue'
-import { size } from 'lodash'
-import { N13ZaloPersonalAppPage } from '@/utils/api/N13ZaloPersonal/Page'
+import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/vue/24/solid'
+import SearchIcon from '@/components/Icons/Search.vue'
+import QrCodeIcon from '@/components/Icons/QrCode.vue'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { error } from '@/utils/decorator/Error'
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 
+/**trạng thái loading */
+const is_loading = ref(false)
 /**dữ liệu hình ảnh qr để quét */
 const qr_code_url = ref<string>()
 /**kết nối socket */
@@ -94,7 +156,10 @@ class Main {
       )
 
       // tự động ping socket liên tục - 30s
-      ping_interval_id = setInterval(() => connection.value?.send('ping'), 1000 * 30)
+      ping_interval_id = setInterval(
+        () => connection.value?.send('ping'),
+        30_000
+      )
     }
 
     // lắng nghe mã qr 2
@@ -115,7 +180,9 @@ class Main {
 
       // thay đổi qr code số 2
       qr_code_url.value = socket_data.qr_code_url
-      // qr_code_url.value = decodeURIComponent(socket_data.qr_code_url)
+
+      // tắt ping socket
+      clearInterval(ping_interval_id)
 
       // đóng kết nối đến socket
       connection.value?.close()
@@ -123,6 +190,8 @@ class Main {
   }
 
   /**Lấy qr code để kết nối tài khoản zalo cá nhân */
+  @loadingV2(is_loading, 'value')
+  @error()
   async getQrCode() {
     // kết nối socket để lấy mã qr số 2
     this.listenSocket()
@@ -134,4 +203,12 @@ class Main {
   }
 }
 const $main = new Main()
+
+// lấy qr code khi component được tạo
+onMounted(() => $main.getQrCode())
 </script>
+<style scoped lang="scss">
+.custom-qr-border {
+  @apply absolute size-12 border-blue-500;
+}
+</style>

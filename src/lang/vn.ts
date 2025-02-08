@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.': 'Sau khi đăng nhập Zalo trên {name}, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.',
+  'Kết nối _ với Zalo cá nhân': 'Kết nối {name} với Zalo cá nhân',
   'Kết nối _ với Trang _': 'Kết nối {partner} với Trang {platform}',
   'Đã để lại cảm xúc lúc _': 'Đã để lại cảm xúc lúc {name}',
   'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Ấn nút "<b>Load unpacked</b>" và chọn thư mục đã giải nén ở Bước 2.',
@@ -48,6 +50,7 @@ const source: Language = {
       website: 'Website',
       fb_whatsapp: 'Whatsapp',
       zalo_oa: 'Zalo OA',
+      zalo_personal: 'Zalo Cá nhân',
       status: 'Trạng thái',
       staff: 'Nhân viên',
       month: 'Tháng',
