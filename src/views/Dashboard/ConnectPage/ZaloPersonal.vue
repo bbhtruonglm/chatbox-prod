@@ -104,8 +104,9 @@ import {
   useOrgStore,
 } from '@/stores'
 import { container } from 'tsyringe'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 import { N13ZaloPersonalAppPage } from '@/utils/api/N13ZaloPersonal/Page'
+import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 
 import Loading from '@/components/Loading.vue'
 
@@ -115,6 +116,23 @@ import SearchIcon from '@/components/Icons/Search.vue'
 import QrCodeIcon from '@/components/Icons/QrCode.vue'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
+
+/**dữ liệu socket */
+interface ISocketData {
+  /**loại xự kiện */
+  event:
+    | 'SECOND_QR_CODE'
+    | 'EXPIRE_QR_CODE'
+    | 'SUCCESS_SCAN_QR_CODE'
+    | 'DONE_CONNECT_PAGE'
+  /**mã qr */
+  qr_code_url: string
+}
+
+const $emit = defineEmits(['done'])
+
+/**ẩn hiện modal kết nối nền tảng */
+const toggleModal = inject(KEY_TOGGLE_MODAL_FUNCT)
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -162,38 +180,80 @@ class Main {
       )
     }
 
-    // lắng nghe mã qr 2
-    connection.value.onmessage = ({ data }) => {
+    // khi kết nối bị đóng
+    connection.value.onclose = () => {
+      // loại bỏ vòng lặp tự động ping socket cũ
+      clearInterval(ping_interval_id)
+    }
+
+    // lắng nghe socket
+    connection.value.onmessage = async ({ data }) => {
       // nếu không có dữ liệu thì thôi
       if (!data) return
 
       /**dữ liệu socket */
-      let socket_data: any
+      let socket_data: ISocketData = undefined!
 
       // cố gắng giải mã dữ liệu
       try {
         socket_data = JSON.parse(data)
       } catch (e) {}
 
-      // nếu không có dữ liệu thì thôi
-      if (!socket_data.qr_code_url) return
+      switch (socket_data?.event) {
+        // nếu đã quét mã thành công thì tiếp tục hiện loading
+        case 'SUCCESS_SCAN_QR_CODE':
+          is_loading.value = true
+          break
 
-      // thay đổi qr code số 2
-      qr_code_url.value = socket_data.qr_code_url
+        // hoàn thành tiến trình kết nối
+        case 'DONE_CONNECT_PAGE':
+          // làm sạch session
+          this.clearSession()
 
-      // tắt ping socket
-      clearInterval(ping_interval_id)
+          // TODO tự động f5, thoát ra bên ngoài
+          console.log('đã xong nhé')
 
-      // đóng kết nối đến socket
-      connection.value?.close()
+          // thông báo ra modal là đã xong
+          $emit('done')
+
+          // tắt modal kết nối nền tảng
+          await toggleModal?.()
+          break
+
+        // quét chậm quá mã bị hết hạn - đang bug
+        // case 'EXPIRE_QR_CODE':
+        //   // làm sạch session
+        //   this.clearSession()
+
+        //   // TODO hiện nút làm lại từ đầu
+        //   console.log('mã qr đã hết hạn')
+        //   break
+
+        // thay đổi qr code số 2
+        case 'SECOND_QR_CODE':
+          // thay đổi qr code số 2
+          qr_code_url.value = socket_data.qr_code_url
+          break
+      }
     }
+  }
+  /**làm sạch session sau khi xong */
+  clearSession() {
+    // tắt loading
+    is_loading.value = false
+
+    // xóa mã qr code
+    qr_code_url.value = undefined
+
+    // đóng kết nối đến socket
+    connection.value?.close()
   }
 
   /**Lấy qr code để kết nối tài khoản zalo cá nhân */
   @loadingV2(is_loading, 'value')
   @error()
   async getQrCode() {
-    // kết nối socket để lấy mã qr số 2
+    // lắng nghe socket
     this.listenSocket()
 
     // lấy qr code số 1 để kết nối tài khoản zalo cá nhân
@@ -206,6 +266,17 @@ const $main = new Main()
 
 // lấy qr code khi component được tạo
 onMounted(() => $main.getQrCode())
+
+watch(
+  () => orgStore.selected_org_id,
+  () => {
+    // làm sạch session khi thay đổi org
+    $main.clearSession()
+
+    // lấy qr code mới khi thay đổi org
+    $main.getQrCode()
+  }
+)
 </script>
 <style scoped lang="scss">
 .custom-qr-border {
