@@ -41,6 +41,20 @@
             )
           }}
         </div>
+        <div
+          v-if="qr_error"
+          class="flex flex-col items-center gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg font-medium"
+        >
+          <span class="text-xs">
+            {{ $t('Mã QR hết hạn') }}
+          </span>
+          <button
+            @click="$main.start()"
+            class="text-sm bg-blue-600 text-white rounded-md px-5 py-2 w-max"
+          >
+            {{ $t('Lấy mã mới') }}
+          </button>
+        </div>
       </div>
     </div>
     <div class="flex flex-col flex-1 items-center gap-2">
@@ -155,6 +169,9 @@ const is_loading = ref(false)
 const qr_code_url = ref<string>()
 /**kết nối socket */
 const connection = ref<WebSocket>()
+/**lỗi khi quét mã qr */
+const qr_error = ref<boolean>(true)
+// const qr_error = ref<boolean>(false)
 
 class Main {
   /**
@@ -212,6 +229,7 @@ class Main {
       switch (socket_data?.event) {
         // nếu đã quét mã thành công thì tiếp tục hiện loading
         case 'SUCCESS_SCAN_QR_CODE':
+          // hiện loading
           is_loading.value = true
           break
 
@@ -219,9 +237,6 @@ class Main {
         case 'DONE_CONNECT_PAGE':
           // làm sạch session
           this.clearSession()
-
-          // TODO tự động f5, thoát ra bên ngoài
-          console.log('đã xong nhé')
 
           // thông báo ra modal là đã xong
           $emit('done')
@@ -231,13 +246,12 @@ class Main {
           break
 
         // quét chậm quá mã bị hết hạn - đang bug
-        // case 'EXPIRE_QR_CODE':
-        //   // làm sạch session
-        //   this.clearSession()
-
-        //   // TODO hiện nút làm lại từ đầu
-        //   console.log('mã qr đã hết hạn')
-        //   break
+        case 'EXPIRE_QR_CODE':
+          // hiện thông báo lỗi
+          qr_error.value = true
+          // tắt loading
+          is_loading.value = false
+          break
 
         // thay đổi qr code số 2
         case 'SECOND_QR_CODE':
@@ -254,6 +268,9 @@ class Main {
 
     // xóa mã qr code
     qr_code_url.value = undefined
+
+    // xóa thông báo lỗi
+    qr_error.value = false
 
     // đóng kết nối đến socket
     connection.value?.close()
@@ -274,21 +291,25 @@ class Main {
       orgStore.selected_org_id
     )
   }
-}
-const $main = new Main()
 
-// lấy qr code khi component được tạo
-onMounted(() => $main.getQrCode())
-
-watch(
-  () => orgStore.selected_org_id,
-  () => {
+  /**bắt đầu luồng chạy */
+  start() {
     // làm sạch session khi thay đổi org
     $main.clearSession()
 
     // lấy qr code mới khi thay đổi org
     $main.getQrCode()
   }
+}
+const $main = new Main()
+
+// lấy qr code khi component được tạo
+onMounted(() => $main.start())
+
+// tự động lấy qr code khi thay đổi org
+watch(
+  () => orgStore.selected_org_id,
+  () => $main.start()
 )
 </script>
 <style scoped lang="scss">
