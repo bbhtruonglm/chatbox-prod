@@ -105,8 +105,9 @@ const ENV: IEnv = {
     'WEBSITE',
     'FB_WHATSAPP',
     'FB_INSTAGRAM',
-    'ZALO_OA',
-    'ZALO_PERSONAL',
+    'ZALO',
+    // 'ZALO_OA',
+    // 'ZALO_PERSONAL',
   ],
   img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar',
   ai: {

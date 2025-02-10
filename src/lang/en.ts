@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Zalo Cá nhân': 'Personal Zalo',
+  'Zalo Doanh nghiệp (OA)': 'Zalo Business (OA)',
   'Tổ chức của bạn hiện đã đạt giới hạn sử dụng. Vui lòng liên hệ Quản trị viên':
     'Your organization has reached the maximum number of pages allowed. Please contact the administrator for more information',
   'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.':
@@ -195,6 +197,7 @@ const source: Language = {
   name: 'English',
   v1: {
     common: {
+      zalo: 'Zalo',
       zalo_personal: 'Zalo Personal',
       vn: 'Vietnamese',
       selected: 'Selected',

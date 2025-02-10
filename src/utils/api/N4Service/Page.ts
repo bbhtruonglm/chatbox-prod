@@ -51,7 +51,7 @@ export class N4SerivceAppPage extends N4Serivce {
       const CURRENT_HOST = origin
 
       /**path đến ui xử lý */
-      let query_path = '/dashboard/select-page?connect_page=ZALO_OA'
+      let query_path = '/dashboard/select-page?connect_page=ZALO&zalo_type=ZALO_OA'
 
       // nếu là deploy ở /chat/xxx thì cần thêm
       if (location?.pathname?.indexOf('/chat/') === 0)

@@ -48,7 +48,12 @@ export interface PageInfo {
 }
 
 /**trang thuộc loại nào */
-export type IPageType = 'FB_MESS' | 'ZALO_OA' | 'FB_INSTAGRAM' | 'WEBSITE'
+export type IPageType =
+  | 'FB_MESS'
+  | 'ZALO_OA'
+  | 'ZALO_PERSONAL'
+  | 'FB_INSTAGRAM'
+  | 'WEBSITE'
 
 /**các thông tin cơ bản của trang */
 export interface IPageInfo {

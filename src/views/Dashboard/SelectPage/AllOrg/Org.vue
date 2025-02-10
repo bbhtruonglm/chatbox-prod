@@ -94,15 +94,23 @@ class Main {
       return false
 
     /**giá trị nền tảng đang được chọn */
-    let current_selected_platform = selected_platform.value
+    let current_selected_platform: ISelectPlatform = selected_platform.value
 
     // nếu menu chọn tổng không phải là tất cả thì ghi đè theo menu ngoài
     if (selectPageStore.current_menu !== 'ALL_PLATFORM')
       current_selected_platform = selectPageStore.current_menu
 
+    // zalo là ngoại lệ vì gộp 2 tab vào 1
+    if (
+      current_selected_platform === 'ZALO' &&
+      page?.page?.type?.includes('ZALO')
+    )
+      return true
+
     // nếu chọn nền tảng cụ thể mà trang không thuộc nền tảng đó thì không hiển thị
     if (
       current_selected_platform !== 'ALL_PLATFORM' &&
+      // phải chọn đúng nền tảng
       page?.page?.type !== current_selected_platform
     )
       return false

@@ -29,6 +29,7 @@ const source: Language = {
   name: 'Tiếng Việt',
   v1: {
     common: {
+      zalo: 'Zalo',
       vn: 'Tiếng Việt',
       selected: 'Đã chọn',
       deselect: 'Bỏ chọn',

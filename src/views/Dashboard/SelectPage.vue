@@ -69,11 +69,35 @@
             tab="WEBSITE"
           />
           <GroupPage
+            filter="FB_INSTAGRAM"
+            :icon="InstagramIcon"
+            :title="`Instagram`"
+            tab="FB_INSTAGRAM"
+          />
+
+
+
+          <GroupPage
+            filter="ZALO"
+            :icon="ZaloIcon"
+            :title="`Zalo`"
+            tab="ZALO"
+          />
+
+
+
+          <!-- <GroupPage
             filter="ZALO_OA"
             :icon="ZaloIcon"
             :title="$t('v1.common.zalo_oa')"
             tab="ZALO_OA"
           />
+          <GroupPage
+            filter="ZALO_PERSONAL"
+            :icon="ZaloIcon"
+            :title="$t('v1.common.zalo_oa')"
+            tab="ZALO_PERSONAL"
+          /> -->
           <GroupPageAction />
         </div>
       </template>
@@ -119,6 +143,7 @@ import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
+import InstagramIcon from '@/components/Icons/Instagram.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 

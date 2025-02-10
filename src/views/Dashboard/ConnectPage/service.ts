@@ -12,6 +12,7 @@ export function composableService() {
     FB_MESS: markRaw(FacebookIcon),
     FB_WHATSAPP: markRaw(WhatsappIcon),
     FB_INSTAGRAM: markRaw(InstagramIcon),
+    ZALO: markRaw(ZaloIcon),
     ZALO_OA: markRaw(ZaloIcon),
     ZALO_PERSONAL: markRaw(ZaloIcon),
     WEBSITE: markRaw(WebIcon),

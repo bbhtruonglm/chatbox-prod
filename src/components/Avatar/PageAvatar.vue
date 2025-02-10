@@ -18,13 +18,13 @@
       class="w-full h-full"
     />
 
-    <img
+    <!-- <img
       @load="removeAnimatePulse"
       loading="lazy"
       v-else-if="page_info?.type === 'FB_INSTAGRAM'"
       :src="loadImageUrl(page_info?.page_id)"
       class="w-full h-full"
-    />
+    /> -->
 
     <template v-else-if="page_info?.type === 'WEBSITE'">
       <img
@@ -82,7 +82,10 @@ const animate_pulse = ref('animate-pulse')
 
 onMounted(() => {
   // nếu web không có avatar thì tắt hiệu ứng, để dùng component mặc định
-  if ($props.page_info?.type === 'WEBSITE' && !$props.page_info?.avatar)
+  if (
+    ['WEBSITE', 'FB_INSTAGRAM'].includes($props.page_info?.type || '') &&
+    !$props.page_info?.avatar
+  )
     removeAnimatePulse()
 })
 

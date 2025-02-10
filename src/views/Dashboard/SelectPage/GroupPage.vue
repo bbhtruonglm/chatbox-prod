@@ -168,7 +168,8 @@ function getListPage() {
       // nếu là các page gần đây thì tạm thời không lọc
       IS_RECENT ||
       // lọc ra các page thuộc về nhóm này
-      page?.page?.type === $props.filter
+      page?.page?.type?.includes($props.filter)
+    // page?.page?.type === $props.filter
   )
 
   // nếu có hàm lọc trang nâng cao thì lọc tiếp
@@ -189,6 +190,7 @@ function filterPlatform(): boolean {
   if (selectPageStore.current_menu === 'ALL_PLATFORM') return true
 
   // nếu không phải chọn đúng nhóm mới được hiển thị
-  return selectPageStore.current_menu === $props.filter
+  return selectPageStore.current_menu.includes($props.filter)
+  // return selectPageStore.current_menu === $props.filter
 }
 </script>
