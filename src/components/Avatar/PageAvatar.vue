@@ -83,7 +83,9 @@ const animate_pulse = ref('animate-pulse')
 onMounted(() => {
   // nếu web không có avatar thì tắt hiệu ứng, để dùng component mặc định
   if (
-    ['WEBSITE', 'FB_INSTAGRAM'].includes($props.page_info?.type || '') &&
+    ['WEBSITE', 'FB_INSTAGRAM'].includes(
+      $props.page_info?.type || ''
+    ) &&
     !$props.page_info?.avatar
   )
     removeAnimatePulse()

@@ -53,19 +53,23 @@
         </div>
         <div
           :class="{
-            'py-2': ['client', 'page', 'note'].includes(message.message_type),
+            'py-2': ['client', 'page', 'note', 'group'].includes(
+              message.message_type
+            ),
           }"
           class="flex gap-1 relative"
         >
           <div
             v-if="
               (message.message_type === 'client' && !message.ad_id) ||
+              message.message_type === 'group' ||
               message.fb_post_id
             "
             class="flex-shrink-0"
           >
             <ClientAvatar
               :conversation="conversationStore.select_conversation"
+              :avatar="message?.group_client_avatar"
               class="w-8 h-8"
             />
           </div>
@@ -79,7 +83,7 @@
           >
             <MessageItem
               v-if="
-                ['client', 'activity', 'page', 'note'].includes(
+                ['client', 'activity', 'page', 'note', 'group'].includes(
                   message.message_type
                 ) && !message.ad_id
               "
@@ -99,9 +103,6 @@
             <template
               v-else-if="message.message_type === 'client' && message.ad_id"
             >
-              <!-- <AdMessage :ad_id="message.ad_id" />
-              <br /> -->
-
               <PostTemplate
                 :message
                 :message_index="index"
@@ -115,15 +116,6 @@
               :message
               :message_index="index"
             />
-
-            <!-- <FacebookPost
-              v-else-if="
-                message.platform_type === 'FB_POST' && message.fb_post_id
-              "
-              :fb_post_id="message.fb_post_id"
-              :message
-            /> -->
-
             <UnsupportMessage v-else />
             <DoubleCheckIcon
               v-if="isLastPageMessage(message, index)"

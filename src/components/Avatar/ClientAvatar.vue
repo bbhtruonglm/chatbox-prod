@@ -1,6 +1,14 @@
 <template>
+  <img
+    @error="onImageError"
+    @load="removeAnimatePulse"
+    loading="lazy"
+    v-if="avatar"
+    :src="avatar"
+    class="overflow-hidden bg-slate-200 rounded-oval"
+  />
   <div
-    v-if="comment"
+    v-else-if="comment"
     :class="animate_pulse"
     class="overflow-hidden bg-slate-200 rounded-oval"
   >
@@ -61,7 +69,8 @@
       @load="removeAnimatePulse"
       loading="lazy"
       v-if="
-        conversation?.platform_type === 'ZALO_PERSONAL' && conversation?.client_avatar
+        conversation?.platform_type === 'ZALO_PERSONAL' &&
+        conversation?.client_avatar
       "
       :src="conversation?.client_avatar"
       class="w-full h-full"
@@ -97,6 +106,8 @@ const $props = withDefaults(
     actual_size?: number
     /**dữ liệu bình luận */
     comment?: FacebookCommentPost
+    /**link avt để dùng luôn */
+    avatar?: string
   }>(),
   {
     actual_size: 64,
@@ -114,7 +125,7 @@ onMounted(() => {
 
   // nếu zalo không có hình ảnh
   if (
-    $props.conversation?.platform_type === 'ZALO_OA' &&
+    $props.conversation?.platform_type?.includes('ZALO') &&
     !$props.conversation?.client_avatar
   )
     removeAnimatePulse()

@@ -65,6 +65,8 @@ export interface QueryConversationInput extends FilterConversation {
 
 /**dữ liệu của một khách hàng */
 export interface ConversationInfo {
+    /**có phải là nhóm chat không */
+    is_group?: boolean
     /**loại của hội thoại */
     conversation_type?: 'CHAT'| 'POST'
     /**id của nhân viên chăm sóc bản mới */

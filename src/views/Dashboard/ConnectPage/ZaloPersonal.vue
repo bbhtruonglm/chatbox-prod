@@ -170,8 +170,7 @@ const qr_code_url = ref<string>()
 /**kết nối socket */
 const connection = ref<WebSocket>()
 /**lỗi khi quét mã qr */
-const qr_error = ref<boolean>(true)
-// const qr_error = ref<boolean>(false)
+const qr_error = ref<boolean>(false)
 
 class Main {
   /**

@@ -274,7 +274,7 @@ function formatButton(list_raw_button: ChatbotButton[]) {
 function addOnClassTemplate() {
   return {
     'bg-[#FFF8E1]': message_type.value === 'page',
-    'bg-white': message_type.value === 'client',
+    'bg-white': ['client', 'group'].includes(message_type.value),
     'bg-[#D8F6CB]': message_type.value === 'note',
     'border border-red-500': CHECK_SLOW_REPLY.value.isSlowReply(),
     // 'border border-yellow-500': CHECK_SLOW_REPLY.value.isWarning(),

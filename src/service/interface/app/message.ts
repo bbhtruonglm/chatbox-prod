@@ -135,6 +135,12 @@ export interface IPost extends IPortContent {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**tên khách hàng nhắn vào nhóm */
+  group_client_name?: string
+  /**id khách hàng nhắn vào nhóm */
+  group_client_id?: string
+  /**avt của khách nhắn vào nhóm */
+  group_client_avatar?: string
   /**comment của tin nhắn này có bị ẩn không */
   is_hidden_comment?: boolean
   /**đã trả lời bí mật chưa */
@@ -171,7 +177,7 @@ export interface MessageInfo {
   /**id khách hàng */
   fb_client_id: string
   /**tin nhắn được gửi từ đâu */
-  message_type: 'page' | 'client' | 'system' | 'note' | 'activity'
+  message_type: 'page' | 'client' | 'system' | 'note' | 'activity' | 'group'
   /**thời gian tin được gửi */
   time: string
   /**nội dung tin nhắn văn bản */
@@ -343,6 +349,8 @@ export interface SendMesageInput {
     /**file muốn gửi là loại gì */
     type: FileTypeInfo
   }
+  /**gửi tin nhắn vào nhóm */
+  is_group?: boolean
 }
 
 /**nội dung của tin nhắn tạm vừa được gửi */
