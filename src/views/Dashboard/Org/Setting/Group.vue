@@ -33,56 +33,49 @@
         class="rounded-md bg-gray-100 p-1 text-gray-500 text-sm font-medium w-fit"
       >
         <button
-          v-for="i of 5"
-          @click="$main.selectGroup(String(i))"
-          :class="{ active: selected_group_id === String(i) }"
+          v-for="group of groups"
+          @click="$main.selectGroup(group.group_id)"
+          :class="{ active: selected_group?.group_id === group.group_id }"
           class="group-item"
         >
-          {{ $t('Nhóm') }} {{ i }}
+          {{ $t('Nhóm') }} {{ group?.group_name }}
         </button>
       </div>
       <GroupSection :title="$t('Trang')">
-        <template v-for="os of 6">
+        <template v-for="os of orgStore.list_os">
           <PageItem
+            v-if="
+              selected_group?.group_pages?.includes(
+                os?.page_info?.fb_page_id || ''
+              )
+            "
+            :page_info="os?.page_info"
             :checkbox_is_visible="false"
             class="cursor-pointer"
-          >
-            <template #after-name>
-              <div
-                v-tooltip="$t('Xóa Trang khỏi Nhóm')"
-                class="group/minus hidden group-hover:flex"
-              >
-                <MinusCircleIcon
-                  class="w-4 h-4 text-slate-500 group-hover/minus:block"
-                />
-              </div>
-            </template>
-          </PageItem>
+          />
         </template>
       </GroupSection>
       <GroupSection :title="$t('Thành viên')">
-        <template v-for="staff of 3">
-          <ActorItem class="cursor-pointer">
+        <template v-for="ms of orgStore.list_ms">
+          <ActorItem
+            v-if="selected_group?.group_staffs?.includes(ms?.staff_id || '')"
+            class="cursor-pointer"
+          >
             <template #avatar>
-              <StaffAvatar class="w-8 h-8 rounded-oval" />
+              <StaffAvatar
+                :id="ms?.user_info?.user_id"
+                class="w-8 h-8 rounded-oval"
+              />
             </template>
-            <template #name> xxxxx </template>
-            <template #after-name>
-              <div
-                v-tooltip="$t('Xóa Trang khỏi Nhóm')"
-                class="group/minus hidden group-hover:flex"
-              >
-                <MinusCircleIcon
-                  class="w-4 h-4 text-slate-500 group-hover/minus:block"
-                />
-              </div>
+            <template #name>
+              {{ ms?.user_info?.full_name }}
             </template>
           </ActorItem>
         </template>
       </GroupSection>
       <div class="flex justify-between items-center text-sm font-medium">
         <button
-          @click="$main.openModalUpsertGroup()"
+          @click="$main.openModalUpsertGroup(selected_group)"
           class="btn-footer bg-slate-200"
         >
           <PencilSquareIcon class="size-4" />
@@ -97,11 +90,22 @@
       </div>
     </template>
   </CardItem>
-  <GroupUpsertModal ref="ref_group_upsert_modal" />
-  <ConfirmDeleteGroupModal ref="ref_confirm_delete_group_modal" />
+  <GroupUpsertModal
+    ref="ref_group_upsert_modal"
+    @done="$main.readGroup()"
+  />
+  <ConfirmDeleteGroupModal
+    :selected_group
+    @done="$main.readGroup()"
+    ref="ref_confirm_delete_group_modal"
+  />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { container } from 'tsyringe'
+import { BillingAppGroup } from '@/utils/api/Billing'
+import { useOrgStore } from '@/stores'
+import { error } from '@/utils/decorator/Error'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import GroupUpsertModal from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal.vue'
@@ -112,31 +116,61 @@ import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
 import { UserGroupIcon, PencilSquareIcon } from '@heroicons/vue/24/solid'
-import { MinusCircleIcon } from '@heroicons/vue/24/outline'
+
+const orgStore = useOrgStore()
 
 /**modal thêm/sửa Nhóm */
 const ref_group_upsert_modal = ref<InstanceType<typeof GroupUpsertModal>>()
 /**modal xác nhận xóa Nhóm */
 const ref_confirm_delete_group_modal =
   ref<InstanceType<typeof ConfirmDeleteGroupModal>>()
-/**id nhóm đang chọn */
-const selected_group_id = ref<string>('1')
+/**danh sách nhóm của tổ chức này */
+const groups = ref<IGroup[]>()
+/**dữ liệu của nhóm được chọn */
+const selected_group = ref<IGroup>()
 
 class Main {
+  /**
+   * @param API_GROUP API nhóm
+   */
+  constructor(
+    private readonly API_GROUP = container.resolve(BillingAppGroup)
+  ) {}
+
   /**mở modal thêm/sửa Nhóm */
-  openModalUpsertGroup() {
-    ref_group_upsert_modal.value?.toggleModal?.()
+  openModalUpsertGroup(group?: IGroup) {
+    ref_group_upsert_modal.value?.toggleModal?.(group)
   }
   /**chọn nhóm */
-  selectGroup(group_id: string) {
-    selected_group_id.value = group_id
+  selectGroup(group_id?: string) {
+    selected_group.value = groups.value?.find(
+      group => group.group_id === group_id
+    )
   }
   /**mở modal xác nhận xóa Nhóm */
   openModalDeleteGroup() {
     ref_confirm_delete_group_modal.value?.toggleModal?.()
   }
+  /**đọc danh sách nhóm */
+  @error()
+  async readGroup() {
+    // Đọc danh sách nhóm
+    groups.value = await this.API_GROUP.readGroup()
+
+    // tự động chọn nhóm đầu tiên
+    this.selectGroup(groups.value?.[0]?.group_id)
+  }
 }
 const $main = new Main()
+
+// Đọc danh sách nhóm khi component được tạo
+onMounted(() => $main.readGroup())
+
+// đọc danh sách nhóm khi tổ chức được thay đổi
+watch(
+  () => orgStore.selected_org_id,
+  () => $main.readGroup()
+)
 </script>
 <style lang="scss" scoped>
 .group-item {

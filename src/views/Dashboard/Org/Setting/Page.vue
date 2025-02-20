@@ -24,7 +24,7 @@
     </template>
     <template #item>
       <div class="grid gap-6 grid-cols-4">
-        <template v-for="os of list_os">
+        <template v-for="os of orgStore.list_os">
           <PageItem
             v-if="os?.page_info"
             :page_info="os?.page_info"
@@ -87,7 +87,7 @@ const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**page đang được chọn */
 const selected_page = ref<IPage>()
 /**danh sách trang trong tổ chức */
-const list_os = ref<OwnerShipInfo[]>()
+// const list_os = ref<OwnerShipInfo[]>()
 /**ref của modal kết nối nền tảng */
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
@@ -108,7 +108,7 @@ function prepareInactivePage(page?: IPage) {
 async function doneInactivePage() {
   // xoá trang khỏi danh sách trang đang chọn
   remove(
-    list_os.value || [],
+    orgStore.list_os || [],
     os => os?.page_info?.fb_page_id === selected_page.value?.fb_page_id
   )
 
@@ -125,12 +125,13 @@ async function getOs() {
 
   try {
     // lấy danh sách trang của tổ chức
-    list_os.value = await read_os(orgStore.selected_org_id)
+    orgStore.list_os = await read_os(orgStore.selected_org_id)
+    // list_os.value = await read_os(orgStore.selected_org_id)
 
     // ghi đè lại tổng số trang hiện tại
     if (orgStore.selected_org_info?.org_package)
       orgStore.selected_org_info.org_package.org_current_page =
-        list_os.value.length
+        orgStore.list_os.length
   } catch (e) {
     // thông báo lỗi
     toastError(e)

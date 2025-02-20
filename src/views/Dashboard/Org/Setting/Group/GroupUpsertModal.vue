@@ -36,46 +36,69 @@
       <div class="grid grid-cols-2 gap-4 min-h-0">
         <GroupSection
           :title="$t('Trang')"
-          :total_item_selected="total_page_selected"
+          :total_item_selected="$main.countSelectedItems(map_group_pages)"
         >
           <GroupItem
-            v-for="i of 10"
-            :name="`xxxxxx`"
+            v-for="os of orgStore.list_os"
+            :name="os?.page_info?.name"
+            v-model="map_group_pages[os?.page_info?.fb_page_id || '']"
           >
             <template #avatar>
-              <PageAvatar class="item-avatar" />
+              <PageAvatar
+                :page_info="os?.page_info"
+                class="item-avatar"
+              />
             </template>
             <template #type>
-              <PageTypeIcon class="size-3.5" />
+              <PageTypeIcon
+                :page_type="os?.page_info?.type"
+                class="size-3.5"
+              />
             </template>
-            <template #info> xxxxxxx </template>
+            <template #info>
+              {{ os?.page_info?.fb_page_id }}
+            </template>
           </GroupItem>
         </GroupSection>
         <GroupSection
           :title="$t('Thành viên')"
-          :total_item_selected="total_staff_selected"
+          :total_item_selected="$main.countSelectedItems(map_group_staffs)"
         >
           <GroupItem
-            v-for="i of 3"
-            :name="`xxxxxx`"
+            v-for="ms of orgStore.list_ms"
+            :name="ms?.user_info?.full_name"
+            v-model="map_group_staffs[ms?.staff_id || '']"
           >
             <template #avatar>
-              <PageAvatar class="item-avatar" />
+              <StaffAvatar
+                :id="ms?.staff_id"
+                class="item-avatar"
+              />
             </template>
-            <template #info> xxxxxxx - yyyyyyy </template>
+            <template #info>
+              {{ ms?.staff_id }}
+              -
+              <template v-if="$member_ship_helper.isAdmin(ms)">
+                {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+              </template>
+              <template v-else>
+                {{ $t('v1.view.main.dashboard.org_staff.member') }}
+              </template>
+            </template>
           </GroupItem>
         </GroupSection>
       </div>
     </template>
     <template v-slot:footer>
       <button
-        @click="$main.toggleModal"
+        @click="$main.toggleModal()"
         class="custom-btn bg-slate-200"
       >
         {{ $t('Đóng') }}
       </button>
       <button
         @click="$main.upsertGroup()"
+        :disabled="!group_name || is_loading"
         class="custom-btn bg-blue-700 text-white"
       >
         <template v-if="is_update">
@@ -90,35 +113,115 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useOrgStore } from '@/stores'
+import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { error } from '@/utils/decorator/Error'
+import { container } from 'tsyringe'
+import { BillingAppGroup } from '@/utils/api/Billing'
+import { useI18n } from 'vue-i18n'
+import { filter, keys } from 'lodash'
+import { groupService } from './service'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import BaseModal from '@/components/Base/BaseModal.vue'
 import GroupItem from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal/GroupItem.vue'
 import GroupSection from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal/GroupSection.vue'
 import Loading from '@/components/Loading.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 
+const { GroupService } = groupService()
+const $emit = defineEmits(['done'])
+
+const orgStore = useOrgStore()
+const $member_ship_helper = SingletonMemberShipHelper.getInst()
+const { t: $t } = useI18n()
+
 /**ref của modal hướng dẫn cài đặt */
 const ref_group_upsert_modal = ref<InstanceType<typeof BaseModal>>()
-/**tên nhóm */
-const group_name = ref<string>()
-/**tổng số trang đã chọn */
-const total_page_selected = ref<number>(2)
-/**tổng số nhân viên đã chọn */
-const total_staff_selected = ref<number>(1)
 /**cờ xác định đang thêm hay sửa */
 const is_update = ref<boolean>()
 /**cờ xác định đang tải dữ liệu */
 const is_loading = ref<boolean>()
+/**tên nhóm */
+const group_name = ref<string>()
+/**ánh xạ danh sách trang được chọn */
+const map_group_pages = ref<Record<string, boolean>>({})
+/**ánh xạ danh sách nhân viên được chọn */
+const map_group_staffs = ref<Record<string, boolean>>({})
+/**id nhóm được chọn khi cập nhật */
+const selected_group_id = ref<string>()
 
 class Main {
+  /**
+   * @param API_GROUP API nhóm
+   */
+  constructor(
+    private readonly SERVICE_GROUP = container.resolve(GroupService),
+    private readonly API_GROUP = container.resolve(BillingAppGroup)
+  ) {}
+
+  /**đếm số phần tử được chọn */
+  countSelectedItems(map: Record<string, boolean>) {
+    return this.SERVICE_GROUP.getSelectedIds(map).length
+  }
+  /**làm sạch dữ liệu */
+  clearData() {
+    group_name.value = undefined
+    map_group_pages.value = {}
+    map_group_staffs.value = {}
+    selected_group_id.value = undefined
+  }
+  /**nhập dữ liệu nhóm muốn sửa */
+  setData(group: IGroup) {
+    group_name.value = group.group_name
+    map_group_pages.value = this.SERVICE_GROUP.setSelectedIds(group.group_pages)
+    map_group_staffs.value = this.SERVICE_GROUP.setSelectedIds(
+      group.group_staffs
+    )
+    selected_group_id.value = group.group_id
+  }
   /**ẩn hiện modal */
-  toggleModal() {
+  toggleModal(group?: IGroup) {
+    // cập nhật cờ xác định đang thêm hay sửa
+    is_update.value = !!group
+
+    // làm sạch dữ liệu
+    this.clearData()
+
+    // nhập dữ liệu nhóm muốn sửa
+    if (group) this.setData(group)
+
     // ẩn hiện modal
     ref_group_upsert_modal.value?.toggleModal?.()
   }
   /**thêm/sửa Nhóm */
-  upsertGroup() {}
+  @loadingV2(is_loading, 'value')
+  @error()
+  async upsertGroup() {
+    // cập nhật nhóm cho tổ chức
+    if (is_update.value)
+      await this.API_GROUP.updateGroup(
+        selected_group_id.value!,
+        group_name.value!,
+        this.SERVICE_GROUP.getSelectedIds(map_group_pages.value),
+        this.SERVICE_GROUP.getSelectedIds(map_group_staffs.value)
+      )
+    // tạo nhóm cho tổ chức
+    else
+      await this.API_GROUP.createGroup(
+        group_name.value!,
+        this.SERVICE_GROUP.getSelectedIds(map_group_pages.value),
+        this.SERVICE_GROUP.getSelectedIds(map_group_staffs.value)
+      )
+
+    // báo component cha cập nhật lại dữ liệu
+    $emit('done')
+
+    // đóng modal
+    this.toggleModal()
+  }
 }
 const $main = new Main()
 

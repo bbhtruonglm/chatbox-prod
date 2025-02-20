@@ -24,7 +24,7 @@
     </template>
     <template #item>
       <div class="grid gap-6 grid-cols-4">
-        <template v-for="staff of list_ms">
+        <template v-for="staff of orgStore.list_ms">
           <ActorItem
             @click="activeMs(staff)"
             :class="{
@@ -118,7 +118,7 @@ const { t: $t } = useI18n()
 /**modal xác nhận huỷ trang */
 const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**danh sách thành viên */
-const list_ms = ref<MemberShipInfo[]>()
+// const list_ms = ref<MemberShipInfo[]>()
 /**nhân viên đang được chọn */
 const selected_staff = ref<MemberShipInfo>()
 /**ref của modal kết nối nền tảng */
@@ -175,7 +175,7 @@ function prepareInactiveStaff(ms?: MemberShipInfo) {
 async function doneInactiveStaff() {
   // xoá nhân viên khỏi danh sách nhân viên đang chọn
   remove(
-    list_ms.value || [],
+    orgStore.list_ms || [],
     os => os?.staff_id === selected_staff.value?.staff_id
   )
 
@@ -205,12 +205,12 @@ async function readMs() {
 
   try {
     // lấy danh sách thành viên
-    list_ms.value = await read_ms(orgStore.selected_org_id)
+    orgStore.list_ms = await read_ms(orgStore.selected_org_id)
 
     // ghi đè lại tổng số nhân viên hiện tại
     if (orgStore.selected_org_info?.org_package)
       orgStore.selected_org_info.org_package.org_current_staff =
-        list_ms.value?.filter(ms => ms?.ms_is_active).length
+      orgStore.list_ms?.filter(ms => ms?.ms_is_active).length
   } catch (e) {
     // thông báo lỗi
     toastError(e)

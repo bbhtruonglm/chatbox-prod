@@ -6,6 +6,7 @@ import type {
   TransactionInfo,
 } from '@/service/interface/app/billing'
 import type { IBankAccount } from './N4Service/Partner'
+import { singleton } from 'tsyringe'
 
 /**gọi API lên server của billing */
 export class Billing extends Botx {
@@ -143,5 +144,61 @@ export class BillingAppTxn extends Billing {
     bank_name: string
   ): Promise<TransactionInfo | undefined> {
     return this.post('check_txn', { txn_id, bank_name })
+  }
+}
+
+/**gọi API nhóm của tổ chức */
+@singleton()
+export class BillingAppGroup extends Billing {
+  constructor() {
+    // gọi API
+    super(`app/group`)
+
+    // tự động nạp id tổ chức đang chọn
+    this.initSelectedOrgId()
+  }
+
+  /**gọi api post */
+  protected post(path: string, body?: Record<string, any>): Promise<any> {
+    return super.post(path, {
+      org_id: this.org_id,
+      ...body,
+    })
+  }
+
+  /**
+   * tạo mới một nhóm
+   * @param group_name tên nhóm
+   * @param group_pages danh sách id trang
+   * @param group_staffs danh sách id nhân viên
+   */
+  public async createGroup(
+    group_name: string,
+    group_pages?: string[],
+    group_staffs?: string[]
+  ): Promise<void> {
+    return this.post('create_group', { group_name, group_pages, group_staffs })
+  }
+  /**lấy danh sách nhóm */
+  public async readGroup(): Promise<IGroup[]> {
+    return this.post('read_group')
+  }
+  /**xóa nhóm */
+  public async deleteGroup(group_id: string): Promise<void> {
+    return this.post('delete_group', { group_id })
+  }
+  /**cập nhật thông tin nhóm */
+  public async updateGroup(
+    group_id: string,
+    group_name?: string,
+    group_pages?: string[],
+    group_staffs?: string[]
+  ): Promise<void> {
+    return this.post('update_group', {
+      group_id,
+      group_name,
+      group_pages,
+      group_staffs,
+    })
   }
 }

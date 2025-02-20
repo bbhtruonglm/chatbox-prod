@@ -1,47 +1,55 @@
 <template>
-  <dialog
-    ref="ref_modal"
-    :id
-    @click="$main.toggleModal"
-    :class="class_modal"
-    class="rounded-xl shadow-lg max-w-[95%] max-h-[95%] [&[open]]:flex flex-col"
+  <Teleport
+    to="body"
+    v-if="is_open"
   >
-    <header
-      v-if="$slots.header"
-      @click.stop
-      class="flex-shrink-0 flex items-center justify-between gap-2 relative"
+    <div
+      class="absolute top-0 left-0 w-screen h-screen z-50 bg-black/10 shadow-lg"
+      @click="$main.toggleModal"
     >
-      <h2
-        :class="class_header"
-        class="text-lg font-medium flex-shrink-0 w-full"
+      <div
+        @click.stop
+        :class="class_modal"
+        class="bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-lg max-w-[95%] max-h-[95%] flex flex-col"
       >
-        <slot name="header" />
-      </h2>
-      <button
-        @click="$main.toggleModal"
-        :class="class_close"
-        class="p-1 absolute right-0"
-      >
-        <XMarkIcon class="size-5" />
-      </button>
-    </header>
-    <section
-      v-if="$slots.body"
-      @click.stop
-      :class="class_body"
-      class="flex-grow overflow-y-auto"
-    >
-      <slot name="body" />
-    </section>
-    <footer
-      v-if="$slots.footer"
-      @click.stop
-      :class="class_footer"
-      class="flex-shrink-0"
-    >
-      <slot name="footer" />
-    </footer>
-  </dialog>
+        <header
+          v-if="$slots.header"
+          @click.stop
+          class="flex-shrink-0 flex items-center justify-between gap-2 relative"
+        >
+          <h2
+            :class="class_header"
+            class="text-lg font-medium flex-shrink-0 w-full"
+          >
+            <slot name="header" />
+          </h2>
+          <button
+            @click="$main.toggleModal"
+            :class="class_close"
+            class="p-1 absolute right-0"
+          >
+            <XMarkIcon class="size-5" />
+          </button>
+        </header>
+        <section
+          v-if="$slots.body"
+          @click.stop
+          :class="class_body"
+          class="flex-grow overflow-y-auto"
+        >
+          <slot name="body" />
+        </section>
+        <footer
+          v-if="$slots.footer"
+          @click.stop
+          :class="class_footer"
+          class="flex-shrink-0"
+        >
+          <slot name="footer" />
+        </footer>
+      </div>
+    </div>
+  </Teleport>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -61,14 +69,14 @@ const $props = withDefaults(
     class_body?: string
     /**class cho footer */
     class_footer?: string
-    /**id nhận dạng */
-    id?: string
   }>(),
   {}
 )
 
 /**ref của modal */
-const ref_modal = ref<HTMLDialogElement>()
+// const ref_modal = ref<HTMLDialogElement>()
+/**ẩn hiện modal */
+const is_open = ref(false)
 
 class Main {
   /**hủy lắng nghe sự kiện nhấn phím */
@@ -77,9 +85,9 @@ class Main {
   /**ẩn hiển modal */
   toggleModal() {
     // nếu modal đang mở thì đóng
-    if (ref_modal.value?.open) {
+    if (is_open.value) {
       // đóng modal
-      ref_modal.value.close()
+      is_open.value = false
 
       // gọi hàm khi modal đóng
       this.onModalClose()
@@ -87,7 +95,7 @@ class Main {
     // nếu modal đang đóng thì mở
     else {
       // mở modal
-      ref_modal.value?.showModal()
+      is_open.value = true
 
       // gọi hàm khi modal mở
       this.onModalOpen()
