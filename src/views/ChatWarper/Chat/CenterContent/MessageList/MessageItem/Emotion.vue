@@ -26,7 +26,7 @@
     </button>
     <BaseModal
       ref="ref_emotion_modal"
-      class_modal="gap-2 bg-white px-3 border"
+      class_modal="gap-2 bg-white px-3 border p-2"
       class_header="text-sm font-semibold text-center py-2 border-b"
       class_close="rounded-full bg-slate-100"
       class_body="flex flex-col gap-4 py-2"

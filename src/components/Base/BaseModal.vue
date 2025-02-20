@@ -4,7 +4,7 @@
     :id
     @click="$main.toggleModal"
     :class="class_modal"
-    class="rounded-xl p-2 shadow-lg max-w-[95%] max-h-[95%] [&[open]]:flex flex-col"
+    class="rounded-xl shadow-lg max-w-[95%] max-h-[95%] [&[open]]:flex flex-col"
   >
     <header
       v-if="$slots.header"

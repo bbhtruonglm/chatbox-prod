@@ -103,6 +103,7 @@ const ENV: IEnv = {
   platform: [
     'FB_MESS',
     'WEBSITE',
+    'FB_INSTAGRAM',
     'ZALO',
     // 'ZALO_OA',
     // 'ZALO_PERSONAL',

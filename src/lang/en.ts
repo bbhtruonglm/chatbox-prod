@@ -1,6 +1,20 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Cập nhật': 'Update',
+  'Chỉnh sửa': 'Edit',
+  'Thành viên': 'Members',
+  'Chức năng Nhóm chỉ áp dụng cho Thành viên. Quản trị viên mặc định sẽ xem được toàn bộ các Trang.':
+    'Group function only applies to Members. By default, Admins can view all Pages.',
+  'Lưu ý': 'Note',
+  'Đã chọn': 'Selected',
+  Trang: 'Page',
+  'Nhập tên nhóm': 'Enter group name',
+  'Tên nhóm': 'Group name',
+  'Tạo nhóm trang': 'Create page group',
+  'Tạo nhóm': 'Create group',
+  Thêm: 'Add',
+  Nhóm: 'Group',
   'Zalo Cá nhân': 'Personal Zalo',
   'Zalo Doanh nghiệp (OA)': 'Zalo Business (OA)',
   'Tổ chức của bạn hiện đã đạt giới hạn sử dụng. Vui lòng liên hệ Quản trị viên':

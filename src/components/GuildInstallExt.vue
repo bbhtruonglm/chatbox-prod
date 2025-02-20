@@ -1,7 +1,7 @@
 <template>
   <BaseModal
     ref="ref_guild_install_ext_modal"
-    class_modal="w-[881px] h-[630px] gap-2 text-sm font-medium bg-gradient-primary"
+    class_modal="w-[881px] h-[630px] gap-2 text-sm font-medium bg-gradient-primary p-2"
     class_close="rounded-lg bg-slate-100"
     class_body="bg-white rounded-md grid grid-cols-2 gap-1"
     class_footer="flex justify-end"
@@ -44,9 +44,13 @@
               {{ $t('Tải Extension. Lưu ý: Extension chỉ hỗ trợ Chrome.') }}
             </li>
           </ul>
-          <button class="custom-btn text-white bg-slate-700 w-fit">
+          <a
+            href="https://drive.google.com/drive/folders/1MmMPWM7wbB3qpK95x42KADdUSCxOhWUv"
+            target="_blank"
+            class="custom-btn text-white bg-slate-700 w-fit no-underline"
+          >
             {{ $t('Tải Extension') }}
-          </button>
+          </a>
           <ul class="custom-list">
             {{
               $t('Bước _', { name: 2 })
