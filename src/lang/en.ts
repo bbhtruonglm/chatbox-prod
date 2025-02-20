@@ -1,6 +1,13 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Xóa Trang khỏi Nhóm': 'Remove Page from Group',
+  Xóa: 'Delete',
+  'Xóa nhóm _ ra khỏi Tổ chức _':
+    'Remove group <b>"{group_name}"</b> from Organization <b>"{org_name}</b>"',
+  'Xác nhận xóa nhóm': 'Confirm delete group',
+  'Sửa Nhóm': 'Edit group',
+  'Xóa Nhóm': 'Delete group',
   'Cập nhật': 'Update',
   'Chỉnh sửa': 'Edit',
   'Thành viên': 'Members',

@@ -1,12 +1,17 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
-  'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.': 'Sau khi đăng nhập Zalo trên {name}, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.',
+  'Xóa nhóm _ ra khỏi Tổ chức _':
+    'Xóa nhóm <b>"{group_name}"</b> ra khỏi Tổ chức <b>"{org_name}</b>"',
+  'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.':
+    'Sau khi đăng nhập Zalo trên {name}, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.',
   'Kết nối _ với Zalo cá nhân': 'Kết nối {name} với Zalo cá nhân',
   'Kết nối _ với Trang _': 'Kết nối {partner} với Trang {platform}',
   'Đã để lại cảm xúc lúc _': 'Đã để lại cảm xúc lúc {name}',
-  'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.': 'Ấn nút "<b>Load unpacked</b>" và chọn thư mục đã giải nén ở Bước 2.',
-  'Bật chế độ Developer mode ở trên cùng góc phải.': 'Bật chế độ "<b>Developer mode</b>" ở trên cùng góc phải.',
+  'Ấn nút Load unpacked và chọn thư mục đã giải nén ở Bước 2.':
+    'Ấn nút "<b>Load unpacked</b>" và chọn thư mục đã giải nén ở Bước 2.',
+  'Bật chế độ Developer mode ở trên cùng góc phải.':
+    'Bật chế độ "<b>Developer mode</b>" ở trên cùng góc phải.',
   'Bước _': 'Bước {name}',
   "Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.":
     "Gửi tin nhắn đến {name}. Sử dụng '/' để trả lời nhanh.",
