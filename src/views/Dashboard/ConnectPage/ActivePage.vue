@@ -395,7 +395,9 @@ async function getListPAGEPage() {
     await getMapMyOs()
 
     /**toàn bộ các trang của người dùng */
-    list_current_page.value = await new N4SerivceAppPage().getListPage()
+    list_current_page.value = await new N4SerivceAppPage().getListPage({
+      is_disable_filter: true
+    })
 
     /**danh sách các trang không phải trong tổ chức của tôi */
     let list_not_my_org_page: PageData[] = []

@@ -28,7 +28,10 @@
         {{ $t('Thêm') }}
       </button>
     </template>
-    <template #item>
+    <template
+      #item
+      v-if="groups?.length"
+    >
       <div
         class="rounded-md bg-gray-100 p-1 text-gray-500 text-sm font-medium w-fit"
       >
