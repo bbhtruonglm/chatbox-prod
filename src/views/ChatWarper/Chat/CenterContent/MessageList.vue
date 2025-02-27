@@ -318,6 +318,20 @@ function socketNewMessage({ detail }: CustomEvent) {
   )
     return
 
+  // nếu là tin nhắn của khách thì gửi cho toàn bộ các widget
+  if (detail?.message_type === 'client' && detail?.message_text) {
+    document.querySelectorAll('iframe')?.forEach(iframe => {
+      iframe?.contentWindow?.postMessage(
+        {
+          from: 'CHATBOX',
+          type: 'CLIENT_MESSAGE',
+          payload: { message: detail?.message_text },
+        },
+        '*'
+      )
+    })
+  }
+
   // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
   if (size(detail.comment))
     remove(messageStore.list_message, message => message._id === detail._id)
