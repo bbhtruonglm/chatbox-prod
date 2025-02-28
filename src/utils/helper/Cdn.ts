@@ -38,9 +38,16 @@ export interface ICdn {
    */
   fbMessageMedia(page_id?: string, message_id?: string, index?: number): string
   webMessageMedia(page_id?: string, message_id?: string, index?: number): string
+  /**
+   * đường dẫn ảnh đại diện của page zalo
+   * @param page_id id của trang
+   */
+  zlpPageAvt(page_id?: string): string
 }
 
-/**quản lý các đường dẫn của media */
+/**
+ * quản lý các đường dẫn của media
+ */
 @singleton()
 export class Cdn implements ICdn {
   /**Host media cdn */
@@ -66,6 +73,9 @@ export class Cdn implements ICdn {
   }
   webMessageMedia(page_id?: string, message_id?: string, index?: number) {
     return `${this.HOST}/media/web/${page_id}/message/${message_id}/${index}`
+  }
+  zlpPageAvt(page_id?: string) {
+    return `${this.HOST}/media/zlp/${page_id}/page`
   }
 }
 
