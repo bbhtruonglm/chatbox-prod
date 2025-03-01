@@ -18,6 +18,7 @@ import CogIcon from '@/components/Icons/Cog.vue'
 import CardIcon from '@/components/Icons/Card.vue'
 import AiBoldIcon from '@/components/Icons/AiBold.vue'
 import CodeIcon from '@/components/Icons/Code.vue'
+import RetionAgentIcon from '@/components/Icons/RetionAgent.vue'
 
 const { t: $t } = useI18n()
 
@@ -32,6 +33,11 @@ const LIST_MENU = [
     title: $t('v1.view.main.dashboard.org.menu.pay'),
     icon: markRaw(CardIcon),
     path: 'pay',
+  },
+  {
+    title: $t('Trợ lý ảo'),
+    icon: markRaw(RetionAgentIcon),
+    path: 'agent',
   },
   // {
   //   title: $t('v1.view.main.dashboard.org.menu.app'),

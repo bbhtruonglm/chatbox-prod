@@ -34,6 +34,8 @@ declare global {
       n13_zalo_personal: string
       /**socket lắng nghe mã qr số 2 */
       n13_zalo_personal_socket: string
+      /**link thiết lập trợ lý ảo cho tổ chức */
+      agent_config: string
     }
     external_link: IExternalLink
     /**cài đặt cho riêng facebook */

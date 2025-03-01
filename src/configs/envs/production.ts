@@ -21,6 +21,7 @@ const ENV: IEnv = {
     n13_zalo_personal: 'https://chatbox-zalo-personal.botbanhang.vn',
     n13_zalo_personal_socket:
       'wss://chatbox-zalo-personal.botbanhang.vn/zalo-personal-qr',
+    agent_config: 'https://setting.retion.ai/embed/virtual-assistant',
   },
   external_link: {
     setting: 'https://setting.retion.ai',

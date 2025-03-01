@@ -19,7 +19,8 @@ const ENV: IEnv = {
     n8_merge_v2: 'https://dev-api.botbanhang.vn/v1/n8_merge',
     media_cdn: 'https://dev-api.botbanhang.vn/v1/n6_static/cdn',
     n13_zalo_personal: 'https://dev-api.botbanhang.vn/v1/n13_zalo_personal',
-    n13_zalo_personal_socket: 'wss://dev-api.botbanhang.vn/zalo-personal-qr'
+    n13_zalo_personal_socket: 'wss://dev-api.botbanhang.vn/zalo-personal-qr',
+    agent_config: 'https://bbh-setting-dev.vercel.app/embed/virtual-assistant',
   },
   external_link: {
     setting: 'https://setting-dev.vercel.app',
