@@ -103,7 +103,7 @@ export const routes = [
           },
           { path: 'app', component: OrgApp },
           { path: 'api', component: OrgApi },
-          { path: 'agent', component: OrgAgent },
+          { path: 'virtual-assistant', component: OrgAgent },
         ],
       },
       { path: 'noti', component: Noti },

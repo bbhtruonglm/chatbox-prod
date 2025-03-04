@@ -37,7 +37,7 @@ const LIST_MENU = [
   {
     title: $t('Trợ lý ảo'),
     icon: markRaw(RetionAgentIcon),
-    path: 'agent',
+    path: 'virtual-assistant',
   },
   // {
   //   title: $t('v1.view.main.dashboard.org.menu.app'),
