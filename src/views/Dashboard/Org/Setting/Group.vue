@@ -5,14 +5,14 @@
     </template>
     <template #title>
       {{ $t('Nhóm') }}
-      <div class="text-xs text-slate-500">
+      <div class="text-xs text-slate-500 hidden md:block">
         {{
           $t(
             'Mặc định sau khi Đăng nhập, Thành viên sẽ xem được toàn bộ Trang của Tổ chức.'
           )
         }}
       </div>
-      <div class="text-xs text-slate-500">
+      <div class="text-xs text-slate-500 hidden md:block">
         {{
           $t(
             'Chức năng Nhóm sẽ chỉ định Thành viên chỉ xem được Trang trong Nhóm sau khi đăng nhập. Lưu ý: Quản trị viên vẫn xem được toàn bộ Trang.'
@@ -133,13 +133,6 @@ const groups = ref<IGroup[]>()
 const selected_group = ref<IGroup>()
 
 class Main {
-  /**
-   * @param API_GROUP API nhóm
-   */
-  constructor(
-    private readonly API_GROUP = container.resolve(BillingAppGroup)
-  ) {}
-
   /**mở modal thêm/sửa Nhóm */
   openModalUpsertGroup(group?: IGroup) {
     ref_group_upsert_modal.value?.toggleModal?.(group)
@@ -158,7 +151,8 @@ class Main {
   @error()
   async readGroup() {
     // Đọc danh sách nhóm
-    groups.value = await this.API_GROUP.readGroup()
+    groups.value = await new BillingAppGroup().readGroup()
+    // groups.value = await this.API_GROUP.readGroup()
 
     // tự động chọn nhóm đầu tiên
     this.selectGroup(groups.value?.[0]?.group_id)

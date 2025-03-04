@@ -23,7 +23,7 @@
       </button>
     </template>
     <template #item>
-      <div class="grid gap-6 grid-cols-4">
+      <div class="grid gap-6 grid-cols-1 md:grid-cols-4">
         <template v-for="os of orgStore.list_os">
           <PageItem
             v-if="os?.page_info"

@@ -12,10 +12,10 @@
     </button>
     <button
       @click="$main.upload"
-      class="btn bg-slate-100"
+      class="btn bg-slate-100 h-9"
     >
       <ArrowUpCircleIcon class="w-4 h-4" />
-      <span class="btn-text">
+      <span class="btn-text hidden md:block">
         {{ $t(`${THIS_I18N}.upload_logo`) }}
         (256 x 256)
       </span>

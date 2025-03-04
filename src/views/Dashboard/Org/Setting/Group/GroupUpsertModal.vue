@@ -33,7 +33,7 @@
           class="py-2 px-3 rounded-md border border-gray-200 shadow-sm tex-sm"
         />
       </div>
-      <div class="grid grid-cols-2 gap-4 min-h-0">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
         <GroupSection
           :title="$t('Trang')"
           :total_item_selected="$main.countSelectedItems(map_group_pages)"

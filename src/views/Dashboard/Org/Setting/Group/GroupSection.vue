@@ -3,7 +3,7 @@
     <div class="text-sm font-medium">
       {{ title }}
     </div>
-    <div class="grid gap-6 grid-cols-4">
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-4">
       <slot />
     </div>
   </div>

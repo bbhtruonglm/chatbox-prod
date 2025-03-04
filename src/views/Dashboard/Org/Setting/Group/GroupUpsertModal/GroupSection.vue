@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2 min-h-0">
+  <div class="flex flex-col gap-2 min-h-0 h-[70vh] md:h-auto pb-4 md:pb-0">
     <div class="flex justify-between items-center">
       <label class="text-base font-semibold">
         {{ title }}
