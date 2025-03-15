@@ -11,7 +11,7 @@ import { Parser, type IParser } from './Parser'
 import { LocalStorage, type ILocalStorage } from './LocalStorage'
 import { Locale, type ILocale } from './Locale'
 import { NotFoundError } from '../error/NotFound'
-import { keys } from 'lodash'
+import { keys, values } from 'lodash'
 import type { IExternalLink } from '../api/N4Service/Partner'
 
 /**các tiện ích liên quan đến trang web bên ngoài */
@@ -76,9 +76,18 @@ export class ExternalSite implements IExternalSite {
   /**lấy id trang hiện tại của hội thoại */
   private getCurrentConversationPageId(): string {
     /**id trang */
-    const PAGE_ID = this.STORE_CONVERSATION.select_conversation?.fb_page_id
+    let PAGE_ID = this.STORE_CONVERSATION.select_conversation?.fb_page_id
 
-    // nếu không có id trang thì báo lỗi
+    // nếu page chưa có hội thoại nào thì lấy trang đầu tiên được chọn
+    if (!PAGE_ID) {
+      /**store dữ liệu trang */
+      const pageStore = usePageStore()
+
+      // lấy id trang đầu tiên được chọn
+      PAGE_ID = keys(pageStore.selected_page_id_list)?.[0]
+    }
+
+    // nếu vẫn không có id trang thì báo lỗi
     if (!PAGE_ID) throw new NotFoundError('PAGE_ID')
 
     // trả về id trang
