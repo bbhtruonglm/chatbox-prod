@@ -1,9 +1,9 @@
 <template>
-  <ActorItem class="cursor-pointer">
+  <ActorItem class="cursor-pointer bg-white">
     <template #avatar>
       <WidgetAvatar
         :src="widget?.icon"
-        class="w-8 h-8 rounded-oval"
+        class="w-8 h-8 rounded-oval bg-gray-200"
       />
     </template>
     <template #name>

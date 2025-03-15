@@ -14,7 +14,7 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item disable_delete @delete="deleteWidget(widget)" @setting="settingWidget(widget)"
+                <Item disable_delete @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)"
                     @tranfer="tranferWidget(widget)" @install="installWidget(widget)" @key="copyKeyWidget(widget)"
                     v-if="widget?.status === 'APPROVED'" :widget="widget" is_control is_owner_control />
             </template>
@@ -24,7 +24,7 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item @delete="deleteWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
+                <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'PRIVATE'"
                     :widget="widget" is_control is_owner_control />
             </template>
@@ -34,7 +34,7 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item @delete="deleteWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
+                <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'REJECT'"
                     :widget="widget" is_control is_owner_control />
             </template>
