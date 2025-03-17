@@ -51,6 +51,7 @@ function genFBSelectPageOption() {
       'pages_manage_posts',
       'pages_manage_engagement',
       'ads_management',
+      'business_management'
     ].join(),
     enable_profile_selector: true,
     auth_type: 'rerequest',

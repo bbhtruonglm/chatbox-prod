@@ -37,7 +37,10 @@
       :value
     />
   </div>
-  <div class="flex-shrink-0 flex items-center gap-2.5">
+  <div
+    v-if="conversationStore.getPage()?.type === 'FB_MESS'"
+    class="flex-shrink-0 flex items-center gap-2.5"
+  >
     <button
       @click="reloadClientInfo"
       :class="{

@@ -201,6 +201,9 @@ class Main {
     // không chạy với dạng hội thoại post
     if ($props.source?.conversation_type === 'POST') return
 
+    // chỉ chạy với trang FB
+    if (conversationStore.getPage()?.type !== 'FB_MESS') return
+
     // nếu không có key thì không cho click
     if (
       !$props.source?.fb_page_id ||
