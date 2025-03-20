@@ -134,7 +134,7 @@
             </div>
           </div>
           <a
-            href="https://retion.ai"
+            :href="`https://${commonStore.partner?.domain}/pricing`"
             target="_blank"
             class="text-slate-700 flex items-center gap-1 w-fit mx-auto"
           >
@@ -149,7 +149,7 @@
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
 import { ref } from 'vue'
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { openNewTab } from '@/service/function'
 import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
 // import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
@@ -168,6 +168,7 @@ import NewTabIcon from '@/components/Icons/NewTab.vue'
 
 import type { IContent } from './UpgradeModal/type'
 
+const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 
