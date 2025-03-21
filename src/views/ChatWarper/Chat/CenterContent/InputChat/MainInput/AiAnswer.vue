@@ -2,7 +2,10 @@
   <div
     :class="{
       '!flex': is_visible_ai_answer || is_loading,
-      '!hidden': !is_loading && !is_visible_ai_answer,
+      '!hidden':
+        (!is_loading && !is_visible_ai_answer) ||
+        commonStore.is_typing ||
+        !conversationStore.getPage()?.quick_reply?.is_complete_sentence,
     }"
     class="hidden group-hover:flex items-center gap-2 overflow-hidden"
   >
@@ -30,7 +33,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useConversationStore, useMessageStore } from '@/stores'
+import { useCommonStore, useConversationStore, useMessageStore } from '@/stores'
 import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -52,6 +55,7 @@ interface ISocketMessagePayload extends Event {
 }
 
 const conversationStore = useConversationStore()
+const commonStore = useCommonStore()
 const messageStore = useMessageStore()
 const { InputService } = inputComposableService()
 
