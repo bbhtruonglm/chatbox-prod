@@ -17,7 +17,10 @@
                 <Item disable_delete @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)"
                     @tranfer="tranferWidget(widget)" @install="installWidget(widget)" @key="copyKeyWidget(widget)"
                     v-if="widget?.status === 'APPROVED'" :widget="widget" is_control is_owner_control >
-                    <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
                 </Item>
             </template>
         </div>
@@ -29,7 +32,10 @@
                 <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'PRIVATE'"
                     :widget="widget" is_control is_owner_control >
-                    <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
                 </Item>
             </template>
         </div>
@@ -41,7 +47,10 @@
                 <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'REJECT'"
                     :widget="widget" is_control is_owner_control >
-                    <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
                 </Item>
             </template>
         </div>
@@ -75,7 +84,7 @@ import type { CbError } from '@/service/interface/function'
 import { confirm, toast, toastError } from '@/service/helper/alert'
 import { toggle_loading } from '@/service/helper/async'
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
-import { ArrowDownCircleIcon } from '@heroicons/vue/24/solid'
+import { ArrowDownCircleIcon, KeyIcon } from '@heroicons/vue/24/solid'
 
 const $emit = defineEmits(['is_loading'])
 
