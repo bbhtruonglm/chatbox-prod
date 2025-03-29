@@ -42,6 +42,16 @@
           }}
         </div>
         <div
+          v-else-if="is_not_allow"
+          class="text-sm text-slate-500 grid place-items-center size-full text-center"
+        >
+          {{
+            $t(
+              'Tổ chức của bạn không có quyền sử dụng tính năng này. Vui lòng nâng cấp gói'
+            )
+          }}
+        </div>
+        <div
           v-if="qr_error"
           class="flex flex-col items-center gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg font-medium"
         >
@@ -140,6 +150,8 @@ import SearchIcon from '@/components/Icons/Search.vue'
 import QrCodeIcon from '@/components/Icons/QrCode.vue'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
+import type { IAlert } from '@/utils/helper/Alert/type'
+import { Toast } from '@/utils/helper/Alert/Toast'
 
 /**dữ liệu socket */
 interface ISocketData {
@@ -171,6 +183,22 @@ const qr_code_url = ref<string>()
 const connection = ref<WebSocket>()
 /**lỗi khi quét mã qr */
 const qr_error = ref<boolean>(false)
+/**không cho phép chạy */
+const is_not_allow = ref(false)
+
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // nếu lỗi là không có quyền truy cập thì thông báo khác
+    if (message === 'NOT_ALLOW') {
+      is_not_allow.value = true
+
+      return
+    }
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
 
 class Main {
   /**
@@ -265,6 +293,9 @@ class Main {
     // tắt loading
     is_loading.value = false
 
+    // cho phép chạy
+    is_not_allow.value = false
+
     // xóa mã qr code
     qr_code_url.value = undefined
 
@@ -277,7 +308,7 @@ class Main {
 
   /**Lấy qr code để kết nối tài khoản zalo cá nhân */
   @loadingV2(is_loading, 'value')
-  @error()
+  @error(new CustomToast())
   async getQrCode() {
     // nếu tổ chức hiện tại đã hết quota thì thôi
     if (orgStore.isReachPageQuota()) return

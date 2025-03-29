@@ -38,9 +38,12 @@ import { ref } from 'vue'
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
 import ZaloPersonal from '@/views/Dashboard/ConnectPage/ZaloPersonal.vue'
 
+/**loại zalo */
+type IZaloType = 'ZALO_OA' | 'ZALO_PERSONAL'
+
 const $emit = defineEmits(['done'])
 
 /**Loại Zalo */
-const zalo_type = ref<'ZALO_OA' | 'ZALO_PERSONAL'>('ZALO_OA')
+const zalo_type = ref<IZaloType>('ZALO_OA')
 </script>
 <style lang="scss" scoped></style>

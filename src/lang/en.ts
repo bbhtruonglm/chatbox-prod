@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Tổ chức của bạn không có quyền sử dụng tính năng này. Vui lòng nâng cấp gói':
+    'Your organization does not have permission to use this feature. Please upgrade your plan',
   'Xóa Trang khỏi Nhóm': 'Remove Page from Group',
   Xóa: 'Delete',
   'Xóa nhóm _ ra khỏi Tổ chức _':

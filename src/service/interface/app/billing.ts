@@ -125,6 +125,8 @@ export interface OrgInfo {
     org_current_ai_sound?: number
     /**số lượng AI xử lý video hiện tại của tổ chức */
     org_current_ai_video?: number
+    /**cho phép tổ chức dùng tính năng zl cá nhân dù gói không cho phép */
+    org_allow_zlp?: boolean
   }
 }
 
