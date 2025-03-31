@@ -49,6 +49,7 @@
           }"
           class="overflow-y-auto flex flex-col gap-3"
         >
+          <SelectGroup />
           <SkeletonGroupPage v-if="selectPageStore.is_loading" />
           <!-- <GroupPage
             filter="RECENT"
@@ -75,8 +76,6 @@
             tab="FB_INSTAGRAM"
           />
 
-
-
           <GroupPage
             filter="ZALO"
             :icon="ZaloIcon"
@@ -84,20 +83,6 @@
             tab="ZALO"
           />
 
-
-
-          <!-- <GroupPage
-            filter="ZALO_OA"
-            :icon="ZaloIcon"
-            :title="$t('v1.common.zalo_oa')"
-            tab="ZALO_OA"
-          />
-          <GroupPage
-            filter="ZALO_PERSONAL"
-            :icon="ZaloIcon"
-            :title="$t('v1.common.zalo_oa')"
-            tab="ZALO_PERSONAL"
-          /> -->
           <GroupPageAction />
         </div>
       </template>
@@ -108,12 +93,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  useConnectPageStore,
-  useOrgStore,
-  usePageStore,
-  useSelectPageStore,
-} from '@/stores'
+import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_GET_ORG_PAGES_FN,
@@ -137,9 +117,9 @@ import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import HotAlert from '@/components/HotAlert.vue'
 import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
+import SelectGroup from '@/views/Dashboard/SelectPage/SelectGroup.vue'
 
 import { FlagIcon } from '@heroicons/vue/24/solid'
-import ClockIcon from '@/components/Icons/Clock.vue'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'

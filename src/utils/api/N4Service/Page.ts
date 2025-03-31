@@ -32,10 +32,17 @@ export class N4SerivceAppPage extends N4Serivce {
     // gọi api
     return this.post('get_current_page', body)
   }
-  /**đọc danh sách trang đang kích hoạt của tổ chức */
-  public async getOrgActiveListPage(org_id: string): Promise<CurrentPageData> {
+  /**
+   * đọc danh sách trang đang kích hoạt của tổ chức 
+   * @param org_id id tổ chức
+   * @param group_id lọc theo id nhóm
+   */
+  public async getOrgActiveListPage(
+    org_id: string,
+    group_id?: string
+  ): Promise<CurrentPageData> {
     // gọi api
-    return this.getListPage({ org_id, is_active: true })
+    return this.getListPage({ org_id, is_active: true, group_id })
   }
   /**đồng bộ lại danh sách trang mới nhất của Facebook với hệ thống */
   public async syncFacebookPage(access_token: string): Promise<void> {
@@ -51,7 +58,8 @@ export class N4SerivceAppPage extends N4Serivce {
       const CURRENT_HOST = origin
 
       /**path đến ui xử lý */
-      let query_path = '/dashboard/select-page?connect_page=ZALO&zalo_type=ZALO_OA'
+      let query_path =
+        '/dashboard/select-page?connect_page=ZALO&zalo_type=ZALO_OA'
 
       // nếu là deploy ở /chat/xxx thì cần thêm
       if (location?.pathname?.indexOf('/chat/') === 0)

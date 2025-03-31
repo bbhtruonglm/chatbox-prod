@@ -118,8 +118,11 @@ class Main {
     // nếu chọn tất cả tổ chức thì thôi
     if (orgStore.is_selected_all_org) return
 
-    /**danh sách trang của tổ chức đang kích hoạt */
-    const RES = await new N4SerivceAppPage().getOrgActiveListPage(org_id)
+    /**danh sách trang của tổ chức đang kích hoạt, có lọc theo nhóm nếu cần */
+    const RES = await new N4SerivceAppPage().getOrgActiveListPage(
+      org_id,
+      orgStore.selected_org_group[orgStore.selected_org_id || '']
+    )
 
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}
@@ -155,7 +158,11 @@ class Main {
     pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
   }
   /**ẩn hiện dropdown */
-  toggleDropdown($event?: MouseEvent, _position?: ModalPosition, _back?: number) {
+  toggleDropdown(
+    $event?: MouseEvent,
+    _position?: ModalPosition,
+    _back?: number
+  ) {
     // truyền vị trí và lùi lại
     position.value = _position || 'BOTTOM'
     back.value = _back || 236

@@ -1,5 +1,5 @@
 <template>
-  <CardItem>
+  <CardItem id="org--group">
     <template #icon>
       <UserGroupIcon class="w-5 h-5" />
     </template>

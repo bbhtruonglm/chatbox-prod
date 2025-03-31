@@ -3,7 +3,11 @@ import { computed, ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import { format as date_format, differenceInDays } from 'date-fns'
 
-import type { MemberShipInfo, OrgInfo, OwnerShipInfo } from '@/service/interface/app/billing'
+import type {
+  MemberShipInfo,
+  OrgInfo,
+  OwnerShipInfo,
+} from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
 import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
@@ -115,6 +119,12 @@ export const useOrgStore = defineStore('org_store', () => {
   /**danh sách thành viên */
   const list_ms = ref<MemberShipInfo[]>()
 
+  /**dữ liệu các nhóm đang được chọn của tổ chức */
+  const selected_org_group = ref<Record<string, string>>(
+    getLocal('selected_org_group', {})
+  )
+  saveLocal(selected_org_group, 'selected_org_group')
+
   /**các tổ chức mà người dùng là admin */
   const admin_orgs = computed(() =>
     list_org.value?.filter(org => org?.current_ms?.ms_role === 'ADMIN')
@@ -208,6 +218,7 @@ export const useOrgStore = defineStore('org_store', () => {
     count_noti,
     is_selected_all_org,
     is_first_select_org,
+    selected_org_group,
 
     list_os,
     list_ms,
