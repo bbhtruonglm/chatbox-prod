@@ -19,6 +19,7 @@ import CardIcon from '@/components/Icons/Card.vue'
 import AiBoldIcon from '@/components/Icons/AiBold.vue'
 import CodeIcon from '@/components/Icons/Code.vue'
 import RetionAgentIcon from '@/components/Icons/RetionAgent.vue'
+import { ServerStackIcon } from '@heroicons/vue/24/solid'
 
 const { t: $t } = useI18n()
 
@@ -38,6 +39,11 @@ const LIST_MENU = [
     title: $t('Trợ lý ảo'),
     icon: markRaw(RetionAgentIcon),
     path: 'virtual-assistant',
+  },
+  {
+    title: $t('Webhook'),
+    icon: markRaw(ServerStackIcon),
+    path: 'webhook',
   },
   // {
   //   title: $t('v1.view.main.dashboard.org.menu.app'),

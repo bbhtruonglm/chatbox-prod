@@ -32,6 +32,7 @@ import OrgSetting from '@/views/Dashboard/Org/Setting.vue'
 import OrgApp from '@/views/Dashboard/Org/App.vue'
 import OrgApi from '@/views/Dashboard/Org/Api.vue'
 import OrgAgent from '@/views/Dashboard/Org/Agent.vue'
+import OrgWebhook from '@/views/Dashboard/Org/Webhook.vue'
 
 import OrgPay from '@/views/Dashboard/Org/Pay.vue'
 import OrgPayInfo from '@/views/Dashboard/Org/Pay/Info.vue'
@@ -104,6 +105,7 @@ export const routes = [
           { path: 'app', component: OrgApp },
           { path: 'api', component: OrgApi },
           { path: 'virtual-assistant', component: OrgAgent },
+          { path: 'webhook', component: OrgWebhook },
         ],
       },
       { path: 'noti', component: Noti },
