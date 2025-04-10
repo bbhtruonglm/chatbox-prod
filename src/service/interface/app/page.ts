@@ -110,6 +110,8 @@ export interface IPageFlag {
   is_has_remove_page_data?: boolean
   /**cài đặt ẩn ảnh của trang trong danh sách conversation, hover vào mới hiện */
   is_hide_page_avatar?: boolean
+  /**trang có bị mất kết nối không */
+  is_disconnected?: boolean
 }
 /**thiết lập tự động chia nhân viên cho khách mới */
 export interface IPageAssignConfig {

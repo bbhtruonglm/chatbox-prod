@@ -5,7 +5,7 @@ import { useOrgStore } from '@/stores'
 /**gọi API lên server của botx, tự động nạp token */
 export class Botx extends ApiManager {
   /**id tổ chức đang chọn */
-  protected org_id?: string
+  public org_id?: string
 
   constructor(uri: string) {
     // tự động nạp token

@@ -230,22 +230,25 @@ export interface IWebhookConfig {
   /** Thông tin metadata bổ sung (dạng key-value) (tùy chọn). */
   metadata?: Record<string, any>
 }
+/**dữ liệu lịch sử */
+export interface IWebhookHistoryData {
+  /** ID của sự kiện (tùy chọn). */
+  eventId?: string | null
+  /** Loại của sự kiện (ví dụ: "full", "partial", v.v.) (tùy chọn). */
+  eventType?: string
+  /** Dữ liệu chi tiết của sự kiện (có thể là bất kỳ kiểu dữ liệu nào) (tùy chọn). */
+  payload?: any
+  /** Các kênh liên quan đến sự kiện (null hoặc một mảng các kênh, tùy chọn). */
+  channels?: string[] | null
+  /** ID duy nhất của tin nhắn hoặc sự kiện payload này (tùy chọn). */
+  id?: string
+  /** Thời điểm sự kiện này xảy ra (ISO 8601 timestamp) (tùy chọn). */
+  timestamp?: string
+}
 /**lịch sử gọi webhook */
 export interface IWebhookHistory {
-  data?: {
-    /** ID của sự kiện (tùy chọn). */
-    eventId?: string | null
-    /** Loại của sự kiện (ví dụ: "full", "partial", v.v.) (tùy chọn). */
-    eventType?: string
-    /** Dữ liệu chi tiết của sự kiện (có thể là bất kỳ kiểu dữ liệu nào) (tùy chọn). */
-    payload?: any
-    /** Các kênh liên quan đến sự kiện (null hoặc một mảng các kênh, tùy chọn). */
-    channels?: string[] | null
-    /** ID duy nhất của tin nhắn hoặc sự kiện payload này (tùy chọn). */
-    id?: string
-    /** Thời điểm sự kiện này xảy ra (ISO 8601 timestamp) (tùy chọn). */
-    timestamp?: string
-  }
+  /**dữ liệu lịch sử */
+  data?: IWebhookHistoryData[]
 }
 /**gọi API webhook của tổ chức */
 @singleton()
@@ -283,6 +286,6 @@ export class BillingAppWebhook extends Billing {
   }
   /**đọc lịch sử gọi webhook */
   public async getWebhookHistory(): Promise<IWebhookHistory> {
-    return this.post('get_webhook_history')
+    return this.post('get_webhook_history', { limit: 20 })
   }
 }

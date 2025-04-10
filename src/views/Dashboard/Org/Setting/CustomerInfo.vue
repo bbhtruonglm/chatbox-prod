@@ -91,6 +91,11 @@
           :is_edit="false"
         />
         <Item
+          :title="$t('Id tổ chức')"
+          v-model="org_id"
+          :is_edit="false"
+        />
+        <Item
           :title="
             $t('v1.view.main.dashboard.org.setting.customer_info.company_name')
           "
@@ -190,6 +195,13 @@ const org_info = computed({
   set(val) {
     set(orgStore, 'selected_org_info.org_info', val)
   },
+})
+/**thông tin của tổ chức */
+const org_id = computed({
+  get() {
+    return orgStore.selected_org_info?.org_id || {}
+  },
+  set(val) {},
 })
 
 class Main {

@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Trang mất quyền truy cập, cần cấp lại quyền':
+    'The page has lost access and needs to be re-granted permission',
   'Tất cả nhóm': 'All groups',
   'Cài đặt nhóm': 'Group settings',
   'Tổ chức của bạn không có quyền sử dụng tính năng này. Vui lòng nâng cấp gói':

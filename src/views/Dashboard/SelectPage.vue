@@ -49,7 +49,7 @@
           }"
           class="overflow-y-auto flex flex-col gap-3"
         >
-          <SelectGroup />
+          <!-- <SelectGroup /> -->
           <SkeletonGroupPage v-if="selectPageStore.is_loading" />
           <!-- <GroupPage
             filter="RECENT"

@@ -15,7 +15,16 @@
       />
     </template>
     <template #name>
-      {{ page_info?.name }}
+      <div class="flex items-center gap-1">
+        <ExclamationTriangleIcon
+          v-if="page_info?.is_disconnected"
+          v-tooltip="$t('Trang mất quyền truy cập, cần cấp lại quyền')"
+          class="size-4 text-red-500"
+        />
+        <div>
+          {{ page_info?.name }}
+        </div>
+      </div>
     </template>
     <template #after-name>
       <slot name="after-name" />
@@ -36,6 +45,8 @@ import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import ActorItem from '@/components/Main/Dashboard/ActorItem.vue'
+
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid'
 
 import type { IPage, PageInfo } from '@/service/interface/app/page'
 

@@ -362,7 +362,7 @@ class Main {
             page_id,
             client_id,
             text,
-            is_group: conversationStore.select_conversation?.is_group,
+            // is_group: conversationStore.select_conversation?.is_group,
           },
           (e, r) => {
             // nếu có lỗi thì báo lỗi
@@ -493,7 +493,7 @@ class Main {
                     page_id,
                     client_id,
                     attachment: { url: file.url, type: file.type },
-                    is_group: conversationStore.select_conversation?.is_group,
+                    // is_group: conversationStore.select_conversation?.is_group,
                   },
                   (e, r) => {
                     file.is_loading = false
@@ -544,7 +544,7 @@ class Main {
                         page_id,
                         client_id,
                         attachment: { url: url, type: file.type },
-                        is_group: conversationStore.select_conversation?.is_group,
+                        // is_group: conversationStore.select_conversation?.is_group,
                       },
                       (e, r) => {
                         if (e) return _cb('DONE')
