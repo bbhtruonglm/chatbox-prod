@@ -1159,6 +1159,7 @@ const source: Language = {
               trial: 'Trial (Pro)',
               business: 'Business',
               pro: 'Pro',
+              pro_2: 'Pro 2x',
               high: 'Premium',
               all: 'All',
               unlimited: 'Unlimited',

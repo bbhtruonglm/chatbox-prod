@@ -10,7 +10,7 @@
       <div class="flex items-center gap-2">
         <div class="flex-grow min-w-0 flex gap-1 items-center">
           <slot name="before-name" />
-          <div class="flex-grow min-w-0 break-words">
+          <div class="flex-grow min-w-0 word-break-break-word">
             <slot name="name" />
           </div>
         </div>

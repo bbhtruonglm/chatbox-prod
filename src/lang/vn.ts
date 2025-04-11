@@ -964,6 +964,7 @@ const source: Language = {
               trial: 'Dùng thử (Pro)',
               business: 'Doanh nghiệp',
               pro: 'Pro',
+              pro_2: 'Pro 2x',
               high: 'Cao cấp',
               all: 'Toàn bộ',
               unlimited: 'Không giới hạn',
