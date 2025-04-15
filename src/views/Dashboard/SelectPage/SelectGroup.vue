@@ -89,6 +89,8 @@ const $main = new Main()
 
 // lấy danh sách nhóm khi thành phần được khởi tạo
 onMounted(() => $main.readGroup())
+
+watch(() => orgStore.selected_org_id, () => $main.readGroup())
 </script>
 <style lang="scss" scoped>
 .group__btn--base {

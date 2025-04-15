@@ -117,7 +117,9 @@ const platform_type = computed(
 /**có sử dụng cnd mới không */
 function isUseNewCdn() {
   // các nền tảng sử dụng cdn mới
-  return ['FB_MESS', 'WEBSITE'].includes(platform_type.value || '')
+  return ['FB_MESS', 'WEBSITE', 'FB_INSTAGRAM'].includes(
+    platform_type.value || ''
+  )
 }
 /**lấy tên của file */
 function getFileName(url: string) {
@@ -159,6 +161,9 @@ function getCdnUrl(): string | undefined {
 
   if (platform_type.value === 'WEBSITE')
     return $cdn.webMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
+
+  if (platform_type.value === 'FB_INSTAGRAM')
+    return $cdn.igMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 
   return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 }

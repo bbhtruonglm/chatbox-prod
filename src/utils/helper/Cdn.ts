@@ -8,6 +8,11 @@ export interface ICdn {
    */
   fbPageAvt(page_id?: string): string
   /**
+   * đường dẫn ảnh đại diện của page facebook
+   * @param page_id id của trang
+   */
+  igPageAvt(page_id?: string): string
+  /**
    * đường dẫn ảnh đại diện của user
    * @param user_id id của user
    */
@@ -18,6 +23,12 @@ export interface ICdn {
    * @param client_id id của client
    */
   fbClientAvt(page_id?: string, client_id?: string): string
+  /**
+   * đường dẫn ảnh đại diện của client
+   * @param page_id id của trang
+   * @param client_id id của client
+   */
+  igClientAvt(page_id?: string, client_id?: string): string
   /**
    * đường dẫn ảnh của post
    * @param page_id id của trang
@@ -37,6 +48,7 @@ export interface ICdn {
    * @param index index của media
    */
   fbMessageMedia(page_id?: string, message_id?: string, index?: number): string
+  igMessageMedia(page_id?: string, message_id?: string, index?: number): string
   webMessageMedia(page_id?: string, message_id?: string, index?: number): string
   /**
    * đường dẫn ảnh đại diện của page zalo
@@ -56,11 +68,17 @@ export class Cdn implements ICdn {
   fbPageAvt(page_id?: string) {
     return `${this.HOST}/media/fb/${page_id}/page`
   }
+  igPageAvt(page_id?: string) {
+    return `${this.HOST}/media/ig/${page_id}/page`
+  }
   userAvt(user_id?: string) {
     return `${this.HOST}/media/s/${user_id}/user`
   }
   fbClientAvt(page_id?: string, client_id?: string) {
     return `${this.HOST}/media/fb/${page_id}/client/${client_id}`
+  }
+  igClientAvt(page_id?: string, client_id?: string) {
+    return `${this.HOST}/media/ig/${page_id}/client/${client_id}`
   }
   fbPostImg(page_id?: string, post_id?: string) {
     return `${this.HOST}/media/fb/${page_id}/post/${post_id}`
@@ -70,6 +88,9 @@ export class Cdn implements ICdn {
   }
   fbMessageMedia(page_id?: string, message_id?: string, index?: number) {
     return `${this.HOST}/media/fb/${page_id}/message/${message_id}/${index}`
+  }
+  igMessageMedia(page_id?: string, message_id?: string, index?: number) {
+    return `${this.HOST}/media/ig/${page_id}/message/${message_id}/${index}`
   }
   webMessageMedia(page_id?: string, message_id?: string, index?: number) {
     return `${this.HOST}/media/web/${page_id}/message/${message_id}/${index}`

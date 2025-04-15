@@ -24,7 +24,7 @@
                   index
                 )
               "
-              class="object-contain w-full h-full"
+              class="object-contain w-full h-full alo"
             />
           </div>
         </template>

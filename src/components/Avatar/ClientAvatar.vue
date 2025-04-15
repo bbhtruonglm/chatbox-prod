@@ -51,7 +51,7 @@
       @load="removeAnimatePulse"
       loading="lazy"
       v-if="conversation?.platform_type === 'FB_INSTAGRAM'"
-      :src="conversation?.client_avatar"
+      :src="loadImageUrl(conversation?.platform_type)"
       class="w-full h-full"
     />
     <img
@@ -95,6 +95,7 @@ import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { container } from 'tsyringe'
+import type { PageType } from '@/service/interface/app/page'
 
 const $cdn = SingletonCdn.getInst()
 
@@ -156,7 +157,13 @@ function removeAnimatePulse() {
   animate_pulse.value = ''
 }
 /**tạo url ảnh */
-function loadImageUrl() {
+function loadImageUrl(platform_type?: PageType) {
+  if (platform_type === 'FB_INSTAGRAM')
+    return $cdn.igClientAvt(
+      $props.conversation?.fb_page_id,
+      $props.conversation?.fb_client_id
+    )
+
   return $cdn.fbClientAvt(
     $props.conversation?.fb_page_id,
     $props.conversation?.fb_client_id

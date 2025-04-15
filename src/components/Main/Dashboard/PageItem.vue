@@ -19,7 +19,7 @@
         <ExclamationTriangleIcon
           v-if="page_info?.is_disconnected"
           v-tooltip="$t('Trang mất quyền truy cập, cần cấp lại quyền')"
-          class="size-4 text-red-500"
+          class="size-4 text-red-500 flex-shrink-0"
         />
         <div>
           {{ page_info?.name }}

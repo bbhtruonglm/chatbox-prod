@@ -124,6 +124,8 @@ class Main {
       orgStore.selected_org_group[orgStore.selected_org_id || '']
     )
 
+    
+
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}
   }
@@ -145,8 +147,12 @@ class Main {
     // xóa toàn bộ trang hiện tại
     pageStore.active_page_list = {}
 
+    console.log('ddd')
+
     /**toàn bộ các trang của người dùng */
-    const PAGE_DATA = await new N4SerivceAppPage().getListPage()
+    const PAGE_DATA = await new N4SerivceAppPage().getListPage({
+      org_group: orgStore.selected_org_group
+    })
 
     // nếu không có dữ liệu trang thì thôi
     if (!PAGE_DATA?.page_list) return

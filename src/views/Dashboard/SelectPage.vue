@@ -14,11 +14,20 @@
       <div
         class="gap-2 flex flex-col md:flex-row md:justify-between flex-shrink-0"
       >
-        <div class="text-lg font-semibold flex items-center gap-2">
-          <FlagIcon class="size-5" />
-          {{ $t('Trình quản lý Trang') }}
+        <div
+          class="text-lg font-semibold flex items-center gap-2 flex-grow min-w-0"
+        >
+          <FlagIcon class="size-5 flex-shrink-0" />
+          <div class="flex-shrink-0">
+            {{ $t('Trình quản lý Trang') }}
+          </div>
+          <AssignGroup
+            v-if="!orgStore.isAdminOrg() && !orgStore.is_selected_all_org"
+          />
         </div>
-        <div class="grid grid-cols-2 gap-5 md:flex md:justify-between">
+        <div
+          class="grid grid-cols-2 gap-5 md:flex md:justify-between flex-shrink-0"
+        >
           <Search
             class="md:w-52"
             v-model="selectPageStore.search"
@@ -49,7 +58,7 @@
           }"
           class="overflow-y-auto flex flex-col gap-3"
         >
-          <!-- <SelectGroup /> -->
+          <SelectGroup v-if="orgStore.isAdminOrg()" />
           <SkeletonGroupPage v-if="selectPageStore.is_loading" />
           <!-- <GroupPage
             filter="RECENT"
@@ -118,6 +127,7 @@ import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import HotAlert from '@/components/HotAlert.vue'
 import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
 import SelectGroup from '@/views/Dashboard/SelectPage/SelectGroup.vue'
+import AssignGroup from '@/views/Dashboard/SelectPage/AssignGroup.vue'
 
 import { FlagIcon } from '@heroicons/vue/24/solid'
 import FacebookIcon from '@/components/Icons/Facebook.vue'

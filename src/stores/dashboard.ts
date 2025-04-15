@@ -130,6 +130,14 @@ export const useOrgStore = defineStore('org_store', () => {
     list_org.value?.filter(org => org?.current_ms?.ms_role === 'ADMIN')
   )
 
+  /**
+   * Tìm kiếm tổ chức theo id
+   * @param org_id id của tổ chức
+   */
+  function findOrg(org_id?: string): OrgInfo | undefined {
+    return list_org.value?.find(org => org.org_id === org_id)
+  }
+
   /** -------------- MUTATION / ACTION -------------- */
   /**có phải là gói không giới hạn thời gian không */
   function isUnlimitedTime() {
@@ -225,6 +233,7 @@ export const useOrgStore = defineStore('org_store', () => {
 
     admin_orgs,
 
+    findOrg,
     isFreePack,
     isTrialPack,
     isProPack,

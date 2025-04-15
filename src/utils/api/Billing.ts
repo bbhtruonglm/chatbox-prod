@@ -180,8 +180,9 @@ export class BillingAppGroup extends Billing {
     return this.post('create_group', { group_name, group_pages, group_staffs })
   }
   /**lấy danh sách nhóm */
-  public async readGroup(): Promise<IGroup[]> {
-    return this.post('read_group')
+  public async readGroup(org_id?: string): Promise<IGroup[]> {
+    if (org_id) return this.post('read_group', { org_id })
+    else return this.post('read_group')
   }
   /**xóa nhóm */
   public async deleteGroup(group_id: string): Promise<void> {

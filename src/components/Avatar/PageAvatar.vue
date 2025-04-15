@@ -7,7 +7,13 @@
       class="w-full h-full object-contain"
     />
     <img
-      v-if="page_info?.avatar"
+      loading="lazy"
+      v-else-if="page_info?.type === 'FB_INSTAGRAM'"
+      :src="loadImageUrl()"
+      class="w-full h-full"
+    />
+    <img
+      v-else-if="page_info?.avatar"
       loading="lazy"
       :src="page_info?.avatar"
       class="w-full h-full object-contain"
@@ -69,6 +75,8 @@ function loadImageUrl(page_id?: string) {
       return $cdn.zlpPageAvt(PAGE_ID)
     case 'FB_MESS':
       return $cdn.fbPageAvt(PAGE_ID)
+    case 'FB_INSTAGRAM':
+      return $cdn.igPageAvt(PAGE_ID)
     default:
       return $props.page_info?.avatar
   }

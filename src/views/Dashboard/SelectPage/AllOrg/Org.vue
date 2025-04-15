@@ -9,6 +9,7 @@
         selectPageStore.is_group_page_mode,
     }"
     class="group/org-item"
+    class_title="flex items-center gap-2 flex-grow min-w-0"
   >
     <template #icon>
       <img
@@ -22,7 +23,10 @@
       />
     </template>
     <template #title>
-      {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
+      <div class="flex-shrink-0 h-6">
+        {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
+      </div>
+      <Group :org_id />
     </template>
     <template #action>
       <OrgTitleAction
@@ -48,6 +52,7 @@ import { KEY_SORT_LIST_PAGE_FUNCT } from '../symbol'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import OrgTitleAction from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitleAction.vue'
 import OrgPages from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgPages.vue'
+import Group from '@/views/Dashboard/SelectPage/AllOrg/Org/Group.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 

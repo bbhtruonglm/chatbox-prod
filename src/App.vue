@@ -56,6 +56,17 @@ class Main {
     // lưu ref vào local storage
     setItem('ref', REF)
   }
+  /**lưu lại id tổ chức nếu được truyền ở param */
+  saveOrgId() {
+    /**id tổ chức */
+    const ORG_ID = this.SERVICE_QUERY_STRING.get('org_id')
+
+    // nếu không có ref thì thôi
+    if (!ORG_ID) return
+
+    // lưu ref vào local storage
+    setItem('selected_org_id', ORG_ID)
+  }
   /**ghi đè lại token lấy từ param, phục vụ cho trường hợp mở từ app mobile */
   getParamToken() {
     /**mã xác thực */
@@ -104,6 +115,9 @@ const $main = new Main()
 $main.getParamToken()
 // lưu lại ref để dùng sau
 $main.saveRef()
+
+// lưu lại id tổ chức nếu được truyền ở param
+$main.saveOrgId()
 
 // lấy thông tin đối tác khi component được mount
 onMounted($main.getPartnerInfo)
