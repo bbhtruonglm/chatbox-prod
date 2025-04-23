@@ -48,6 +48,7 @@ import {
   KEY_GET_ORG_PAGES_FN,
   KEY_GET_ALL_ORG_AND_PAGE_FN,
   KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
+  KEY_RELOAD_PAGE_DATA,
 } from '@/views/Dashboard/symbol'
 import { usePageStore, useSelectPageStore, useOrgStore } from '@/stores'
 import { keys, size } from 'lodash'
@@ -124,8 +125,6 @@ class Main {
       orgStore.selected_org_group[orgStore.selected_org_id || '']
     )
 
-    
-
     // lưu lại danh sách trang
     pageStore.active_page_list = RES?.page_list || {}
   }
@@ -147,11 +146,9 @@ class Main {
     // xóa toàn bộ trang hiện tại
     pageStore.active_page_list = {}
 
-    console.log('ddd')
-
     /**toàn bộ các trang của người dùng */
     const PAGE_DATA = await new N4SerivceAppPage().getListPage({
-      org_group: orgStore.selected_org_group
+      org_group: orgStore.selected_org_group,
     })
 
     // nếu không có dữ liệu trang thì thôi
@@ -188,6 +185,7 @@ provide(
   KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
   $main.toggleDropdown.bind($main)
 )
+provide(KEY_RELOAD_PAGE_DATA, $main.reloadPageData.bind($main))
 </script>
 <style scoped lang="scss">
 .dashboard-header {

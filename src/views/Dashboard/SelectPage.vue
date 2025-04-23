@@ -9,6 +9,7 @@
           'ALMOST_REACH_QUOTA_AI',
           'CHANGE_PAGE_OWNER',
           'LOCK_FEATURE',
+          'PAGE_EXPIRED_SESSION',
         ]"
       />
       <div

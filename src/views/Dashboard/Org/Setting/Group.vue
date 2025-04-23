@@ -82,7 +82,7 @@
           class="btn-footer bg-slate-200"
         >
           <PencilSquareIcon class="size-4" />
-          {{ $t('Sửa Nhóm') }} 1
+          {{ $t('Sửa Nhóm') }}
         </button>
         <button
           @click="$main.openModalDeleteGroup()"

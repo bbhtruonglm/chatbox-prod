@@ -6,7 +6,7 @@
     class="h-full w-full flex relative p-2 gap-2"
   >
     <HotAlert
-      :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE']"
+      :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE', 'PAGE_EXPIRED_SESSION']"
       class="absolute top-3 left-1/2 -translate-x-1/2 w-2/3 z-10"
     />
     <Menu />

@@ -72,6 +72,8 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   const is_loading = ref(false)
   /**tìm kiếm trang */
   const search = ref('')
+  /**ẩn bỏ các logic chọn, chỉ hiển thị ui kết nối */
+  const is_hidden_menu = ref(false)
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
@@ -80,6 +82,7 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   }
 
   return {
+    is_hidden_menu,
     current_menu,
     is_loading,
     search,

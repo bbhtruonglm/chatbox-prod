@@ -1,6 +1,7 @@
 <template>
   <div class="p-2 flex flex-col h-full">
     <div
+      v-if="!connectPageStore.is_hidden_menu"
       class="w-fit flex rounded-lg p-1 bg-gray-100 text-gray-500 text-sm font-medium flex-shrink-0"
     >
       <button
@@ -33,10 +34,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useConnectPageStore } from '@/stores'
 
 import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
 import ZaloPersonal from '@/views/Dashboard/ConnectPage/ZaloPersonal.vue'
+
+const connectPageStore = useConnectPageStore()
 
 /**loại zalo */
 type IZaloType = 'ZALO_OA' | 'ZALO_PERSONAL'
@@ -45,5 +49,14 @@ const $emit = defineEmits(['done'])
 
 /**Loại Zalo */
 const zalo_type = ref<IZaloType>('ZALO_OA')
+
+onMounted(() => {
+  // xử lý thêm để tự động chọn loại zalo nếu cần thiết
+  switch (connectPageStore.current_menu) {
+    case 'ZALO_PERSONAL':
+      zalo_type.value = 'ZALO_PERSONAL'
+      break
+  }
+})
 </script>
 <style lang="scss" scoped></style>

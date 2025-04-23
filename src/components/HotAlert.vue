@@ -19,6 +19,7 @@
       </div>
       <div class="flex-shrink-0">
         <button
+          v-if="getConfig(noti.noti_code).btn_title"
           @click="readNoti(noti)"
           :class="getConfig(noti.noti_code).btn"
           class="item text-white hover:brightness-90"
@@ -67,7 +68,7 @@ interface ISetting {
   /**màu nút */
   btn: string
   /**tiêu đề nút */
-  btn_title: string
+  btn_title?: string
   /**màu chữ */
   text: string
 }
@@ -129,6 +130,13 @@ const SETTINGS: Record<string, ISetting> = {
     btn: 'bg-red-500',
     text: 'text-red-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.extend'),
+  },
+  PAGE_EXPIRED_SESSION: {
+    bg: 'bg-red-100',
+    border: 'border-red-200',
+    btn: 'bg-red-500',
+    text: 'text-red-700',
+    // btn_title: DEFAULT_SETTING.btn_title,
   },
 }
 
