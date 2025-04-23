@@ -54,7 +54,7 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid'
 
 import type { IPage } from '@/service/interface/app/page'
-import { useConnectPageStore } from '@/stores'
+import { useConnectPageStore, useOrgStore } from '@/stores'
 import { inject, ref } from 'vue'
 import { KEY_RELOAD_PAGE_DATA } from '@/views/Dashboard/symbol'
 
@@ -66,11 +66,14 @@ const $props = withDefaults(
     checkbox_is_visible?: boolean
     /**trạng thái của checkbox */
     checkbox_is_disabled?: boolean
+    /** id tổ chức */
+    org_id?: string
   }>(),
   {}
 )
 
 const connectPageStore = useConnectPageStore()
+const orgStore = useOrgStore()
 
 /**nạp lại dữ liệu trang */
 const reloadPageData = inject(KEY_RELOAD_PAGE_DATA)
@@ -89,6 +92,17 @@ class Main {
   toggleModalConnectPage() {
     // ẩn bỏ các chi tiết thừa
     connectPageStore.is_hidden_menu = true
+
+    // nếu đang chọn tẩt cả tổ chức, tự động chọn tổ chức của trang
+    if (orgStore.is_selected_all_org) {
+      // gán tổ chức được chọn
+      orgStore.selected_org_id = $props.org_id
+
+      // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức
+      orgStore.selected_org_info = orgStore.list_org?.find(
+        org => org.org_id === orgStore.selected_org_id
+      )
+    }
 
     // xử lý tùy theo nền tảng
     switch ($props.page_info?.type) {

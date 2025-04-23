@@ -39,6 +39,7 @@
       <OrgPages
         @sort_list_page="$main.getListPage"
         v-model:active_page_list="active_page_list"
+        :org_id
       />
     </template>
   </CardItem>

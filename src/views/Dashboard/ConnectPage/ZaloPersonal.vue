@@ -32,7 +32,7 @@
           <Loading class="size-7" />
         </div>
         <div
-          v-if="orgStore.isReachPageQuota()"
+          v-if="orgStore.isReachPageQuota() && !connectPageStore.is_hidden_menu"
           class="text-sm text-slate-500 grid place-items-center size-full text-center"
         >
           {{
@@ -311,7 +311,7 @@ class Main {
   @error(new CustomToast())
   async getQrCode() {
     // nếu tổ chức hiện tại đã hết quota thì thôi
-    if (orgStore.isReachPageQuota()) return
+    if (orgStore.isReachPageQuota() && !connectPageStore.is_hidden_menu) return
 
     // lắng nghe socket
     this.listenSocket()

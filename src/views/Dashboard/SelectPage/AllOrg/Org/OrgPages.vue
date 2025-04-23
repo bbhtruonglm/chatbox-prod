@@ -9,6 +9,7 @@
         @sort_list_page="$emit('sort_list_page')"
         :page_info="page?.page!"
         :page="page"
+        :org_id
       />
     </template>
   </div>
@@ -22,6 +23,14 @@ import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import type { PageData } from '@/service/interface/app/page'
 
 const $emit = defineEmits(['sort_list_page'])
+
+const $props = withDefaults(
+  defineProps<{
+    /** id tổ chức */
+    org_id?: string
+  }>(),
+  {}
+)
 
 /**xử lý khi trang được chọn ở chế độ nhiều */
 const triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)

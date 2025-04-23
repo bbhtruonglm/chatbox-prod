@@ -7,6 +7,7 @@
     :page_info="page_info"
     @click="selectPage"
     class="border border-slate-200 cursor-pointer"
+    :org_id
   >
     <template #after-name>
       <!-- nếu page hết hạn thì ẩn ngôi sao để ưu tiên block dưới -->
@@ -76,6 +77,8 @@ const $props = withDefaults(
     page: PageData
     /**lọc hiển thị nền tảng */
     filter?: string
+    /** id tổ chức */
+    org_id?: string
   }>(),
   {}
 )
