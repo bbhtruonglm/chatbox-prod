@@ -10,7 +10,7 @@
       v-if="conversationStore.select_conversation?.conversation_type === 'POST'"
     /> -->
     <template v-else>
-      <AlertHeader />
+      <AiJourney />
       <template v-for="widget of pageStore.widget_list">
         <div
           v-if="!widget.is_hidden"
@@ -62,7 +62,7 @@ import { copy } from '@/service/helper/format'
 import PostAnalytic from '@/views/ChatWarper/Chat/RightBar/PostAnalytic.vue'
 import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
-import AlertHeader from '@/views/ChatWarper/Chat/CenterContent/MessageList/AlertHeader.vue'
+import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 

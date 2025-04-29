@@ -1,5 +1,5 @@
 <template>
-  <ActorItem>
+  <ActorItem @click="$main.onClickPage()">
     <template #before-avatar>
       <Checkbox
         v-if="checkbox_is_visible"
@@ -85,6 +85,14 @@ const checkbox_model = defineModel('checkbox')
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
 
 class Main {
+  /**xử lý khi click vào trang */
+  onClickPage() {
+    // nếu trang mất quyền truy cập thì mở modal kết nối lại luôn
+    // mặc dù không sử dụng stop, nhưng ở đây nếu chạy thì không chạy event click bên ngoài?
+    if ($props.page_info?.is_disconnected) {
+      this.toggleModalConnectPage()
+    }
+  }
   reloadPageData() {
     reloadPageData?.()
   }

@@ -460,9 +460,8 @@ async function getListPAGEPage() {
 }
 /**toggle trang */
 function selectPage(page: PageData) {
-  // TODO tạm thời tắt đê cho H2, sẽ bật lại sau
   // nếu không phải là admin thì bỏ qua
-  // if (!isPageAdmin(page)) return
+  if (!isPageAdmin(page)) return
 
   /**id của trang */
   const PAGE_ID = page?.page?.fb_page_id || ''

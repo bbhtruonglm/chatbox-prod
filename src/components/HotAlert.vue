@@ -38,7 +38,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { get_noti, read_noti } from '@/service/api/chatbox/billing'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -56,6 +56,7 @@ const $props = withDefaults(
 )
 
 const orgStore = useOrgStore()
+const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const $router = useRouter()
 
@@ -180,16 +181,16 @@ async function getNoti() {
 async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   try {
     // nếu đang loading thì thôi
-    if (is_loading.value) return
+    if (commonStore.is_loading_full_screen) return
 
     // mở loading
-    is_loading.value = true
+    commonStore.is_loading_full_screen = true
 
     // đánh dấu noti là đã đọc
     await read_noti(orgStore.selected_org_id, noti?.noti_id)
 
     // giảm số thông báo
-    orgStore.count_noti--
+    if (orgStore.count_noti) orgStore.count_noti--
 
     // chỉ đóng không xử lý gì thêm
     if (is_close) getNoti()
@@ -236,7 +237,7 @@ async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   } catch (e) {
   } finally {
     // tắt loading
-    is_loading.value = false
+    commonStore.is_loading_full_screen = false
   }
 }
 </script>
