@@ -7,7 +7,7 @@
       v-if="is_loading"
       type="FULL"
     />
-    <div class="text-[10px]">
+    <div class="text-xxs">
       {{ $t('v1.view.main.dashboard.chat.post.post_by') }}
       <span class="font-bold">
         {{ post_info?.admin_creator?.name || post_info?.from?.name }}
@@ -63,13 +63,13 @@
       </a>
     </div>
   </div>
-  <FacebookCommentModal
+  <!-- <FacebookCommentModal
     ref="fb_cmt_ref"
     :page_id="conversationStore.select_conversation?.fb_page_id"
     :client_id="conversationStore.select_conversation?.fb_client_id"
     :target_id="post_info?.id"
     :post_title="post_info.attachments?.data?.[0]?.title"
-  />
+  /> -->
 </template>
 
 <script setup lang="ts">
@@ -84,7 +84,7 @@ import { openNewTab } from '@/service/function'
 import { SingletonCdn } from '@/utils/helper/Cdn'
 
 import Loading from '@/components/Loading.vue'
-import FacebookCommentModal from '@/components/Main/Dashboard/FacebookCommentModal.vue'
+import FacebookCommentModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/CommentModal.vue'
 
 import SpeakerIcon from '@/components/Icons/Speaker.vue'
 

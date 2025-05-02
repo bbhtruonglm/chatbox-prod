@@ -30,6 +30,12 @@ declare global {
       n8_merge_v2: string
       /**host của cdn tập tin */
       media_cdn: string
+      /**api quản lý zalo cá nhân */
+      n13_zalo_personal: string
+      /**socket lắng nghe mã qr số 2 */
+      n13_zalo_personal_socket: string
+      /**link thiết lập trợ lý ảo cho tổ chức */
+      agent_config: string
     }
     external_link: IExternalLink
     /**cài đặt cho riêng facebook */
@@ -60,6 +66,15 @@ declare global {
     zalo_oa: {
       /**callback url trung gian */
       portal: string
+    }
+    /**cài đặt cho IG */
+    instagram: {
+      /**đường dẫn chuyển hướng */
+      redirect_uri: string
+      /**id ứng dụng riêng của IG */
+      app_id: string
+      /**các quyền của IG */
+      scope: string[]
     }
     /**danh sách các nền tảng được kết nối với hệ thống chatobox */
     platform: IPageType[]

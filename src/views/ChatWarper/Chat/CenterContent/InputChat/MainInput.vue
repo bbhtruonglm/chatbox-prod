@@ -3,46 +3,56 @@
     id="main_input_chat"
     :class="{
       'pr-3': isVisibleSendBtn(),
+      '!rounded-xl':
+        (is_visible_ai_answer || is_loading_ai_answer) &&
+        !commonStore.is_typing &&
+        conversationStore.getPage()?.quick_reply?.is_complete_sentence
+        ,
+      'hover:rounded-xl': is_loading_ai_answer,
     }"
-    class="flex items-end bg-white rounded-3xl py-2 px-4"
+    class="flex flex-col gap-1 bg-white rounded-3xl group py-2 px-4 transition-all"
   >
-    <div class="flex gap-2 items-end flex-grow min-w-0">
-      <!-- <AiManager /> -->
-      <AttachmentMenu />
-      <Input
-        ref="input_chat_ref"
-        @keyup="quick_answer_ref?.handleChatValue"
-        :class="{
-          'animate-fast-pulse': messageStore.is_input_run_ai,
-        }"
-      />
+    <AiAnswer v-model:is_loading="is_loading_ai_answer" />
+    <div class="flex items-end">
+      <div class="flex gap-2 items-end flex-grow min-w-0">
+        <!-- <AiManager /> -->
+        <AttachmentMenu />
+        <Input
+          ref="input_chat_ref"
+          @keyup="quick_answer_ref?.handleChatValue"
+          :class="{
+            'animate-fast-pulse': messageStore.is_input_run_ai,
+          }"
+        />
+      </div>
+      <div
+        v-if="isVisibleSendBtn()"
+        class="w-8 h-8 cursor-pointer flex-shrink-0"
+      >
+        <StopIcon
+          v-if="messageStore.is_input_run_ai"
+          @click="messageStore.is_input_run_ai = !messageStore.is_input_run_ai"
+          v-tooltip="$t('v1.view.main.dashboard.chat.action.stop_action')"
+          class="w-full h-full"
+        />
+        <SendIcon
+          v-else
+          v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')"
+          @click="input_chat_ref?.sendMessage"
+          class="w-full h-full"
+        />
+      </div>
+      <QuickAnswer ref="quick_answer_ref" />
     </div>
-    <div
-      v-if="isVisibleSendBtn()"
-      class="w-8 h-8 cursor-pointer flex-shrink-0"
-    >
-      <StopIcon
-        v-if="messageStore.is_input_run_ai"
-        @click="messageStore.is_input_run_ai = !messageStore.is_input_run_ai"
-        v-tooltip="$t('v1.view.main.dashboard.chat.action.stop_action')"
-        class="w-full h-full"
-      />
-      <SendIcon
-        v-else
-        v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')"
-        @click="input_chat_ref?.sendMessage"
-        class="w-full h-full"
-      />
-    </div>
-    <QuickAnswer ref="quick_answer_ref" />
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMessageStore, useCommonStore } from '@/stores'
+import { useMessageStore, useCommonStore, useConversationStore } from '@/stores'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 
+import AiAnswer from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/AiAnswer.vue'
 import QuickAnswer from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/QuickAnswer.vue'
 import AiManager from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/AiManager.vue'
 import AttachmentMenu from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/AttachmentMenu.vue'
@@ -53,12 +63,24 @@ import StopIcon from '@/components/Icons/Stop.vue'
 
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
+const conversationStore = useConversationStore()
 const { t: $t } = useI18n()
 
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<InstanceType<typeof Input>>()
 /**ref của modal chọn câu trả lời nhanh */
 const quick_answer_ref = ref<InstanceType<typeof QuickAnswer>>()
+
+/**có đang tạo câu trả lời không */
+const is_loading_ai_answer = ref<boolean>(false)
+/**hội thoại hiện tại đang dược chọn */
+const conversation = computed(() => conversationStore.select_conversation)
+/**câu trả lời hiện tại */
+const ai_answer = computed(() => conversation.value?.ai_answer)
+/**câu trả lời tồn tại và không phải là khoảng trắng */
+const is_visible_ai_answer = computed(
+  () => ai_answer.value && ai_answer.value !== ' '
+)
 
 /**có hiển thị nút gửi tin không */
 function isVisibleSendBtn() {

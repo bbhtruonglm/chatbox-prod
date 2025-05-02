@@ -12,6 +12,7 @@
         class="h-7 w-full bg-contain bg-no-repeat bg-left flex-shrink-0"
       />
       <RouterView />
+      <slot />
       <div class="flex justify-between">
         <p class="flex items-center gap-3 text-xs">
           <a
@@ -38,7 +39,7 @@
 import { useCommonStore } from '@/stores'
 
 import Language from '@/components/Language.vue'
-import { composableService } from './OAuth/service'
+import { composableService } from '@/views/OAuth/service'
 
 const { TERM, PRIVACY } = composableService()
 const commonStore = useCommonStore()

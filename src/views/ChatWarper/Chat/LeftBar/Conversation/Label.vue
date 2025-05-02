@@ -16,7 +16,7 @@
 </template>
 <script setup lang="ts">
 import { getILabel, getPageInfo } from '@/service/function'
-import { useChatbotUserStore } from '@/stores'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
 
 const $props = withDefaults(
   defineProps<{
@@ -29,6 +29,7 @@ const $props = withDefaults(
 )
 
 const chatbotUserStore = useChatbotUserStore()
+const orgStore = useOrgStore()
 
 /**lấy cài đặt nhãn */
 function getLabelConfig() {
@@ -42,6 +43,9 @@ function getLabelConfig() {
   }
 
   // * Trường hợp không bật chế độ ghi đè thiết lập page
-  return getPageInfo($props.page_id)?.display_label_type || 'ICON_TOOLTIP'
+  return (
+    orgStore?.selected_org_info?.org_config?.org_display_label_type ||
+    'ICON_TOOLTIP'
+  )
 }
 </script>

@@ -1,12 +1,15 @@
 import PageNotFound from '@/views/404.vue'
 
 import DeleteAccount from '@/views/DeleteAccount.vue'
+import DeauthorizeInstagram from '@/views/DeauthorizeInstagram.vue'
 
 import OAuthV2 from '@/views/OAuthV2.vue'
 import Login from '@/views/OAuth/Login.vue'
 import LoginEmail from '@/views/OAuth/LoginEmail.vue'
 import Register from '@/views/OAuth/Register.vue'
 import RegisterDetail from '@/views/OAuth/RegisterDetail.vue'
+import ForgotPassword from '@/views/OAuth/ForgotPassword.vue'
+import ResetPassword from '@/views/OAuth/ResetPassword.vue'
 
 import ChatShort from '@/views/ChatWarper.vue'
 
@@ -28,6 +31,8 @@ import Org from '@/views/Dashboard/Org.vue'
 import OrgSetting from '@/views/Dashboard/Org/Setting.vue'
 import OrgApp from '@/views/Dashboard/Org/App.vue'
 import OrgApi from '@/views/Dashboard/Org/Api.vue'
+import OrgAgent from '@/views/Dashboard/Org/Agent.vue'
+import OrgWebhook from '@/views/Dashboard/Org/Webhook.vue'
 
 import OrgPay from '@/views/Dashboard/Org/Pay.vue'
 import OrgPayInfo from '@/views/Dashboard/Org/Pay/Info.vue'
@@ -36,6 +41,8 @@ import OrgPayReCharge from '@/views/Dashboard/Org/Pay/ReCharge.vue'
 import Template from '@/views/Template.vue'
 import DownloadApp from '@/views/DownloadApp.vue'
 import TakeControl from '@/views/TakeControl.vue'
+import PostAnalyticIframe from '@/views/PostAnalyticIframe.vue'
+import InstagramRedirectUri from '@/views/InstagramRedirectUri.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },
@@ -50,11 +57,13 @@ export const routes = [
       { path: 'login-email', component: LoginEmail },
       { path: 'register', component: Register },
       { path: 'register-detail', component: RegisterDetail },
+      { path: 'forgot-password', component: ForgotPassword },
+      { path: 'reset-password', component: ResetPassword },
     ],
   },
   {
     path: '/logout',
-    redirect: '/oauth'
+    redirect: '/oauth',
   },
 
   // { path: '/chat', component: ChatShort },
@@ -95,6 +104,8 @@ export const routes = [
           },
           { path: 'app', component: OrgApp },
           { path: 'api', component: OrgApi },
+          { path: 'virtual-assistant', component: OrgAgent },
+          { path: 'webhook', component: OrgWebhook },
         ],
       },
       { path: 'noti', component: Noti },
@@ -106,6 +117,9 @@ export const routes = [
   { path: '/download-app', component: DownloadApp },
   { path: '/take-control', component: TakeControl },
   { path: '/delete-account', component: DeleteAccount },
+  { path: '/deauthorize-instagram', component: DeauthorizeInstagram },
+  { path: '/post-analytic', component: PostAnalyticIframe },
+  { path: '/instagram-redirect-uri', component: InstagramRedirectUri },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },
 ]

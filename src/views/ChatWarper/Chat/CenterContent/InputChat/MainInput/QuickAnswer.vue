@@ -12,6 +12,7 @@
   >
     <div
       id="chat__quick-answer__modal"
+      v-show="list_answer?.length"
       @click="toggleModal(true)"
       class="absolute top-0 left-0 w-screen h-screen z-20"
     >
@@ -79,7 +80,7 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { computed, inject, nextTick, ref } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import {
   useConversationStore,
   useMessageStore,
@@ -96,6 +97,7 @@ import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
 import { QuickAnswer } from '@/utils/api/Widget'
 import { container } from 'tsyringe'
 import { ExternalSite } from '@/utils/helper/ExternalSite'
+import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 
 import Loading from '@/components/Loading.vue'
 
@@ -106,6 +108,9 @@ import CogIcon from '@/components/Icons/Cog.vue'
 
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
 import type { SourceChat } from '@/service/interface/app/ai'
+import type { WidgetEventData } from '@/service/interface/app/widget'
+
+const { InputService } = inputComposableService()
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -113,11 +118,13 @@ const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()
 const $external_site = container.resolve(ExternalSite)
+const $input_service = container.resolve(InputService)
 
 /**cache câu trả lời, hạnc chế gọi API liên tục mỗi lần click */
 const CACHE_LIST_ANSWER = new Map<string, QuickAnswerInfo[]>()
 /**số câu trả lời tối đa sẽ lấy */
 const MAX_ANSWER = 200
+/**các tính năng AI */
 const AI_FEATURE: QuickAnswerInfo[] = [
   {
     id: 'translate',
@@ -159,7 +166,7 @@ const isVisibleSendBtn = inject(IS_VISIBLE_SEND_BTN_FUNCT)
 /**click vào nút mở modal */
 function clickBtnOpenQuickAnswer() {
   // thêm / vào input chat
-  setInputText('/')
+  $input_service.setInputText('/')
 
   // hiện modal
   toggleModal()
@@ -185,7 +192,8 @@ function toggleModal(is_clear_input?: boolean) {
   if (!INPUT_CHAT) return
 
   // xóa nội dung input nếu được yêu cầu
-  if (is_clear_input && INPUT_CHAT.innerText === '/') setInputText('')
+  if (is_clear_input && INPUT_CHAT.innerText === '/')
+    $input_service.setInputText('')
 }
 /**thay đổi vị chí, kích thước của modal cho vừa với input chat */
 async function changeModalPosition() {
@@ -293,8 +301,7 @@ function selectQuickAnswer(answer: QuickAnswerInfo) {
   content = replaceTemplateMessage(content)
 
   // gán giá trị vào input
-  // INPUT_CHAT.innerText = content
-  setInputText(content)
+  $input_service.setInputText(content)
 
   // nếu trả lời nhanh có ảnh thì thêm vào danh sách tập tin đính kèm
   if (size(list_images))
@@ -352,14 +359,18 @@ async function transalate() {
     /**nội dung chat */
     let text = INPUT_CHAT?.innerText
 
-    // nếu không có nội dung thì thôi
-    if (!text) throw 'DONE'
+    // nếu chỉ có '/' thì xóa luôn để tránh lỗi
+    if (text?.trim() === '/') text = ''
 
     // xóa dấu /dich ở cuối câu, loại bỏ khoảng trắng
-    text = text.replace(/\/(?:d(?:ich|ic|i)?|\/)?$/, '').trim()
+    text = text?.trim()?.replace(/\/(?:d(?:ich|ic|i)?|\/)?$/, '')
 
     // cập nhật lại input trước 1 lần
-    setInputText(text)
+    $input_service.setInputText(text)
+
+    // check lại nếu không có nội dung thì thôi
+    if (!text) throw 'DONE'
+
 
     // gọi api dịch
     const RES = await text_translate({
@@ -375,7 +386,7 @@ async function transalate() {
       throw $t('v1.view.main.dashboard.chat.quick_answer.translate_error')
 
     // thay đổi nội dung chat thành dịch, nếu chưa bị huỷ
-    if (messageStore.is_input_run_ai) setInputText(RES.text)
+    if (messageStore.is_input_run_ai) $input_service.setInputText(RES.text)
   } catch (e) {
     // hiển thị thông báo lỗi
     if (e !== 'DONE') toastError(e)
@@ -383,35 +394,6 @@ async function transalate() {
 
   // đánh dấu AI đã chạy xong
   messageStore.is_input_run_ai = false
-}
-/**đặt nội dung vào input chat + giữ con trỏ ở cuối */
-function setInputText(text: string) {
-  /**input chat */
-  const INPUT_CHAT = document.getElementById('chat-text-input-message')
-
-  // nếu không có input chat thì thôi
-  if (!INPUT_CHAT) return
-
-  // thay đổi nội dung chat
-  INPUT_CHAT.innerText = text
-
-  /**đối tượng Range */
-  const RANGE = document.createRange()
-
-  /**đối tượng Selection */
-  const SELECTION = window.getSelection()
-
-  // Đặt điểm bắt đầu của RANGE ở cuối phần tử
-  RANGE.selectNodeContents(INPUT_CHAT)
-
-  // Đặt điểm kết thúc của RANGE ở cuối phần tử
-  RANGE.collapse(false)
-
-  // Xóa mọi lựa chọn hiện tại
-  SELECTION?.removeAllRanges()
-
-  // Thêm RANGE mới vào SELECTION
-  SELECTION?.addRange(RANGE)
 }
 /**hoàn thành câu */
 async function complete() {
@@ -465,7 +447,7 @@ async function complete() {
       .trim()
 
     // cập nhật lại input trước 1 lần
-    setInputText(text)
+    $input_service.setInputText(text)
 
     // gọi api tạo nội dung
     const RES = await gen_answer({
@@ -480,7 +462,7 @@ async function complete() {
       throw $t('v1.view.main.dashboard.chat.quick_answer.complete_error')
 
     // thay đổi nội dung mới vào input chat, nếu chưa bị huỷ
-    if (messageStore.is_input_run_ai) setInputText(RES.text)
+    if (messageStore.is_input_run_ai) $input_service.setInputText(RES.text)
   } catch (e) {
     // hiển thị thông báo lỗi
     if (e !== 'DONE') toastError(e)
@@ -494,21 +476,49 @@ function replaceTemplateMessage(content: string) {
   /**dữ liệu hội thoại đang được chọn */
   const CONVERSATION = conversationStore.select_conversation
 
+  // loại bỏ các template chưa xử lý được
+  content = content
+    .replace(/#{{FIRST_NAME}}/g, '')
+    .replace(/#{{LAST_NAME}}/g, '')
+    .replace(/#{{STAFF_FIRST_NAME}}/g, '')
+    .replace(/#{{STAFF_LAST_NAME}}/g, '')
+    .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+    .replace(/#\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+    .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
+
+  /**tên khách hàng */
+  const CLIENT_NAME = CONVERSATION?.client_name || ''
+  /**tên nhân viên */
+  const STAFF_NAME =
+    getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''
+  /**số điện thoại khách hàng */
+  const PHONE = CONVERSATION?.client_phone || ''
+  /**email khách hàng */
+  const EMAIL = CONVERSATION?.client_email || ''
+  /**tên trang */
+  const PAGE_NAME = getPageInfo(page_id.value)?.name || ''
+
   return (
     content
       // tên khách hàng
-      .replace(/#{FULL_NAME}/g, CONVERSATION?.client_name || '')
+      .replace(/#{FULL_NAME}/g, CLIENT_NAME)
+      .replace(/#{{FULL_NAME}}/g, CLIENT_NAME)
+
       // tên nhân viên chăm sóc
-      .replace(
-        /#{STAFF_NAME}/g,
-        getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''
-      )
+      .replace(/#{STAFF_NAME}/g, STAFF_NAME)
+      .replace(/#{{STAFF_NAME}}/g, STAFF_NAME)
+
       // số điện thoại khách hàng
-      .replace(/#{PHONE}/g, CONVERSATION?.client_phone || '')
+      .replace(/#{PHONE}/g, PHONE)
+      .replace(/#{{PHONE}}/g, PHONE)
+
       // email khách hàng
-      .replace(/#{EMAIL}/g, CONVERSATION?.client_email || '')
+      .replace(/#{EMAIL}/g, EMAIL)
+      .replace(/#{{EMAIL}}/g, EMAIL)
+
       // tên trang
-      .replace(/#{PAGE_NAME}/g, getPageInfo(page_id.value)?.name || '')
+      .replace(/#{PAGE_NAME}/g, PAGE_NAME)
+      .replace(/#{{PAGE_NAME}}/g, PAGE_NAME)
   )
 }
 /**cuộn tới vị trí trả lời nhanh đang chọn */
@@ -598,6 +608,24 @@ function setDefaultQuickAnswer() {
   selected_answer_id.value = list_answer.value?.[0]?.id || ''
   // tự động đặt vị trí thành đầu tiên
   selected_answer_index.value = 0
+}
+
+onMounted(() => window.addEventListener('message', onWidgetEvent))
+onUnmounted(() => window.removeEventListener('message', onWidgetEvent))
+
+/**xử lý dữ liệu widget truyền vào */
+function onWidgetEvent($event: MessageEvent<WidgetEventData>) {
+  // lấy ra các dữ liệu cần thiết
+  let { _type, content, list_images } = $event?.data
+
+  // chỉ xử lý dữ liệu từ widget
+  if (_type !== 'WIDGET') return true
+
+  /**nội dung văn bản, đã lọc bỏ cú pháp hình ảnh cũ */
+  const CONTENT = content?.split('\n\n##attachment##')?.[0]
+
+  // chạy logic chung vơi trả lời nhanh nội bộ
+  selectQuickAnswer({ content: CONTENT, list_images })
 }
 
 defineExpose({ toggleModal, handleChatValue })

@@ -273,6 +273,7 @@ const is_loading_page_list = ref(false)
 const create_new_website_ref = ref<ComponentRef>()
 /**data tạo mới website */
 const create_new_website_data = ref<PageWebsiteCreate>({
+  org_id: '',
   avatar: '',
   description: '',
   name: '',

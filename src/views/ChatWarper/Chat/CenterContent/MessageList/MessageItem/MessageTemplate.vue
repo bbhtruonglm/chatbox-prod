@@ -42,11 +42,7 @@
       <div
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
-        v-html="
-          message_type === 'client'
-            ? fixXss(renderText(data_source?.content))
-            : fixXss(data_source?.content)
-        "
+        v-html="fixXss(renderText(data_source?.content))"
         class="enter-line"
       />
     </div>
@@ -118,6 +114,8 @@ function isHaveFileAttachment() {
 }
 /**làm sạch html trước khi hiển thị, tránh XSS */
 function fixXss(text?: string) {
-  return DOMPurify.sanitize(text || '')
+  return DOMPurify.sanitize(text || '', {
+    ADD_ATTR: ['target']
+  })
 }
 </script>

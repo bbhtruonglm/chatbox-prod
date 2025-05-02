@@ -1,22 +1,43 @@
 <template>
-  <div
-    ref="input_chat_ref"
-    id="chat-text-input-message"
-    @input="$main.calcIsTyping"
-    @keydown.enter="$main.submitInput"
-    @paste="$main.onPasteImage"
-    @keyup="$emit('keyup', $event)"
-    class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word mb-1.5"
-    contenteditable="true"
-    :placeholder="
-      $t('v1.view.main.dashboard.chat.send_to', {
-        name: conversationStore.select_conversation?.client_name,
-      })
-    "
-  />
+  <div class="w-full h-full relative mb-1">
+    <div
+      ref="input_chat_ref"
+      id="chat-text-input-message"
+      @input="$main.calcIsTyping"
+      @keydown.enter="$main.submitInput"
+      @keydown.tab="$main.handleTab"
+      @paste="$main.onPasteImage"
+      @keyup="$emit('keyup', $event)"
+      class="max-h-32 overflow-hidden overflow-y-auto w-full h-full focus:outline-none word-break-break-word"
+      contenteditable="true"
+    />
+    <span
+      v-if="!commonStore.is_typing"
+      class="absolute text-sm text-slate-500 pointer-events-none top-1/2 -translate-y-1/2 truncate w-full"
+    >
+      <template
+        v-if="
+          conversationStore.select_conversation?.conversation_type === 'POST'
+        "
+      >
+        {{
+          $t('Bình luận dưới tên _', {
+            name: conversationStore.getPage()?.name,
+          })
+        }}
+      </template>
+      <template v-else>
+        {{
+          $t("Gửi tin nhắn đến _. Sử dụng '/' để trả lời nhanh.", {
+            name: conversationStore.select_conversation?.client_name,
+          })
+        }}
+      </template>
+    </span>
+  </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, toRef } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useConversationStore,
@@ -26,25 +47,29 @@ import {
   useOrgStore,
 } from '@/stores'
 import { send_message } from '@/service/api/chatbox/n4-service'
-import { map, get, size, uniqueId, partition, set } from 'lodash'
+import { map, get, size, uniqueId, partition, set, remove } from 'lodash'
 import { srcImageToFile } from '@/service/helper/file'
-import { getPageInfo, scrollToBottomMessage } from '@/service/function'
+import { scrollToBottomMessage } from '@/service/function'
 import { sendTextMesage, sendImageMessage } from '@/service/helper/ext'
 import { eachOfLimit, waterfall } from 'async'
 import { toastError } from '@/service/helper/alert'
 import { N6StaticAppUploadFile, type Uploadtype } from '@/utils/api/N6Static'
-import { container, singleton } from 'tsyringe'
+import { container } from 'tsyringe'
 import { Delay } from '@/utils/helper/Delay'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/PostTemplate/service'
+import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
+import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 
 import FacebookError from '@/components/Main/Dashboard/FacebookError.vue'
 
 import type { Cb, CbError } from '@/service/interface/function'
 import type { UploadFile } from '@/service/interface/app/album'
-import { error } from '@/utils/decorator/Error'
-import { loadingV2 } from '@/utils/decorator/Loading'
-import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import type { IAlert } from '@/utils/helper/Alert/type'
+import { N4SerivceAppConversation } from '@/utils/api/N4Service/Conversation'
+
+const { ToastReplyComment } = composableService()
+const { InputService } = inputComposableService()
 
 const $emit = defineEmits<{
   /**xuất sự kiện keyup ra bên ngoài */
@@ -81,19 +106,6 @@ const platform_type = computed(
   () => conversationStore.select_conversation?.platform_type
 )
 
-/**custom lại thông báo lỗi */
-@singleton()
-class ToastReplyComment extends Toast implements IAlert {
-  public error(message: any): void {
-    // lỗi đã trả lời rồi
-    if (message?.code === 10900)
-      message = $t('v1.view.main.dashboard.chat.post.already_replied')
-
-    // thông báo lỗi
-    super.error(message)
-  }
-}
-
 /**decorator xử lý khi phát sinh lỗi trả lời bình luận */
 const handleErrorReplyComment = error(
   container.resolve(ToastReplyComment),
@@ -110,9 +122,49 @@ class Main {
    * @param API_POST API của bài viết
    */
   constructor(
-    private readonly API_POST = container.resolve(N4SerivceAppPost)
+    private readonly API_POST = container.resolve(N4SerivceAppPost),
+    private readonly SERVICE_INPUT = container.resolve(InputService),
+    private readonly API_CONVERSATION = container.resolve(
+      N4SerivceAppConversation
+    )
   ) {}
 
+  /**xử lý sự kiện tab */
+  async handleTab($event: KeyboardEvent) {
+    // nếu không có câu trả lời của ai thì thôi
+    if (!conversationStore.select_conversation?.ai_answer) return
+    if (!page_id.value || !client_id.value) return
+
+    // chặn sự kiện mặc định của tab
+    $event.preventDefault()
+
+    // ghi đè nội dung vào ô chat
+    this.SERVICE_INPUT.setInputText(
+      conversationStore.select_conversation?.ai_answer
+    )
+
+    // xóa câu trả lời của ai
+    await this.clearAiAnswer()
+  }
+  /**loại bỏ dữ liệu câu trả lời của AI */
+  async clearAiAnswer() {
+    // nếu không có câu trả lời của ai thì thôi
+    if (!conversationStore.select_conversation?.ai_answer) return
+    if (!page_id.value || !client_id.value) return
+
+    // xóa câu trả lời của ai hiện tại
+    conversationStore.select_conversation.ai_answer = ''
+
+    // xóa câu trả lời ai trong danh sách hội thoại
+    set(
+      conversationStore.conversation_list,
+      [conversationStore.select_conversation?.data_key || '', 'ai_answer'],
+      ''
+    )
+
+    // xóa câu trả lời ai trên server
+    await this.API_CONVERSATION.clearAiAnswer(page_id.value, client_id.value)
+  }
   /**tính toán xem ô input có dữ liệu không */
   async calcIsTyping($event: Event) {
     /**thẻ div input */
@@ -170,7 +222,7 @@ class Main {
     else this.sendMessage()
   }
   /**gửi tin nhắn */
-  sendMessage() {
+  async sendMessage() {
     // đang gửi file thì không cho click nút gửi, tránh bị gửi lặp
     if (messageStore.is_send_file) return
 
@@ -203,6 +255,9 @@ class Main {
 
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
+
+    // xóa câu trả lời của ai
+    await this.clearAiAnswer()
   }
   /**luồng trả lời tin nhắn bí mật */
   @handleLoadingReplyComment
@@ -251,19 +306,30 @@ class Main {
       text
     )
 
-    // TODO đang xử dụng index, có thể bị bug khi có tin nhắn mới, index bị thay đổi?
-    // tự động thêm luôn vào danh sách bình luận
-    messageStore.list_message?.[
-      messageStore.reply_comment?.message_index || 0
-    ]?.reply_comments?.unshift({
+    /**bình luận được trả lời */
+    const COMMENT =
+      messageStore.list_message?.[
+        messageStore.reply_comment?.message_index || 0
+      ]
+
+    // tiêm dữ liệu trả lời vào bình luận này
+    COMMENT?.reply_comments?.unshift({
       comment_id: RES.id || '',
       message: text,
       from: { name: conversationStore.getPage()?.name },
       createdAt: new Date().toISOString(),
     })
 
+    // loại bỏ comment này khỏi danh sách
+    remove(messageStore.list_message, message => message._id === COMMENT._id)
+
+    // thêm lại vào cuối
+    messageStore.list_message.push(COMMENT)
+
     // xoá dữ liệu trả lời
     messageStore.clearReplyComment()
+
+    scrollToBottomMessage()
   }
   /**gửi tin nhắn dạng văn bản */
   async sendText(
@@ -274,12 +340,6 @@ class Main {
   ) {
     // xoá dữ liệu trong input
     this.clearInputText()
-
-    // xoá dữ liệu trong input
-    // input.innerHTML = ''
-
-    // đánh dấu là input đã hết text
-    // commonStore.is_typing = false
 
     // scroll xuống cuối trang
     scrollToBottomMessage()
@@ -302,6 +362,7 @@ class Main {
             page_id,
             client_id,
             text,
+            // is_group: conversationStore.select_conversation?.is_group,
           },
           (e, r) => {
             // nếu có lỗi thì báo lỗi
@@ -432,6 +493,7 @@ class Main {
                     page_id,
                     client_id,
                     attachment: { url: file.url, type: file.type },
+                    // is_group: conversationStore.select_conversation?.is_group,
                   },
                   (e, r) => {
                     file.is_loading = false
@@ -482,6 +544,7 @@ class Main {
                         page_id,
                         client_id,
                         attachment: { url: url, type: file.type },
+                        // is_group: conversationStore.select_conversation?.is_group,
                       },
                       (e, r) => {
                         if (e) return _cb('DONE')
@@ -515,7 +578,7 @@ class Main {
   }
   /**xử lý báo lỗi khi gửi tin nhắn thất bại */
   handleSendMessageError(error: any) {
-    console.log('ak:::',error)
+    console.log('ak:::', error)
     if (error?.error === -224)
       return toastError(
         $t(
@@ -575,5 +638,5 @@ class Main {
 }
 const $main = new Main()
 
-defineExpose({ input_chat_ref, sendMessage: $main.sendMessage })
+defineExpose({ input_chat_ref, sendMessage: $main.sendMessage.bind($main) })
 </script>

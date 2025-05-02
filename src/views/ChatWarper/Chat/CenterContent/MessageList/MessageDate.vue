@@ -1,7 +1,7 @@
 <template>
   <div
     id="chat__message-date"
-    class="text-[10px] text-slate-500 absolute group-hover:block hidden w-max z-10 -top-3.5"
+    class="text-xxs text-slate-500 absolute group-hover:block hidden w-max z-10 -bottom-3.5"
   >
     <span
       v-if="parserStaffName()"
@@ -14,7 +14,7 @@
       v-if="time"
       class="mr-1"
     >
-      {{ format_date(new Date(time), 'HH:mm:ss, dd/MM/yyyy') }}
+      {{ $date_handle.formatShort(time) }}
     </span>
     <span v-if="is_edit">
       ({{ $t('v1.view.main.dashboard.chat.message.edited') }})
@@ -26,7 +26,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { format as format_date } from 'date-fns'
+import { DateHandle } from '@/utils/helper/DateHandle';
+import { container } from 'tsyringe';
+
 
 const $props = withDefaults(
   defineProps<{
@@ -45,6 +47,8 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+const $date_handle = container.resolve(DateHandle)
 
 /**phân tích tên nv từ meta */
 function parserStaffName() {

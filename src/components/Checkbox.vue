@@ -9,9 +9,9 @@
     :false-value="false_value"
     class="custom-checkbox"
   />
+  <!-- @click.stop -->
   <input
     v-else
-    @click.stop
     v-model="model"
     ref="checkbox_ref"
     type="checkbox"

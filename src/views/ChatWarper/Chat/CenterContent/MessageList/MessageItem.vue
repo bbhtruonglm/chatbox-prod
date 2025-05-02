@@ -3,24 +3,12 @@
     id="chat__message-item"
     class="w-fit max-w-96 group relative"
   >
-    <Emotion
+    <!-- <Emotion
       v-if="primary_emotion"
       :emotion="primary_emotion"
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
       :message_type="message?.message_type"
-    />
-    <MessageDate
-      :class="{
-        'right-0': message_type !== 'client',
-      }"
-      :time="message_time"
-      :meta="meta"
-      :is_edit="message?.is_edit"
-      :duration="CHECK_SLOW_REPLY.getDuration()"
-      :is_show_duration="
-        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
-      "
-    />
+    /> -->
     <ReplyMessage
       v-if="reply_message"
       :message="reply_message"
@@ -51,16 +39,34 @@
         :message
       />
     </SliderWarper>
-    <div
+    <!-- <div
       v-if="message?.reaction?.emoji"
       class="absolute text-xs -bottom-2 -right-1"
     >
       {{ message?.reaction?.emoji }}
-    </div>
+    </div> -->
+    <Emotion
+      :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
+      :message
+    />
     <SlowReply
       v-if="CHECK_SLOW_REPLY.isSlowReply()"
       :duration="CHECK_SLOW_REPLY.getDuration()"
       :next_message="messageStore.list_message?.[message_index + 1]"
+      :time="message_time"
+    />
+    <MessageDate
+      v-else
+      :class="{
+        'right-0': message_type !== 'client',
+      }"
+      :time="message_time"
+      :meta="meta"
+      :is_edit="message?.is_edit"
+      :duration="CHECK_SLOW_REPLY.getDuration()"
+      :is_show_duration="
+        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
+      "
     />
   </div>
 </template>
@@ -79,16 +85,22 @@ import MessageDate from '@/views/ChatWarper/Chat/CenterContent/MessageList/Messa
 import MessageTemplate from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate.vue'
 import SliderWarper from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/SliderWarper.vue'
 import AttachmentMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage.vue'
-import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Emotion.vue'
+// import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Emotion.vue'
+import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/Emotion.vue'
 
 import type {
   ChatbotButton,
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/service'
+import { container } from 'tsyringe'
+
+const { MessageService } = composableService()
 
 const messageStore = useMessageStore()
 const { t: $t } = useI18n()
+const $mesage_service = container.resolve(MessageService)
 
 const $props = withDefaults(
   defineProps<{
@@ -123,111 +135,121 @@ const primary_emotion = computed(() => $props.message?.ai?.[0]?.emotion)
 /**AI đánh dấu tin này bị rep chậm */
 const is_ai_slow_reply = computed(() => $props.message?.is_ai_slow_reply)
 /**dữ liệu của tin nhắn */
-const message_source = computed<MessageTemplateInput[]>(() => {
-  /**
-   * - chỉ lấy dữ liệu của attr đầu tiên
-   * - nếu có nhiều attr thì xử lý kiểu khác (hiện tại chỉ có FB là có list attr là dạng ảnh)
-   */
-  const SOURCE = attachments.value?.[0]
+// const message_source = computed<MessageTemplateInput[]>(() => {
+//   /**
+//    * - chỉ lấy dữ liệu của attr đầu tiên
+//    * - nếu có nhiều attr thì xử lý kiểu khác (hiện tại chỉ có FB là có list attr là dạng ảnh)
+//    */
+//   const SOURCE = attachments.value?.[0]
 
-  /**kết quả trả về */
-  let result: MessageTemplateInput[] = []
+//   /**kết quả trả về */
+//   let result: MessageTemplateInput[] = []
 
-  // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
-  if (!SOURCE?.payload)
-    result.push({
-      is_ai: false,
-      content:
-        text.value || postback_title.value || $t('v1.common.unsupport_message'),
-    })
+//   // nếu không attr -> văn bản thuần tuý | nếu không có thì báo lỗi
+//   if (!SOURCE?.payload)
+//     result.push({
+//       is_ai: false,
+//       content:
+//         text.value || postback_title.value || $t('v1.common.unsupport_message'),
+//     })
 
-  // nếu chỉ có các nút bấm -> chỉ tạo 1 record
-  if (SOURCE?.payload?.buttons)
-    result.push({
-      is_ai: false,
-      // nút bấm sẽ kèm theo một nội dung tin nhắn nào đó
-      content: text.value,
-      // map lại dữ liệu nút bấm
-      list_button: formatButton(SOURCE.payload.buttons),
-    })
+//   // nếu chỉ có các nút bấm -> chỉ tạo 1 record
+//   if (SOURCE?.payload?.buttons)
+//     result.push({
+//       is_ai: false,
+//       // nút bấm sẽ kèm theo một nội dung tin nhắn nào đó
+//       content: text.value,
+//       // map lại dữ liệu nút bấm
+//       list_button: formatButton(SOURCE.payload.buttons),
+//     })
 
-  // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
-  if (SOURCE?.payload?.elements)
-    result.push(
-      ...SOURCE?.payload?.elements?.map((element, index) => {
-        /**dữ liệu của 1 template */
-        let res: MessageTemplateInput = {}
+//   // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
+//   if (SOURCE?.payload?.elements)
+//     result.push(
+//       ...SOURCE?.payload?.elements?.map((element, index) => {
+//         /**dữ liệu của 1 template */
+//         let res: MessageTemplateInput = {}
 
-        // tạm thời chỉ hiện AI với image
-        if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
-        else res.is_ai = false
+//         // tạm thời chỉ hiện AI với image
+//         if ($props.message?.ai?.[0]?.ocr) res.is_ai = true
+//         else res.is_ai = false
 
-        // thêm dữ liệu AI nếu có
-        if ($props.message?.ai?.[index]) res.ai = $props.message?.ai?.[index]
+//         // thêm dữ liệu AI nếu có
+//         if ($props.message?.ai?.[index]) res.ai = $props.message?.ai?.[index]
 
-        // tiêu đề
-        res.title = element.title
-        // nội dung văn bản, hoặc url file fb không hiển thị được
-        res.content = element.subtitle || text.value || element.url
-        // dữ liệu ocr của AI
-        res.ocr = $props.message?.ai?.[0]?.ocr
-        // danh sách nút bấm
-        if (element?.buttons) res.list_button = formatButton(element?.buttons)
+//         // tiêu đề
+//         res.title = element.title
+//         // nội dung văn bản, hoặc url file fb không hiển thị được
+//         res.content = element.subtitle || text.value || element.url
+//         // dữ liệu ocr của AI
+//         res.ocr = $props.message?.ai?.[0]?.ocr
+//         // danh sách nút bấm
+//         if (element?.buttons) res.list_button = formatButton(element?.buttons)
 
-        // hình ảnh của slider
-        if (element.image_url) res.image = { url: element.image_url }
+//         // hình ảnh của slider
+//         if (element.image_url) res.image = { url: element.image_url }
 
-        // video của AI
-        if (element.video_url) res.video = { url: element.video_url }
-        // âm thanh của AI
-        if (element.audio_url) res.audio = { url: element.audio_url }
-        // file của AI
-        if (element.file_url) res.file = { url: element.file_url }
+//         // video của AI
+//         if (element.video_url) res.video = { url: element.video_url }
+//         // âm thanh của AI
+//         if (element.audio_url) res.audio = { url: element.audio_url }
+//         // file của AI
+//         if (element.file_url) res.file = { url: element.file_url }
 
-        // trả về dữ liệu
-        return res
-      })
-    )
+//         // trả về dữ liệu
+//         return res
+//       })
+//     )
 
-  // nếu chỉ có url (là file nhưng chưa xử lý AI, link dạng fallback) -> tạo 1 record
-  if (SOURCE?.payload?.url && !SOURCE?.payload?.elements) {
-    /**dữ liệu của 1 template */
-    let res: MessageTemplateInput = {}
+//   // nếu chỉ có url (là file nhưng chưa xử lý AI, link dạng fallback) -> tạo 1 record
+//   if (SOURCE?.payload?.url && !SOURCE?.payload?.elements) {
+//     /**dữ liệu của 1 template */
+//     let res: MessageTemplateInput = {}
 
-    // tính là chưa xử lý AI
-    res.is_ai = false
+//     // tính là chưa xử lý AI
+//     res.is_ai = false
 
-    // hình ảnh
-    if (SOURCE?.type === 'image') res.image = { url: SOURCE.payload.url }
-    // video
-    if (SOURCE?.type === 'video') res.video = { url: SOURCE.payload.url }
-    // âm thanh
-    if (SOURCE?.type === 'audio') res.audio = { url: SOURCE.payload.url }
-    // tập tin khác
-    if (SOURCE?.type === 'file') res.file = { url: SOURCE.payload.url }
-    // link
-    if (SOURCE?.type === 'fallback') {
-      res.title = text.value
-      res.content = SOURCE.payload.title
-      res.list_button = [
-        {
-          title: $t('v1.view.main.dashboard.chat.action.open_url'),
-          url: SOURCE.payload.url,
-          type: 'web_url',
-        },
-      ]
-    }
+//     // hình ảnh
+//     if (SOURCE?.type === 'image') res.image = { url: SOURCE.payload.url }
+//     // video
+//     if (SOURCE?.type === 'video') res.video = { url: SOURCE.payload.url }
+//     // âm thanh
+//     if (SOURCE?.type === 'audio') res.audio = { url: SOURCE.payload.url }
+//     // tập tin khác
+//     if (SOURCE?.type === 'file') res.file = { url: SOURCE.payload.url }
+//     // link
+//     if (SOURCE?.type === 'fallback') {
+//       res.title = text.value
+//       res.content = SOURCE.payload.title
+//       res.list_button = [
+//         {
+//           title: $t('v1.view.main.dashboard.chat.action.open_url'),
+//           url: SOURCE.payload.url,
+//           type: 'web_url',
+//         },
+//       ]
+//     }
 
-    // trường hợp vừa có ảnh vừa có text
-    if (text.value) res.content = text.value
+//     // trường hợp vừa có ảnh vừa có text
+//     if (text.value) res.content = text.value
 
-    // trả về dữ liệu
-    result.push(res)
-  }
+//     // trả về dữ liệu
+//     result.push(res)
+//   }
 
-  // trả về mảng
-  return result
-})
+//   // trả về mảng
+//   return result
+// })
+
+const message_source = computed<MessageTemplateInput[]>(() =>
+  $mesage_service.genMessageSource(
+    $props.message?.ai,
+    attachments.value,
+    text.value,
+    postback_title.value
+  )
+)
+
 /**
  * serivce kiểm tra tin nhắn rep chậm
  * - phải computed vì data prop có thể bị thay đổi
@@ -252,7 +274,7 @@ function formatButton(list_raw_button: ChatbotButton[]) {
 function addOnClassTemplate() {
   return {
     'bg-[#FFF8E1]': message_type.value === 'page',
-    'bg-white': message_type.value === 'client',
+    'bg-white': ['client', 'group'].includes(message_type.value),
     'bg-[#D8F6CB]': message_type.value === 'note',
     'border border-red-500': CHECK_SLOW_REPLY.value.isSlowReply(),
     // 'border border-yellow-500': CHECK_SLOW_REPLY.value.isWarning(),

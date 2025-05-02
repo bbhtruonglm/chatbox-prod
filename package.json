@@ -23,6 +23,7 @@
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@heroicons/vue": "^2.2.0",
+    "@vueuse/core": "^12.4.0",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.13",
     "date-fns": "2.30.0",
@@ -46,7 +47,8 @@
     "vue-virtual-scroller": "2.0.0-beta.8",
     "vue3-virtual-scroll-list": "^0.2.1",
     "vuedraggable": "^4.1.0",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "zca-js": "2.0.0-beta.8"
   },
   "devDependencies": {
     "@types/async": "^3.2.16",

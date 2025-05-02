@@ -2,7 +2,7 @@
   <button
     v-if="is_error"
     v-tooltip.top="$t('v1.view.main.dashboard.chat.message.error_send_message')"
-    class="text-white bg-red-500 rounded-full text-[10px] w-2.5 h-2.5 flex items-center justify-center icon-position"
+    class="text-white bg-red-500 rounded-full text-xxs size-2.5 flex items-center justify-center icon-position"
   >
     !
   </button>
@@ -24,6 +24,6 @@ const $props = withDefaults(
 </script>
 <style scoped lang="scss">
 .icon-position {
-  @apply absolute -right-4 bottom-2;
+  @apply absolute -right-2.5 bottom-2;
 }
 </style>

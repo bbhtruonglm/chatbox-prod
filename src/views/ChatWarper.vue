@@ -6,7 +6,7 @@
     class="h-full w-full flex relative p-2 gap-2"
   >
     <HotAlert
-      :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE']"
+      :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE', 'PAGE_EXPIRED_SESSION']"
       class="absolute top-3 left-1/2 -translate-x-1/2 w-2/3 z-10"
     />
     <Menu />
@@ -35,7 +35,7 @@ import {
   useOrgStore,
 } from '@/stores'
 import { flow, toggle_loading } from '@/service/helper/async'
-import { difference, intersection, keys, map, size } from 'lodash'
+import { debounce, difference, intersection, keys, map, size } from 'lodash'
 import { useI18n } from 'vue-i18n'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import {
@@ -75,6 +75,7 @@ import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { User } from '@/utils/helper/User'
 import type { IAlert } from '@/utils/helper/Alert/type'
 import { LocalStorage } from '@/utils/helper/LocalStorage'
+import type { FacebookCommentPost } from '@/service/interface/app/post'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -348,6 +349,11 @@ function getPageInfoToChat() {
     true
   )
 }
+/**giảm tải việc làm mới thời gian liên tục */
+const debounceRefreshConversationTime = debounce(() => {
+  // thông báo cho component cập nhật lại thời gian
+  window.dispatchEvent(new CustomEvent('chatbox_conversation_refresh_time'))
+}, 1000 * 5)
 /**lắng nghe sự kiện từ socket */
 function onSocketFromChatboxServer() {
   /**tạo kết nối đến socket */
@@ -404,6 +410,8 @@ function onSocketFromChatboxServer() {
       event?: SocketEvent
       /**dữ liệu tin nhắn cần cập nhật */
       update_message?: MessageInfo
+      /**dữ liệu comment cập nhật */
+      update_comment?: FacebookCommentPost
     } = {}
 
     // cố gắng giải mã dữ liệu
@@ -413,7 +421,8 @@ function onSocketFromChatboxServer() {
 
     if (!size(socket_data)) return
 
-    let { conversation, message, update_message, event } = socket_data
+    let { conversation, message, update_message, update_comment, event } =
+      socket_data
 
     // gửi thông điệp đến component xử lý danh sách hội thoại
     if (validateConversation(conversation, message))
@@ -427,16 +436,29 @@ function onSocketFromChatboxServer() {
       )
 
     // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
-    if (size(message))
+    if (size(message)) {
+      // socket tin nhắn mới cho các component
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_message', { detail: message })
       )
+
+      // render lại thời gian của hội thoại
+      debounceRefreshConversationTime()
+    }
 
     // gửi thông điệp cập nhật tin nhắn đã có
     if (size(update_message))
       window.dispatchEvent(
         new CustomEvent('chatbox_socket_update_message', {
           detail: update_message,
+        })
+      )
+
+    // gửi thông điệp cập nhật comment
+    if (size(update_comment))
+      window.dispatchEvent(
+        new CustomEvent('chatbox_socket_update_comment', {
+          detail: update_comment,
         })
       )
 

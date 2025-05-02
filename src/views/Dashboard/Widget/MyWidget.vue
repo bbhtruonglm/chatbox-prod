@@ -14,9 +14,14 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item disable_delete @delete="deleteWidget(widget)" @setting="settingWidget(widget)"
+                <Item disable_delete @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)"
                     @tranfer="tranferWidget(widget)" @install="installWidget(widget)" @key="copyKeyWidget(widget)"
-                    v-if="widget?.status === 'APPROVED'" :widget="widget" is_control is_owner_control />
+                    v-if="widget?.status === 'APPROVED'" :widget="widget" is_control is_owner_control >
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
+                </Item>
             </template>
         </div>
         <Title v-if="widget_list?.filter(widget => widget?.status === 'PRIVATE')?.length"
@@ -24,9 +29,14 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item @delete="deleteWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
+                <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'PRIVATE'"
-                    :widget="widget" is_control is_owner_control />
+                    :widget="widget" is_control is_owner_control >
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
+                </Item>
             </template>
         </div>
         <Title v-if="widget_list?.filter(widget => widget?.status === 'REJECT')?.length"
@@ -34,9 +44,14 @@
         <div :class="{ 'md:grid-cols-3 xl:grid-cols-4': commonStore.dashboard_toggle_nav }"
             class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
             <template v-for="widget of widget_list">
-                <Item @delete="deleteWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
+                <Item @delete="deleteWidget(widget)" @click="settingWidget(widget)" @setting="settingWidget(widget)" @tranfer="tranferWidget(widget)"
                     @install="installWidget(widget)" @key="copyKeyWidget(widget)" v-if="widget?.status === 'REJECT'"
-                    :widget="widget" is_control is_owner_control />
+                    :widget="widget" is_control is_owner_control >
+                    <div class="flex items-center gap-2">
+                        <KeyIcon class="size-4" @click.stop="copyKeyWidget(widget)" />
+                        <ArrowDownCircleIcon class="size-4" @click.stop="installWidget(widget)" />
+                    </div>
+                </Item>
             </template>
         </div>
     </div>
@@ -45,14 +60,16 @@
         <!-- <InstallWidget ref="install_widget_ref" :widget="selected_widget" /> -->
         <TranferWidget @reload="getMyWidget()" ref="tranfer_widget_ref" :widget="selected_widget" />
     </template>
+    <WidgetInfo ref="widget_info_ref" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useCommonStore } from '@/stores'
+import { useCommonStore, useWidgetStore } from '@/stores'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { delete_my_widget } from '@/service/api/chatbox/n5-app'
 
+import WidgetInfo from '@/views/Dashboard/Widget/WidgetInfo.vue'
 import UpsertWidget from '@/views/Dashboard/Widget/UpsertWidget.vue'
 import Title from '@/views/Dashboard/Widget/Title.vue'
 import Item from '@/views/Dashboard/Widget/Item.vue'
@@ -67,11 +84,13 @@ import type { CbError } from '@/service/interface/function'
 import { confirm, toast, toastError } from '@/service/helper/alert'
 import { toggle_loading } from '@/service/helper/async'
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
+import { ArrowDownCircleIcon, KeyIcon } from '@heroicons/vue/24/solid'
 
 const $emit = defineEmits(['is_loading'])
 
 const $t = useI18n().t
 const commonStore = useCommonStore()
+const widgetStore = useWidgetStore()
 
 /**ref của modal cài đặt widget */
 const install_widget_ref = ref<ComponentRef>()
@@ -83,6 +102,8 @@ const widget_list = ref<AppInfo[]>([])
 const upsert_widget_ref = ref<ComponentRef>()
 /**ref của modal chuyển nhượng widget */
 const tranfer_widget_ref = ref<ComponentRef>()
+/**ref của modal cài đặt widget */
+const widget_info_ref = ref<ComponentRef>()
 
 onMounted(() => getMyWidget())
 
@@ -150,9 +171,15 @@ function tranferWidget(widget: AppInfo) {
 }
 /**cài đặt widget cho trang */
 function installWidget(widget: AppInfo) {
-    selected_widget.value = widget
+    // gán giá trị cho widget được chọn
+    widgetStore.selected_widget = widget
 
-    install_widget_ref.value?.toggleModal()
+    // mở modal
+    widget_info_ref.value.toggleModal()
+
+    // selected_widget.value = widget
+
+    // install_widget_ref.value?.toggleModal()
 }
 /**sao chép mã bí mật của widget */
 function copyKeyWidget(widget: AppInfo) {

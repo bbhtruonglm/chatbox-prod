@@ -19,17 +19,19 @@
           :class="class_modal"
           class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-gradient-primary p-2 max-w-[95%] max-h-[95%] flex flex-col shadow-lg"
         >
-          <div class="flex items-center justify-between px-3">
+          <div class="flex items-center justify-between">
             <div
               :class="class_header"
               class="text-lg font-medium flex-shrink-0"
             >
               <slot name="header"></slot>
             </div>
-            <CloseIcon
+            <div
               @click="toggleModal"
-              class="w-3.5 h-3.5 cursor-pointer"
-            />
+              class="bg-slate-100 rounded-lg p-1 cursor-pointer"
+            >
+              <XMarkIcon class="w-5 h-5" />
+            </div>
           </div>
           <div
             :class="class_body"
@@ -38,6 +40,7 @@
             <slot name="body"></slot>
           </div>
           <div
+            v-if="$slots.footer"
             :class="class_footer"
             class="flex-shrink-0"
           >
@@ -52,6 +55,7 @@
 import { ref } from 'vue'
 
 import CloseIcon from '@/components/Icons/Close.vue'
+import { XMarkIcon } from '@heroicons/vue/24/solid'
 
 const $emit = defineEmits(['close_modal', 'open_modal'])
 

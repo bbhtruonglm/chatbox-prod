@@ -9,7 +9,11 @@
       :style="initSize()"
     >
       <img
-        :src="getFbUrl() || data_source?.image?.url"
+        :src="
+          isUseNewCdn()
+            ? getCdnUrl() || data_source?.image?.url
+            : data_source?.image?.url
+        "
         class="w-full h-full object-contain"
       />
     </div>
@@ -24,14 +28,22 @@
         preload="metadata"
       >
         <source
-          :src="getFbUrl() || data_source?.video?.url"
+          :src="
+            isUseNewCdn()
+              ? getCdnUrl() || data_source?.video?.url
+              : data_source?.video?.url
+          "
           type="video/mp4"
         />
       </video>
     </div>
     <Audio
       v-if="data_source?.audio?.url"
-      :src="getFbUrl() || ''"
+      :src="
+        isUseNewCdn()
+          ? getCdnUrl() || data_source?.audio?.url
+          : data_source?.audio?.url
+      "
       class="min-w-52"
     />
     <div
@@ -49,13 +61,20 @@
   <MediaDetail
     ref="media_detail_ref"
     :data_source
-    :url="getFbUrl()"
+    :url="
+      isUseNewCdn()
+        ? getCdnUrl()
+        : data_source?.image?.url ||
+          data_source?.video?.url ||
+          data_source?.audio?.url ||
+          data_source?.file?.url
+    "
     :message_id="message?._id"
     :message
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { last } from 'lodash'
 import { FitSize } from '@/utils/helper/Attachment'
 
@@ -70,6 +89,7 @@ import type {
   MessageTemplateInput,
 } from '@/service/interface/app/message'
 import { SingletonCdn } from '@/utils/helper/Cdn'
+import { useConversationStore } from '@/stores'
 
 const $props = withDefaults(
   defineProps<{
@@ -84,10 +104,23 @@ const $props = withDefaults(
 )
 
 const $cdn = SingletonCdn.getInst()
+const conversationStore = useConversationStore()
 
 /**ref của component MediaDetail */
 const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
 
+/**loại nền tảng */
+const platform_type = computed(
+  () => conversationStore.select_conversation?.platform_type
+)
+
+/**có sử dụng cnd mới không */
+function isUseNewCdn() {
+  // các nền tảng sử dụng cdn mới
+  return ['FB_MESS', 'WEBSITE', 'FB_INSTAGRAM'].includes(
+    platform_type.value || ''
+  )
+}
 /**lấy tên của file */
 function getFileName(url: string) {
   try {
@@ -116,7 +149,7 @@ function initSize() {
   ).toCss()
 }
 /**đọc dữ liệu mới của tập tin */
-function getFbUrl(): string | undefined {
+function getCdnUrl(): string | undefined {
   // nếu là slider thực thì dùng luôn
   if ($props.message?.message_attachments?.[0]?.type === 'template') return
 
@@ -125,6 +158,12 @@ function getFbUrl(): string | undefined {
 
   // nếu không có id thì không cần xử lý
   if (!TARGET_ID) return
+
+  if (platform_type.value === 'WEBSITE')
+    return $cdn.webMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
+
+  if (platform_type.value === 'FB_INSTAGRAM')
+    return $cdn.igMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 
   return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 }

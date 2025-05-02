@@ -7,6 +7,7 @@ import type {
 } from '@/service/interface/app/page'
 import type { AllStaffList } from '@/service/interface/app/staff'
 import type { LocationQueryValue } from 'vue-router'
+import { singleton } from 'tsyringe'
 
 /**dữ liệu của trang hiện tại kích hoạt */
 export interface CurrentPageData {
@@ -17,6 +18,7 @@ export interface CurrentPageData {
 }
 
 /**gọi API module page của chatbox */
+@singleton()
 export class N4SerivceAppPage extends N4Serivce {
   constructor() {
     // gọi API module page của chatbot
@@ -30,10 +32,17 @@ export class N4SerivceAppPage extends N4Serivce {
     // gọi api
     return this.post('get_current_page', body)
   }
-  /**đọc danh sách trang đang kích hoạt của tổ chức */
-  public async getOrgActiveListPage(org_id: string): Promise<CurrentPageData> {
+  /**
+   * đọc danh sách trang đang kích hoạt của tổ chức 
+   * @param org_id id tổ chức
+   * @param group_id lọc theo id nhóm
+   */
+  public async getOrgActiveListPage(
+    org_id: string,
+    group_id?: string
+  ): Promise<CurrentPageData> {
     // gọi api
-    return this.getListPage({ org_id, is_active: true })
+    return this.getListPage({ org_id, is_active: true, group_id })
   }
   /**đồng bộ lại danh sách trang mới nhất của Facebook với hệ thống */
   public async syncFacebookPage(access_token: string): Promise<void> {
@@ -49,7 +58,8 @@ export class N4SerivceAppPage extends N4Serivce {
       const CURRENT_HOST = origin
 
       /**path đến ui xử lý */
-      let query_path = '/dashboard/select-page?connect_page=ZALO_OA'
+      let query_path =
+        '/dashboard/select-page?connect_page=ZALO&zalo_type=ZALO_OA'
 
       // nếu là deploy ở /chat/xxx thì cần thêm
       if (location?.pathname?.indexOf('/chat/') === 0)
@@ -107,6 +117,20 @@ export class N4SerivceAppPage extends N4Serivce {
    */
   public async createWebsite(body: PageWebsiteCreate): Promise<IPage> {
     // gọi api
-    return this.post('create_website_page', body)
+    return this.post('create_website_page', body, true)
+  }
+  /**kết nối, tái đồng bộ tài khoản IG */
+  public async syncInstagramPage(
+    code: string,
+    redirect_uri: string,
+    org_id?: string
+  ): Promise<void> {
+    // gọi api
+    return this.post('sync_instagram_page', { code, redirect_uri, org_id })
+  }
+  /**kết nối tài khoản zalo cá nhân */
+  public async syncZaloPersonalPage(org_id?: string): Promise<string> {
+    // gọi api
+    return this.post('sync_zalo_personal_page', { org_id })
   }
 }

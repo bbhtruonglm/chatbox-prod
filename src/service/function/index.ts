@@ -78,11 +78,15 @@ export const preGoToChat = (proceed: Cb) => {
 export const resetConversationFilter = () => {
   const conversationStore = useConversationStore()
 
-  conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
+  conversationStore.option_filter_page_data.is_spam_fb = 'NO'
+  // conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
 }
 
 /**chọn một hội thoại */
-export const selectConversation = (conversation: ConversationInfo) => {
+export const selectConversation = (
+  conversation: ConversationInfo,
+  is_disable_focus?: boolean
+) => {
   if (!conversation) return
 
   const conversationStore = useConversationStore()
@@ -102,7 +106,8 @@ export const selectConversation = (conversation: ConversationInfo) => {
   )
 
   // tự động focus vào input chat
-  document.getElementById('chat-text-input-message')?.focus()
+  if (!is_disable_focus)
+    document.getElementById('chat-text-input-message')?.focus()
 }
 
 /**cuộn xuống cuối trang */
@@ -113,12 +118,14 @@ export const scrollToBottomMessage = () => {
 
   // html được render thì mới cuộn
   nextTick(() => {
-    LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
+    setTimeout(() => {
+      LIST_MESSAGE.scrollTop = LIST_MESSAGE.scrollHeight
+    }, 200)
   })
 }
 
 /**
- * lấy danh sách nhãn của trang 
+ * lấy danh sách nhãn của trang
  * @deprecated dùng hàm của store thay thế
  */
 export const getPageLabel = (page_id?: string) => {
@@ -188,7 +195,7 @@ export const getILabel = (page_id?: string, label_id?: string) => {
 }
 
 /**
- * lọc các nhãn chưa bị xoá 
+ * lọc các nhãn chưa bị xoá
  * @deprecated dùng hàm của store thay thế
  */
 export const getLabelValid = (page_id?: string, label_list?: string[]) => {
@@ -293,8 +300,11 @@ export function isActiveMessageFilter() {
 export function isFilterActive() {
   const conversationStore = useConversationStore()
 
-  // đọc lấy dữ liệu lọc không có search
-  let filter = omit(conversationStore.option_filter_page_data, ['search'])
+  // đọc lấy dữ liệu lọc sẽ bỏ qua
+  let filter = omit(conversationStore.option_filter_page_data, [
+    'search', // tìm kiếm
+    'conversation_type', // loại hội thoại
+  ])
 
   // loại bỏ các giá trị bị undefied trong object
   filter = pickBy(filter, identity)

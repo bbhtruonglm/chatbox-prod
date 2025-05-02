@@ -13,7 +13,7 @@ export interface ILabel {
     /**thời gian tạo */
     createdAt?: string
     /**chú thích */
-    description?: string
+    description?: string | number
     /**vị trí */
     index?: number
 }

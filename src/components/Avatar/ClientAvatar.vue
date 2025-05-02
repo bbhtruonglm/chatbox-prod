@@ -1,5 +1,31 @@
 <template>
+  <img
+    @error="onImageError"
+    @load="removeAnimatePulse"
+    loading="lazy"
+    v-if="avatar"
+    :src="avatar"
+    class="overflow-hidden bg-slate-200 rounded-oval"
+  />
   <div
+    v-else-if="comment"
+    :class="animate_pulse"
+    class="overflow-hidden bg-slate-200 rounded-oval"
+  >
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      :src="$main.loadCommentFromAvatar()"
+      class="w-full h-full"
+    />
+  </div>
+  <PageAvatar
+    v-else-if="conversation?.conversation_type === 'POST'"
+    :page_info="conversationStore.getPage()"
+  />
+  <div
+    v-else
     :class="animate_pulse"
     class="overflow-hidden bg-slate-200 rounded-oval"
   >
@@ -12,7 +38,6 @@
     >
       {{ nameToLetter(conversation?.client_name) }}
     </div>
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
@@ -21,22 +46,31 @@
       :src="loadImageUrl()"
       class="w-full h-full"
     />
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
       loading="lazy"
       v-if="conversation?.platform_type === 'FB_INSTAGRAM'"
-      :src="loadImageUrl()"
+      :src="loadImageUrl(conversation?.platform_type)"
       class="w-full h-full"
     />
-
     <img
       @error="onImageError"
       @load="removeAnimatePulse"
       loading="lazy"
       v-if="
         conversation?.platform_type === 'ZALO_OA' && conversation?.client_avatar
+      "
+      :src="conversation?.client_avatar"
+      class="w-full h-full"
+    />
+    <img
+      @error="onImageError"
+      @load="removeAnimatePulse"
+      loading="lazy"
+      v-if="
+        conversation?.platform_type === 'ZALO_PERSONAL' &&
+        conversation?.client_avatar
       "
       :src="conversation?.client_avatar"
       class="w-full h-full"
@@ -52,11 +86,16 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useChatbotUserStore } from '@/stores'
+import { useConversationStore } from '@/stores'
 import { nameToLetter } from '@/service/helper/format'
-import { SingletonCdn } from '@/utils/helper/Cdn'
+import { Cdn, SingletonCdn, type ICdn } from '@/utils/helper/Cdn'
+
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
+import type { FacebookCommentPost } from '@/service/interface/app/post'
+import { container } from 'tsyringe'
+import type { PageType } from '@/service/interface/app/page'
 
 const $cdn = SingletonCdn.getInst()
 
@@ -66,13 +105,17 @@ const $props = withDefaults(
     conversation?: ConversationInfo
     /**kích thước thực tế của hình ảnh */
     actual_size?: number
+    /**dữ liệu bình luận */
+    comment?: FacebookCommentPost
+    /**link avt để dùng luôn */
+    avatar?: string
   }>(),
   {
     actual_size: 64,
   }
 )
 
-const chatbotUserStore = useChatbotUserStore()
+const conversationStore = useConversationStore()
 
 /**thêm hiệu ứng ẩn hiện khi ảnh đang được load */
 const animate_pulse = ref('animate-pulse')
@@ -83,7 +126,7 @@ onMounted(() => {
 
   // nếu zalo không có hình ảnh
   if (
-    $props.conversation?.platform_type === 'ZALO_OA' &&
+    $props.conversation?.platform_type?.includes('ZALO') &&
     !$props.conversation?.client_avatar
   )
     removeAnimatePulse()
@@ -114,7 +157,13 @@ function removeAnimatePulse() {
   animate_pulse.value = ''
 }
 /**tạo url ảnh */
-function loadImageUrl() {
+function loadImageUrl(platform_type?: PageType) {
+  if (platform_type === 'FB_INSTAGRAM')
+    return $cdn.igClientAvt(
+      $props.conversation?.fb_page_id,
+      $props.conversation?.fb_client_id
+    )
+
   return $cdn.fbClientAvt(
     $props.conversation?.fb_page_id,
     $props.conversation?.fb_client_id
@@ -126,4 +175,26 @@ function onImageError($event: Event) {
 
   image.src = `${$env.img_host}/1111111111?width=${$props.actual_size}&height=${$props.actual_size}`
 }
+
+class Main {
+  /**
+   * @param SERVICE_CDN dịch vụ cdn
+   */
+  constructor(private readonly SERVICE_CDN: ICdn = container.resolve(Cdn)) {}
+
+  /**lấy avt của người gửi của bình luận này */
+  loadCommentFromAvatar() {
+    // nếu không có bình luận thì trả về rỗng
+    if (!$props.comment) return ''
+
+    /**id trang */
+    const PAGE_ID = $props.conversation?.fb_page_id
+    /**id người gửi */
+    const FROM_ID = $props.comment?.from?.id
+
+    // trả về url ảnh
+    return this.SERVICE_CDN.fbClientAvt(PAGE_ID, FROM_ID)
+  }
+}
+const $main = new Main()
 </script>

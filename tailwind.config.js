@@ -23,8 +23,8 @@ module.exports = {
       })
       // reset css
       addBase({
-        'button': { '@apply focus:outline-none hover:brightness-90': {} },
-        'a': { '@apply underline text-blue-700 hover:brightness-90': {} },
+        'button': { '@apply focus:outline-none hover:brightness-90 disabled:opacity-50': {} },
+        'a': { '@apply underline text-blue-700 hover:brightness-90 disabled:opacity-50': {} },
       })
     },
   ],

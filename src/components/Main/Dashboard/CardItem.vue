@@ -4,8 +4,11 @@
       <slot name="icon" />
     </div>
     <div class="flex flex-col gap-3 w-full min-w-0">
-      <div class="flex justify-between">
-        <div class="text-sm font-medium">
+      <div class="flex justify-between gap-2">
+        <div
+          :class="class_title"
+          class="text-sm font-medium"
+        >
           <slot name="title" />
         </div>
         <slot name="action" />
@@ -14,3 +17,12 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+const $props = withDefaults(
+  defineProps<{
+    /**class của tiêu đề */
+    class_title?: string
+  }>(),
+  {}
+)
+</script>

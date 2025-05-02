@@ -1,5 +1,76 @@
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 
+/**dữ liệu phân tích của bài viết */
+export interface IPostAnalyticData {
+  // dữ liệu có sẵn quét từ FB
+  /**tổng số lượt reaction */
+  // total_reactions?: number
+  /**tổng số lượt bình luận */
+  total_comment?: number
+  /**tổng số lượt chia sẻ */
+  total_share?: number
+  /**tổng số lượt reaction like */
+  total_reaction_like?: number
+  /**tổng số lượt reaction love */
+  total_reaction_love?: number
+  /**tổng số lượt reaction wow */
+  total_reaction_wow?: number
+  /**tổng số lượt reaction haha */
+  total_reaction_haha?: number
+  /**tổng số lượt reaction sorry */
+  total_reaction_sorry?: number
+  /**tổng số lượt reaction anger */
+  total_reaction_anger?: number,
+
+  // phân loại cảm xúc
+  /**tổng số lượt cảm xúc tích cực */
+  total_emotion_positive?: number
+  /**tổng số lượt cảm xúc tiêu cực */
+  total_emotion_negative?: number
+  /**tổng số lượt cảm xúc trung lập */
+  total_emotion_neutral?: number
+
+  // dữ liệu phân tích cảm xúc
+  /**tổng số lượt thích */
+  total_emotion_like?: number
+  /**tổng số lượt cảm thấy vui */
+  total_emotion_happy?: number
+  /**tổng số lượt cảm thấy buồn */
+  total_emotion_sad?: number
+  /**tổng số lượt cảm thấy tức giận */
+  total_emotion_angry?: number
+
+  // dữ liệu phân tích CTA
+  /**tổng số lượt cta địa chỉ */
+  total_cta_address?: number
+  /**tổng số lượt cta tài liệu */
+  total_cta_document?: number
+  /**tổng số lượt cta email */
+  total_cta_email?: number
+  /**tổng số lượt cta link */
+  total_cta_link?: number
+  /**tổng số lượt cta số điện thoại */
+  total_cta_phone?: number
+  /**tổng số lượt cta đặt hàng */
+  total_cta_place_order?: number
+  /**tổng số lượt cta sale */
+  total_cta_sale?: number
+  /**tổng số lượt cta giao hàng */
+  total_cta_shipping?: number
+  /**tổng số lượt cta thời gian */
+  total_cta_time?: number
+  /**tổng số lượt cta giao dịch */
+  total_cta_transaction?: number
+}
+/**bài viết */
+export interface IPostAnalytic {
+  /**id trang */
+  page_id?: string
+  /**id bài viết */
+  post_id?: string
+  /**dữ liệu phân tích của bài viết */
+  post_analytic_data?: IPostAnalyticData
+}
 /**kích thước của file */
 export interface AttachmentSize {
   /**độ rộng */
@@ -8,6 +79,8 @@ export interface AttachmentSize {
   height?: number
 }
 export interface IPortContent {
+  /**thời gian tạo */
+  created_time?: string
   /**id bài viết */
   id?: string
   /**tên người tạo */
@@ -49,11 +122,25 @@ export interface IPortContent {
 }
 /**dữ liệu của 1 bài post */
 export interface IPost extends IPortContent {
+  /**thời gian tạo bài viết */
+  createdAt?: string
   /**nội dung bài viết */
   content?: IPortContent
+  /**loại nền tảng */
+  post_platform?: 'FB'
+  /**id trang */
+  page_id?: string
+  /**id bài viết */
+  post_id?: string
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**tên khách hàng nhắn vào nhóm */
+  group_client_name?: string
+  /**id khách hàng nhắn vào nhóm */
+  group_client_id?: string
+  /**avt của khách nhắn vào nhóm */
+  group_client_avatar?: string
   /**comment của tin nhắn này có bị ẩn không */
   is_hidden_comment?: boolean
   /**đã trả lời bí mật chưa */
@@ -70,6 +157,8 @@ export interface MessageInfo {
     reaction?: string
     /**icon đại diện */
     emoji?: string
+    /**thời gian cập nhật */
+    updatedAt?: string
   }
   /**tin nhắn này có phải bị sửa không */
   is_edit?: boolean
@@ -82,13 +171,13 @@ export interface MessageInfo {
   /**id bản ghi mongo */
   _id: string
   /**tin nhắn này thuộc loại gì */
-  platform_type?: 'FB_MESS' | 'FB_POST'
+  platform_type?: 'FB_MESS' | 'FB_POST' | 'WEBSITE'
   /**id trang */
   fb_page_id: string
   /**id khách hàng */
   fb_client_id: string
   /**tin nhắn được gửi từ đâu */
-  message_type: 'page' | 'client' | 'system' | 'note' | 'activity'
+  message_type: 'page' | 'client' | 'system' | 'note' | 'activity' | 'group'
   /**thời gian tin được gửi */
   time: string
   /**nội dung tin nhắn văn bản */
@@ -260,6 +349,8 @@ export interface SendMesageInput {
     /**file muốn gửi là loại gì */
     type: FileTypeInfo
   }
+  /**gửi tin nhắn vào nhóm */
+  is_group?: boolean
 }
 
 /**nội dung của tin nhắn tạm vừa được gửi */

@@ -1,5 +1,6 @@
 <template>
   <MenuItem
+    id="dashboard__menu-left"
     @click="selectPageStore.selectMenu(key)"
     v-for="{ key, title, icon, class_icon } of list_platform"
     :icon="icon ?? SquareIcon"
@@ -13,15 +14,14 @@ import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import { useI18n } from 'vue-i18n'
 import { ref, markRaw } from 'vue'
 import { useSelectPageStore } from '@/stores'
+import { composableService } from '@/views/Dashboard/ConnectPage/service'
 
 import SquareIcon from '@/components/Icons/Square.vue'
-import ClockIcon from '@/components/Icons/Clock.vue'
-import FacebookIcon from '@/components/Icons/Facebook.vue'
-import ZaloIcon from '@/components/Icons/Zalo.vue'
-import WebIcon from '@/components/Icons/Web.vue'
 
 import type { Component } from 'vue'
 import type { ISelectPlatform } from './type'
+
+const { ICON_MAP } = composableService()
 
 const { t: $t } = useI18n()
 const selectPageStore = useSelectPageStore()
@@ -47,13 +47,6 @@ function isSelectedMenu(key: string) {
 }
 /**khởi tạo danh sách menu */
 function getPlatform(): PlatformItem[] {
-  /** Icon mặc định */
-  const ICON_MAP: Record<string, Component> = {
-    FB_MESS: markRaw(FacebookIcon),
-    ZALO_OA: markRaw(ZaloIcon),
-    WEBSITE: markRaw(WebIcon),
-  }
-
   /** Menu mặc định */
   const DEFAULT_MENU: PlatformItem[] = [
     {
@@ -61,11 +54,11 @@ function getPlatform(): PlatformItem[] {
       title: $t('v1.common.all'),
       icon: markRaw(SquareIcon),
     },
-    {
-      key: 'RECENT',
-      title: $t('v1.common.recent'),
-      icon: markRaw(ClockIcon),
-    },
+    // {
+    //   key: 'RECENT',
+    //   title: $t('v1.common.recent'),
+    //   icon: markRaw(ClockIcon),
+    // },
   ]
 
   /** Danh sách nền tảng */

@@ -33,6 +33,15 @@ export function composableValidate() {
     ...VLD_EMAIL.fields,
   })
 
+  /**xác thực email + password + confirm password */
+  const VLD_EMAIL_PASSWORD_AND_CONFIRM = object({
+    confirm_password: string()
+      .required($t('Bạn chưa nhập _', { name: CONFIRM_PASSWORD }))
+      .noWhitespace($t('_ không hợp lệ', { name: CONFIRM_PASSWORD })),
+
+    ...VLD_EMAIL_PASSWORD.fields,
+  })
+
   /**xác thực khi tạo tài khoản bằng email */
   const VLD_EMAIL_REGISTER = object({
     first_name: string()
@@ -43,13 +52,14 @@ export function composableValidate() {
       .required($t('Bạn chưa nhập _', { name: LAST_NAME }))
       .noWhitespace($t('_ không hợp lệ', { name: LAST_NAME })),
 
-    confirm_password: string()
-      .required($t('Bạn chưa nhập _', { name: CONFIRM_PASSWORD }))
-      .noWhitespace($t('_ không hợp lệ', { name: CONFIRM_PASSWORD })),
-
-    ...VLD_EMAIL_PASSWORD.fields,
+    ...VLD_EMAIL_PASSWORD_AND_CONFIRM.fields,
   })
 
   // trả về kết quả
-  return { VLD_EMAIL, VLD_EMAIL_PASSWORD, VLD_EMAIL_REGISTER }
+  return {
+    VLD_EMAIL,
+    VLD_EMAIL_PASSWORD,
+    VLD_EMAIL_REGISTER,
+    VLD_EMAIL_PASSWORD_AND_CONFIRM,
+  }
 }

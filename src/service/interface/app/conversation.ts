@@ -1,6 +1,8 @@
 import type { PageType } from './page'
 
 export interface FilterConversation {
+    /**loại hội thoại */
+    conversation_type?: 'CHAT'| 'POST'
     /**lọc hội thoại chưa đọc */
     unread_message?: 'true' | 'false'
     /**tìm kiếm hội thoại theo tên | sdt | email */
@@ -63,6 +65,10 @@ export interface QueryConversationInput extends FilterConversation {
 
 /**dữ liệu của một khách hàng */
 export interface ConversationInfo {
+    /**có phải là nhóm chat không */
+    is_group?: boolean
+    /**loại của hội thoại */
+    conversation_type?: 'CHAT'| 'POST'
     /**id của nhân viên chăm sóc bản mới */
     user_id?: string
     /**cảm xúc cuối cùng */
@@ -123,6 +129,8 @@ export interface ConversationInfo {
     createdAt?: string
     /**thời gian cập nhật */
     updatedAt?: string
+    /**nội dung câu trả lời */
+    ai_answer?: string
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */

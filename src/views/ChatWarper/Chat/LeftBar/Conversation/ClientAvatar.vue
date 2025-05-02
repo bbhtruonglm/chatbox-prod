@@ -13,7 +13,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore } from '@/stores'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
 import { getPageInfo } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
@@ -29,11 +29,13 @@ const $props = withDefaults(
 )
 
 const chatbotUserStore = useChatbotUserStore()
+const orgStore = useOrgStore()
 
 /**kiểm soát việc page avatar được hiển thị như thế nào */
 function controlPageAvatarVisible() {
-  /**thiết lập trang */
-  const PAGE_CONFIG = getPageInfo($props.source?.fb_page_id)
+  /**thiết lập tổ chức */
+  const ORG_CONFIG = orgStore.selected_org_info?.org_config
+  
   /**thiết lập cá nhân */
   const USER_CONFIG = chatbotUserStore.personal_settings
 
@@ -49,22 +51,9 @@ function controlPageAvatarVisible() {
     return
   }
 
-  // nếu page thiết lập ẩn thì ẩn luôn
-  if (PAGE_CONFIG?.is_hide_page_avatar) return HIDE_CSS
+  // nếu tổ chức thiết lập ẩn thì ẩn luôn
+  if (ORG_CONFIG?.org_is_hide_page_avatar) return HIDE_CSS
 
   // không thì thôi
-
-  // if (
-  //   // nếu page đang thiết lập ẩn, thì luôn ẩn mà không cần quan tâm đến thiết lập của user
-  //   getPageInfo($props.source?.fb_page_id)?.is_hide_page_avatar ||
-  //   // nếu user đã thiết lập ẩn thì cũng ẩn luôn
-  //   // đang kích hoạt thiết lập cá nhân
-  //   (chatbotUserStore.personal_settings?.is_enable_personal_setting &&
-  //     // thiết lập cá nhân: thiết lập ẩn avatar page
-  //     chatbotUserStore.personal_settings?.is_hide_page_avatar)
-  // )
-  //   return 'hidden group-hover:block'
-
-  // nếu không thì luôn hiện
 }
 </script>

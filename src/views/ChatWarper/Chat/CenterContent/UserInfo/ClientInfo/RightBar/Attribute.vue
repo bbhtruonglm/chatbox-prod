@@ -54,7 +54,10 @@
   />
   <InfoItem
     title="first_name"
-    :value="conversationStore.chatbot_client?.client_first_name"
+    :value="
+      conversationStore.chatbot_client?.client_first_name ||
+      conversationStore.select_conversation?.client_name
+    "
   />
   <InfoItem
     title="last_name"

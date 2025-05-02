@@ -3,45 +3,52 @@
     id="chat__right-bar"
     class="w-[400px] h-full flex-shrink-0 overflow-y-auto flex flex-col gap-2"
   >
-    <!-- <UserInfo /> -->
-    <AlertHeader />
-    <template v-for="widget of pageStore.widget_list">
-      <div
-        v-if="!widget.is_hidden"
-        :class="{
-          'flex-grow': widget.is_show,
-        }"
-        class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col"
-      >
-        <button
-          @click="toggleWidget(widget)"
-          class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
-        >
-          {{ widget.snap_app?.name }}
-          <ArrowDown
-            :class="{
-              '-rotate-90': !widget.is_show,
-            }"
-            class="w-3 text-slate-500 duration-300 mr-1"
-          />
-        </button>
+    <PostRightBar
+      v-if="conversationStore.select_conversation?.conversation_type === 'POST'"
+    />
+    <!-- <PostAnalytic
+      v-if="conversationStore.select_conversation?.conversation_type === 'POST'"
+    /> -->
+    <template v-else>
+      <AiJourney />
+      <template v-for="widget of pageStore.widget_list">
         <div
-          v-if="widget.is_show"
-          :class="
-            widget.app_installed_size === 'FULL'
-              ? 'min-h-[calc(100vh_-_132px)]'
-              : 'min-h-[300px]'
-          "
-          class="w-full border-t flex-grow"
+          v-if="!widget.is_hidden"
+          :class="{
+            'flex-grow': widget.is_show,
+          }"
+          class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col"
         >
-          <iframe
-            :id="`widget-${widget._id}`"
-            class="w-full h-full"
-            :src="widget.url"
-            frameborder="0"
-          />
+          <button
+            @click="toggleWidget(widget)"
+            class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
+          >
+            {{ widget.snap_app?.name }}
+            <ArrowDown
+              :class="{
+                '-rotate-90': !widget.is_show,
+              }"
+              class="w-3 text-slate-500 duration-300 mr-1"
+            />
+          </button>
+          <div
+            v-if="widget.is_show"
+            :class="
+              widget.app_installed_size === 'FULL'
+                ? 'min-h-[calc(100vh_-_132px)]'
+                : 'min-h-[300px]'
+            "
+            class="w-full border-t flex-grow"
+          >
+            <iframe
+              :id="`widget-${widget._id}`"
+              class="w-full h-full"
+              :src="widget.url"
+              frameborder="0"
+            />
+          </div>
         </div>
-      </div>
+      </template>
     </template>
   </div>
 </template>
@@ -52,8 +59,10 @@ import { getIframeUrl, getPageWidget } from '@/service/function'
 import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
 
+import PostAnalytic from '@/views/ChatWarper/Chat/RightBar/PostAnalytic.vue'
+import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
-import AlertHeader from '@/views/ChatWarper/Chat/CenterContent/MessageList/AlertHeader.vue'
+import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 

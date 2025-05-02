@@ -7,7 +7,7 @@
   </Alert>
 </template>
 <script setup lang="ts">
-import { useOAuthStore } from '../../stores/oauth'
+import { useOAuthStore } from './store'
 
 import Alert from '@/views/OAuth/Alert.vue'
 

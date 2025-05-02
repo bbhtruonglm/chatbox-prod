@@ -9,12 +9,24 @@
         selectPageStore.is_group_page_mode,
     }"
     class="group/org-item"
+    class_title="flex items-center gap-2 flex-grow min-w-0"
   >
     <template #icon>
-      <BriefCaseIcon class="w-5 h-5 text-slate-700" />
+      <img
+        v-if="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+        :src="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+        class="w-5 h-5 rounded-oval"
+      />
+      <BriefCaseIcon
+        v-else
+        class="w-5 h-5 text-slate-700"
+      />
     </template>
     <template #title>
-      {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
+      <div class="flex-shrink-0 h-6">
+        {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
+      </div>
+      <Group :org_id />
     </template>
     <template #action>
       <OrgTitleAction
@@ -27,6 +39,7 @@
       <OrgPages
         @sort_list_page="$main.getListPage"
         v-model:active_page_list="active_page_list"
+        :org_id
       />
     </template>
   </CardItem>
@@ -40,6 +53,7 @@ import { KEY_SORT_LIST_PAGE_FUNCT } from '../symbol'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import OrgTitleAction from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitleAction.vue'
 import OrgPages from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgPages.vue'
+import Group from '@/views/Dashboard/SelectPage/AllOrg/Org/Group.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 
@@ -64,7 +78,7 @@ const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
 /**lọc theo nền tảng */
 const selected_platform = ref<ISelectPlatform>('ALL_PLATFORM')
 /**danh sách page sau khi được lọc */
-const active_page_list = ref<PageData[]>()
+const active_page_list = defineModel<PageData[]>('active_page_list')
 
 class Main {
   /**sắp xếp page gắn sao lên đầu */
@@ -86,15 +100,23 @@ class Main {
       return false
 
     /**giá trị nền tảng đang được chọn */
-    let current_selected_platform = selected_platform.value
+    let current_selected_platform: ISelectPlatform = selected_platform.value
 
     // nếu menu chọn tổng không phải là tất cả thì ghi đè theo menu ngoài
     if (selectPageStore.current_menu !== 'ALL_PLATFORM')
       current_selected_platform = selectPageStore.current_menu
 
+    // zalo là ngoại lệ vì gộp 2 tab vào 1
+    if (
+      current_selected_platform === 'ZALO' &&
+      page?.page?.type?.includes('ZALO')
+    )
+      return true
+
     // nếu chọn nền tảng cụ thể mà trang không thuộc nền tảng đó thì không hiển thị
     if (
       current_selected_platform !== 'ALL_PLATFORM' &&
+      // phải chọn đúng nền tảng
       page?.page?.type !== current_selected_platform
     )
       return false

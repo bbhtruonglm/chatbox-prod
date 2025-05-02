@@ -8,6 +8,7 @@ export type PageType =
   | 'WEBSITE'
   | 'FB_WHATSAPP'
   | 'FB_INSTAGRAM'
+  | 'ZALO_PERSONAL'
 
 /**@deprecated IPage */
 export interface PageInfo {
@@ -47,7 +48,12 @@ export interface PageInfo {
 }
 
 /**trang thuộc loại nào */
-export type IPageType = 'FB_MESS' | 'ZALO_OA' | 'FB_INSTAGRAM' | 'WEBSITE'
+export type IPageType =
+  | 'FB_MESS'
+  | 'ZALO_OA'
+  | 'ZALO_PERSONAL'
+  | 'FB_INSTAGRAM'
+  | 'WEBSITE'
 
 /**các thông tin cơ bản của trang */
 export interface IPageInfo {
@@ -104,6 +110,8 @@ export interface IPageFlag {
   is_has_remove_page_data?: boolean
   /**cài đặt ẩn ảnh của trang trong danh sách conversation, hover vào mới hiện */
   is_hide_page_avatar?: boolean
+  /**trang có bị mất kết nối không */
+  is_disconnected?: boolean
 }
 /**thiết lập tự động chia nhân viên cho khách mới */
 export interface IPageAssignConfig {
@@ -574,8 +582,13 @@ export interface PageList {
 }
 
 export interface PageWebsiteCreate {
+  /**id tổ chức */
+  org_id: string
+  /**tên trang */
   name: string
+  /**hình ảnh của trang */
   avatar?: string
+  /**mô tả */
   description?: string
 }
 

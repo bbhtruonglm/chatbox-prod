@@ -35,6 +35,17 @@ export interface OrgInfo {
   }
   /**các thiết lập của tổ chức */
   org_config?: {
+    /**
+     * chế độ hiển thị gắn nhãn
+     * - ICON_TOOLTIP: Hiện chấm màu có chú giải
+     * - ICON: Chỉ hiện chấm màu
+     * - FULL: Hiện văn bản
+     */
+    org_display_label_type?: 'ICON_TOOLTIP' | 'ICON' | 'FULL'
+    /**cài đặt ẩn ảnh của trang trong danh sách conversation, hover vào mới hiện */
+    org_is_hide_page_avatar?: boolean
+    /**chế độ hiển thị (sắp xếp) hội thoại */
+    org_sort_conversation?: 'NEWEST' | 'UNREAD'
     /**yêu cầu bảo mật nâng cao 2FA */
     org_is_active_2fa?: boolean
     /**kích hoạt AI tự động dịch en -> vn */
@@ -49,6 +60,8 @@ export interface OrgInfo {
     org_is_auto_charge?: boolean
     /**id của người kích hoạt chế độ tự động thanh toán */
     org_auto_charge_actor?: string
+    /**hiện hội thoại theo nhân viên chỉ định */
+    org_is_only_visible_client_of_staff?: boolean
   }
   /**thông số về gói hiện tại của tổ chức */
   org_package?: {
@@ -112,6 +125,8 @@ export interface OrgInfo {
     org_current_ai_sound?: number
     /**số lượng AI xử lý video hiện tại của tổ chức */
     org_current_ai_video?: number
+    /**cho phép tổ chức dùng tính năng zl cá nhân dù gói không cho phép */
+    org_allow_zlp?: boolean
   }
 }
 

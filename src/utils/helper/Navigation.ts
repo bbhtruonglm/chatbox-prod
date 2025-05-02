@@ -14,6 +14,8 @@ export class Navigation {
 
 /**các tiện ích liên quan đến cửa sổ trình duyệt */
 export interface IWindowAction {
+  /**chuyển hướng đến url */
+  redirect(url?: string): void
   /**mở url trong một tab mới */
   openNewTab(url?: string): void
   /**mở url trong một popup */
@@ -23,6 +25,13 @@ export interface IWindowAction {
 /**các tiện ích liên quan đến cửa sổ trình duyệt */
 @singleton()
 export class WindowAction implements IWindowAction {
+  redirect(url?: string): void {
+    // nếu không có url thì thôi
+    if (!url) return
+
+    // chuyển hướng
+    window.location.href = url
+  }
   openNewTab(url?: string): void {
     // nếu không có url thì thôi
     if (!url) return

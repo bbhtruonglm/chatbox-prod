@@ -36,8 +36,7 @@
                 class="w-10 h-10 rounded-lg bg-slate-100"
               >
                 <Item
-                  :data_source="input.data_source"
-                  :url="attachment?.payload?.url"
+                  :data_source="$main.getDataSource(att_index)"
                   is_mini
                 />
               </button>
@@ -175,16 +174,18 @@ class Main {
     )
   ) {}
 
+  /**lấy dữ liệu của file */
+  getDataSource(index?: number) {
+    // trả về dữ liệu của file
+    return this.SERVICE_CREATE_DATA_SOURCE.exec($props.message, index)
+  }
   /**chọn att khác */
   changeAttachment(index?: number) {
     // thay lại giá trị của att mới được chọn
     input.value = {
       ...input.value,
       ...{
-        data_source: this.SERVICE_CREATE_DATA_SOURCE.exec(
-          $props.message,
-          index
-        ),
+        data_source: this.getDataSource(index),
         index,
       },
     }
@@ -232,7 +233,7 @@ watch(
 )
 
 // xuất phương thức
-defineExpose({ toggleModal: $main.toggleModal })
+defineExpose({ toggleModal: $main.toggleModal.bind($main) })
 </script>
 <style lang="scss" scoped>
 .custom-btn {

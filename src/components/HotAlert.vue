@@ -19,6 +19,7 @@
       </div>
       <div class="flex-shrink-0">
         <button
+          v-if="getConfig(noti.noti_code).btn_title"
           @click="readNoti(noti)"
           :class="getConfig(noti.noti_code).btn"
           class="item text-white hover:brightness-90"
@@ -37,7 +38,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useOrgStore } from '@/stores'
+import { useCommonStore, useOrgStore } from '@/stores'
 import { get_noti, read_noti } from '@/service/api/chatbox/billing'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -55,6 +56,7 @@ const $props = withDefaults(
 )
 
 const orgStore = useOrgStore()
+const commonStore = useCommonStore()
 const { t: $t } = useI18n()
 const $router = useRouter()
 
@@ -67,7 +69,7 @@ interface ISetting {
   /**màu nút */
   btn: string
   /**tiêu đề nút */
-  btn_title: string
+  btn_title?: string
   /**màu chữ */
   text: string
 }
@@ -130,6 +132,13 @@ const SETTINGS: Record<string, ISetting> = {
     text: 'text-red-700',
     btn_title: $t('v1.view.main.dashboard.org.menu.extend'),
   },
+  PAGE_EXPIRED_SESSION: {
+    bg: 'bg-red-100',
+    border: 'border-red-200',
+    btn: 'bg-red-500',
+    text: 'text-red-700',
+    // btn_title: DEFAULT_SETTING.btn_title,
+  },
 }
 
 /**danh sách các thông báo mới */
@@ -172,16 +181,16 @@ async function getNoti() {
 async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   try {
     // nếu đang loading thì thôi
-    if (is_loading.value) return
+    if (commonStore.is_loading_full_screen) return
 
     // mở loading
-    is_loading.value = true
+    commonStore.is_loading_full_screen = true
 
     // đánh dấu noti là đã đọc
     await read_noti(orgStore.selected_org_id, noti?.noti_id)
 
     // giảm số thông báo
-    orgStore.count_noti--
+    if (orgStore.count_noti) orgStore.count_noti--
 
     // chỉ đóng không xử lý gì thêm
     if (is_close) getNoti()
@@ -228,7 +237,7 @@ async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   } catch (e) {
   } finally {
     // tắt loading
-    is_loading.value = false
+    commonStore.is_loading_full_screen = false
   }
 }
 </script>

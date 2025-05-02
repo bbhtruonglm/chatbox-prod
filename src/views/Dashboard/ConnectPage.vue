@@ -3,12 +3,18 @@
     ref="modal_connect_page_ref"
     class_modal="h-3/4"
     class_body="py-2 flex gap-2"
+    @close_modal="$main.resetStore()"
   >
     <template #header>
-      {{ $t('v1.view.main.dashboard.select_platform.add_page') }}
+      <template v-if="!connectPageStore.is_hidden_menu">
+        {{ $t('v1.view.main.dashboard.select_platform.add_page') }}
+      </template>
+      <template v-else>
+        {{ $t('Cấp lại quyền') }}
+      </template>
     </template>
     <template #body>
-      <Menu />
+      <Menu v-if="!connectPageStore.is_hidden_menu" />
       <div class="w-[784px] bg-white rounded-md p-2 flex flex-col relative">
         <div
           v-if="connectPageStore.is_loading"
@@ -17,6 +23,7 @@
           <Loading class="mx-auto" />
         </div>
         <div
+          v-if="!connectPageStore.is_hidden_menu"
           class="font-medium p-2 border-b border-slate-200 flex-shrink-0 flex items-center justify-between"
         >
           <template v-if="connectPageStore.current_menu === 'PAGE'">
@@ -39,9 +46,7 @@
           </template>
           <div class="flex items-center gap-2.5">
             <Search
-              v-if="
-                ['PAGE', 'MEMBER'].includes(connectPageStore.current_menu)
-              "
+              v-if="['PAGE', 'MEMBER'].includes(connectPageStore.current_menu)"
               :placeholder="
                 connectPageStore.current_menu === 'MEMBER'
                   ? $t('v1.common.search')
@@ -52,7 +57,9 @@
             <SelectOrg class="border rounded-lg" />
           </div>
         </div>
-        <LowPermision v-if="!orgStore.isAdminOrg()" />
+        <LowPermision
+          v-if="!orgStore.isAdminOrg() && !connectPageStore.is_hidden_menu"
+        />
         <template v-else>
           <ActivePage
             v-if="connectPageStore.current_menu === 'PAGE'"
@@ -65,8 +72,19 @@
             @close="toggleModal"
           />
           <Facebook v-else-if="connectPageStore.current_menu === 'FB_MESS'" />
-          <Website v-else-if="connectPageStore.current_menu === 'WEBSITE'" />
-          <ZaloOA v-else-if="connectPageStore.current_menu === 'ZALO_OA'" />
+          <Website
+            v-else-if="connectPageStore.current_menu === 'WEBSITE'"
+            @done="$emit('done')"
+          />
+
+          <Zalo
+            v-else-if="connectPageStore.current_menu?.includes('ZALO')"
+            @done="$emit('done')"
+          />
+
+          <Instagram
+            v-else-if="connectPageStore.current_menu === 'FB_INSTAGRAM'"
+          />
           <div
             v-else
             class="p-2"
@@ -92,8 +110,9 @@ import ActivePage from '@/views/Dashboard/ConnectPage/ActivePage.vue'
 import Member from '@/views/Dashboard/ConnectPage/Member.vue'
 import Facebook from '@/views/Dashboard/ConnectPage/Facebook.vue'
 import Website from '@/views/Dashboard/ConnectPage/Website.vue'
-import ZaloOA from '@/views/Dashboard/ConnectPage/ZaloOA.vue'
+import Zalo from '@/views/Dashboard/ConnectPage/Zalo.vue'
 import Search from '@/views/Dashboard/ConnectPage/Search.vue'
+import Instagram from '@/components/OAuth/Instagram.vue'
 
 const $emit = defineEmits(['done'])
 
@@ -111,6 +130,15 @@ function toggleModal(key?: string) {
   // ẩn hiện modal
   modal_connect_page_ref.value?.toggleModal()
 }
+
+class Main {
+  /**nạp lại dữ liệu gốc */
+  resetStore() {
+    // xóa cờ
+    connectPageStore.is_hidden_menu = false
+  }
+}
+const $main = new Main()
 
 // cung cấp hàm toggle modal cho component cha
 defineExpose({ toggleModal })

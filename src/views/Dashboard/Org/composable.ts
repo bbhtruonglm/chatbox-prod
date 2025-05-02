@@ -17,7 +17,7 @@ export function initRequireData() {
   
     try {
       // gọi api update
-      orgStore.selected_org_info = await update_org(orgStore.selected_org_id, {
+      await update_org(orgStore.selected_org_id, {
         org_config: orgStore.selected_org_info?.org_config,
       })
   

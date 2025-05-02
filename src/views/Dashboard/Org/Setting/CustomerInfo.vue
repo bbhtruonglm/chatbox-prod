@@ -23,18 +23,22 @@
           @click="$main.save"
           class="bg-green-600 text-white py-1 px-4 rounded-md text-sm font-medium"
         >
-          {{ $t('v1.common.ok') }}
+          <span class="hidden md:block">{{ $t('v1.common.ok') }}</span>
+          <span class="block md:hidden">✔︎</span>
         </button>
         <button
           @click="$main.cancelEdit"
           class="bg-gray-600 text-white py-1 px-4 rounded-md text-sm font-medium"
         >
-          {{ $t('v1.common.cancel') }}
+          <span class="hidden md:block">{{ $t('v1.common.cancel') }}</span>
+          <span class="block md:hidden">✕</span>
         </button>
       </div>
     </template>
     <template #item>
-      <div class="grid grid-cols-2 text-sm font-medium gap-2 pr-5">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 text-sm font-medium gap-2 pr-5"
+      >
         <Item
           :title="
             $t('v1.view.main.dashboard.org.setting.customer_info.org_name')
@@ -84,6 +88,11 @@
             $t('v1.view.main.dashboard.org.setting.customer_info.contract_code')
           "
           v-model="org_info.org_contract_code"
+          :is_edit="false"
+        />
+        <Item
+          :title="$t('Id tổ chức')"
+          v-model="org_id"
           :is_edit="false"
         />
         <Item
@@ -186,6 +195,13 @@ const org_info = computed({
   set(val) {
     set(orgStore, 'selected_org_info.org_info', val)
   },
+})
+/**thông tin của tổ chức */
+const org_id = computed({
+  get() {
+    return orgStore.selected_org_info?.org_id || {}
+  },
+  set(val) {},
 })
 
 class Main {

@@ -19,11 +19,16 @@
     >
       {{ $t('v1.view.main.dashboard.org.lock_free_page_over_quota') }}
     </div>
+    <FullPost
+      v-else-if="
+        conversationStore.select_conversation.conversation_type === 'POST'
+      "
+    />
     <div
       v-else
       @scroll="onScrollMessage"
       id="list-message"
-      class="pt-14 pb-5 px-2 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
+      class="pt-14 pb-5 pl-2 pr-3 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
         v-if="is_loading"
@@ -36,6 +41,7 @@
       <!-- <HeaderChat /> -->
       <div
         v-for="(message, index) of messageStore.list_message"
+        :key="message._id"
         class="relative"
       >
         <div class="flex flex-col gap-2">
@@ -47,19 +53,23 @@
         </div>
         <div
           :class="{
-            'py-2': ['client', 'page', 'note'].includes(message.message_type),
+            'py-2': ['client', 'page', 'note', 'group'].includes(
+              message.message_type
+            ),
           }"
           class="flex gap-1 relative"
         >
           <div
             v-if="
               (message.message_type === 'client' && !message.ad_id) ||
+              message.message_type === 'group' ||
               message.fb_post_id
             "
             class="flex-shrink-0"
           >
             <ClientAvatar
               :conversation="conversationStore.select_conversation"
+              :avatar="message?.group_client_avatar"
               class="w-8 h-8"
             />
           </div>
@@ -73,7 +83,7 @@
           >
             <MessageItem
               v-if="
-                ['client', 'activity', 'page', 'note'].includes(
+                ['client', 'activity', 'page', 'note', 'group'].includes(
                   message.message_type
                 ) && !message.ad_id
               "
@@ -93,32 +103,19 @@
             <template
               v-else-if="message.message_type === 'client' && message.ad_id"
             >
-              <AdMessage :ad_id="message.ad_id" />
-              <br />
-              
-              <!-- <PostTemplate
+              <PostTemplate
                 :message
                 :message_index="index"
-              /> -->
-
+              />
             </template>
 
-            <!-- <PostTemplate
+            <PostTemplate
               v-else-if="
                 message.platform_type === 'FB_POST' && message.fb_post_id
               "
               :message
               :message_index="index"
-            /> -->
-
-            <FacebookPost
-              v-else-if="
-                message.platform_type === 'FB_POST' && message.fb_post_id
-              "
-              :fb_post_id="message.fb_post_id"
-              :message
             />
-
             <UnsupportMessage v-else />
             <DoubleCheckIcon
               v-if="isLastPageMessage(message, index)"
@@ -177,6 +174,7 @@ import { toastError } from '@/service/helper/alert'
 import { getPageInfo, scrollToBottomMessage } from '@/service/function'
 import { debounce, findLastIndex, remove, size } from 'lodash'
 
+import FullPost from '@/views/ChatWarper/Chat/CenterContent/MessageList/FullPost.vue'
 import Loading from '@/components/Loading.vue'
 import TimeSplit from '@/views/ChatWarper/Chat/CenterContent/MessageList/TimeSplit.vue'
 import UnsupportMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnsupportMessage.vue'
@@ -265,7 +263,7 @@ onMounted(() => {
   window.addEventListener('chatbox_socket_message', socketNewMessage)
 
   // cập nhật tin nhắn
-  window.addEventListener('chatbox_socket_update_message', socketUpdatêMssage)
+  window.addEventListener('chatbox_socket_update_message', socketUpdateMssage)
 })
 
 // hủy lắng nghe sự kiện từ socket khi component bị hủy
@@ -276,7 +274,7 @@ onUnmounted(() => {
   // cập nhật tin nhắn
   window.removeEventListener(
     'chatbox_socket_update_message',
-    socketUpdatêMssage
+    socketUpdateMssage
   )
 })
 
@@ -308,10 +306,6 @@ function isLastPageMessage(message: MessageInfo, index: number) {
   // nếu là tin nhắn cuối cùng của nhân viên gửi
   return index === last_client_message_index.value
 }
-/**phân tích tên nv từ meta */
-function parserStaffName(meta?: string) {
-  return meta?.split('__')?.[1] || ''
-}
 /**xử lý socket tin nhắn mới */
 function socketNewMessage({ detail }: CustomEvent) {
   // nếu không có dữ liệu thì thôi
@@ -323,6 +317,20 @@ function socketNewMessage({ detail }: CustomEvent) {
     detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
   )
     return
+
+  // nếu là tin nhắn của khách thì gửi cho toàn bộ các widget
+  if (detail?.message_type === 'client' && detail?.message_text) {
+    document.querySelectorAll('iframe')?.forEach(iframe => {
+      iframe?.contentWindow?.postMessage(
+        {
+          from: 'CHATBOX',
+          type: 'CLIENT_MESSAGE',
+          payload: { message: detail?.message_text },
+        },
+        '*'
+      )
+    })
+  }
 
   // nếu là dạng comment bài post thì loại bỏ các post cũ, để post mới sẽ lên đầu
   if (size(detail.comment))
@@ -341,7 +349,7 @@ function socketNewMessage({ detail }: CustomEvent) {
   scrollToBottomMessage()
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
-function socketUpdatêMssage({ detail }: CustomEvent) {
+function socketUpdateMssage({ detail }: CustomEvent) {
   // nếu không có dữ liệu thì thôi
   if (!detail) return
 
@@ -406,6 +414,10 @@ function loadMoreMessage($event: UIEvent) {
 function getListMessage(is_scroll?: boolean) {
   // nếu đang mất mạng thì không cho gọi api
   if (!commonStore.is_connected_internet) return
+
+  // nếu chưa chọn khách hàng thì thôi
+  if (!conversationStore.select_conversation?.fb_page_id) return
+  if (!conversationStore.select_conversation?.fb_client_id) return
 
   /**id tin nhắn trên đầu của lần loading trước */
   let old_first_message_id = messageStore.list_message?.[0]?._id

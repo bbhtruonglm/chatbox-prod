@@ -395,7 +395,9 @@ async function getListPAGEPage() {
     await getMapMyOs()
 
     /**toàn bộ các trang của người dùng */
-    list_current_page.value = await new N4SerivceAppPage().getListPage()
+    list_current_page.value = await new N4SerivceAppPage().getListPage({
+      is_disable_filter: true
+    })
 
     /**danh sách các trang không phải trong tổ chức của tôi */
     let list_not_my_org_page: PageData[] = []
@@ -458,9 +460,8 @@ async function getListPAGEPage() {
 }
 /**toggle trang */
 function selectPage(page: PageData) {
-  // TODO tạm thời tắt đê cho H2, sẽ bật lại sau
   // nếu không phải là admin thì bỏ qua
-  // if (!isPageAdmin(page)) return
+  if (!isPageAdmin(page)) return
 
   /**id của trang */
   const PAGE_ID = page?.page?.fb_page_id || ''

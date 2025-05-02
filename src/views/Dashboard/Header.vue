@@ -8,17 +8,8 @@
     >
       <img
         :src="commonStore.partner?.logo?.full"
-        class="h-6"
+        class="h-8"
       />
-      <!-- <img
-        v-if="Domain.isRetion()"
-        src="@/assets/imgs/retion-full.svg"
-        class="h-6"
-      />
-      <img
-        v-else
-        src="@/assets/imgs/bot-full.svg"
-      /> -->
     </button>
     <div class="flex gap-7 items-center">
       <slot name="right" />

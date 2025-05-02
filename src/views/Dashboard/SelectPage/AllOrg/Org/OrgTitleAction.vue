@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex-shrink-0">
     <template v-if="selectPageStore.is_group_page_mode">
       <div
         v-if="orgStore.selected_org_id === org_id && $main.countSelectedPage()"

@@ -9,15 +9,33 @@
           'ALMOST_REACH_QUOTA_AI',
           'CHANGE_PAGE_OWNER',
           'LOCK_FEATURE',
+          'PAGE_EXPIRED_SESSION',
         ]"
       />
-      <div class="grid grid-cols-2 gap-2 md:flex md:justify-between flex-shrink-0">
-        <Search
-          class="md:w-72"
-          v-model="selectPageStore.search"
-          :placeholder="$t('v1.common.page_search_placeholder')"
-        />
-        <SelectOrg is_allow_all />
+      <div
+        class="gap-2 flex flex-col md:flex-row md:justify-between flex-shrink-0"
+      >
+        <div
+          class="text-lg font-semibold flex items-center gap-2 flex-grow min-w-0"
+        >
+          <FlagIcon class="size-5 flex-shrink-0" />
+          <div class="flex-shrink-0">
+            {{ $t('Trình quản lý Trang') }}
+          </div>
+          <AssignGroup
+            v-if="!orgStore.isAdminOrg() && !orgStore.is_selected_all_org"
+          />
+        </div>
+        <div
+          class="grid grid-cols-2 gap-5 md:flex md:justify-between flex-shrink-0"
+        >
+          <Search
+            class="md:w-52"
+            v-model="selectPageStore.search"
+            :placeholder="$t('v1.common.page_search_placeholder')"
+          />
+          <SelectOrg is_allow_all />
+        </div>
       </div>
       <div
         v-if="selectPageStore.is_loading"
@@ -31,7 +49,7 @@
       </template>
       <template v-else>
         <EmptyPage
-          v-if="!pageStore.countActivePage()"
+          v-if="!pageStore.countActivePage() && !selectPageStore.is_loading"
           tab="PAGE"
         />
         <div
@@ -41,12 +59,14 @@
           }"
           class="overflow-y-auto flex flex-col gap-3"
         >
-          <GroupPage
+          <SelectGroup v-if="orgStore.isAdminOrg()" />
+          <SkeletonGroupPage v-if="selectPageStore.is_loading" />
+          <!-- <GroupPage
             filter="RECENT"
             :icon="ClockIcon"
             :title="$t('v1.common.recent')"
             tab="PAGE"
-          />
+          /> -->
           <GroupPage
             filter="FB_MESS"
             :icon="FacebookIcon"
@@ -60,11 +80,19 @@
             tab="WEBSITE"
           />
           <GroupPage
-            filter="ZALO_OA"
-            :icon="ZaloIcon"
-            :title="$t('v1.common.zalo_oa')"
-            tab="ZALO_OA"
+            filter="FB_INSTAGRAM"
+            :icon="InstagramIcon"
+            :title="`Instagram`"
+            tab="FB_INSTAGRAM"
           />
+
+          <GroupPage
+            filter="ZALO"
+            :icon="ZaloIcon"
+            :title="`Zalo`"
+            tab="ZALO"
+          />
+
           <GroupPageAction />
         </div>
       </template>
@@ -75,12 +103,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  useConnectPageStore,
-  useOrgStore,
-  usePageStore,
-  useSelectPageStore,
-} from '@/stores'
+import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_GET_ORG_PAGES_FN,
@@ -93,6 +116,7 @@ import { preGoToChat } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { map } from 'lodash'
 
+import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 import Loading from '@/components/Loading.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
@@ -103,11 +127,14 @@ import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import HotAlert from '@/components/HotAlert.vue'
 import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
+import SelectGroup from '@/views/Dashboard/SelectPage/SelectGroup.vue'
+import AssignGroup from '@/views/Dashboard/SelectPage/AssignGroup.vue'
 
-import ClockIcon from '@/components/Icons/Clock.vue'
+import { FlagIcon } from '@heroicons/vue/24/solid'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WebIcon from '@/components/Icons/Web.vue'
+import InstagramIcon from '@/components/Icons/Instagram.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 
@@ -168,17 +195,17 @@ onMounted(() => {
    */
   getMeChatbotUser?.()
 
-  // kích hoạt zalo nếu phát hiện
-  triggerConnectZalo()
+  // kích hoạt tự động mở kết nối nền tảng nếu cần
+  triggerConnectPlatform()
 })
 
-/**kích hoạt oauth zalo redirect nếu phát hiện */
-function triggerConnectZalo() {
-  // nếu không có cờ zalo thì thôi
-  if ($route.query.connect_page !== 'ZALO_OA') return
+/**kích hoạt tự động mở kết nối nền tảng nếu cần */
+function triggerConnectPlatform() {
+  // nếu không có cờ thì thôi
+  if (!$route.query.connect_page) return
 
   // mở modal connect zalo
-  toggleModalConnectPage?.('ZALO_OA')
+  toggleModalConnectPage?.($route.query.connect_page)
 }
 /**chuyển đến trang chat */
 function goToChat() {

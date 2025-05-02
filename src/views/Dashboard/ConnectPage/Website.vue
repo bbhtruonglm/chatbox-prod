@@ -44,7 +44,7 @@
   <AlertRechQuota ref="alert_reach_quota_page_ref" />
 </template>
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
+import { inject, ref, toRef } from 'vue'
 import { useCommonStore, useConnectPageStore, useOrgStore } from '@/stores'
 import { isDomain } from '@/service/helper/check'
 import { useI18n } from 'vue-i18n'
@@ -53,12 +53,19 @@ import { error } from '@/utils/decorator/Error'
 import { container } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { KEY_TOGGLE_MODAL_FUNCT } from '@/views/Dashboard/ConnectPage/symbol'
 
 import EmptyPage from '@/views/Dashboard/ConnectPage/EmptyPage.vue'
 import InjectScript from '@/views/Dashboard/ConnectPage/Website/InjectScript.vue'
 import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import WebIcon from '@/components/Icons/Web.vue'
+import type { IAlert } from '@/utils/helper/Alert/type'
+
+const $emit = defineEmits(['done'])
+
+/**ẩn hiện modal kết nối nền tảng */
+const toggleModal = inject(KEY_TOGGLE_MODAL_FUNCT)
 
 const connectPageStore = useConnectPageStore()
 const commonStore = useCommonStore()
@@ -71,18 +78,29 @@ const name = ref<string>()
 /**ref của modal hướng dẫn nhúng script */
 const inject_script_ref = ref<InstanceType<typeof InjectScript>>()
 /**ref của modal thông báo hết quota */
-const alert_reach_quota_page_ref =
-  ref<InstanceType<typeof AlertRechQuota>>()
+const alert_reach_quota_page_ref = ref<InstanceType<typeof AlertRechQuota>>()
 /**id trang sau khi tạo */
 const page_id = ref<string>()
+
+class CustomToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // nếu lỗi là không có quyền truy cập thì thông báo khác
+    if (message?.message === 'REACH_QUOTA.PAGE')
+      return alert_reach_quota_page_ref.value?.toggleModal()
+
+    // thông báo lỗi
+    super.error(message)
+  }
+}
 
 class Main {
   /**tạo mới page web */
   @loading(toRef(commonStore, 'is_loading_full_screen'))
-  @error($toast)
+  @error(new CustomToast())
   async createWebsite() {
     // nếu chưa nhập tên thì không thực hiện
     if (!name.value) return
+    if (!orgStore.selected_org_id) return
 
     // kiểm tra tên trang web có hợp lệ không
     if (!isDomain(name.value))
@@ -95,6 +113,7 @@ class Main {
     /**tạo mới page web */
     const PAGE = await new N4SerivceAppPage().createWebsite({
       name: name.value,
+      org_id: orgStore.selected_org_id,
     })
 
     // lưu lại id trang mới được tạo
@@ -104,7 +123,7 @@ class Main {
     inject_script_ref.value?.toggleModal()
   }
   /**sau khi xong */
-  done() {
+  async done() {
     // reset lại giá trị
     name.value = ''
 
@@ -112,7 +131,13 @@ class Main {
     page_id.value = undefined
 
     // quay lại page danh sách trang
-    connectPageStore.selectMenu('PAGE')
+    // connectPageStore.selectMenu('PAGE')
+
+    // thông báo ra modal là đã xong
+    $emit('done')
+
+    // tắt modal kết nối nền tảng
+    await toggleModal?.()
   }
 }
 const $main = new Main()

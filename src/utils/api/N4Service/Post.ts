@@ -1,3 +1,4 @@
+import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { N4Serivce } from '@/utils/api/N4Serivce'
 import { singleton } from 'tsyringe'
@@ -28,6 +29,36 @@ export class N4SerivceAppPost extends N4Serivce {
       page_id,
       client_id,
       target_id: post_id,
+      limit,
+      skip,
+    })
+  }
+  /** Lấy bình luận chính của bài post với tòa bộ khách hàng */
+  public async getPostComment(
+    page_id: string,
+    post_id: string,
+    skip?: number,
+    limit?: number
+  ): Promise<FacebookCommentPost[]> {
+    return this.post('get_comment', {
+      page_id,
+      target_id: post_id,
+      limit,
+      skip,
+    })
+  }
+  /** Lấy bình luận con */
+  public async getChildComment(
+    page_id: string,
+    // client_id: string,
+    comment_id: string,
+    skip?: number,
+    limit?: number
+  ): Promise<FacebookCommentPost[]> {
+    return this.post('get_comment', {
+      page_id,
+      // client_id,
+      target_id: comment_id,
       limit,
       skip,
     })
@@ -70,6 +101,46 @@ export class N4SerivceAppPost extends N4Serivce {
       post_id,
       target_id,
       is_hidden,
+    })
+  }
+  /**đọc info 1 bài post */
+  public async getPost(
+    page_id: string,
+    post_id?: string,
+    ad_id?: string
+  ): Promise<IPost> {
+    return this.post('get_post', {
+      page_id,
+      post_id,
+      ad_id,
+    })
+  }
+  /**đọc thống kê 1 bài post */
+  public async getPostAnalytic(
+    page_id: string,
+    post_id?: string,
+    ad_id?: string,
+    is_refresh_cache?: boolean
+  ): Promise<IPostAnalytic> {
+    return this.post('get_post_analytic', {
+      page_id,
+      post_id,
+      ad_id,
+      is_refresh_cache,
+    })
+  }
+  /**đọc danh sách bài post */
+  public async getPosts(
+    page_id: string | Object,
+    skip: number,
+    limit: number,
+    search?: string
+  ): Promise<IPost[]> {
+    return this.post('get_posts', {
+      page_id,
+      skip,
+      limit,
+      search
     })
   }
 }

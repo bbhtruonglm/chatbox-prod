@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import { format as date_format, differenceInDays } from 'date-fns'
 
-import type { OrgInfo } from '@/service/interface/app/billing'
+import type {
+  MemberShipInfo,
+  OrgInfo,
+  OwnerShipInfo,
+} from '@/service/interface/app/billing'
 import type { AppInfo } from '@/service/interface/app/widget'
 import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
@@ -17,10 +21,11 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   /** -------------- STAGE -------------- */
   /**menu đang chọn */
   const current_menu = ref<ISelectPlatform>(
-    getLocal('current_selected_tab', 'ALL_PLATFORM')
+    'ALL_PLATFORM'
+    // getLocal('current_selected_tab', 'ALL_PLATFORM')
   )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(current_menu, 'current_selected_tab')
+  // saveLocal(current_menu, 'current_selected_tab')
 
   /**tìm kiếm danh sách page theo tên hoặc id */
   const search = ref('')
@@ -29,9 +34,12 @@ export const useSelectPageStore = defineStore('select_page_store', () => {
   const is_loading = ref(false)
 
   /**có đang ở chế độ gộp trang không */
-  const is_group_page_mode = ref<boolean>(getLocal('is_group_page_mode', false))
+  const is_group_page_mode = ref<boolean>(
+    false
+    // getLocal('is_group_page_mode', false)
+  )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(is_group_page_mode, 'is_group_page_mode')
+  // saveLocal(is_group_page_mode, 'is_group_page_mode')
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
@@ -64,6 +72,8 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   const is_loading = ref(false)
   /**tìm kiếm trang */
   const search = ref('')
+  /**ẩn bỏ các logic chọn, chỉ hiển thị ui kết nối */
+  const is_hidden_menu = ref(false)
 
   /** -------------- MUTATION / ACTION -------------- */
   /**chọn menu */
@@ -72,6 +82,7 @@ export const useConnectPageStore = defineStore('connect_page_store', () => {
   }
 
   return {
+    is_hidden_menu,
     current_menu,
     is_loading,
     search,
@@ -95,14 +106,40 @@ export const useOrgStore = defineStore('org_store', () => {
   saveLocal(selected_org_id, 'selected_org_id')
   /**có đang chọn toàn bộ tổ chức không */
   const is_selected_all_org = ref<boolean>(
-    getLocal('is_selected_all_org', true)
+    true
+    // getLocal('is_selected_all_org', true)
   )
   // lưu lại data vào local để khi f5 không bị reset
-  saveLocal(is_selected_all_org, 'is_selected_all_org')
+  // saveLocal(is_selected_all_org, 'is_selected_all_org')
   /**thông tin tổ chức đang được chọn */
   const selected_org_info = ref<OrgInfo>()
   /**đếm số thông báo */
   const count_noti = ref()
+  /**đã chọn lần đầu chưa */
+  const is_first_select_org = ref<boolean>(false)
+  /**danh sách trang trong tổ chức đang được chọn */
+  const list_os = ref<OwnerShipInfo[]>()
+  /**danh sách thành viên */
+  const list_ms = ref<MemberShipInfo[]>()
+
+  /**dữ liệu các nhóm đang được chọn của tổ chức */
+  const selected_org_group = ref<Record<string, string>>(
+    getLocal('selected_org_group', {})
+  )
+  saveLocal(selected_org_group, 'selected_org_group')
+
+  /**các tổ chức mà người dùng là admin */
+  const admin_orgs = computed(() =>
+    list_org.value?.filter(org => org?.current_ms?.ms_role === 'ADMIN')
+  )
+
+  /**
+   * Tìm kiếm tổ chức theo id
+   * @param org_id id của tổ chức
+   */
+  function findOrg(org_id?: string): OrgInfo | undefined {
+    return list_org.value?.find(org => org.org_id === org_id)
+  }
 
   /** -------------- MUTATION / ACTION -------------- */
   /**có phải là gói không giới hạn thời gian không */
@@ -191,7 +228,15 @@ export const useOrgStore = defineStore('org_store', () => {
     selected_org_info,
     count_noti,
     is_selected_all_org,
+    is_first_select_org,
+    selected_org_group,
 
+    list_os,
+    list_ms,
+
+    admin_orgs,
+
+    findOrg,
     isFreePack,
     isTrialPack,
     isProPack,
@@ -204,7 +249,7 @@ export const useOrgStore = defineStore('org_store', () => {
     isReachPageQuota,
     isUnlimitedTime,
     isUnlimitedPage,
-    isUnlimitedStaff
+    isUnlimitedStaff,
   }
 })
 

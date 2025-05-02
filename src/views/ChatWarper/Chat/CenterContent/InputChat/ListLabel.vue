@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="labels?.length"
     id="chat__select-label"
     :class="is_expand_label ? 'max-h-40 min-h-6' : 'h-6'"
     class="flex gap-1 group"
@@ -125,10 +126,13 @@ class Main {
     map(MAP_LABELS, (label: ICustomLabel) => {
       // đánh dấu các nhãn đã được chọn
       label.is_active = this.isActiveLabel(label._id)
+
+      // chuyển description sang dạng số
+      label.description = Number(label?.description)
     })
 
     // sắp xếp
-    labels.value = sortBy(MAP_LABELS, 'is_active', 'description')
+    labels.value = sortBy(MAP_LABELS, ['is_active', 'index', 'title'])
 
     // đếm số nhãn bị ẩn
     this.countHiddenLabel()
