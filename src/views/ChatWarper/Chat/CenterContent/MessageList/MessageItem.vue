@@ -38,6 +38,16 @@
         :attachment_size
         :message
       />
+      <!-- icon hiện ở tin nhắn -->
+      <div v-if="message_type == 'client'" class="flex items-center py-1.5 gap-2">
+        <button class="w-6 h-6 flex justify-center items-center rounded-full border border-blue-700 bg-blue-100">
+          <Zalo class="w-3 h-3"></Zalo>
+        </button>
+        <!--  -->
+        <button class="w-6 h-6 flex justify-center items-center rounded-full border border-green-600 bg-green-100">
+          <PhoneIcon class="w-3 h-3 text-green-600"></PhoneIcon>
+        </button>
+      </div>
     </SliderWarper>
     <!-- <div
       v-if="message?.reaction?.emoji"
@@ -95,6 +105,10 @@ import type {
 } from '@/service/interface/app/message'
 import { composableService } from '@/views/ChatWarper/Chat/CenterContent/MessageList/service'
 import { container } from 'tsyringe'
+
+//* icon
+import Zalo from '@/components/Icons/Zalo.vue'
+import { PhoneIcon } from '@heroicons/vue/24/solid'
 
 const { MessageService } = composableService()
 

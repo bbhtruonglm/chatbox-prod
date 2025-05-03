@@ -634,6 +634,7 @@ const source: Language = {
               open_facebook: 'Facebook profile',
               open_inbox: 'Open Facebook inbox',
               mark_unread: 'Mark message as unread',
+              mark_call: 'Call phone',
               block_user: 'Block user',
               alow_user: 'Unblock user',
               send_message: 'Click to send message',
