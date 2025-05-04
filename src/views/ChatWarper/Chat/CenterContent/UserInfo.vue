@@ -40,9 +40,9 @@
     <div v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5">
       <!--  -->
-      <button  @click="phone_list_ref?.toggle" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_call')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
+      <!-- <button  @click="phone_list_ref?.toggle" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_call')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
         <PhoneIcon class="w-3.5 h-3.5 text-green-600"></PhoneIcon>
-      </button>
+      </button> -->
       <button @click="$main.unreadConversation" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_unread')"
         class="text-slate-500 border border-slate-500 p-1.5 rounded-lg hover:bg-slate-100">
         <Loading v-if="is_loading_unread_conversation" :size="14" />

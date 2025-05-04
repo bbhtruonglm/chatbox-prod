@@ -20,6 +20,7 @@
           class="w-full h-full"
           :src="genUrl()"
           frameborder="0"
+          allow="microphone; camera; autoplay; speaker"
         />
         <div
           v-else
