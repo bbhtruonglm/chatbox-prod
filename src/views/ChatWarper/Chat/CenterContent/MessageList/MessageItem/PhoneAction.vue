@@ -1,6 +1,10 @@
 <template>
   <div
-    v-if="message?.client_phone && message_type == 'client'"
+    v-if="
+      orgStore.selected_org_info?.org_package?.org_allow_message_action &&
+      message?.client_phone &&
+      message_type == 'client'
+    "
     class="flex items-center py-1.5 gap-2"
   >
     <button
@@ -37,7 +41,7 @@ import { Parser } from '@/utils/helper/Parser'
 //* icon
 import Zalo from '@/components/Icons/Zalo.vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, useOrgStore, usePageStore } from '@/stores'
 import { PhoneIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
@@ -50,6 +54,7 @@ const $props = withDefaults(
 
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
+const orgStore = useOrgStore()
 
 /**tin nhắn này thuộc về dạng nào */
 const message_type = computed(() => $props.message?.message_type)

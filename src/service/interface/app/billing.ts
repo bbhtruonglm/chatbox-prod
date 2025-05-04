@@ -65,6 +65,8 @@ export interface OrgInfo {
   }
   /**thông số về gói hiện tại của tổ chức */
   org_package?: {
+    /**có cho phép chạy tính năng action tin nhắn call center và zalo không */
+    org_allow_message_action?: boolean
     /**số tháng của gói hiện tại */
     org_months?: number
     /**đã giảm giá 1 lần rồi */
