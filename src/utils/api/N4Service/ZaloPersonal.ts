@@ -1,0 +1,26 @@
+import type { FacebookCommentPost } from '@/service/interface/app/post'
+import { N4Serivce } from '@/utils/api/N4Serivce'
+import { singleton } from 'tsyringe'
+
+/**gọi API module page của chatbox */
+@singleton()
+export class N4SerivceAppZaloPersonal extends N4Serivce {
+  constructor() {
+    // gọi API module page của chatbot
+    super('app/zalo_personal')
+  }
+
+  /**gửi lời mời kết bạn */
+  public async sendFriendRequest(
+    page_id: string,
+    message_id: string
+  ): Promise<{
+    /**đã kết bạn chưa */
+    is_accept_friend_request?: boolean
+  }> {
+    return this.post('send_friend_request_by_message', {
+      page_id,
+      message_id,
+    })
+  }
+}

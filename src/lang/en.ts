@@ -1,6 +1,10 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Gửi lời mời kết bạn': 'Send friend request',
+  'Khách hàng này chưa là bạn bè với Zalo': 'This customer is not friends with zalo',
+  'Kết bạn': 'Request friend',
+  'Hội thoại Zalo cá nhân': 'Zalo Personal Conversation',
   'Gọi điện': 'Call',
   'Cấp lại quyền': 'Regrant permission',
   'Trang mất quyền truy cập, cần cấp lại quyền':

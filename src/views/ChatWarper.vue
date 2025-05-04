@@ -76,6 +76,7 @@ import { User } from '@/utils/helper/User'
 import type { IAlert } from '@/utils/helper/Alert/type'
 import { LocalStorage } from '@/utils/helper/LocalStorage'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
+import { read_os } from '@/service/api/chatbox/billing'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -107,6 +108,8 @@ watch(
 
 onMounted(() => {
   $main.getPageInfoToChat()
+
+  $main.markOrgHaveZalo()
 
   initExtensionLogic()
 
@@ -298,55 +301,6 @@ function getTokenOfWidget(
         data: r,
       }
     }
-  )
-}
-/**đọc dữ liệu của các page được chọn lưu lại */
-function getPageInfoToChat() {
-  flow(
-    [
-      // * delay để load dữ liệu từ local vào store
-      (cb: CbError) => setTimeout(() => cb(), 200),
-      // * đọc dữ liệu các page được chọn để chat
-      (cb: CbError) => {
-        if (!size(pageStore.selected_page_id_list)) {
-          toggle_loading(false)
-          return $router.push('/dashboard')
-        }
-
-        cb()
-      },
-      // * đọc dữ liệu trang từ server
-      (cb: CbError) =>
-        getSelectedPageInfo($t, (e, r) => {
-          if (e) {
-            // nếu có lỗi thì chuyển về trang dashboard
-            $router.push('/dashboard')
-
-            return cb(e)
-          }
-
-          // intergrateChatV1()
-          cb()
-        }),
-      // lưu lại các widget trên chợ, để map cta
-      (cb: CbError) =>
-        new N5AppV1AppApp()
-          .readMarket()
-          .then(n => {
-            pageStore.market_widgets = n
-
-            cb()
-          })
-          .catch(e => cb(e)),
-      // * khởi tạo kết nối socket lên server
-      (cb: CbError) => {
-        onSocketFromChatboxServer()
-
-        cb()
-      },
-    ],
-    undefined,
-    true
   )
 }
 /**giảm tải việc làm mới thời gian liên tục */
@@ -723,6 +677,20 @@ class Main {
 
     // khởi tạo kết nối socket lên server
     onSocketFromChatboxServer()
+  }
+
+  /**đánh dấu xem tổ chức này có page zalo không */
+  async markOrgHaveZalo() {
+    // nếu không có id tổ chức thì thôi
+    if (!orgStore.selected_org_id) return
+
+    /**lấy danh sách trang của tổ chức hiện tại */
+    const OSS = await read_os(orgStore.selected_org_id)
+
+    /**lọc ra các trang zalo cá nhân */
+    pageStore.zlp_oss = OSS.filter(
+      os => os?.page_info?.type === 'ZALO_PERSONAL'
+    )
   }
 }
 const $main = new Main()

@@ -11,7 +11,7 @@ import type {
   ListPageIsInstall,
 } from '@/service/interface/app/widget'
 import type { StaffInfo } from '@/service/interface/app/staff'
-import type { PageOrgInfoMap } from '@/service/interface/app/billing'
+import type { OwnerShipInfo, PageOrgInfoMap } from '@/service/interface/app/billing'
 import type { ILabel } from '@/service/interface/app/label'
 
 export const usePageStore = defineStore('page_store', () => {
@@ -108,6 +108,9 @@ export const usePageStore = defineStore('page_store', () => {
   /**các widget trên chợ */
   const market_widgets = ref<Record<string, AppInfo>>()
 
+  /**các trang zalo cá nhân của tổ chức đang được chọn dể chat */
+  const zlp_oss = ref<OwnerShipInfo[]>()
+
   /**--------------- GETTER ------------ */
   /**đếm số trang đang kích hoạt */
   function countActivePage() {
@@ -146,6 +149,7 @@ export const usePageStore = defineStore('page_store', () => {
     selected_pages_staffs,
     market_widgets,
     map_orgs,
+    zlp_oss,
 
     countSelectedPage,
     isSelectedPage,
