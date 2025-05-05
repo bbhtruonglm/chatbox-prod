@@ -51,6 +51,7 @@
       :list_button="data_source?.list_button"
       :ai="data_source?.ai"
       :message_id="message?._id"
+      :message
     />
   </div>
 </template>

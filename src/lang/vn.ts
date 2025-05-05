@@ -441,6 +441,7 @@ const source: Language = {
               open_facebook: 'Trang cá nhân Fb',
               open_inbox: 'Mở hộp thư Fb',
               mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
+              mark_call: 'Gọi điện thoại',
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',
               send_message: 'Nhấn để gửi tin nhắn',

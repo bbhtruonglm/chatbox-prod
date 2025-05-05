@@ -85,6 +85,7 @@
             v-if="input.data_source?.list_button?.length"
             :list_button="input.data_source?.list_button"
             :message_id="input.message_id"
+            :message
           />
         </div>
       </div>

@@ -35,6 +35,7 @@ import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageIte
 
 import type {
   MessageAiData,
+  MessageInfo,
   MessageTemplateButton,
 } from '@/service/interface/app/message'
 import { ref } from 'vue'
@@ -53,6 +54,8 @@ const $props = withDefaults(
     message_id?: string
     /**id của bình luận */
     comment_id?: string
+    /**dữ liệu của tin nhắn */
+    message?: MessageInfo
   }>(),
   {}
 )
@@ -168,6 +171,7 @@ function onClickBtn(button?: MessageTemplateButton) {
       client_id: conversationStore.select_conversation?.fb_client_id,
       message_id: $props.message_id,
       comment_id: $props.comment_id,
+      message_phone: $props.message?.client_phone
     })
 
     /**dữ liệu của widget được cài */
