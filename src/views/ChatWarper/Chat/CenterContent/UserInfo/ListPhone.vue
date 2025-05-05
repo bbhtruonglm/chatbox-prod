@@ -15,7 +15,7 @@ import { ref, onMounted } from 'vue'
 import Dropdown from '@/components/Dropdown.vue'
 
 /**component con*/
-import PhoneItem from '@/components/Main/Dashboard/PhoneItem.vue'
+import PhoneItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ListPhone/PhoneItem.vue'
 
 /**ref của dropdown danh sách cuộc gọi của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Dropdown>>()

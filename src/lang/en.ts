@@ -227,6 +227,9 @@ const source: Language = {
   'Mật khẩu không khớp': 'Password does not match',
   'Đăng ký tài khoản thành công': 'Successfully registered account',
   'Email đã tồn tại': 'Account already exists',
+  'Tạo':'Create',
+  'Gọi lần cuối':'Last call',
+  'Gọi điện thoại':'Phone',
   name: 'English',
   v1: {
     common: {
@@ -639,7 +642,6 @@ const source: Language = {
               open_facebook: 'Facebook profile',
               open_inbox: 'Open Facebook inbox',
               mark_unread: 'Mark message as unread',
-              mark_call: 'Call phone',
               block_user: 'Block user',
               alow_user: 'Unblock user',
               send_message: 'Click to send message',
