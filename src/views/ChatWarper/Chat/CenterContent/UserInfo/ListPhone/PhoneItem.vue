@@ -15,9 +15,14 @@
       <div class="flex flex-1 flex-col overflow-hidden flex-shrink-0">
         <div class="flex items-center overflow-hidden justify-between">
           <span class="font-medium text-sm text-black">{{ phone_number }}</span>
-          <span class="text-xs text-slate-500"> {{ $t('Tạo') }} {{ created_at }}</span>
+          <span class="text-xs text-slate-500">
+            {{ $t('Tạo') }} {{ formatCreatedAt(created_at) }}</span
+          >
         </div>
-        <span class="text-sm text-black">{{ $t('Gọi lần cuối') }}: {{ last_call }}</span>
+        <span class="text-sm text-black"
+          >{{ $t('Gọi lần cuối') }}:
+          {{ $date_handle.format(last_call, 'HH:mm dd/MM/yyyy') }}</span
+        >
       </div>
     </div>
     <!-- Các nút hành động -->
@@ -38,9 +43,19 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/vi'
+
+import { container } from 'tsyringe'
+import { DateHandle } from '@/utils/helper/DateHandle'
+
 /**icon*/
 import { InformationCircleIcon, PhoneIcon } from '@heroicons/vue/24/solid'
 import Zalo from '@/components/Icons/Zalo.vue'
+
+dayjs.extend(relativeTime)
+dayjs.locale('vi')
 
 /*Prod truyền vào từ cha**/
 defineProps<{
@@ -48,4 +63,21 @@ defineProps<{
   created_at: string
   last_call: string
 }>()
+
+//*Biến đổi thời gian
+const $date_handle = container.resolve(DateHandle)
+
+//* biến đổi thời gian 
+function formatCreatedAt(DATA_STR: string) {
+  const DATE = dayjs(DATA_STR)
+  const NOW = dayjs()
+
+  if (NOW.diff(DATE, 'day') >= 3) {
+    // Quá 3 ngày thì hiển thị dạng chuẩn
+    return DATE.format('DD/MM/YYYY')
+  } else {
+    // Dưới 3 ngày thì hiển thị dạng tương đối: "2 ngày trước"
+    return DATE.fromNow()
+  }
+}
 </script>

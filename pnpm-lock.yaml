@@ -26,6 +26,9 @@ importers:
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       dompurify:
         specifier: ^3.2.3
         version: 3.2.3
@@ -784,6 +787,9 @@ packages:
 
   date-format-parse@0.2.7:
     resolution: {integrity: sha512-/+lyMUKoRogMuTeOVii6lUwjbVlesN9YRYLzZT/g3TEZ3uD9QnpjResujeEqUW+OSNbT7T1+SYdyEkTcRv+KDQ==}
+
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
@@ -2480,6 +2486,8 @@ snapshots:
       '@babel/runtime': 7.24.7
 
   date-format-parse@0.2.7: {}
+
+  dayjs@1.11.13: {}
 
   de-indent@1.0.2: {}
 

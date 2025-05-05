@@ -1,38 +1,64 @@
 import { ApiManager } from '@/utils/base/Api'
 
 /**lịch sử cuộc gọi */
-export interface ICallHistory {
-  /**id bản ghi */
-  id?: string
-  /**id cuộc gọi */
-  call_id?: null
-  /**Thời lượng cuộc gọi - ms */
-  duration?: number
-  /**Thời điểm kết thúc cuộc gọi */
-  end_time?: null
-  /**
-   * Loại cuộc gọi:
-   * - "OUTGOING": Gọi đi
-   */
-  call_type?: 'OUTGOING'
-  /**Thời điểm tạo bản ghi*/
-  createdAt?: string
-  /**Thời điểm cập nhật bản ghi*/
-  updatedAt?: string
-  /**ID liên hệ*/
-  contact_id?: string
-  /**Thời điểm bắt đầu cuộc gọi*/
-  start_time?: null
-  /**
-   * Trạng thái cuộc gọi:
-   * - "ANSWERED": Đã trả lời
-   * - "NO_ANSWER": Không nghe máy
-   * - "CANCELED": Đã hủy
-   * - "BUSY": Máy bận
-   */
-  call_status?: 'ANSWERED' | 'NO_ANSWER' | 'CANCELED' | 'BUSY'
-  /**Số điện thoại*/
-  phone?: string
+/** Dạng lịch sử cuộc gọi */
+export enum CallHistoryType {
+  /** Cuộc gọi đi */
+  OUTGOING = 'OUTGOING',
+  /** Cuộc gọi đến */
+  INCOMING = 'INCOMING',
+}
+
+/** Trạng thái cuộc gọi */
+export enum CallStatus {
+  /** Máy bận */
+  BUSY = 'BUSY',
+  /** Đã kết thúc */
+  ENDED = 'ENDED',
+  /** Đã hủy */
+  CANCELED = 'CANCELED',
+  /** Đã trả lời */
+  ANSWERED = 'ANSWERED',
+  /** Không trả lời */
+  NO_ANSWER = 'NO_ANSWER',
+}
+
+/** Lịch sử cuộc gọi */
+
+export interface CallHistory {
+
+  /** ID bản ghi dạng UUID */
+  id?: string;
+
+  /** ID cuộc gọi (Do bên thứ 3 cung cấp) */
+  call_id?: string;
+
+  /** Dạng lịch sử cuộc gọi */
+  call_type?: keyof typeof CallHistoryType;
+
+  /** Trạng thái cuộc gọi */
+  call_status?: keyof typeof CallStatus;
+
+  /** ID contact */
+  contact_id?: string | null;
+
+  /** Số điện thoại gọi đi */
+  phone?: string;
+
+  /** Thời gian bắt đầu cuộc gọi */
+  start_time?: Date;
+
+  /** Thời gian kết thúc cuộc gọi */
+  end_time?: Date;
+
+  /** Thời lượng cuộc gọi (tính bằng giây) */
+  duration?: number;
+
+  /** Thời gian tạo record */
+  createdAt?: Date;
+
+  /** Thời gian cập nhật record */
+  updatedAt?: Date;
 }
 
 /**gọi API lên server của merchant */
@@ -51,7 +77,7 @@ export class MerchantContact extends ApiManager {
     org_id: string,
     page_id: string,
     client_id: string
-  ): Promise<ICallHistory[]> {
+  ): Promise<CallHistory[]> {
     /**dữ liệu gốc */
     return await this.post('customer/call_history', {
       org_id,

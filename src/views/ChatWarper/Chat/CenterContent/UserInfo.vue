@@ -40,7 +40,7 @@
     <div v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5">
       <!--  -->
-      <button  @click="phone_list_ref?.toggle" v-tooltip.left="$t('Gọi điện thoại')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
+      <button @click="toggleListPhone" v-tooltip.left="$t('Gọi điện thoại')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
         <PhoneIcon class="size-3.5 text-green-600"></PhoneIcon>
       </button>
       <button @click="$main.unreadConversation" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_unread')"
@@ -124,6 +124,11 @@ class Main {
       conversationStore.select_conversation.fb_client_id
     ).resetRead(1)
   }
+}
+
+function toggleListPhone(event: MouseEvent) {
+  phone_list_ref.value?.toggle(event); // Truyền event vào toggle
+  
 }
 
 
