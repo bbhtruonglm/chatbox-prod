@@ -135,6 +135,8 @@ export interface IPost extends IPortContent {
 }
 /**dữ liệu của một tin nhắn */
 export interface MessageInfo {
+  /**só diện thoại phát hiện được từ tin nhắn */
+  client_phone?: string
   /**tên khách hàng nhắn vào nhóm */
   group_client_name?: string
   /**id khách hàng nhắn vào nhóm */

@@ -1,6 +1,11 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Gửi lời mời kết bạn': 'Send friend request',
+  'Khách hàng này chưa là bạn bè với Zalo': 'This customer is not friends with zalo',
+  'Kết bạn': 'Request friend',
+  'Hội thoại Zalo cá nhân': 'Zalo Personal Conversation',
+  'Gọi điện': 'Call',
   'Cấp lại quyền': 'Regrant permission',
   'Trang mất quyền truy cập, cần cấp lại quyền':
     'The page has lost access and needs to be re-granted permission',
@@ -634,6 +639,7 @@ const source: Language = {
               open_facebook: 'Facebook profile',
               open_inbox: 'Open Facebook inbox',
               mark_unread: 'Mark message as unread',
+              mark_call: 'Call phone',
               block_user: 'Block user',
               alow_user: 'Unblock user',
               send_message: 'Click to send message',

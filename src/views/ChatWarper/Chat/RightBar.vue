@@ -45,6 +45,7 @@
               class="w-full h-full"
               :src="widget.url"
               frameborder="0"
+              allow="microphone; camera; autoplay; speaker"
             />
           </div>
         </div>

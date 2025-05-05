@@ -38,6 +38,7 @@
         :attachment_size
         :message
       />
+      <PhoneAction :message />
     </SliderWarper>
     <!-- <div
       v-if="message?.reaction?.emoji"
@@ -87,6 +88,7 @@ import SliderWarper from '@/views/ChatWarper/Chat/CenterContent/MessageList/Mess
 import AttachmentMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/AttachmentMessage.vue'
 // import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Emotion.vue'
 import Emotion from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/Emotion.vue'
+import PhoneAction from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction.vue'
 
 import type {
   ChatbotButton,

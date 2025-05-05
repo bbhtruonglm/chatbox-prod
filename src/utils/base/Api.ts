@@ -73,7 +73,7 @@ export class ApiManager {
       const RESULT = await RES.json()
 
       // có message thì là bị lỗi
-      if (RESULT?.message) throw RESULT
+      if (RESULT?.message || RESULT?.code !== 200) throw RESULT
 
       // nếu là raw thì trả về nguyên bản
       // if (is_raw) return RESULT
