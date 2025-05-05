@@ -12,7 +12,7 @@ export class ApiManager {
     this.#URI = uri
 
     // lưu lại header
-    this.#HEADERS = headers
+    this.#HEADERS = headers || {}
   }
 
   /**thực hiện gọi API */
