@@ -25,7 +25,7 @@ export enum CallStatus {
 
 /** Lịch sử cuộc gọi */
 
-export interface CallHistory {
+export interface ICallHistory {
 
   /** ID bản ghi dạng UUID */
   id?: string;
@@ -77,7 +77,7 @@ export class MerchantContact extends ApiManager {
     org_id: string,
     page_id: string,
     client_id: string
-  ): Promise<CallHistory[]> {
+  ): Promise<ICallHistory[]> {
     /**dữ liệu gốc */
     return await this.post('customer/call_history', {
       org_id,

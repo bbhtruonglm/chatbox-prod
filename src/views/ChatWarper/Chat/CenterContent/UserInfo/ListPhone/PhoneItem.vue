@@ -54,29 +54,39 @@ import { DateHandle } from '@/utils/helper/DateHandle'
 import { InformationCircleIcon, PhoneIcon } from '@heroicons/vue/24/solid'
 import Zalo from '@/components/Icons/Zalo.vue'
 
+// Mở rộng dayjs với tính năng relativeTime (hiển thị thời gian tương đối)
 dayjs.extend(relativeTime)
+
+// Đặt ngôn ngữ mặc định của dayjs là tiếng Việt
 dayjs.locale('vi')
 
-/*Prod truyền vào từ cha**/
+/** Props truyền vào từ component cha */
 defineProps<{
+  /** Số điện thoại của khách hàng */
   phone_number: string
+
+  /** Thời gian  cuộc gọi đầu tiên*/
   created_at: string
+
+  /** Thời gian cuộc gọi gần nhất */
   last_call: string
 }>()
 
-//*Biến đổi thời gian
+/**Biến đổi thời gian*/
 const $date_handle = container.resolve(DateHandle)
 
-//* biến đổi thời gian 
-function formatCreatedAt(DATA_STR: string) {
-  const DATE = dayjs(DATA_STR)
+/** Biến đổi thời gian thành định dạng hiển thị phù hợp */
+function formatCreatedAt(data_str: string) {
+  /** Đối tượng thời gian từ chuỗi đầu vào */
+  const DATE = dayjs(data_str)
+  /** Thời điểm hiện tại */
   const NOW = dayjs()
 
   if (NOW.diff(DATE, 'day') >= 3) {
-    // Quá 3 ngày thì hiển thị dạng chuẩn
+    // Nếu cách hiện tại ≥ 3 ngày → hiển thị định dạng chuẩn ngày/tháng/năm
     return DATE.format('DD/MM/YYYY')
   } else {
-    // Dưới 3 ngày thì hiển thị dạng tương đối: "2 ngày trước"
+    // Nếu dưới 3 ngày → hiển thị dạng thời gian tương đối, ví dụ: "2 ngày trước"
     return DATE.fromNow()
   }
 }
