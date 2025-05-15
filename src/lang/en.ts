@@ -230,6 +230,7 @@ const source: Language = {
   'Tạo':'Create',
   'Gọi lần cuối':'Last call',
   'Gọi điện thoại':'Phone',
+   'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Please select page and customer before proceeding.',
   name: 'English',
   v1: {
     common: {

@@ -34,6 +34,7 @@ const source: Language = {
   'Tạo':'Tạo',
   'Gọi lần cuối':'Gọi lần cuối',
   'Gọi điện thoại':'Gọi điện thoại',
+  'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Vui lòng chọn trang và khách hàng trước khi thực hiện',
   name: 'Tiếng Việt',
   v1: {
     common: {

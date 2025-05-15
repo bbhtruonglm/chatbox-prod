@@ -7,8 +7,17 @@
     position="BOTTOM"
     :back="309"
     :distance="9"
-    class_content="flex flex-col gap-1 max-h-[210px] overflow-y-auto"
+    class_content="flex flex-col gap-1 max-h-[210px] overflow-hidden overflow-y-auto"
   >
+    <div
+      v-if="is_loading"
+      class="relative z-10"
+    >
+      <div class="absolute top-6 left-1/2 translate-x-1/2">
+        <Loading class="mx-auto" />
+      </div>
+    </div>
+
     <!-- Nếu có cuộc gọi thì hiển thị danh sách -->
     <PhoneItem
       v-for="(item, index) in UNIQUECALLS"
@@ -30,30 +39,32 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useConversationStore, useCommonStore, useOrgStore } from '@/stores'
-import { useRoute } from 'vue-router'
+import { useConversationStore, useOrgStore } from '@/stores'
+import { container } from 'tsyringe'
 
 /**component*/
 import Dropdown from '@/components/Dropdown.vue'
+import Loading from '@/components/Loading.vue'
 
 /**component con*/
 import PhoneItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ListPhone/PhoneItem.vue'
 
 /**Api*/
 import { MerchantContact } from '@/utils/api/Merchant'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { useI18n } from 'vue-i18n'
 
 /*Biến store**/
 const orgStore = useOrgStore()
 
-const commonStore = useCommonStore()
-
 const conversationStore = useConversationStore()
 
-/*Biến router**/
-const $route = useRoute()
+/**trạng thái loading */
+const is_loading = ref(false)
 
-/**id trang */
-const page_id = ref($route.query.page_id as string)
+const $toast = container.resolve(Toast)
+
+const { t: $t } = useI18n()
 
 /**ref của dropdown danh sách cuộc gọi của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Dropdown>>()
@@ -91,48 +102,57 @@ const UNIQUECALLS = computed(() => {
 function toggle($event?: MouseEvent) {
   // Gọi phương thức toggleDropdown() trên component menu để ẩn/hiện dropdown
   client_menu_ref.value?.toggleDropdown($event)
-
+  // Reset danh sách cuộc gọi trước khi gọi API
+  conversation_lists.value = []
   // Gọi lại API lấy lịch sử cuộc gọi mỗi khi toggle (dù là mở hay đóng)
-  fetchCallHistory()
+  $main.fetchCallHistory()
 }
 
-/** Hàm gọi API lấy lịch sử cuộc gọi */
-async function fetchCallHistory() {
-  try {
-    /** ID tổ chức được chọn */
-    const ORG_ID = orgStore.selected_org_id ?? ''
-    /** ID trang hiện tại */
-    const PAGE_ID = page_id.value ?? ''
-    /** ID khách hàng đang xem */
-    const CLIENT_ID = conversationStore.select_conversation?.fb_client_id ?? ''
+class Main {
+  /**
+   * @param API gọi API
+   */
+  constructor(private readonly API = container.resolve(MerchantContact)) {}
 
-    // Bật trạng thái loading toàn màn hình
-    commonStore.is_loading_full_screen = true
+  /** Lấy danh sách cuộc gọi */
+  async fetchCallHistory() {
+    // Bật loading
+    is_loading.value = true
 
-    // Gọi API lấy lịch sử cuộc gọi
-    const RES = await new MerchantContact().getCallHistory(
-      ORG_ID,
-      PAGE_ID,
-      CLIENT_ID
-    )
+    try {
+      /** ID tổ chức được chọn */
+      const ORG_ID = orgStore.selected_org_id
+      /** ID trang hiện tại */
+      const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+      /** ID khách hàng đang xem */
+      const CLIENT_ID = conversationStore.select_conversation?.fb_client_id
 
-    return RES
-  } catch (error) {
-    console.error('Error fetching call history:', error)
+      // Kiểm tra xem cả ba giá trị có tồn tại không
+      if (!ORG_ID || !PAGE_ID || !CLIENT_ID) {
+        $toast.error(
+          $t('Vui lòng chọn trang và khách hàng trước khi thực hiện')
+        )
+        is_loading.value = false // Tắt loading nếu có lỗi
+        return
+      }
 
-    if (Array.isArray(error)) {
-      // API đang trả về mảng nên gán trực tiếp vào danh sách cuộc gọi
-      conversation_lists.value = error
-      return
+      /** Gọi API để lấy danh sách cuộc gọi */
+      await this.API.getCallHistory(ORG_ID, PAGE_ID, CLIENT_ID)
+    } catch (error) {
+      console.error('Error fetching call history:', error)
+
+      if (Array.isArray(error)) {
+        // API đang trả về mảng nên gán trực tiếp vào danh sách cuộc gọi
+        conversation_lists.value = error
+        return
+      }
+    } finally {
+      // Tắt loading
+      is_loading.value = false
     }
-
-    // Ném lỗi để xử lý bên ngoài nếu không phải mảng
-    throw error
-  } finally {
-    // Tắt trạng thái loading
-    commonStore.is_loading_full_screen = false
   }
 }
+const $main = new Main()
 
 defineExpose({ toggle })
 </script>
