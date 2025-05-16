@@ -2,6 +2,13 @@ import type { FacebookCommentPost } from '@/service/interface/app/post'
 import { N4Serivce } from '@/utils/api/N4Serivce'
 import { singleton } from 'tsyringe'
 
+interface IGroupMember {
+  /**Tên của thành viên*/
+  client_name?: string
+  /**avatar của thành viên*/
+  client_avatar?: string
+}
+
 /**gọi API module page của chatbox */
 @singleton()
 export class N4SerivceAppZaloPersonal extends N4Serivce {
@@ -21,6 +28,17 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
     return this.post('send_friend_request_by_message', {
       page_id,
       message_id,
+    })
+  }
+
+  /**gửi lời mời kết bạn */
+  public async getGroupMenbers(
+    page_id: string,
+    group_id: string
+  ): Promise<IGroupMember[]> {
+    return this.post('get_group_member', {
+      page_id,
+      group_id,
     })
   }
 }
