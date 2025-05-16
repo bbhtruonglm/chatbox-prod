@@ -31,6 +31,7 @@ const source: Language = {
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
   '_ không hợp lệ': '{name} không hợp lệ',
+  'Thành viên nhóm':'Thành viên nhóm',
   name: 'Tiếng Việt',
   v1: {
     common: {

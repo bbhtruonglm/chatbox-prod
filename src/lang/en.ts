@@ -227,6 +227,7 @@ const source: Language = {
   'Mật khẩu không khớp': 'Password does not match',
   'Đăng ký tài khoản thành công': 'Successfully registered account',
   'Email đã tồn tại': 'Account already exists',
+  'Thành viên nhóm':' Group members',
   name: 'English',
   v1: {
     common: {
