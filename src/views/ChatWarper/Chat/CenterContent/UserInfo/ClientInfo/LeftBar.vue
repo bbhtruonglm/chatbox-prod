@@ -106,10 +106,10 @@
       </div>
     </div>
     <button
-      @click="toggleClientChatbot"
+      @click="is_enable = !is_enable"
       class="text-blue-700 bg-blue-100 rounded-md text-sm py-2 px-4 gap-2 flex items-center justify-center hover:brightness-90"
     >
-      <template v-if="conversationStore.chatbot_client?.client_is_stop">
+      <template v-if="!is_enable">
         <PlayOutlineIcon class="w-4 h-4" />
         {{ $t('v1.view.main.dashboard.chat.client.start_bot') }}
       </template>
@@ -121,26 +121,28 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useConversationStore, useCommonStore } from '@/stores'
-import { computed } from 'vue'
-import { dateFormat } from '@/service/helper/format'
 import { getILabel } from '@/service/function'
+import { dateFormat } from '@/service/helper/format'
+import { useCommonStore, useConversationStore } from '@/stores'
+import { computed } from 'vue'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 
+import ClockWhiteIcon from '@/components/Icons/ClockWhite.vue'
+import DateWhiteIcon from '@/components/Icons/DateWhite.vue'
 import GenderIcon from '@/components/Icons/Gender.vue'
 import GlobalIcon from '@/components/Icons/Global.vue'
 import LinkIcon from '@/components/Icons/Link.vue'
-import DateWhiteIcon from '@/components/Icons/DateWhite.vue'
-import ClockWhiteIcon from '@/components/Icons/ClockWhite.vue'
-import UserSquareIcon from '@/components/Icons/UserSquare.vue'
-import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
 import PauseWhiteIcon from '@/components/Icons/PauseWhite.vue'
 import PlayOutlineIcon from '@/components/Icons/PlayOutline.vue'
+import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
+import UserSquareIcon from '@/components/Icons/UserSquare.vue'
 import { toastError } from '@/service/helper/alert'
 import { ChatbotAppClient } from '@/utils/api/Chatbot'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
 import { set } from 'lodash'
 
+const { is_enable } = composableService()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 
