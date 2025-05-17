@@ -144,9 +144,9 @@ const $toast = container.resolve(Toast)
 
 /**ref của dropdown menu của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Menu>>()
-/**ref của dropdown menu của danh sách */
-const phone_list_ref = ref<InstanceType<typeof Menu>>()
-/**ref của dropdown menu của danh sách thành viên nhóm */
+/**ref của dropdown danh sách cuộc gọi của nhóm */
+const phone_list_ref = ref<InstanceType<typeof ListPhone>>()
+/**ref của dropdown danh sách thành viên nhóm */
 const member_list_ref = ref<InstanceType<typeof Member>>()
 /**modal assign nhân viên */
 const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
