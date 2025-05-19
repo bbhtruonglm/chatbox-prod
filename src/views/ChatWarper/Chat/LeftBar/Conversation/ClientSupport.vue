@@ -43,8 +43,8 @@
           class="w-3 h-3"
         />
       </template>
-      <SparklesIcon v-if="calcStatus(source)" class="size-4" />
-      <!-- <div
+      <SparklesIcon v-if="calcStatus?.(source?.bot_resume_at)" class="size-4" />
+      <div
         v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
         class="ml-1"
       >
@@ -66,7 +66,7 @@
           width="13"
           height="13"
         />
-      </div> -->
+      </div>
     </div>
   </div>
   <Popover
@@ -86,8 +86,8 @@
   </Popover>
 </template>
 <script setup lang="ts">
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
 import { ref } from 'vue'
-import { calcStatus } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
 import { getLabelValid, getPageInfo } from '@/service/function'
 import { useExtensionStore } from '@/stores'
 
@@ -107,6 +107,9 @@ const $props = withDefaults(
 )
 
 const extensionStore = useExtensionStore()
+
+/** logic bật/tắt bot */
+const { calcStatus } = composableService(true)
 
 /**ref của popover */
 const label_popover_ref = ref<ComponentRef>()

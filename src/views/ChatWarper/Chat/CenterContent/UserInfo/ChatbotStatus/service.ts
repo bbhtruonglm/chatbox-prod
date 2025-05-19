@@ -8,29 +8,14 @@ import { container } from 'tsyringe'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-
-/** tính toán trạng thái */
-export function calcStatus(conversation?: ConversationInfo): boolean {
-  /**thời gian bot quay lại chạy */
-  const BOT_RESUME_AT = conversation?.bot_resume_at
-
-  // nếu không có -> bot bật
-  if (!BOT_RESUME_AT) return true
-
-  // nếu chưa đến giờ -> bot tắt
-  if (BOT_RESUME_AT > Date.now()) return false
-
-  // đã đến giờ -> bot bật
-  return true
-}
-
-/** thiết lập tắt bật chatbot của khách hàng */
-export function composableService() {
+/**
+ * thiết lập tắt bật chatbot của khách hàng
+ * @param without_watch không lắng nghe chuyển hội thoại
+ */
+export function composableService(without_watch: boolean = false) {
   const conversationStore = useConversationStore()
   const commonStore = useCommonStore()
   const { t: $t } = useI18n()
-  // const $toast = container.resolve(Toast)
   const $toast = container.resolve(ToastV2)
   const $date_handle = container.resolve(DateHandle)
 
@@ -62,19 +47,26 @@ export function composableService() {
       // ghi lại dữ liệu mới
       conversationStore.select_conversation.bot_resume_at = RES?.bot_resume_at
 
+      /** Data key của hội thoại đang được chọn */
+      const DATA_KEY = conversationStore.select_conversation?.data_key || ''
+
+      // cập nhật dữ liệu ở danh sách hội thoại
+      conversationStore.conversation_list[DATA_KEY].bot_resume_at =
+        RES?.bot_resume_at
+
       // cảnh báo khi bot tắt
       if (status) this.alertDisableChatbot()
     }
 
-    /**cảnh báo khi bot tắt */
+    /** cảnh báo khi bot tắt */
     alertDisableChatbot() {
-      /**giờ bot bật */
+      /** giờ bot bật */
       const DATE_RESUME_AT = $date_handle.format(
         conversationStore.select_conversation?.bot_resume_at,
         'hh:mm'
       )
 
-      /**nội dung thông báo */
+      /** nội dung thông báo */
       const ALERT_MESSAGE = $t(
         'Trợ lý AI đã tắt. Trợ lý AI sẽ tự động bật lại sau 60 phút nữa (lúc _)',
         { date: DATE_RESUME_AT }
@@ -83,20 +75,32 @@ export function composableService() {
       // cảnh báo
       $toast.warning(ALERT_MESSAGE, 'top-center', 3000)
     }
+
+    /** tính toán trạng thái */
+    calcStatus(time?: number): boolean {
+      // nếu không có -> bot bật
+      if (!time) return true
+
+      // nếu chưa đến giờ -> bot tắt
+      if (time > Date.now()) return false
+
+      // đã đến giờ -> bot bật
+      return true
+    }
   }
   const $main = new Main()
 
-  /**trạng thái hiện tại */
+  // nếu không cần lắng nghe thay đổi của khi chuyển hội thoại thì trả về hàm tính toán trạng thái thôi
+  if (without_watch) {
+    return { calcStatus: $main.calcStatus }
+  }
+
+  /** trạng thái hiện tại */
   const is_enable = computed({
-    get: () => calcStatus(conversationStore.select_conversation),
+    get: () =>
+      $main.calcStatus(conversationStore.select_conversation?.bot_resume_at),
     set: async val => await $main.manageChatbot(!val),
   })
-
-  // tính lại khi đổi hội thoại
-  watch(
-    () => conversationStore.select_conversation?.fb_client_id,
-    () => calcStatus(conversationStore.select_conversation)
-  )
 
   return { is_enable }
 }

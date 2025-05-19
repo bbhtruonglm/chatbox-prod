@@ -2,20 +2,17 @@ import { N4SerivceAppConversation } from '@/utils/api/N4Service/Conversation'
 import { useCommonStore, useConversationStore } from '@/stores'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
-import { Toast, ToastV2 } from '@/utils/helper/Alert/Toast'
+import { ToastV2 } from '@/utils/helper/Alert/Toast'
 import { DateHandle } from '@/utils/helper/DateHandle'
 import { container } from 'tsyringe'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-
-/** thiết lập tắt bật chatbot của khách hàng */
+/**thiết lập tắt bật chatbot của khách hàng */
 export function composableService() {
   const conversationStore = useConversationStore()
   const commonStore = useCommonStore()
   const { t: $t } = useI18n()
-  // const $toast = container.resolve(Toast)
   const $toast = container.resolve(ToastV2)
   const $date_handle = container.resolve(DateHandle)
 
@@ -50,7 +47,6 @@ export function composableService() {
       // cảnh báo khi bot tắt
       if (status) this.alertDisableChatbot()
     }
-
     /**cảnh báo khi bot tắt */
     alertDisableChatbot() {
       /**giờ bot bật */
@@ -68,11 +64,10 @@ export function composableService() {
       // cảnh báo
       $toast.warning(ALERT_MESSAGE, 'top-center', 3000)
     }
-
-    /** tính toán trạng thái */
-    calcStatus(conversation?: ConversationInfo): boolean {
+    /**tính toán trạng thái */
+    calcStatus(): boolean {
       /**thời gian bot quay lại chạy */
-      const BOT_RESUME_AT = conversation?.bot_resume_at
+      const BOT_RESUME_AT = conversationStore.select_conversation?.bot_resume_at
 
       // nếu không có -> bot bật
       if (!BOT_RESUME_AT) return true
@@ -83,20 +78,19 @@ export function composableService() {
       // đã đến giờ -> bot bật
       return true
     }
-
   }
   const $main = new Main()
 
   /**trạng thái hiện tại */
   const is_enable = computed({
-    get: () => $main.calcStatus(conversationStore.select_conversation),
+    get: () => $main.calcStatus(),
     set: async val => await $main.manageChatbot(!val),
   })
 
   // tính lại khi đổi hội thoại
   watch(
     () => conversationStore.select_conversation?.fb_client_id,
-    () => $main.calcStatus(conversationStore.select_conversation)
+    () => $main.calcStatus()
   )
 
   return { is_enable }
