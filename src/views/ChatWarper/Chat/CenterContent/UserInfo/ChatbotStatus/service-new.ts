@@ -10,21 +10,6 @@ import { useI18n } from 'vue-i18n'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 
-/** tính toán trạng thái */
-export function calcStatus(conversation?: ConversationInfo): boolean {
-  /**thời gian bot quay lại chạy */
-  const BOT_RESUME_AT = conversation?.bot_resume_at
-
-  // nếu không có -> bot bật
-  if (!BOT_RESUME_AT) return true
-
-  // nếu chưa đến giờ -> bot tắt
-  if (BOT_RESUME_AT > Date.now()) return false
-
-  // đã đến giờ -> bot bật
-  return true
-}
-
 /** thiết lập tắt bật chatbot của khách hàng */
 export function composableService() {
   const conversationStore = useConversationStore()
@@ -83,19 +68,35 @@ export function composableService() {
       // cảnh báo
       $toast.warning(ALERT_MESSAGE, 'top-center', 3000)
     }
+
+    /** tính toán trạng thái */
+    calcStatus(conversation?: ConversationInfo): boolean {
+      /**thời gian bot quay lại chạy */
+      const BOT_RESUME_AT = conversation?.bot_resume_at
+
+      // nếu không có -> bot bật
+      if (!BOT_RESUME_AT) return true
+
+      // nếu chưa đến giờ -> bot tắt
+      if (BOT_RESUME_AT > Date.now()) return false
+
+      // đã đến giờ -> bot bật
+      return true
+    }
+
   }
   const $main = new Main()
 
   /**trạng thái hiện tại */
   const is_enable = computed({
-    get: () => calcStatus(conversationStore.select_conversation),
+    get: () => $main.calcStatus(conversationStore.select_conversation),
     set: async val => await $main.manageChatbot(!val),
   })
 
   // tính lại khi đổi hội thoại
   watch(
     () => conversationStore.select_conversation?.fb_client_id,
-    () => calcStatus(conversationStore.select_conversation)
+    () => $main.calcStatus(conversationStore.select_conversation)
   )
 
   return { is_enable }

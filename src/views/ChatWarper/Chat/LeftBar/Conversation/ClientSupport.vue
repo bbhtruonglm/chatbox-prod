@@ -43,6 +43,7 @@
           class="w-3 h-3"
         />
       </template>
+      <SparklesIcon v-if="calcStatus(source)" class="size-4" />
       <!-- <div
         v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
         class="ml-1"
@@ -86,6 +87,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { calcStatus } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
 import { getLabelValid, getPageInfo } from '@/service/function'
 import { useExtensionStore } from '@/stores'
 
@@ -95,6 +97,7 @@ import Popover from '@/components/Popover.vue'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { ComponentRef } from '@/service/interface/vue'
+import { SparklesIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
   defineProps<{
