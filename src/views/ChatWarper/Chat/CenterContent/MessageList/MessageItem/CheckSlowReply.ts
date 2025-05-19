@@ -84,6 +84,8 @@ export class CheckSlowReply implements ICheckSlowReply {
     return true
   }
   isSlowReply() {
+    console.log('cờ AI check rep chậm',this.CURRENT_MESSAGE?.is_ai_slow_reply);
+
     // nếu AI không đánh dấu rep chậm thì thôi
     if (!this.CURRENT_MESSAGE?.is_ai_slow_reply) return
 

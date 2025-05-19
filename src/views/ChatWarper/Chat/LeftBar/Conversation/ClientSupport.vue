@@ -46,25 +46,10 @@
       <SparklesIcon v-if="calcStatus?.(source?.bot_resume_at)" class="size-4" />
       <div
         v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
-        class="ml-1"
       >
-        <img
-          v-if="source?.platform_type === 'FB_MESS'"
-          src="@/assets/icons/facebook.svg"
-          width="13"
-          height="13"
-        />
-        <img
-          v-if="source?.platform_type === 'WEBSITE'"
-          src="@/assets/icons/website-2.svg"
-          width="13"
-          height="13"
-        />
-        <img
-          v-if="source?.platform_type === 'ZALO_OA'"
-          src="@/assets/icons/zalo.svg"
-          width="13"
-          height="13"
+        <PageTypeIcon
+          :page_type="source?.platform_type"
+          class="flex-shrink-0 w-3.5 h-3.5"
         />
       </div>
     </div>
@@ -94,10 +79,12 @@ import { useExtensionStore } from '@/stores'
 import Label from '@/views/ChatWarper/Chat/LeftBar/Conversation/Label.vue'
 import Loading from '@/components/Loading.vue'
 import Popover from '@/components/Popover.vue'
+import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-import type { ComponentRef } from '@/service/interface/vue'
 import { SparklesIcon } from '@heroicons/vue/24/solid'
+
+import type { ComponentRef } from '@/service/interface/vue'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
 
 const $props = withDefaults(
   defineProps<{
