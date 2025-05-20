@@ -43,7 +43,15 @@
           class="w-3 h-3"
         />
       </template>
-      <SparklesIcon v-if="calcStatus?.(source?.bot_resume_at)" class="size-4" />
+      <!-- Nếu AI bật và thiết lập AI bật thì mới hiển thị icon -->
+      <SparklesIcon 
+        v-if="
+          calcStatus?.(source?.bot_resume_at) && 
+          getPageInfo(source?.fb_page_id)?.is_active_ai_agent
+        " 
+        class="size-4"
+        v-tooltip.bottom="$t('AI đang bật')"
+      />
       <div
         v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
       >

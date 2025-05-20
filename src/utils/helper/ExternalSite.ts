@@ -117,11 +117,11 @@ export class ExternalSite implements IExternalSite {
 
 
     /**đường dẫn được thiết lập của đối tác */
-    let uri
+    let uri:string | undefined
     
-    // nếu không phải môi trường dev thì sử dụng link của đối tác
-    if(NODE_ENV !== 'development') {
-      this.STORE_COMMON.partner?.external_link?.[site]
+    // nếu là môi trường production thì dùng link của đối tác
+    if(NODE_ENV === 'production') {
+      uri = this.STORE_COMMON.partner?.external_link?.[site]
     }
 
     // sử dụng link default nếu không có link của đối tác
