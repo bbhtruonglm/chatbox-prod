@@ -70,6 +70,9 @@ export interface IPageInfo {
    * - cho phép chỉnh sửa nếu là page tự tạo (WEB)
    */
   name?: string
+  /** tên gợi của trang người dùng tự thiết lập */
+  alias?:string
+
   // TODO sửa lại để tất cả các trang đều dùng link ảnh trong avatar, thay vì mỗi page type chạy 1 kiểu khác nhau
   /**link ảnh đại diện của trang */
   avatar?: string
