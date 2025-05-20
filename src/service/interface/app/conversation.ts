@@ -65,6 +65,8 @@ export interface QueryConversationInput extends FilterConversation {
 
 /**dữ liệu của một khách hàng */
 export interface ConversationInfo {
+    /**thời gian chatbot được chạy tiếp */
+    bot_resume_at?: number
     /**có phải là nhóm chat không */
     is_group?: boolean
     /**loại của hội thoại */
