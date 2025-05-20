@@ -68,7 +68,7 @@ import { toggle_loading } from '@/service/helper/async'
 import { confirm, toast, toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
 import { map, remove } from 'lodash'
-import { openPopup } from '@/service/function'
+import { getPageName, openPopup } from '@/service/function'
 import { onMounted } from 'vue'
 
 import Item from '@/views/Dashboard/Widget/Item.vue'
@@ -128,7 +128,7 @@ function getSelectedPageName() {
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return pageStore.active_page_list?.[widgetStore.selected_page_id]?.page?.name
+  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
 }
 /**gỡ cài đặt ứng dụng */
 function deleteApp(id: string) {

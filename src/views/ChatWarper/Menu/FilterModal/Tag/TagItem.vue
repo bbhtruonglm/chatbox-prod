@@ -12,7 +12,7 @@
         </div>
         <div v-if="Object.keys(pageStore.selected_page_id_list).length > 1"
             class="text-xs text-slate-400 break-words mt-1">
-            {{ getPageInfo(label?.fb_page_id)?.name }}
+            {{ getPageName(getPageInfo(label?.fb_page_id)) }}
             -
             {{ label?.fb_page_id }}
         </div>
@@ -20,7 +20,7 @@
 </template>
 <script setup lang="ts">
 import { usePageStore } from '@/stores'
-import { getPageInfo } from '@/service/function'
+import { getPageInfo, getPageName } from '@/service/function'
 
 import type { ILabel } from '@/service/interface/app/label'
 
