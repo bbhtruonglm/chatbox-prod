@@ -29,6 +29,7 @@ import { User } from '@/utils/helper/User'
 import { LocaleSingleton } from '@/utils/helper/Locale'
 import { Parser } from '@/utils/helper/Parser'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import type { IPage } from '@/service/interface/app/page'
 
 /**kiểm tra, xử lý một số logic trước khi đi đến trang chat */
 export const preGoToChat = (proceed: Cb) => {
@@ -187,6 +188,12 @@ export const getPageInfo = (page_id?: string) => {
   const pageStore = usePageStore()
 
   return pageStore.selected_page_list_info?.[page_id as string]?.page
+}
+
+/** lấy tên hiển thị của trang */
+export const getPageName = (page_info?: IPage) => { 
+  // ưu tiên tên gợi sau đó mới đến tên của page
+  return page_info?.alias || page_info?.name || 'N/A'
 }
 
 /**đọc dữ liệu của nhãn */

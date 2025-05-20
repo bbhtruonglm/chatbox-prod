@@ -73,7 +73,7 @@
             />
             <div class="flex-grow min-w-0">
               <div class="truncate">
-                {{ page?.page?.name }}
+                {{ getPageName(page?.page) }}
               </div>
               <div class="text-xs text-slate-500 truncate">
                 {{ page?.page?.fb_page_id }}
@@ -100,6 +100,7 @@
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { getPageName } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { size } from 'lodash'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
@@ -146,7 +147,7 @@ function getSelectedPageName() {
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return pageStore.active_page_list?.[widgetStore.selected_page_id]?.page?.name
+  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
 }
 /**lấy thông tin trang của tổ chức hiện tại */
 async function getCurrentPageOrgInfo() {
@@ -170,7 +171,7 @@ function filterPage(page: PageData): boolean {
   if (!search.value) return true
 
   /**tên trang */
-  const NAME = nonAccentVn(page?.page?.name || '')
+  const NAME = nonAccentVn(getPageName(page?.page) || '')
   /**nội dung tìm kiếm */
   const SEARCH = nonAccentVn(search.value || '')
 

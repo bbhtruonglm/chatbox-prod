@@ -27,7 +27,7 @@
           ref="connect_page_ref"
         />
         <div>
-          {{ page_info?.name }}
+          {{ getPageName(page_info)}}
         </div>
       </div>
     </template>
@@ -46,6 +46,11 @@
   </ActorItem>
 </template>
 <script setup lang="ts">
+import { getPageName } from '@/service/function'
+import { useConnectPageStore, useOrgStore } from '@/stores'
+import { inject, ref } from 'vue'
+import { KEY_RELOAD_PAGE_DATA } from '@/views/Dashboard/symbol'
+
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import Checkbox from '@/components/Checkbox.vue'
@@ -54,9 +59,6 @@ import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid'
 
 import type { IPage } from '@/service/interface/app/page'
-import { useConnectPageStore, useOrgStore } from '@/stores'
-import { inject, ref } from 'vue'
-import { KEY_RELOAD_PAGE_DATA } from '@/views/Dashboard/symbol'
 
 const $props = withDefaults(
   defineProps<{
