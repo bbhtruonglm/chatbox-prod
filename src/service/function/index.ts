@@ -328,7 +328,11 @@ export function setParamChat(
   client_id: string
 ) {
   // $router.replace({ query: { p: page_id, u: client_id } })
-  $router.replace({ query: { page_id: page_id, user_id: client_id } })
+  // lấy ra tab ở query string cũ
+  const { tab } = $router.currentRoute.value.query
+
+  $router.replace({ query: { page_id: page_id, user_id: client_id, tab } })
+  // $router.replace({ query: { page_id: page_id, user_id: client_id } })
 }
 
 /** Check trạng thái kích hoạt bộ lọc */
