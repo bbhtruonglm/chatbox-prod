@@ -33,7 +33,7 @@ const ENV: IEnv = {
     chatbox: 'https://chat-dev.botbanhang.vn',
     download: 'https://sellingpage.net/download',
     merchant: 'https://merchant.vn',
-    admin: 'https://bbh-dashboard-xi.vercel.app',
+    admin: 'https://dashboard-dev-ten.vercel.app',
   },
   facebook: {
     app_id: '1282108599314861',

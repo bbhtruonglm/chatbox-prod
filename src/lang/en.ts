@@ -231,6 +231,8 @@ const source: Language = {
   'Gọi lần cuối':'Last call',
   'Gọi điện thoại':'Phone',
    'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Please select page and customer before proceeding.',
+  'Thành viên nhóm':' Group members',
+  'Chưa có thành viên nào':'No members yet',
   name: 'English',
   v1: {
     common: {

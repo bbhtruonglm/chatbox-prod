@@ -76,6 +76,19 @@
       >
         <PhoneIcon class="size-3.5 text-green-600"></PhoneIcon>
       </button>
+      <!-- <button  @click="phone_list_ref?.toggle" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_call')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
+        <PhoneIcon class="w-3.5 h-3.5 text-green-600"></PhoneIcon>
+      </button> -->
+      <!--  -->
+      <button
+        v-if="conversationStore.select_conversation?.is_group === true"
+        @click="member_list_ref?.toggle"
+        v-tooltip.left="$t('Thành viên nhóm')"
+        class="p-1.5 flex justify-center items-center rounded-lg border border-slate-500 hover:bg-slate-100"
+      >
+        <UsersIcon class="size-3.5 text-slate-500"></UsersIcon>
+      </button>
+      <!--  -->
       <button
         @click="$main.unreadConversation"
         v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_unread')"
@@ -101,6 +114,7 @@
   </div>
   <Menu ref="client_menu_ref" />
   <ListPhone ref="phone_list_ref" />
+  <Member ref="member_list_ref" />
   <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
@@ -115,14 +129,17 @@ import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import Menu from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Menu.vue'
 import ListPhone from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ListPhone.vue'
+import Member from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Member.vue'
 import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
 import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vue'
 
+/**Icon*/ 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'
 import MailOpenIcon from '@/components/Icons/MailOpen.vue'
 import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
+import { UsersIcon } from '@heroicons/vue/24/outline'
 import { PhoneIcon } from '@heroicons/vue/24/solid'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
@@ -133,8 +150,10 @@ const $toast = container.resolve(Toast)
 
 /**ref của dropdown menu của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Menu>>()
-/**ref của dropdown menu của danh sách */
+/**ref của dropdown danh sách cuộc gọi của nhóm */
 const phone_list_ref = ref<InstanceType<typeof ListPhone>>()
+/**ref của dropdown danh sách thành viên nhóm */
+const member_list_ref = ref<InstanceType<typeof Member>>()
 /**modal assign nhân viên */
 const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
 /**bật loading khi gọi api đánh dấu hội thoại chưa đọc */
