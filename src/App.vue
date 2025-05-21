@@ -29,9 +29,12 @@ import { setItem } from './service/helper/localStorage'
 import { error } from './utils/decorator/Error'
 import { container } from 'tsyringe'
 import { QueryString, type IQueryString } from './utils/helper/QueryString'
+import { useKeyboardShortcut } from '@/views/composables/useKeyboardShortcut'
 
 const commonStore = useCommonStore()
 const $toast = container.resolve(Toast)
+
+useKeyboardShortcut()
 
 class Main {
   /**

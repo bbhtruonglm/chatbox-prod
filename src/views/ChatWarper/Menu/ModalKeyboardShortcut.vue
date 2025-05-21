@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import BaseModal from '@/components/Base/BaseModal.vue';
 
@@ -293,11 +293,6 @@ const SHORTCUT_LIST = [
 
 /** Ref của modal */
 const base_modal = ref<InstanceType<typeof BaseModal>>()
-
-onMounted(() => {
-  console.log(base_modal.value)
-  base_modal.value?.toggleModal()
-})
 
 /** bật modal */
 function toggleModal() {
