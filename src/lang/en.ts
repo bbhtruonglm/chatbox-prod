@@ -355,6 +355,7 @@ const source: Language = {
               alert: 'Alerts',
               setting: 'Settings',
               logout: 'Logout',
+              keyboard_shortcut: 'Keyboard shortcuts',
             },
             noti: {
               title: 'Notifications',

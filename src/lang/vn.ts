@@ -157,6 +157,7 @@ const source: Language = {
               alert: 'Thông báo',
               setting: 'Thiết lập',
               logout: 'Đăng xuất',
+              keyboard_shortcut: 'Phím tắt',
             },
             noti: {
               title: 'Thông báo',

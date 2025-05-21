@@ -71,6 +71,11 @@
       </MenuItem>
     </template>
     <MenuItem
+      @click="openKeyboardShortcutModal()"
+      :icon="QuestionMarkCircleIcon"
+      :title="$t('v1.view.main.dashboard.header.menu.keyboard_shortcut')"
+    />
+    <MenuItem
       v-if="chatbotUserStore.isBbhMember()"
       @click="$external_site.openSystemDashboard()"
       :icon="ServerSettingIcon"
@@ -84,6 +89,7 @@
   </Dropdown>
   <Alert ref="modal_alert_ref" />
   <UserInfo ref="modal_user_info_ref" />
+  <ModalKeyboardShortcut ref="modal_keyboard_shortcut" />
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore, useOrgStore } from '@/stores'
@@ -101,6 +107,7 @@ import Badge from '@/components/Badge.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import Alert from '@/components/User/Alert.vue'
 import UserInfo from '@/components/User/UserInfo.vue'
+import ModalKeyboardShortcut from '@/views/ChatWarper/Menu/ModalKeyboardShortcut.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
@@ -113,6 +120,7 @@ import SquareIcon from '@/components/Icons/Square.vue'
 
 import type { ModalPosition } from '@/service/interface/vue'
 import { Device } from '@/utils/helper/Device'
+import { QuestionMarkCircleIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
   defineProps<{
@@ -136,6 +144,8 @@ const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
 const modal_alert_ref = ref<InstanceType<typeof Alert>>()
 /** Ref của modal thông tin người dùng */
 const modal_user_info_ref = ref<InstanceType<typeof UserInfo>>()
+/** Ref của modal keyboard shortcut */
+const modal_keyboard_shortcut = ref<InstanceType<typeof ModalKeyboardShortcut>>()
 
 // đếm số thông báo khi khởi động
 onMounted(countNotiCurrentOrg)
@@ -178,6 +188,19 @@ function openUserInfoModal() {
   // mở modal thông tin người dùng
   modal_user_info_ref.value?.toggleModal()
 }
+
+/** mở modal phím tắt */
+function openKeyboardShortcutModal() {
+  // tắt menu dropdown
+  user_menu_ref.value?.toggleDropdown()
+
+  console.log(modal_keyboard_shortcut.value);
+  
+
+  // mở modal phím tắt
+  modal_keyboard_shortcut.value?.toggleModal?.()
+}
+
 /**mở modal của noti */
 function openNoti() {
   // tắt dropdown
