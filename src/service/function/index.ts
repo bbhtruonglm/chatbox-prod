@@ -515,11 +515,11 @@ export function renderText(text: string) {
     text = text.replace(email, ` <span class="email-detect">${email}</span>`)
 
   // thay đổi hiển thị của url
-  if (url)
-    text = text.replace(
-      url,
-      `<a class="link-detect" href="${url}" target="_blank">${url}</a>`
-    )
+  // if (url)
+  //   text = text.replace(
+  //     url,
+  //     `<a class="link-detect" href="${url}" target="_blank">${url}</a>`
+  //   )
 
   // trả về chuỗi đã xử lý
   return text
