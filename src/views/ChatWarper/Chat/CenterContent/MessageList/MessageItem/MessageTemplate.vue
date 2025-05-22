@@ -49,7 +49,7 @@
       <div
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
-        v-html="fixXss(MARKDOWN_SERVICE.render(renderText(data_source?.content)))"
+        v-html="fixXss($markdown.render(renderText(data_source?.content)))"
       />
         <!-- class="enter-line" -->
 
@@ -99,7 +99,7 @@ const $props = withDefaults(
 )
 
 /** service render markdown */
-const MARKDOWN_SERVICE = container.resolve(MarkedService)
+const $markdown = container.resolve(MarkedService)
 
 /**
  * có hiển thị content không
