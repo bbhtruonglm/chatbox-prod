@@ -57,7 +57,7 @@
       >
         <PageTypeIcon
           :page_type="source?.platform_type"
-          class="flex-shrink-0 w-3.5 h-3.5"
+          class="flex-shrink-0 size-3"
         />
       </div>
     </div>
