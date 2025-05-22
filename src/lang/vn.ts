@@ -37,6 +37,7 @@ const source: Language = {
   'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Vui lòng chọn trang và khách hàng trước khi thực hiện',
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
+  'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
   name: 'Tiếng Việt',
   v1: {
     common: {

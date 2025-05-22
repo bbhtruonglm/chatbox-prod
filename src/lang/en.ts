@@ -233,6 +233,7 @@ const source: Language = {
    'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Please select page and customer before proceeding.',
   'Thành viên nhóm':' Group members',
   'Chưa có thành viên nào':'No members yet',
+  'Chưa có cuộc gọi nào':'No calls yet',
   name: 'English',
   v1: {
     common: {
