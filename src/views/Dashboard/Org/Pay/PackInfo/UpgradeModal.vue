@@ -196,6 +196,9 @@ const CONTENTS: Record<string, IContent> = {
   PRO: {
     title: $t('v1.view.main.dashboard.org.pay.pro'),
     price: '480.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '5.760.000',
+    }),
     price_discount:
       '<span class="line-through font-normal">480.000</span> <span class="text-green-700">288,000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),
@@ -220,6 +223,9 @@ const CONTENTS: Record<string, IContent> = {
   COMPANY: {
     title: $t('v1.view.main.dashboard.org.pay.business'),
     price: '2.600.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '31.200.000',
+    }),
     price_discount:
       '<span class="line-through font-normal">2.600.000</span> <span class="text-green-700">2.080.000</span> / ' +
       $t('v1.view.main.dashboard.org.pay.month'),

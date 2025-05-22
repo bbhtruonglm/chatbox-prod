@@ -1,11 +1,14 @@
-import Swal from 'sweetalert2'
 import { isObject } from 'lodash'
+import type { SweetAlertIcon, SweetAlertPosition } from 'sweetalert2'
+import Swal from 'sweetalert2'
+import { singleton } from 'tsyringe'
+import { useToast, type POSITION } from 'vue-toastification'
+
+import CustomToastV2 from '@/components/CustomToastV2.vue'
 
 import type { IAlert } from '@/utils/helper/Alert/type'
-import type { SweetAlertIcon, SweetAlertPosition } from 'sweetalert2'
-import { singleton } from 'tsyringe'
 
-/**thông báo dạng toast */
+/** thông báo dạng toast */
 @singleton()
 export class Toast implements IAlert {
   /**thời gian toast hiển thị */
@@ -67,6 +70,86 @@ export class Toast implements IAlert {
   public question(message: any): void {
     // hiển thị thông báo
     this.#trigger('question', message)
+  }
+}
+
+/** thông báo dạng toast mới */
+@singleton()
+export class ToastV2 implements IAlert {
+  /**kích hoạt thông báo dạng toast */
+  #trigger(icon: SweetAlertIcon, message: any, position: string = 'top-right', timer: number|false = false): void {
+    /** thông điệp đã xử lý */
+    const MESSAGE = this.#formatError(message)
+
+    /** đối tượng toast của thư viện vue-toastification */
+    const TOAST = useToast()
+
+    // hiển thị thông báo
+    TOAST(
+      {
+        component: CustomToastV2,
+        props: {
+          message: MESSAGE,
+          type: icon,
+        },
+      },
+      {
+        position: position as POSITION,
+        timeout: timer,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: false,
+        icon: false,
+        rtl: false,
+      },
+    )
+  }
+
+  /**format lỗi thành chuỗi */
+  #formatError(e: any): string {
+    /**nội dung thông báo */
+    let message = e?.message || e
+
+    // tự động parser obj thành string
+    if (isObject(message)) message = JSON.stringify(message, null, 4)
+
+    // trả về thông báo
+    return message
+  }
+  
+  /** thông báo thành công */
+  public success(message: any, position?: string, timer?: number): void {
+    // hiển thị thông báo
+    this.#trigger('success', message, position, timer)
+  }
+
+  /** thông báo lỗi */
+  public error(message: any, position?: string, timer?: number): void {
+    // hiển thị thông báo
+    this.#trigger('error', message, position, timer)
+  }
+
+  /** hiện cảnh báo */
+  public warning(message: any, position?: string, timer?: number): void {
+    // hiển thị thông báo
+    this.#trigger('warning', message, position, timer)
+  }
+
+  /** hiện cảnh báo */
+  public question(message: any, position?: string, timer?: number): void {
+    // hiển thị thông báo
+    this.#trigger('question', message, position, timer)
+  }
+
+  /** hiện thông tin */
+  public info(message: any, position?: string, timer?: number): void {
+    // hiển thị thông báo
+    this.#trigger('info', message, position, timer)
   }
 }
 

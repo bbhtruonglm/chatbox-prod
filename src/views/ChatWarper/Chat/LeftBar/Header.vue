@@ -74,6 +74,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import { debounce } from 'lodash'
@@ -89,6 +90,9 @@ const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+/** router */
+const $router = useRouter()
 
 /**phiên bản trong package.json */
 const version = npm_package_version
@@ -113,6 +117,15 @@ class Main {
   activeTab(tab: IActiveTab) {
     // thay đổi cờ
     conversationStore.option_filter_page_data.conversation_type = tab
+
+    // nếu tab là dạng bài biết thì thêm param lên url
+    $router.push({
+      query: {
+        ...$router.currentRoute.value.query,
+        tab: tab === 'POST' ? 'POST' : undefined,
+      }
+    })
+    
   }
   /**chuyển đổi trạng thái tìm kiếm */
   async toggleSearch() {

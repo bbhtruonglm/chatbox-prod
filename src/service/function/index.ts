@@ -94,7 +94,7 @@ export const selectConversation = (
 
   // chọn khách hàng này, lưu dữ liệu vào store
   conversationStore.select_conversation = conversation
-
+  
   // đánh dấu tin nhắn là đã đọc
   reset_read_conversation(
     {
@@ -335,7 +335,17 @@ export function setParamChat(
   client_id: string
 ) {
   // $router.replace({ query: { p: page_id, u: client_id } })
-  $router.replace({ query: { page_id: page_id, user_id: client_id } })
+
+  /** tab hội thoại được lưu trong store */
+  const TAB = useConversationStore().option_filter_page_data.conversation_type
+
+  $router.replace({
+    query: {
+      page_id: page_id,
+      user_id: client_id,
+      tab: TAB === 'POST' ? 'POST' : undefined,
+    },
+  })
 }
 
 /** Check trạng thái kích hoạt bộ lọc */
@@ -522,11 +532,11 @@ export function renderText(text: string) {
     text = text.replace(email, ` <span class="email-detect">${email}</span>`)
 
   // thay đổi hiển thị của url
-  if (url)
-    text = text.replace(
-      url,
-      `<a class="link-detect" href="${url}" target="_blank">${url}</a>`
-    )
+  // if (url)
+  //   text = text.replace(
+  //     url,
+  //     `<a class="link-detect" href="${url}" target="_blank">${url}</a>`
+  //   )
 
   // trả về chuỗi đã xử lý
   return text

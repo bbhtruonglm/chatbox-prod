@@ -112,8 +112,17 @@ export class ExternalSite implements IExternalSite {
   }
   /**tính uri phù hợp với đối tác */
   private calcUri(site: keyof IExternalLink): string {
+    /** Môi trường đang chạy */
+    const NODE_ENV: string = import.meta.env.VITE_APP_ENV
+
+
     /**đường dẫn được thiết lập của đối tác */
-    let uri = this.STORE_COMMON.partner?.external_link?.[site]
+    let uri:string | undefined
+    
+    // nếu là môi trường production thì dùng link của đối tác
+    if(NODE_ENV === 'production') {
+      uri = this.STORE_COMMON.partner?.external_link?.[site]
+    }
 
     // sử dụng link default nếu không có link của đối tác
     if (!uri) uri = $env.external_link[site]

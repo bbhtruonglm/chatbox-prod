@@ -231,7 +231,15 @@ const source: Language = {
   'Mật khẩu không khớp': 'Password does not match',
   'Đăng ký tài khoản thành công': 'Successfully registered account',
   'Email đã tồn tại': 'Account already exists',
+  'AI đang bật': 'AI is on',
+  Tạo: 'Create',
+  'Gọi lần cuối': 'Last call',
+  'Gọi điện thoại': 'Phone',
+  'Vui lòng chọn trang và khách hàng trước khi thực hiện':
+    'Please select page and customer before proceeding.',
   'Thành viên nhóm': ' Group members',
+  'Chưa có thành viên nào': 'No members yet',
+  'Chưa có cuộc gọi nào': 'No calls yet',
   name: 'English',
   v1: {
     common: {
@@ -644,7 +652,6 @@ const source: Language = {
               open_facebook: 'Facebook profile',
               open_inbox: 'Open Facebook inbox',
               mark_unread: 'Mark message as unread',
-              mark_call: 'Call phone',
               block_user: 'Block user',
               alow_user: 'Unblock user',
               send_message: 'Click to send message',
