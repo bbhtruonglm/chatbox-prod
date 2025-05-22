@@ -25,14 +25,11 @@ export function useKeyboardShortcut() {
 
   /** hàm bật lọc tương tác */
   const toggleInteract = () => {
-    console.log(123);
-    
     commonStore.filter_show_with_shortcut = 'interact'
   }
 
   /** hàm bật lọc trạng thái */
   const toggleMessage = () => {
-    console.log(1234);
     commonStore.filter_show_with_shortcut = 'message'
   }
 

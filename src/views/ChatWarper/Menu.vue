@@ -35,8 +35,8 @@
       <hr class="border-slate-700 w-8 mx-auto" />
       <NavItem
         id="interact"
-        @dblclick="filter_interact?.filter_dropdown_ref?.toggleDropdown"
         :is_disable_tooltip="true"
+        @dblclick="filter_interact?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_interact?.filter_popover_ref?.mouseover"
         @mouseleave="filter_interact?.filter_popover_ref?.mouseleave"
         @click="filter_interact?.clearThisFilter()"
@@ -46,8 +46,8 @@
       />
       <NavItem
         id="message"
-        @dblclick="filter_message?.filter_dropdown_ref?.toggleDropdown"
         :is_disable_tooltip="true"
+        @dblclick="filter_message?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_message?.filter_popover_ref?.mouseover"
         @mouseleave="filter_message?.filter_popover_ref?.mouseleave"
         @click="filter_message?.clearThisFilter()"
@@ -57,6 +57,7 @@
       />
       <NavItem
         id="phone"
+        @dblclick="filter_phone?.filter_dropdown_ref?.toggleDropdown"
         :is_disable_tooltip="true"
         @mouseover="filter_phone?.filter_popover_ref?.mouseover"
         @mouseleave="filter_phone?.filter_popover_ref?.mouseleave"
@@ -68,6 +69,7 @@
       <NavItem
         id="date"
         :is_disable_tooltip="true"
+        @dblclick="filter_date?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_date?.filter_popover_ref?.mouseover"
         @mouseleave="filter_date?.filter_popover_ref?.mouseleave"
         @click="filter_date?.clearThisFilter()"
@@ -78,6 +80,7 @@
       <NavItem
         id="tag"
         :is_disable_tooltip="true"
+        @dblclick="filter_tag?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_tag?.filter_popover_ref?.mouseleave"
         @click="filter_tag?.clearThisFilter()"
@@ -88,6 +91,7 @@
       <NavItem
         id="not_tag"
         :is_disable_tooltip="true"
+        @dblclick="filter_not_tag?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_not_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_not_tag?.filter_popover_ref?.mouseleave"
         @click="filter_not_tag?.clearThisFilter()"
@@ -99,6 +103,7 @@
         id="staff"
         v-if="$main.isShowStaffFilter()"
         :is_disable_tooltip="true"
+        @dblclick="filter_staff?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_staff?.filter_popover_ref?.mouseover"
         @mouseleave="filter_staff?.filter_popover_ref?.mouseleave"
         @click="filter_staff?.clearThisFilter()"
@@ -109,6 +114,7 @@
       <NavItem
         id="post"
         :is_disable_tooltip="true"
+        @dblclick="filter_post?.filter_dropdown_ref?.toggleDropdown"
         @mouseover="filter_post?.filter_popover_ref?.mouseover"
         @mouseleave="filter_post?.filter_popover_ref?.mouseleave"
         @click="filter_post?.clearThisFilter()"
