@@ -94,7 +94,7 @@ export const selectConversation = (
 
   // chọn khách hàng này, lưu dữ liệu vào store
   conversationStore.select_conversation = conversation
-
+  
   // đánh dấu tin nhắn là đã đọc
   reset_read_conversation(
     {

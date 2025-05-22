@@ -232,6 +232,7 @@ const source: Language = {
   'Đăng ký tài khoản thành công': 'Successfully registered account',
   'Email đã tồn tại': 'Account already exists',
   'Thành viên nhóm': ' Group members',
+  'AI đang bật': 'AI is on',
   name: 'English',
   v1: {
     common: {

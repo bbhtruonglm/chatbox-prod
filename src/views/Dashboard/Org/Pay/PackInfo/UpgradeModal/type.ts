@@ -6,6 +6,8 @@ export interface IContent {
   title: string
   /**Giá liên quan đến nội dung. */
   price: string
+  /** tương tương 1 năm không giảm giá */
+  price_year?: string
   /**Giá giảm giá liên quan đến nội dung. */
   price_discount?: string
   /**tương đương 1 năm */

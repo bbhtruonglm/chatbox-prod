@@ -35,7 +35,7 @@ async function bootstrap() {
 
   waterfall(
     [
-      (cb: CbError) => loadLib(cb),
+      (cb: CbError) => loadLib(APP,cb),
       (cb: CbError) => loadRouter(APP, cb),
       (cb: CbError) => loadLanguage(APP, cb),
       (cb: CbError) => loadDirective(APP, cb),
