@@ -20,7 +20,7 @@
 
     <!-- Nếu có cuộc gọi thì hiển thị danh sách -->
     <PhoneItem
-      v-for="(item, index) in uniquecalls"
+      v-for="(item, index) in unique_calls"
       :key="index"
       :phone_number="item.phone"
       :created_at="item.createdAt"
@@ -29,7 +29,7 @@
 
     <!-- Nếu không có cuộc gọi nào thì hiển thị thông báo -->
     <div
-      v-if="uniquecalls.length === 0"
+      v-if="unique_calls.length === 0"
       class="text-gray-500 text-center py-8"
     >
        <p v-if="!is_loading">{{ $t('Chưa có cuộc gọi nào') }}</p>
@@ -73,7 +73,7 @@ const client_menu_ref = ref<InstanceType<typeof Dropdown>>()
 const conversation_lists = ref<any[]>([])
 
 /** Mảng mới gồm các cuộc gọi không trùng số, chỉ giữ cuộc gọi mới nhất theo từng số điện thoại */
-const uniquecalls = computed(() => {
+const unique_calls = computed(() => {
   /** Map để lưu các phần tử, với key là số điện thoại */
   const MAP = new Map<string, any>()
 
