@@ -16,7 +16,8 @@ import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
 
 export const useConversationStore = defineStore('conversation_store', () => {
 
-  const route = useRoute()
+  /** router */
+  const $route = useRoute()
 
   /**lưu dữ liệu lọc hội thoại */
   const option_filter_page_data = ref<FilterConversation>(
@@ -42,7 +43,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     })
 
     // kiểm tra query string có tab bằng post hay không
-    if (route.query.tab === 'POST') {
+    if ($route .query.tab === 'POST') {
       option_filter_page_data.conversation_type = 'POST'
     } 
     // nếu không có thì mặc định là tab chat
