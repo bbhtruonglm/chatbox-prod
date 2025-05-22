@@ -46,6 +46,7 @@
       />
       <NavItem
         id="message"
+        @dblclick="filter_message?.filter_dropdown_ref?.toggleDropdown"
         :is_disable_tooltip="true"
         @mouseover="filter_message?.filter_popover_ref?.mouseover"
         @mouseleave="filter_message?.filter_popover_ref?.mouseleave"
@@ -140,44 +141,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import {
+  isActiveFilter,
   isActiveMessageFilter,
   isFilterActive,
-  isActiveFilter,
   resetConversationFilter,
 } from '@/service/function'
-
-import Attach from '@/views/ChatWarper/Menu/Attach.vue'
-import User from '@/components/User.vue'
-import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'
-import FilterInteract from '@/views/ChatWarper/Menu/FilterModal/FilterInteract.vue'
-import FilterMessage from '@/views/ChatWarper/Menu/FilterModal/FilterMessage.vue'
-import FilterPhone from '@/views/ChatWarper/Menu/FilterModal/FilterPhone.vue'
-import FilterDate from '@/views/ChatWarper/Menu/FilterModal/FilterDate.vue'
-import FilterNotTag from '@/views/ChatWarper/Menu/FilterModal/FilterNotTag.vue'
-import FilterTag from '@/views/ChatWarper/Menu/FilterModal/FilterTag.vue'
-import FilterStaff from '@/views/ChatWarper/Menu/FilterModal/FilterStaff.vue'
-import FilterPost from '@/views/ChatWarper/Menu/FilterModal/FilterPost.vue'
-
-import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
-import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import InboxIcon from '@/components/Icons/Inbox.vue'
-import ChatDotIcon from '@/components/Icons/ChatDot.vue'
-import PhoneIcon from '@/components/Icons/Phone.vue'
-import DateIcon from '@/components/Icons/Date.vue'
-import TagIcon from '@/components/Icons/Tag.vue'
-import TagNotIcon from '@/components/Icons/TagNot.vue'
-import UsersIcon from '@/components/Icons/Users.vue'
-import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
-import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
-import { Domain } from '@/utils/helper/Domain'
+import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import {
   CalcSpecialPageConfigs,
   type ICalcSpecialPageConfigs,
 } from '@/utils/helper/Conversation/CalcSpecialPageConfigs'
 import { container } from 'tsyringe'
+import { ref, watch } from 'vue'
+
+import User from '@/components/User.vue'
+import Attach from '@/views/ChatWarper/Menu/Attach.vue'
+import FilterDate from '@/views/ChatWarper/Menu/FilterModal/FilterDate.vue'
+import FilterInteract from '@/views/ChatWarper/Menu/FilterModal/FilterInteract.vue'
+import FilterMessage from '@/views/ChatWarper/Menu/FilterModal/FilterMessage.vue'
+import FilterNotTag from '@/views/ChatWarper/Menu/FilterModal/FilterNotTag.vue'
+import FilterPhone from '@/views/ChatWarper/Menu/FilterModal/FilterPhone.vue'
+import FilterPost from '@/views/ChatWarper/Menu/FilterModal/FilterPost.vue'
+import FilterStaff from '@/views/ChatWarper/Menu/FilterModal/FilterStaff.vue'
+import FilterTag from '@/views/ChatWarper/Menu/FilterModal/FilterTag.vue'
+import NavItem from '@/views/ChatWarper/Menu/NavItem.vue'
+
+import ChatDotIcon from '@/components/Icons/ChatDot.vue'
+import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
+import DateIcon from '@/components/Icons/Date.vue'
+import InboxIcon from '@/components/Icons/Inbox.vue'
+import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
+import PhoneIcon from '@/components/Icons/Phone.vue'
+import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
+import TagIcon from '@/components/Icons/Tag.vue'
+import TagNotIcon from '@/components/Icons/TagNot.vue'
+import UsersIcon from '@/components/Icons/Users.vue'
+import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+
 
 const conversationStore = useConversationStore()
 const orgStore = useOrgStore()
@@ -202,11 +203,42 @@ const filter_staff = ref<InstanceType<typeof FilterStaff>>()
 /** Lọc theo bài post */
 const filter_post = ref<InstanceType<typeof FilterPost>>()
 
+/** id của bộ lọc đã bật gần nhất */
+const filter_show_with_shortcut = ref('')
+
 watch(
   () => commonStore.filter_show_with_shortcut,
-  newValue => {
+  new_value => {
+    /** id của bộ lọc đang bật */
+    let old_value = ''
+
+    /** map từ key shortcut sang ref của dropdown */ 
+    const FILTER_MAP: Record<string, {
+      filter_dropdown_ref?: { is_open: boolean }
+    } | undefined> = {
+      interact: filter_interact.value,
+      message:  filter_message.value,
+      phone:    filter_phone.value,
+      date:     filter_date.value,
+      tag:      filter_tag.value,
+      not_tag:  filter_not_tag.value,
+      staff:    filter_staff.value,
+      post:     filter_post.value,
+    }
+
+    /** id của bộ lọc đã bật gần nhất */
+    const KEY = filter_show_with_shortcut.value
+
+    /** bộ lọc gần nhất đã bật */
+    const FITLER = FILTER_MAP[KEY]
+
+    // nếu filter tồn tại và đang mở thì gán lại old_value
+    if (FITLER?.filter_dropdown_ref?.is_open) {
+      old_value = KEY
+    }
+
     // nếu không có giá trị thì thôi
-    if (!newValue) return
+    if (!new_value) return
 
     /** sự kiện nhấn doubles click */
     const DBL_CLICK_EVENT = new MouseEvent('dblclick', {
@@ -215,11 +247,20 @@ watch(
       cancelable: true,
     })
 
-    /** Nút cần nhấn */
-    const BUTTON = document.getElementById(newValue) as HTMLElement
+    /** Nút cần nhấn của bộ lọc đang bật */
+    const BUTTON_CURRENT = document.getElementById(old_value) as HTMLElement
 
-    // trigger nhấn sự kiện nhấn doubles click
-    BUTTON?.dispatchEvent(DBL_CLICK_EVENT)
+    /** Nút cần nhấn của bộ lọc cần mở */
+    const BUTTON_NEW = document.getElementById(new_value) as HTMLElement
+
+    // trigger nhấn sự kiện nhấn double click của bộ lọc hiện tại
+    BUTTON_CURRENT?.dispatchEvent(DBL_CLICK_EVENT)
+
+    // trigger nhấn sự kiện nhấn double click của bộ lọc cần mở
+    BUTTON_NEW?.dispatchEvent(DBL_CLICK_EVENT)
+
+    // lưu lại id bộ lọc cần mở
+    filter_show_with_shortcut.value = new_value
 
     // clear data
     commonStore.filter_show_with_shortcut = ''

@@ -7,21 +7,7 @@
     height="auto"
     class_content="flex flex-col gap-1"
   >
-    <MenuTitle :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
-    <FilterCheckbox
-      true_value="YES"
-      :false_value="undefined"
-      v-model="conversationStore.option_filter_page_data.have_phone"
-      :icon="PhoneIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')"
-    />
-    <FilterCheckbox
-      true_value="NO"
-      :false_value="undefined"
-      v-model="conversationStore.option_filter_page_data.have_phone"
-      :icon="MinusIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.phone.exclude_phone')"
-    />
+    <Phone />
   </Popover>
 </template>
 <script setup lang="ts">
@@ -34,6 +20,7 @@ import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 
 import PhoneIcon from '@/components/Icons/Phone.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
+import Phone from './Content/Phone.vue'
 
 const conversationStore = useConversationStore()
 
