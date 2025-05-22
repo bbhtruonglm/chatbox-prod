@@ -103,7 +103,7 @@ function teleportToTarget($event?: MouseEvent) {
       dropdown_ref.value.style.top = `${y - $props.back}px`
 
       // left của modal - kích thước tam giác
-      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px`
+      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px` 
       // top của target + một nửa độ cao của target - kích thước tam giác
       triangle_ref.value.style.top = `${y + height / 2 - TRIANGLE_SIZE}px`
 

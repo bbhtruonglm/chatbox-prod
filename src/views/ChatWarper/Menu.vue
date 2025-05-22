@@ -34,6 +34,8 @@
       </button>
       <hr class="border-slate-700 w-8 mx-auto" />
       <NavItem
+        id="interact"
+        @dblclick="filter_interact?.filter_dropdown_ref?.toggleDropdown"
         :is_disable_tooltip="true"
         @mouseover="filter_interact?.filter_popover_ref?.mouseover"
         @mouseleave="filter_interact?.filter_popover_ref?.mouseleave"
@@ -43,6 +45,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.interact.title')"
       />
       <NavItem
+        id="message"
         :is_disable_tooltip="true"
         @mouseover="filter_message?.filter_popover_ref?.mouseover"
         @mouseleave="filter_message?.filter_popover_ref?.mouseleave"
@@ -52,6 +55,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.message.title')"
       />
       <NavItem
+        id="phone"
         :is_disable_tooltip="true"
         @mouseover="filter_phone?.filter_popover_ref?.mouseover"
         @mouseleave="filter_phone?.filter_popover_ref?.mouseleave"
@@ -61,6 +65,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.phone.title')"
       />
       <NavItem
+        id="date"
         :is_disable_tooltip="true"
         @mouseover="filter_date?.filter_popover_ref?.mouseover"
         @mouseleave="filter_date?.filter_popover_ref?.mouseleave"
@@ -70,6 +75,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.time.title')"
       />
       <NavItem
+        id="tag"
         :is_disable_tooltip="true"
         @mouseover="filter_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_tag?.filter_popover_ref?.mouseleave"
@@ -79,6 +85,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.label.title')"
       />
       <NavItem
+        id="not_tag"
         :is_disable_tooltip="true"
         @mouseover="filter_not_tag?.filter_popover_ref?.mouseover"
         @mouseleave="filter_not_tag?.filter_popover_ref?.mouseleave"
@@ -88,6 +95,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.exclude_label.title')"
       />
       <NavItem
+        id="staff"
         v-if="$main.isShowStaffFilter()"
         :is_disable_tooltip="true"
         @mouseover="filter_staff?.filter_popover_ref?.mouseover"
@@ -98,6 +106,7 @@
         :title="$t('v1.view.main.dashboard.chat.filter.staff.title')"
       />
       <NavItem
+        id="post"
         :is_disable_tooltip="true"
         @mouseover="filter_post?.filter_popover_ref?.mouseover"
         @mouseleave="filter_post?.filter_popover_ref?.mouseleave"
@@ -131,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import {
   isActiveMessageFilter,
@@ -192,6 +201,30 @@ const filter_not_tag = ref<InstanceType<typeof FilterNotTag>>()
 const filter_staff = ref<InstanceType<typeof FilterStaff>>()
 /** Lọc theo bài post */
 const filter_post = ref<InstanceType<typeof FilterPost>>()
+
+watch(
+  () => commonStore.filter_show_with_shortcut,
+  newValue => {
+    // nếu không có giá trị thì thôi
+    if (!newValue) return
+
+    /** sự kiện nhấn doubles click */
+    const DBL_CLICK_EVENT = new MouseEvent('dblclick', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    })
+
+    /** Nút cần nhấn */
+    const BUTTON = document.getElementById(newValue) as HTMLElement
+
+    // trigger nhấn sự kiện nhấn doubles click
+    BUTTON?.dispatchEvent(DBL_CLICK_EVENT)
+
+    // clear data
+    commonStore.filter_show_with_shortcut = ''
+  }
+)
 
 class Main {
   /**

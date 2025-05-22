@@ -7,45 +7,40 @@
     height="auto"
     class_content="flex flex-col gap-1"
   >
-    <MenuTitle
-      :title="$t('v1.view.main.dashboard.chat.filter.interact.title')"
-    />
-    <FilterCheckbox
-      v-model="conversationStore.option_filter_page_data.display_style"
-      true_value="INBOX"
-      :false_value="undefined"
-      :icon="ChatDotIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.interact.message')"
-    />
-    <FilterCheckbox
-      v-model="conversationStore.option_filter_page_data.display_style"
-      true_value="COMMENT"
-      :false_value="undefined"
-      :icon="NewSpaperIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.interact.comment')"
-    />
+    <Interact />
   </Popover>
+  <Dropdown
+    ref="filter_dropdown_ref"
+    width="349px"
+    height="auto"
+    :is_fit="false"
+    position="RIGHT"
+    :distance="9"
+    class_content="flex flex-col gap-1"
+  >
+    <Interact />
+  </Dropdown>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Popover from '@/components/Popover.vue'
-import FilterCheckbox from '@/views/ChatWarper/Menu/FilterModal/FilterCheckbox.vue'
-import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
-
-import ChatDotIcon from '@/components/Icons/ChatDot.vue'
-import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import Interact from '@/views/ChatWarper/Menu/FilterModal/Content/Interact.vue';
 
 const conversationStore = useConversationStore()
 
 /**ref của popover */
 const filter_popover_ref = ref<InstanceType<typeof Popover>>()
 
+/**ref của dropdown */
+const filter_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
 /**xoá lọc */
 function clearThisFilter() {
   delete conversationStore.option_filter_page_data.display_style
 }
 
-defineExpose({ filter_popover_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, clearThisFilter, filter_dropdown_ref })
 </script>
