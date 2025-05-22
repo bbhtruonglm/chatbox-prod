@@ -11,14 +11,14 @@ export const loadLib = (APP: App, proceed: Cb) => {
 
 
     /** cấu hình thư viện vue-toastification */
-    const options = {
+    const OPTIONS = {
         transition: 'Vue-Toastification__bounce', // hoặc 'none'
         maxToasts: 5,
         newestOnTop: true,
     }
 
     // khởi tạo thư viện vue-toastification
-    APP.use(Toast, options)
+    APP.use(Toast, OPTIONS)
 
 
     proceed()

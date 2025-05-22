@@ -50,7 +50,6 @@
       :position="message_type === 'client' ? 'RIGHT' : 'LEFT'"
       :message
     />
-    {{ CHECK_SLOW_REPLY.isSlowReply() }}
     <SlowReply
       v-if="CHECK_SLOW_REPLY.isSlowReply()"
       :duration="CHECK_SLOW_REPLY.getDuration()"
