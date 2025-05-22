@@ -335,7 +335,17 @@ export function setParamChat(
   client_id: string
 ) {
   // $router.replace({ query: { p: page_id, u: client_id } })
-  $router.replace({ query: { page_id: page_id, user_id: client_id } })
+
+  /** tab hội thoại được lưu trong store */
+  const TAB = useConversationStore().option_filter_page_data.conversation_type
+
+  $router.replace({
+    query: {
+      page_id: page_id,
+      user_id: client_id,
+      tab: TAB === 'POST' ? 'POST' : undefined,
+    },
+  })
 }
 
 /** Check trạng thái kích hoạt bộ lọc */
