@@ -27,6 +27,7 @@
     "async": "^3.2.4",
     "autoprefixer": "^10.4.13",
     "date-fns": "2.30.0",
+    "dayjs": "^1.11.13",
     "dompurify": "^3.2.3",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
