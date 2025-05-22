@@ -68,6 +68,7 @@
       v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5"
     >
+      <ChatbotStatus />
       <!--  -->
       <button
         @click="toggleListPhone"
@@ -132,8 +133,9 @@ import ListPhone from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ListPhone.
 import Member from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Member.vue'
 import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
 import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vue'
+import ChatbotStatus from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus.vue'
 
-/**Icon*/ 
+/**Icon*/
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'
 import MailOpenIcon from '@/components/Icons/MailOpen.vue'

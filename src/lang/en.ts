@@ -1,8 +1,12 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Trợ lý AI đã tắt. Trợ lý AI sẽ tự động bật lại sau 60 phút nữa (lúc _)':
+    'The AI assistant is currently off. The AI assistant will automatically turn back on in 60 minutes (at {date})',
+  'Trợ lý AI': 'AI assistant',
   'Gửi lời mời kết bạn': 'Send friend request',
-  'Khách hàng này chưa là bạn bè với Zalo': 'This customer is not friends with zalo',
+  'Khách hàng này chưa là bạn bè với Zalo':
+    'This customer is not friends with zalo',
   'Kết bạn': 'Request friend',
   'Hội thoại Zalo cá nhân': 'Zalo Personal Conversation',
   'Gọi điện': 'Call',

@@ -56,7 +56,7 @@ import {
   check_page_install_widget,
   install_widget,
 } from '@/service/api/chatbox/n5-app'
-import { openPopup } from '@/service/function'
+import { getPageName, openPopup } from '@/service/function'
 import { flow } from '@/service/helper/async'
 import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { useRouter } from 'vue-router'
@@ -100,7 +100,7 @@ function getSelectedPageName() {
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return pageStore.active_page_list?.[widgetStore.selected_page_id]?.page?.name
+  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
 }
 /**cài đặt css cho button done */
 function setCssBtnDone() {

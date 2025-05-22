@@ -134,4 +134,12 @@ export class N4SerivceAppConversation extends N4Serivce {
   async clearAiAnswer(page_id: string, client_id: string): Promise<void> {
     return this.post('clear_ai_answer', { page_id, client_id })
   }
+  /**tắt bật chatbot */
+  async manageChatbot(
+    page_id: string,
+    client_id: string,
+    is_disable: boolean
+  ): Promise<ConversationInfo> {
+    return this.post('manage_chatbot', { page_id, client_id, is_disable })
+  }
 }

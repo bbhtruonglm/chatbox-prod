@@ -5,7 +5,7 @@
       class="w-10 h-10"
     />
     <PageAvatar
-      v-tooltip.bottom="getPageInfo(source?.fb_page_id)?.name"
+      v-tooltip.bottom="getPageName(getPageInfo(source?.fb_page_id))"
       :page_info="getPageInfo(source?.fb_page_id)"
       :class="controlPageAvatarVisible()"
       class="w-5 h-5 absolute -bottom-1 -right-1"
@@ -14,7 +14,7 @@
 </template>
 <script setup lang="ts">
 import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { getPageInfo } from '@/service/function'
+import { getPageInfo, getPageName } from '@/service/function'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'

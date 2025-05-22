@@ -1,6 +1,8 @@
 import type { Language } from '@/service/interface/language'
 
 const source: Language = {
+  'Trợ lý AI đã tắt. Trợ lý AI sẽ tự động bật lại sau 60 phút nữa (lúc _)':
+    'Trợ lý AI đã tắt. Trợ lý AI sẽ tự động bật lại sau 60 phút nữa (lúc {date})',
   'Xóa nhóm _ ra khỏi Tổ chức _':
     'Xóa nhóm <b>"{group_name}"</b> ra khỏi Tổ chức <b>"{org_name}</b>"',
   'Sau khi đăng nhập Zalo trên _, vui lòng không quét mã QR đăng nhập Zalo trên phiên bản Website (https://chat.zalo.me) để làm ảnh hưởng đồng bộ tin nhắn về Bot Bán Hàng.':
