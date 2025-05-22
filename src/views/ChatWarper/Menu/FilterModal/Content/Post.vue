@@ -82,6 +82,7 @@
   <div
     class="w-full mt-5 mb-5"
     v-if="!filter_post"
+    id="filter_popover_ref"
   >
     <div class="grid grid-cols-3 mb-3 gap-3">
       <div class="text-sm text-black">
@@ -201,7 +202,7 @@
     </div>
     <div
       class="flex items-center justify-between cursor-pointer"
-      @click="date_picket_ref?.toggle"
+      @click.stop="date_picket_ref?.toggle"
     >
       <div class="text-sm text-black">Chọn thời gian</div>
       <div class="cursor-pointer">
@@ -252,6 +253,7 @@ import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
 
 import type { IPost } from '@/service/interface/app/message'
 import type { ComponentRef } from '@/service/interface/vue'
+import { nextTick } from 'async'
 
 /** Interface của bài post */
 interface IFilterPost extends IPost {
@@ -318,11 +320,16 @@ function cancelFilter() {
     is_private_reply: '',
     post_id: '',
   }
-  conversationStore.option_filter_page_data = {
-    ...conversationStore.option_filter_page_data,
-    ...filter_keys.value,
-    ...{ post_id: '', time_range: undefined },
-  }
+
+
+  // dừng nextTick để đợi filter_keys.value thay đổi mới gán
+  nextTick(() => {
+    conversationStore.option_filter_page_data = {
+      ...conversationStore.option_filter_page_data,
+      ...filter_keys.value,
+      ...{ post_id: '', time_range: undefined },
+    }
+  })
   posts.value = posts.value.map(item => {
     item.is_selected = false
     return item

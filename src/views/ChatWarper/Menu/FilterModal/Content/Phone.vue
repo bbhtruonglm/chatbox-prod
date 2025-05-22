@@ -7,7 +7,6 @@
     :icon="PhoneIcon"
     :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')"
   />
-  {{ conversationStore.option_filter_page_data.have_phone }}
   <FilterCheckbox
     true_value="NO"
     :false_value="undefined"
