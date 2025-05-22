@@ -28,7 +28,7 @@
     <!-- Các nút hành động -->
     <div class="flex flex-shrink-0 items-center py-1.5 gap-2.5">
       <!--  -->
-      <button
+      <!-- <button
         class="size-7 flex justify-center items-center rounded-full border border-green-600 bg-green-100"
       >
         <PhoneIcon class="size-3 flex-shrink-0 text-green-600"></PhoneIcon>
@@ -37,7 +37,7 @@
         class="size-7 flex justify-center items-center rounded-full border border-blue-700 bg-blue-100"
       >
         <Zalo class="size-3 flex-shrink-0"></Zalo>
-      </button>
+      </button> -->
     </div>
   </div>
 </template>
