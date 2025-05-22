@@ -70,6 +70,14 @@
     >
       <ChatbotStatus />
       <!--  -->
+      <button
+        v-if="orgStore.selected_org_info?.org_package?.org_allow_message_action"
+        @click="toggleListPhone"
+        v-tooltip.left="$t('Gọi điện thoại')"
+        class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100"
+      >
+        <PhoneIcon class="size-3.5 text-green-600"></PhoneIcon>
+      </button>
       <!-- <button  @click="phone_list_ref?.toggle" v-tooltip.left="$t('v1.view.main.dashboard.chat.action.mark_call')"  class="p-1.5 flex justify-center items-center rounded-lg border border-green-600 bg-green-100">
         <PhoneIcon class="w-3.5 h-3.5 text-green-600"></PhoneIcon>
       </button> -->
@@ -94,16 +102,15 @@
         />
         <MailOpenIcon
           v-else
-          class="w-3.5 h-3.5"
+          class="size-3.5"
         />
       </button>
-      <!--  -->
       <button
         v-tooltip.bottom="$t('v1.common.more')"
         @click="client_menu_ref?.toggle"
         class="text-slate-500 border border-slate-500 p-1.5 rounded-lg hover:bg-slate-100"
       >
-        <DotIcon class="w-3.5 h-3.5" />
+        <DotIcon class="size-3.5" />
       </button>
     </div>
   </div>
@@ -113,28 +120,28 @@
   <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
-import { useConversationStore } from '@/stores'
-import { ref, computed } from 'vue'
-import { container } from 'tsyringe'
-import { Clipboard } from '@/utils/helper/Clipboard'
-import { Toast } from '@/utils/helper/Alert/Toast'
+import { useConversationStore, useOrgStore } from '@/stores'
 import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { Clipboard } from '@/utils/helper/Clipboard'
+import { container } from 'tsyringe'
+import { computed, ref } from 'vue'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
-import Menu from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Menu.vue'
+import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
+import ChatbotStatus from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus.vue'
+import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vue'
 import ListPhone from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ListPhone.vue'
 import Member from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Member.vue'
-import ChangeStaff from '@/views/ChatWarper/Chat/CenterContent/ChangeStaff/ChangeStaff.vue'
-import IconInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/IconInfo.vue'
-import ChatbotStatus from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus.vue'
+import Menu from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Menu.vue'
 
 /**Icon*/
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'
 import MailOpenIcon from '@/components/Icons/MailOpen.vue'
-import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
 import { UsersIcon } from '@heroicons/vue/24/outline'
 import { PhoneIcon } from '@heroicons/vue/24/solid'
 
@@ -144,11 +151,13 @@ const conversationStore = useConversationStore()
 const $clipboard = container.resolve(Clipboard)
 const $toast = container.resolve(Toast)
 
+const orgStore = useOrgStore()
+
 /**ref của dropdown menu của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Menu>>()
-/**ref của dropdown menu của danh sách */
-const phone_list_ref = ref<InstanceType<typeof Menu>>()
-/**ref của dropdown menu của danh sách thành viên nhóm */
+/**ref của dropdown danh sách cuộc gọi của nhóm */
+const phone_list_ref = ref<InstanceType<typeof ListPhone>>()
+/**ref của dropdown danh sách thành viên nhóm */
 const member_list_ref = ref<InstanceType<typeof Member>>()
 /**modal assign nhân viên */
 const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
@@ -184,6 +193,13 @@ class Main {
       conversationStore.select_conversation.fb_client_id
     ).resetRead(1)
   }
+}
+
+/** Hàm mở danh sách điện thoại khi người dùng click */
+function toggleListPhone(event: MouseEvent) {
+  // Gọi phương thức toggle() trên component được tham chiếu bằng phone_list_ref
+  // Nếu component tồn tại, truyền vào MouseEvent để xử lý tương tác
+  phone_list_ref.value?.toggle(event)
 }
 
 const $main = new Main()

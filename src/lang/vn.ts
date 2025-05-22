@@ -33,7 +33,13 @@ const source: Language = {
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
   '_ không hợp lệ': '{name} không hợp lệ',
-  'Thành viên nhóm': 'Thành viên nhóm',
+  'Tạo':'Tạo',
+  'Gọi lần cuối':'Gọi lần cuối',
+  'Gọi điện thoại':'Gọi điện thoại',
+  'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Vui lòng chọn trang và khách hàng trước khi thực hiện',
+  'Thành viên nhóm':'Thành viên nhóm',
+  'Chưa có thành viên nào':'Chưa có thành viên nào',
+  'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
   name: 'Tiếng Việt',
   v1: {
     common: {
@@ -444,7 +450,6 @@ const source: Language = {
               open_facebook: 'Trang cá nhân Fb',
               open_inbox: 'Mở hộp thư Fb',
               mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
-              mark_call: 'Gọi điện thoại',
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',
               send_message: 'Nhấn để gửi tin nhắn',
