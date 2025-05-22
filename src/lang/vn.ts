@@ -33,6 +33,7 @@ const source: Language = {
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
   '_ không hợp lệ': '{name} không hợp lệ',
+  'AI đang bật': 'AI đang bật',
   'Tạo':'Tạo',
   'Gọi lần cuối':'Gọi lần cuối',
   'Gọi điện thoại':'Gọi điện thoại',

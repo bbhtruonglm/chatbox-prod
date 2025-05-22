@@ -28,7 +28,10 @@
 <script setup lang="ts">
 import { DateHandle } from '@/utils/helper/DateHandle';
 import { container } from 'tsyringe';
+import { useI18n } from 'vue-i18n';
 
+/** i18n */
+const { t } = useI18n();
 
 const $props = withDefaults(
   defineProps<{
@@ -52,6 +55,12 @@ const $date_handle = container.resolve(DateHandle)
 
 /**phân tích tên nv từ meta */
 function parserStaffName() {
+  /** tên nhân sự nhắn tin */
+  const STAFF_NAME = $props.meta?.split('__')?.[1]
+
+  // nếu không có thì là AI nhắn
+  if(STAFF_NAME === 'undefined') return t('Trợ lý AI')
+
   return $props.meta?.split('__')?.[1]
 }
 </script>

@@ -68,7 +68,9 @@
       v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5"
     >
-      <ChatbotStatus />
+      <ChatbotStatus
+        v-if="conversationStore.getPage()?.is_active_ai_agent"
+      />
       <!--  -->
       <button
         v-if="orgStore.selected_org_info?.org_package?.org_allow_message_action"
