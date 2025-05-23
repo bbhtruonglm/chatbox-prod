@@ -59,21 +59,25 @@
   </Alert>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useCommonStore, useOrgStore } from '@/stores'
 import { toastError } from '@/service/helper/alert'
+import { useCommonStore, useOrgStore } from '@/stores'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
 import Alert from '@/components/Alert.vue'
+import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
 
 import { N4SerivceAppUser } from '@/utils/api/N4Service/User'
 import { debounce } from 'lodash'
 
+import { add_ms } from '@/service/api/chatbox/billing'
 import type { MemberShipInfo } from '@/service/interface/app/billing'
 import type { ChatbotUserInfo } from '@/service/interface/app/chatbot_user'
-import { add_ms } from '@/service/api/chatbox/billing'
 
 const $emit = defineEmits(['done'])
+
+/** i18n */
+const { t: $t } = useI18n()
 
 const orgStore = useOrgStore()
 const commonStore = useCommonStore()
@@ -132,7 +136,11 @@ async function addStaff() {
     $emit('done')
   } catch (e) {
     // thông báo lỗi
-    toastError(e)
+    if(e === 'REACH_QUOTA.STAFF'){
+      toastError($t('Số thành viên đạt giới hạn'))
+    } else {
+      toastError(e)
+    }
   } finally {
     //  tắt loading
     commonStore.is_loading_full_screen = false
