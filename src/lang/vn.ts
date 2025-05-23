@@ -44,6 +44,7 @@ const source: Language = {
   'Chọn thời gian': 'Chọn thời gian',
   'Thêm thành viên':'Thêm thành viên',
   'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
+  'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
   name: 'Tiếng Việt',
   v1: {
     common: {

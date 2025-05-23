@@ -243,6 +243,7 @@ const source: Language = {
   'Chọn thời gian': 'Select time',
   'Thêm thành viên': 'Add members',
   'Số thành viên đạt giới hạn': 'Maximum number of members',
+  'Tên nhóm không hợp lệ': 'Invalid group name',
   name: 'English',
   v1: {
     common: {

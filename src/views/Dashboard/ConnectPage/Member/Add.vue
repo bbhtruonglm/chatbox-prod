@@ -41,7 +41,7 @@
     </template>
     <template #footer>
       <button
-        @click="add_ref?.toggleModal()"
+        @click="toggleModal()"
         class="btn-custom bg-slate-100 text-slate-500"
       >
         {{ $t('v1.common.close') }}
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { toastError } from '@/service/helper/alert'
 import { useCommonStore, useOrgStore } from '@/stores'
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Alert from '@/components/Alert.vue'
@@ -108,6 +108,10 @@ const findUser = debounce(async ($event: Event) => {
 /**ẩn hiện modal của component */
 function toggleModal() {
   add_ref.value?.toggleModal()
+  // nếu đang mở thì clear dữ liệu người dùng
+  if(add_ref.value?.is_open) {
+    user.value = undefined
+  }
 }
 /**thêm thành viên */
 async function addStaff() {
@@ -124,7 +128,8 @@ async function addStaff() {
     commonStore.is_loading_full_screen = true
 
     // tắt modal
-    add_ref.value?.toggleModal()
+    // add_ref.value?.toggleModal()
+    toggleModal()
 
     // thêm nhân viên vào tổ chức
     await add_ms(orgStore.selected_org_id, user.value?.user_id, role.value)
