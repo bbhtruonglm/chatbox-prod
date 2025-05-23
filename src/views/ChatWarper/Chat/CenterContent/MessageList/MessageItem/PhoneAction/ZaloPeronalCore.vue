@@ -104,12 +104,14 @@ class Main {
       return $toast.error($t('Trang zalo bạn chọn đang bị mất kết nối'))
 
     // nếu chưa chọn id trang thì dừng
-    if (!selected_page_id.value) return
+    if (!selected_page_id.value ) return
 
     // gửi kết bạn
     const RES = await this.API.sendFriendRequest(
       selected_page_id.value,
-      $props.message?._id
+      $props.message?._id,
+      $props.message?.fb_page_id,
+      $props.message?.fb_client_id
     )
 
     // đã kết bạn
