@@ -49,7 +49,7 @@
           calcStatus?.(source?.bot_resume_at) && 
           getPageInfo(source?.fb_page_id)?.is_active_ai_agent
         " 
-        class="size-4"
+        class="size-3"
         v-tooltip.bottom="$t('AI đang bật')"
       />
       <div
