@@ -41,6 +41,9 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Không trả lời': 'Không trả lời',
+  'Trả lời ngay': 'Trả lời ngay',
+  'Trả lời sau _': 'Trả lời sau {duration}',
   name: 'Tiếng Việt',
   v1: {
     common: {

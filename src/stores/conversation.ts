@@ -79,6 +79,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
     // trả về dữ liệu trang
     return pageStore.getPage(select_conversation.value?.fb_page_id)?.page
   }
+
+  /** lấy dữ liệu trang với id trang trong hội thoại */
+  function getPageById(page_id: string) {
+    const pageStore = usePageStore()
+
+    // trả về dữ liệu trang
+    return pageStore.getPage(page_id)?.page
+  }
+
   /**lấy danh sách nhãn của trang của hội thoại này */
   function getLabels(): Record<string, ILabel> | undefined {
     const pageStore = usePageStore()
@@ -157,5 +166,6 @@ export const useConversationStore = defineStore('conversation_store', () => {
     getLabels,
     getActiveLabelIds,
     getPage,
+    getPageById
   }
 })

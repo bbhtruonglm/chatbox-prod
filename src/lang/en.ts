@@ -240,6 +240,9 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Không trả lời': 'No reply',
+  'Trả lời ngay': 'Reply now',
+  'Trả lời sau _': 'Reply after {duration}',
   name: 'English',
   v1: {
     common: {
