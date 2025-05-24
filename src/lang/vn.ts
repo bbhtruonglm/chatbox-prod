@@ -41,6 +41,7 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Không thể kết nối. Vui lòng thử lại':'Không thể kết nối. Vui lòng thử lại',
   name: 'Tiếng Việt',
   v1: {
     common: {
