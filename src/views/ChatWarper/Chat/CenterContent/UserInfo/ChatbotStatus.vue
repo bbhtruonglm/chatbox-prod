@@ -3,11 +3,11 @@
     v-tooltip.bottom="$t('Trợ lý AI')"
     class="flex flex-col items-end"
   >
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-1 after:!h-3">
       <SparklesIcon class="size-4" />
       <Toggle
         v-model="is_enable"
-        :class_toggle="`peer-checked:bg-black !h-4 w-7 after:h-3 after:w-3 ${
+        :class_toggle="`peer-checked:bg-black !h-4 !w-7 after:!h-3 after:!w-3 ${
           ai_agent_working_hour_answer?.type === 'NOT_ANSWER' &&
           'cursor-not-allowed'
         }`"
