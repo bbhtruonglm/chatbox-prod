@@ -41,6 +41,12 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Lọc':'Lọc',
+  'Nhãn':'Nhãn',
+  'Trừ nhãn':'Trừ nhãn',
+  'Thời gian':'Thời gian',
+  'Nhân viên':'Nhân viên',
+  'Lọc bài viết':'Lọc bài viết',
   name: 'Tiếng Việt',
   v1: {
     common: {

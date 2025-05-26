@@ -240,6 +240,12 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Lọc':'Filter',
+  'Nhãn':'Tag',
+  'Trừ nhãn':'Not tag',
+  'Thời gian':'Date',
+  'Nhân viên':'Staff',
+  'Lọc bài viết':'Filter posts',
   name: 'English',
   v1: {
     common: {
