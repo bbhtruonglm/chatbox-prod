@@ -76,8 +76,13 @@
     v-if="isFilterActive()"
     class="bg-slate-100 rounded-lg py-1.5 px-2 text-xs flex gap-2 items-center"
   >
-    <FunnelIcon class="w-3.5 h-3.5 flex-shrink-0" />
+    <div class="flex gap-2 w-full">
+      <FunnelIcon class="w-3.5 h-3.5 flex-shrink-0" />
     <p class="truncate">{{ filter }}</p>
+    </div>
+    <button @click="$filter_service.clearAllFilter()">
+      <XMarkIcon class="w-3.5 h-3.5 flex-shrink-0" />
+    </button>
   </div>
 </template>
 <script setup lang="ts">
@@ -88,14 +93,16 @@ import {
   useOrgStore,
   usePageStore,
 } from '@/stores'
+import { FilterService } from '@/utils/helper/Filter'
 import { format } from 'date-fns'
 import { debounce, map } from 'lodash'
+import { container } from 'tsyringe'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import SearchIcon from '@/components/Icons/Search.vue'
-import { FunnelIcon } from '@heroicons/vue/24/outline'
+import { FunnelIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { XCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { ILabel } from '@/service/interface/app/label'
@@ -112,6 +119,8 @@ const { t: $t } = useI18n()
 
 /** router */
 const $router = useRouter()
+
+const $filter_service = container.resolve(FilterService)
 
 /**phiên bản trong package.json */
 const version = npm_package_version
