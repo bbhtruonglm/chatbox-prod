@@ -16,13 +16,16 @@
 </template>
 <script setup lang="ts">
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
 
 import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 
 import type { PageData } from '@/service/interface/app/page'
+// import { useOrgStore } from '@/stores';
 
 const $emit = defineEmits(['sort_list_page'])
+
+// const orgStore = useOrgStore()
 
 const $props = withDefaults(
   defineProps<{
@@ -31,6 +34,12 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+// const show_pages = computed(() => {
+//   return active_page_list.value?.filter(page => {
+//     return page?.group_admin_id === $props.org_id
+//   })
+// })
 
 /**xử lý khi trang được chọn ở chế độ nhiều */
 const triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
