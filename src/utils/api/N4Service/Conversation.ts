@@ -134,6 +134,23 @@ export class N4SerivceAppConversation extends N4Serivce {
   async clearAiAnswer(page_id: string, client_id: string): Promise<void> {
     return this.post('clear_ai_answer', { page_id, client_id })
   }
+
+  /** 
+   * lấy số lượng hội thoại 
+   * @param page_ids danh sách id trang
+   * @param filter điều kiện lọc
+   * @returns
+   * */
+  async countConversation(
+    page_ids: string[],
+    filter: FilterConversation
+  ): Promise<number> {
+    return this.post('count_conversation', { 
+      page_id: page_ids,
+      ...filter
+    })
+  }
+
   /**tắt bật chatbot */
   async manageChatbot(
     page_id: string,
