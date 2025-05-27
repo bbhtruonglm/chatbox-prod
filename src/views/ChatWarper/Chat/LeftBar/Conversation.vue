@@ -217,6 +217,57 @@ class Main {
     // tự động chọn khách hàng cho lần đầu tiên
     if (is_first_time) $main.selectDefaultConversation(is_pick_first)
   }
+
+  /**
+   * đếm số lượng hội thoại
+   */
+  @loadingV2(is_loading, 'value')
+  @error()
+  async countConversation(){
+    // nếu đang mất mạng thì không cho gọi api
+    if (!commonStore.is_connected_internet) return
+
+    /**danh sách id page */
+    const PAGE_IDS = keys(pageStore.selected_page_id_list)
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
+    /**ghi đè 1 số lọc tin nhắn */
+    const OVERWRITE_FILTER: FilterConversation = {}
+
+    // chỉ cho hiện hội thoại của nhân viên
+    if (SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff) {
+      // tạo ra filter nhân viên
+      OVERWRITE_FILTER.staff_id = []
+
+      // thêm id mới
+      if (chatbotUserStore.chatbot_user?.user_id)
+        OVERWRITE_FILTER.staff_id?.push(chatbotUserStore.chatbot_user?.user_id)
+
+      // thêm id cũ, tránh lỗi
+      if (chatbotUserStore.chatbot_user?.fb_staff_id)
+        OVERWRITE_FILTER.staff_id?.push(
+          chatbotUserStore.chatbot_user?.fb_staff_id
+        )
+    }
+
+    /**lấy dữ liệu hội thoại */
+    const RES = await this.API_CONVERSATION.countConversation(
+      PAGE_IDS,
+      {
+        ...conversationStore.option_filter_page_data,
+        ...OVERWRITE_FILTER,
+      }
+    )
+
+      console.log('count',RES);
+      
+
+    // lưu lại dữ liệu vào store
+    conversationStore.total_conversation = RES || 0
+    
+  }
+
   /**xử lý socket conversation */
   onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // nếu không có dữ liệu thì thôi
@@ -341,6 +392,9 @@ class Main {
     is_done.value = false
 
     await this.getConversation(is_first_time, is_pick_first)
+
+    // lấy số lượng các hội thoại
+    await this.countConversation()
   }
   /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
   selectDefaultConversation(is_pick_first?: boolean) {
