@@ -262,6 +262,7 @@ export interface IBusinessHourConfig {
     '6'?: IBusinessHourDayConfig
   }
 }
+
 /**thiết lập chung > thời gian làm việc */
 export interface IPageGeneralBusinessHourConfig {
   /**
