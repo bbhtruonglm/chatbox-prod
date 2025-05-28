@@ -247,13 +247,13 @@
   />
 </template>
 <script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue'
+import { debounce, keys, omit } from 'lodash'
 import { useConversationStore, usePageStore } from '@/stores'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { Cdn } from '@/utils/helper/Cdn'
 import { format } from 'date-fns'
-import { debounce, keys } from 'lodash'
 import { container } from 'tsyringe'
-import { onMounted, ref } from 'vue'
 
 import FilterDateOfPost from '@/components/Main/Dashboard/FilterDateOfPost.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
@@ -305,6 +305,18 @@ const filter_timerange = ref<boolean>(false)
 
 onMounted(() => $main.getPostList())
 
+/** lắng nghe khi clear filter */
+watch(
+  () => conversationStore.option_filter_page_data.post_id,
+  value => {
+    // nếu có giá trị thì thôi
+    if (value) return
+
+    // loại bỏ gắn cờ
+    cancelFilter()
+  }
+)
+
 /** Xoá lọc */
 function clearThisFilter() {
   cancelFilter()
@@ -323,18 +335,42 @@ function updateFilterTime(start_time: number, end_time: number) {
 }
 /** Hủy lọc */
 function cancelFilter() {
-  filter_keys.value = {
-    is_reply: '',
-    have_email: '',
-    have_phone: '',
-    is_private_reply: '',
-    post_id: '',
-  }
-  conversationStore.option_filter_page_data = {
-    ...conversationStore.option_filter_page_data,
-    ...filter_keys.value,
-    ...{ post_id: '', time_range: undefined },
-  }
+  // filter_keys.value = {
+  //   is_reply: '',
+  //   have_email: '',
+  //   have_phone: '',
+  //   is_private_reply: '',
+  //   post_id: '',
+  // }
+
+  /** các trường sẽ bị xóa */
+  const DELETE_FIELDS = [
+    'is_reply',
+    'have_email',
+    'have_phone',
+    'is_private_reply',
+    'post_id',
+    'time_range',
+  ]
+
+  // Xóa bộ lọc của bài post
+  conversationStore.option_filter_page_data = omit(
+    conversationStore.option_filter_page_data,
+    DELETE_FIELDS
+  )
+
+  // cập nhật lại giá trj lưu tạm của bộ lọc
+  filter_keys.value = omit(
+    filter_keys.value,
+    DELETE_FIELDS
+  )
+
+  // conversationStore.option_filter_page_data = {
+  //   ...conversationStore.option_filter_page_data,
+  //   ...filter_keys.value,
+  //   ...{ post_id: '', time_range: undefined },
+  // }
+
   posts.value = posts.value.map(item => {
     item.is_selected = false
     return item
