@@ -28,13 +28,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { BillingAppGroup } from '@/utils/api/Billing'
-import { computed, inject, onMounted, provide, ref, watch } from 'vue'
-import {
-  KEY_GET_ALL_ORG_AND_PAGE_FN,
-  KEY_GET_ORG_PAGES_FN,
-} from '@/views/Dashboard/symbol'
+import { useChatbotUserStore, useOrgStore, usePageManagerStore } from '@/stores';
+import { BillingAppGroup } from '@/utils/api/Billing';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const $props = withDefaults(
   defineProps<{
@@ -46,9 +42,18 @@ const $props = withDefaults(
 
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
+const pageManagerStore = usePageManagerStore()
 /**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
+
+/**
+ * @deprecated sử dụng getOrgPages trong composable usePageManager
+ */
+// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
+
+/**
+ * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
+ */
+// const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
@@ -65,14 +70,28 @@ class Main {
     delete orgStore.selected_org_group[$props.org_id]
 
     // lấy lại danh sách trang
-    getALlOrgAndPage?.({
-      org_group: orgStore.selected_org_group,
-    })
+    // getALlOrgAndPage?.({
+    //   org_group: orgStore.selected_org_group,
+    // })
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
-    // đọc toàn bộ nhóm từ server
-    groups.value = await new BillingAppGroup().readGroup($props.org_id)
+    /** toàn bộ nhóm từ server */
+    const RES = await new BillingAppGroup().readGroup($props.org_id)
+
+    // lưu lại vào reactive để hiển thị
+    groups.value = RES
+
+    // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
+    RES?.forEach(group => {
+      group?.group_pages?.forEach(page_id => {
+        // nếu không có id page hoặc id nhóm thì thôi
+        if (!page_id || !group?.group_id) return
+
+        // lưu ánh xạ từ id page tới id nhóm
+        pageManagerStore.pape_to_group_map[page_id] = group.group_id
+      })
+    })
   }
   /**chọn nhóm */
   selectGroup(group_id?: string): void {
@@ -85,9 +104,9 @@ class Main {
     orgStore.selected_org_group[$props.org_id] = group_id
 
     // lấy lại danh sách trang
-    getALlOrgAndPage?.({
-      org_group: orgStore.selected_org_group,
-    })
+    // getALlOrgAndPage?.({
+    //   org_group: orgStore.selected_org_group,
+    // })
   }
 }
 const $main = new Main()

@@ -48,8 +48,8 @@
 <script setup lang="ts">
 import { getPageName } from '@/service/function'
 import { useConnectPageStore, useOrgStore } from '@/stores'
-import { inject, ref } from 'vue'
-import { KEY_RELOAD_PAGE_DATA } from '@/views/Dashboard/symbol'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { ref } from 'vue'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
@@ -77,14 +77,20 @@ const $props = withDefaults(
 const connectPageStore = useConnectPageStore()
 const orgStore = useOrgStore()
 
-/**nạp lại dữ liệu trang */
-const reloadPageData = inject(KEY_RELOAD_PAGE_DATA)
+/**
+ * nạp lại dữ liệu trang 
+ * @deprecated sử dụng reloadPageData trong composable
+*/
+// const reloadPageData = inject(KEY_RELOAD_PAGE_DATA)
 
 /**giá trị của checkbox */
 const checkbox_model = defineModel('checkbox')
 
 /**ref của modal kết nối nền tảng */
 const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
+
+/** composable */
+const { reloadPageData } = usePageManager()
 
 class Main {
   /**xử lý khi click vào trang */

@@ -28,14 +28,22 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { Cog6ToothIcon } from '@heroicons/vue/24/solid'
 import { inject, onMounted, ref, watch } from 'vue'
 import { KEY_GET_ORG_PAGES_FN } from '@/views/Dashboard/symbol'
 
 const orgStore = useOrgStore()
-/**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
+
+/** composable */
+const { getOrgPages } = usePageManager()
+
+/**
+ * lấy danh sách trang đã kích hoạt 
+ * @deprecated sử dụng getOrgPages trong composable usePageManager
+*/
+// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()

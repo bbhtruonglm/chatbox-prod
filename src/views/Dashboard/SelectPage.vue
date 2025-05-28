@@ -101,40 +101,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, provide, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { preGoToChat } from '@/service/function'
+import { nonAccentVn } from '@/service/helper/format'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { KEY_GO_TO_CHAT_FUNCT, KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_GET_ORG_PAGES_FN,
   KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
-import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
-import { useRoute, useRouter } from 'vue-router'
-import { preGoToChat } from '@/service/function'
-import { nonAccentVn } from '@/service/helper/format'
 import { map } from 'lodash'
+import { computed, inject, onMounted, provide, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 
-import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
+import HotAlert from '@/components/HotAlert.vue'
 import Loading from '@/components/Loading.vue'
-import Search from '@/components/Main/Dashboard/Search.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
-import Menu from '@/views/Dashboard/SelectPage/Menu.vue'
+import Search from '@/components/Main/Dashboard/Search.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
+import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
+import AssignGroup from '@/views/Dashboard/SelectPage/AssignGroup.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import GroupPage from '@/views/Dashboard/SelectPage/GroupPage.vue'
 import GroupPageAction from '@/views/Dashboard/SelectPage/GroupPageAction.vue'
-import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
-import HotAlert from '@/components/HotAlert.vue'
-import AllOrg from '@/views/Dashboard/SelectPage/AllOrg.vue'
+import Menu from '@/views/Dashboard/SelectPage/Menu.vue'
 import SelectGroup from '@/views/Dashboard/SelectPage/SelectGroup.vue'
-import AssignGroup from '@/views/Dashboard/SelectPage/AssignGroup.vue'
+import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 
-import { FlagIcon } from '@heroicons/vue/24/solid'
 import FacebookIcon from '@/components/Icons/Facebook.vue'
-import ZaloIcon from '@/components/Icons/Zalo.vue'
-import WebIcon from '@/components/Icons/Web.vue'
 import InstagramIcon from '@/components/Icons/Instagram.vue'
+import WebIcon from '@/components/Icons/Web.vue'
+import ZaloIcon from '@/components/Icons/Zalo.vue'
+import { FlagIcon } from '@heroicons/vue/24/solid'
 
 import type { PageData } from '@/service/interface/app/page'
 
@@ -145,12 +145,21 @@ const $router = useRouter()
 const $route = useRoute()
 const orgStore = useOrgStore()
 
+/** composable */
+const { toggleModalConnectPage, getOrgPages } = usePageManager()
+
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
-/**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-/**mở modal connect page */
-const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
+/** 
+ * lấy danh sách trang đã kích hoạt 
+ * @deprecated sử dụng getOrgPages trong composable usePageManager
+ * */
+// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
+/**
+ * mở modal connect page 
+ * @deprecated sử dụng toggleModalConnectPage trong composable usePageManager
+*/
+// const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)
 
@@ -204,8 +213,11 @@ function triggerConnectPlatform() {
   // nếu không có cờ thì thôi
   if (!$route.query.connect_page) return
 
+  /** cờ kiểm tra mở kết nối */
+  const CONNECT_PAGE = $route.query.connect_page?.toString() || ''
+
   // mở modal connect zalo
-  toggleModalConnectPage?.($route.query.connect_page)
+  toggleModalConnectPage?.(CONNECT_PAGE)
 }
 /**chuyển đến trang chat */
 function goToChat() {

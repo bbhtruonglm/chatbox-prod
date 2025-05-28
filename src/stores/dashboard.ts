@@ -13,6 +13,9 @@ import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
 import { gte } from 'lodash'
 import { UNLIMITED_VALUE } from '@/configs/constants/billing'
+import type { ModalPosition } from '@/service/interface/vue'
+import type DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPickConnectPlatform.vue'
+import type ConnectPage from '@/views/Dashboard/ConnectPage.vue'
 
 const $member_ship_helper = SingletonMemberShipHelper.getInst()
 
@@ -272,6 +275,28 @@ export const useWidgetStore = defineStore('widget_store', () => {
   }
 })
 
+/** store quản lý màn doardbard */
+export const usePageManagerStore = defineStore('page_manager_store', () => {
+  /**ref của modal kết nối nền tảng */
+  const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
+  /**ref của dropdown tiền chọn nền tảng để kết nối */
+  const ref_dropdown_pick_connect_platform =
+    ref<InstanceType<typeof DropdownPickConnectPlatform>>()
+  /**vị trí của dropdown */
+  const position = ref<ModalPosition>()
+  /**lùi lại bao nhiêu */
+  const back = ref<number>()
+  /** map pape_id -> group_id */
+  const pape_to_group_map = ref<Record<string, string>>({})
+
+  return {
+    connect_page_ref,
+    ref_dropdown_pick_connect_platform,
+    position,
+    back,
+    pape_to_group_map
+  }
+})
 // /**lớp trừu tượng để khởi tạo store */
 // export class StoreAbstract {
 //   /**store duy nhất */
