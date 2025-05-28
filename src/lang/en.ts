@@ -240,6 +240,10 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Chọn thời gian': 'Select time',
+  'Thêm thành viên': 'Add members',
+  'Số thành viên đạt giới hạn': 'Maximum number of members',
+  'Tên nhóm không hợp lệ': 'Invalid group name',
   name: 'English',
   v1: {
     common: {

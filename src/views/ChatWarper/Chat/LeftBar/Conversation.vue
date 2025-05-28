@@ -45,6 +45,7 @@ import {
   usePageStore,
   useChatbotUserStore,
   useMessageStore,
+  useOrgStore,
 } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
@@ -88,6 +89,7 @@ const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
 const messageStore = useMessageStore()
+const orgStore = useOrgStore()
 
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
@@ -161,8 +163,12 @@ class Main {
     /**ghi đè 1 số lọc tin nhắn */
     const OVERWRITE_FILTER: FilterConversation = {}
 
-    // chỉ cho hiện hội thoại của nhân viên
-    if (SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff) {
+    // chỉ cho hiện hội thoại của nhân viên và
+    // nếu không phải là chế độ xem bài viết
+    if (
+      SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff && 
+      conversationStore.option_filter_page_data.conversation_type !== 'POST'
+    ) {
       // tạo ra filter nhân viên
       OVERWRITE_FILTER.staff_id = []
 
@@ -364,7 +370,7 @@ class Main {
 
       // reset lại widget
       pageStore.widget_list = []
-      
+
       // lấy phần tử đầu tiên của hội thoại từ store
       const FIRST_CONVERSATION = map(conversationStore.conversation_list)?.[0]
 
@@ -419,6 +425,29 @@ class Main {
             },
             (e, r) => {
               if (e) return cb(e)
+
+              /** dữ liệu của hội thoại tìm được */
+              const CONVERSATION = r?.conversation?.[data_key]
+
+              /** id của nhân sự hiện tại */
+              const CURRENT_STAFF_ID =
+                chatbotUserStore.chatbot_user?.user_id ||
+                conversationStore.select_conversation?.fb_staff_id
+
+              /** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
+              const IS_ADMIN = conversationStore.isCurrentStaffAdmin()
+
+              // nếu bật chỉ hiện hội thoại với nhân viên được assign và
+              // id hiện tại không phải của nhân sự đó và
+              // không phải admin thì dừng lại
+              if (
+                orgStore.selected_org_info?.org_config
+                  ?.org_is_only_visible_client_of_staff &&
+                CONVERSATION?.fb_staff_id !== CURRENT_STAFF_ID &&
+                !IS_ADMIN
+              ) {
+                cb()
+              }
 
               conversation = r?.conversation?.[data_key]
               cb()

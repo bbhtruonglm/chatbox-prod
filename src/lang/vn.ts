@@ -41,6 +41,10 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Chọn thời gian': 'Chọn thời gian',
+  'Thêm thành viên':'Thêm thành viên',
+  'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
+  'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
   name: 'Tiếng Việt',
   v1: {
     common: {
