@@ -79,7 +79,7 @@
     v-if="isFilterActive()"
     class="bg-slate-100 rounded-lg py-1.5 px-2 text-xs flex gap-2 items-center"
   >
-    <div class="flex gap-2 w-full">
+    <div class="flex gap-2 w-full min-w-0">
       <FunnelIcon class="w-3.5 h-3.5 flex-shrink-0" />
     <p class="truncate">{{ filter }}</p>
     </div>
