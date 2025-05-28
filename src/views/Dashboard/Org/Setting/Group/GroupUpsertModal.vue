@@ -130,6 +130,7 @@ import GroupItem from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal/Grou
 import GroupSection from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal/GroupSection.vue'
 import Loading from '@/components/Loading.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
+import { Toast } from '@/utils/helper/Alert/Toast'
 
 const { GroupService } = groupService()
 const $emit = defineEmits(['done'])
@@ -152,6 +153,8 @@ const map_group_pages = ref<Record<string, boolean>>({})
 const map_group_staffs = ref<Record<string, boolean>>({})
 /**id nhóm được chọn khi cập nhật */
 const selected_group_id = ref<string>()
+
+const $toast = container.resolve(Toast)
 
 class Main {
   /**
@@ -198,8 +201,13 @@ class Main {
   }
   /**thêm/sửa Nhóm */
   @loadingV2(is_loading, 'value')
-  @error()
+  @error($toast)
   async upsertGroup() {
+    // check tên nhóm
+    if (!group_name.value?.trim()) {
+      throw $t('Tên nhóm không hợp lệ')
+    }
+
     // cập nhật nhóm cho tổ chức
     if (is_update.value)
       await this.API_GROUP.updateGroup(
