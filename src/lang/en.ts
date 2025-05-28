@@ -240,6 +240,7 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Không thể kết nối. Vui lòng thử lại': 'Unable to connect. Please try again',
   'Chọn thời gian': 'Select time',
   'Thêm thành viên': 'Add members',
   'Số thành viên đạt giới hạn': 'Maximum number of members',

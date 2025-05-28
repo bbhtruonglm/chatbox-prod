@@ -41,6 +41,7 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Không thể kết nối. Vui lòng thử lại':'Không thể kết nối. Vui lòng thử lại',
   'Chọn thời gian': 'Chọn thời gian',
   'Thêm thành viên':'Thêm thành viên',
   'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
