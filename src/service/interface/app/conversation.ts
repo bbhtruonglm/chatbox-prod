@@ -10,7 +10,7 @@ export interface FilterConversation {
     /**lọc hội thoại có tên */
     have_client_name?: boolean
     /**hiển thị tất cả hội thoại | chỉ hiển thị tin nhắn | chỉ hiển thị bình luận */
-    display_style?: 'ALL' | 'INBOX' | 'COMMENT'
+    display_style?: 'ALL' | 'INBOX' | 'COMMENT' | 'FRIEND' | 'GROUP'
     /**lọc hội thoại có | không có số điện thoại */
     have_phone?: 'YES' | 'NO'
     /**lọc hội thoại không có uid */

@@ -1,4 +1,5 @@
 import { getItem } from '@/service/helper/localStorage'
+import { ErrorHandler } from '@/utils/helper/Conversation/ErrorHandler'
 
 /**quản lý API của ứng dụng */
 export class ApiManager {
@@ -84,10 +85,7 @@ export class ApiManager {
       // trả về dữ liệu
       return RESULT?.data || RESULT
     } catch (e: any) {
-      // nếu là raw thì ném ra luôn
-      if (is_raw_error) throw e
-      // nếu có lỗi thì ưu tiên ném ra thông báo lỗi
-      else throw e?.mean || e?.message || e
+      throw ErrorHandler.parse(e, is_raw_error)
     }
   }
 

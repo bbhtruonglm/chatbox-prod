@@ -47,6 +47,11 @@ const source: Language = {
   'Thời gian':'Thời gian',
   'Nhân viên':'Nhân viên',
   'Lọc bài viết':'Lọc bài viết',
+  'Không thể kết nối. Vui lòng thử lại':'Không thể kết nối. Vui lòng thử lại',
+  'Chọn thời gian': 'Chọn thời gian',
+  'Thêm thành viên':'Thêm thành viên',
+  'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
+  'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
   name: 'Tiếng Việt',
   v1: {
     common: {
@@ -367,6 +372,8 @@ const source: Language = {
                 title: 'Lọc tương tác',
                 message: 'Tương tác từ nhắn tin',
                 comment: 'Tương tác từ bình luận',
+                friend: 'Tương tác từ bạn bè',
+                group: 'Tương tác từ nhóm',
               },
               message: {
                 title: 'Lọc trạng thái tin nhắn',

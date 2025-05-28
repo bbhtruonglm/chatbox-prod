@@ -1,6 +1,7 @@
 /**
  * lib để request api
  */
+import { ErrorHandler } from '@/utils/helper/Conversation/ErrorHandler'
 import query_string from 'query-string'
 import { size } from 'lodash'
 
@@ -52,6 +53,6 @@ export const request = (
             proceed(null, r)
         })
         .catch(e => {
-            proceed(e.message || e)
+            proceed(ErrorHandler.parse(e))
         })
 }
