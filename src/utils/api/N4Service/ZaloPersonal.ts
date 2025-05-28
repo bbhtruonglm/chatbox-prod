@@ -21,7 +21,9 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
   /**gửi lời mời kết bạn */
   public async sendFriendRequest(
     page_id: string,
-    message_id: string
+    message_id: string,
+    actual_page_id:string,
+    actual_client_id:string
   ): Promise<{
     /**đã kết bạn chưa */
     is_accept_friend_request?: boolean
@@ -29,6 +31,8 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
     return this.post('send_friend_request_by_message', {
       page_id,
       message_id,
+      actual_page_id,
+      actual_client_id
     })
   }
 
