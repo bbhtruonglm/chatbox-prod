@@ -240,20 +240,17 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
-<<<<<<< HEAD
   'Lọc':'Filter',
   'Nhãn':'Tag',
   'Trừ nhãn':'Not tag',
   'Thời gian':'Date',
   'Nhân viên':'Staff',
   'Lọc bài viết':'Filter posts',
-=======
   'Không thể kết nối. Vui lòng thử lại': 'Unable to connect. Please try again',
   'Chọn thời gian': 'Select time',
   'Thêm thành viên': 'Add members',
   'Số thành viên đạt giới hạn': 'Maximum number of members',
   'Tên nhóm không hợp lệ': 'Invalid group name',
->>>>>>> pre-release/hai
   name: 'English',
   v1: {
     common: {
