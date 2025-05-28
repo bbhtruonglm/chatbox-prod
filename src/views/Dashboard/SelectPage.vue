@@ -49,11 +49,16 @@
       </template>
       <template v-else>
         <EmptyPage
-          v-if="!pageStore.countActivePage() && !selectPageStore.is_loading"
+          v-if="
+            !(
+              pageStore.countActivePage() ||
+              orgStore.selected_org_group?.[orgStore.selected_org_id || '']
+            ) && !selectPageStore.is_loading
+          "
           tab="PAGE"
         />
+        <!-- v-else -->
         <div
-          v-else
           :class="{
             'pb-16': selectPageStore.is_group_page_mode,
           }"
@@ -105,7 +110,10 @@ import { preGoToChat } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import { KEY_GO_TO_CHAT_FUNCT, KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
+import {
+  KEY_GO_TO_CHAT_FUNCT,
+  KEY_SORT_LIST_PAGE_FUNCT,
+} from '@/views/Dashboard/SelectPage/symbol'
 import {
   KEY_GET_CHATBOT_USER_FUNCT,
   KEY_GET_ORG_PAGES_FN,
@@ -150,15 +158,15 @@ const { toggleModalConnectPage, getOrgPages } = usePageManager()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
-/** 
- * lấy danh sách trang đã kích hoạt 
+/**
+ * lấy danh sách trang đã kích hoạt
  * @deprecated sử dụng getOrgPages trong composable usePageManager
  * */
 // const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 /**
- * mở modal connect page 
+ * mở modal connect page
  * @deprecated sử dụng toggleModalConnectPage trong composable usePageManager
-*/
+ */
 // const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 computed(() => selectPageStore.current_menu)

@@ -36,13 +36,14 @@ export const usePageStore = defineStore('page_store', () => {
   /** lưu dữ liệu của các page được kích hoạt của user này */
   // const active_page_list = ref<PageList>({})
   const active_page_list = computed({
-    get: () =>
-      filterPageByGroup(
+    get: () => {
+      return filterPageByGroup(
         all_page_list.value,
         pageManagerStore.pape_to_group_map,
         map_orgs.value?.map_page_org || {},
         orgStore.selected_org_group
-      ),
+      )
+    },
     set: val => {
       all_page_list.value = val
     },

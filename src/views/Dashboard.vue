@@ -140,13 +140,6 @@ class Main {
     // lưu lại danh sách trang
     pageStore.all_page_list = RES?.page_list || {}
 
-    // lưu lại danh sách trang
-    // pageStore.active_page_list = filterPageByGroup(
-    //   pageStore.all_page_list || {},
-    //   pageManagerStore.pape_to_group_map,
-    //   pageStore?.map_orgs?.map_page_org || {},
-    //   orgStore.selected_org_group,
-    // )
   }
   /**có hiển thị các nút của trang chọn page không */
   isShowSelectPageButton() {
@@ -176,16 +169,8 @@ class Main {
 
     pageStore.all_page_list = PAGE_DATA?.page_list
 
-    // lưu trữ danh sách trang hiện tại
-    // pageStore.active_page_list = filterPageByGroup(
-    //   pageStore.all_page_list || {},
-    //   pageManagerStore.pape_to_group_map,
-    //   pageStore?.map_orgs?.map_page_org || {},
-    //   orgStore.selected_org_group,
-    // )
-
     // lấy dữ liệu mapping tổ chức và trang
-    pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
+    pageStore.map_orgs = await read_link_org(keys(pageStore.all_page_list))
   }
   /**ẩn hiện dropdown */
   toggleDropdown(

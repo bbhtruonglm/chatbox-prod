@@ -62,14 +62,6 @@ export function usePageManager() {
 
       
       pageStore.all_page_list = RES?.page_list || {}
-
-      // lưu lại danh sách trang
-      // pageStore.active_page_list = this.filterPageByGroup(
-      //   pageStore.all_page_list || {},
-      //   pageManagerStore.pape_to_group_map,
-      //   pageStore?.map_orgs?.map_page_org || {},
-      //   orgStore.selected_org_group
-      // )
     }
     /**có hiển thị các nút của trang chọn page không */
     isShowSelectPageButton() {
@@ -100,16 +92,8 @@ export function usePageManager() {
       // lưu trữ dữ liệu trang
       pageStore.all_page_list = PAGE_DATA?.page_list
 
-      // lưu trữ danh sách trang hiện tại
-      // pageStore.active_page_list = this.filterPageByGroup(
-      //   pageStore.all_page_list || {},
-      //   pageManagerStore.pape_to_group_map,
-      //   pageStore?.map_orgs?.map_page_org || {},
-      //   orgStore.selected_org_group
-      // )
-
       // lấy dữ liệu mapping tổ chức và trang
-      pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
+      pageStore.map_orgs = await read_link_org(keys(pageStore.all_page_list))
     }
     /**ẩn hiện dropdown */
     toggleDropdown(
@@ -140,16 +124,18 @@ export function usePageManager() {
       page_to_org_map: Record<string, string>,
       selected_org_group: Record<string, string>
     ) {
-
-      // nếu có thì lọc các trang có id nhóm trùng với id nhóm được chọn
       return pickBy(page_list, (page, id) => {
+        /** id của tổ chức của trang hiện tại */
         const PAGE_ORG_ID = page_to_org_map[id]
+
+        /** id của nhóm của trang hiện tại */
         const PAGE_GROUP_ID = pape_to_group_map[id]
 
+        /** nếu tổ chức đó đang không lọc theo nhóm thì thôi */
         if(!selected_org_group[PAGE_ORG_ID]) return true
 
+        /** nếu có thì cần lọc đúng những page của nhóm đã chọn */
         return selected_org_group[PAGE_ORG_ID] === PAGE_GROUP_ID
-
       })
     }
   }

@@ -168,14 +168,6 @@ async function getCurrentPageOrgInfo() {
 
   // lưu lại danh sách trang
   pageStore.all_page_list = RES?.page_list || {}
-
-  // lưu lại danh sách trang
-  // pageStore.active_page_list = filterPageByGroup(
-  //   pageStore.all_page_list || {},
-  //   pageManagerStore.pape_to_group_map,
-  //   pageStore?.map_orgs?.map_page_org || {},
-  //   orgStore.selected_org_group,
-  // )
 }
 /**ẩn hiện org theo tìm kiếm */
 function filterPage(page: PageData): boolean {

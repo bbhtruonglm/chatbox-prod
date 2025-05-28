@@ -78,9 +78,6 @@ class Main {
 
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[$props.org_id]
-
-    // cập nhật danh sách trang
-    this.updatePageList()
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
@@ -110,19 +107,6 @@ class Main {
 
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[$props.org_id] = group_id
-
-    // cập nhật danh sách trang
-    this.updatePageList()
-  }
-
-  /** cập nhật danh sách trang */
-  updatePageList() {
-    // pageStore.active_page_list = filterPageByGroup(
-    //   pageStore.all_page_list || {},
-    //   pageManagerStore.pape_to_group_map,
-    //   pageStore?.map_orgs?.map_page_org || {},
-    //   orgStore.selected_org_group,
-    // )
   }
 }
 const $main = new Main()
