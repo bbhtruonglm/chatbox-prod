@@ -366,6 +366,8 @@ const source: Language = {
                 title: 'Lọc tương tác',
                 message: 'Tương tác từ nhắn tin',
                 comment: 'Tương tác từ bình luận',
+                friend: 'Tương tác từ bạn bè',
+                group: 'Tương tác từ nhóm',
               },
               message: {
                 title: 'Lọc trạng thái tin nhắn',

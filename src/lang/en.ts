@@ -566,6 +566,8 @@ const source: Language = {
                 title: 'Filter by interaction',
                 message: 'Interaction from messages',
                 comment: 'Interaction from comments',
+                friend: 'Interaction from friends',
+                group: 'Interaction from groups',
               },
               message: {
                 title: 'Filter by message status',

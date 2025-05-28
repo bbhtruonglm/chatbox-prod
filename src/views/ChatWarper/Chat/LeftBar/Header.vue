@@ -30,6 +30,9 @@
           class="h-full"
         >
           {{ $t('Chat') }}
+          <span v-if="conversationStore.total_conversation" class="rounded-full bg-red-500 text-white text-xxs px-1">
+            {{ conversationStore.total_conversation }}
+          </span>
         </button>
         <button
           @click="$main.activeTab('POST')"
