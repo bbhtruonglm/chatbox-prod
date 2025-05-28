@@ -79,8 +79,9 @@ export class ApiManager {
       // nếu là raw thì trả về nguyên bản
       // if (is_raw) return RESULT
 
-      // fix riêng cho trường hợp này
-      if (RESULT?.data === false) return RESULT?.data
+      // fix falsy value
+      if (RESULT?.data === false || RESULT?.data === 0 || RESULT?.data === '')
+        return RESULT?.data
 
       // trả về dữ liệu
       return RESULT?.data || RESULT
