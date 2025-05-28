@@ -1,6 +1,6 @@
 <template>
   <CardItem
-    v-if="active_page_list?.length"
+    v-if="active_page_list?.length || orgStore.selected_org_group?.[org_id]"
     id="all-org__org-item"
     :class="{
       'opacity-50':

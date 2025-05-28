@@ -294,7 +294,7 @@ export const usePageManagerStore = defineStore('page_manager_store', () => {
     ref_dropdown_pick_connect_platform,
     position,
     back,
-    pape_to_group_map
+    pape_to_group_map,
   }
 })
 // /**lớp trừu tượng để khởi tạo store */

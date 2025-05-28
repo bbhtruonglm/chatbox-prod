@@ -1,20 +1,20 @@
+import { read_link_org } from '@/service/api/chatbox/billing'
+import type { PageList } from '@/service/interface/app/page'
+import type { ModalPosition } from '@/service/interface/vue'
 import {
   useOrgStore,
   usePageManagerStore,
   usePageStore,
   useSelectPageStore,
 } from '@/stores'
-import { useRoute } from 'vue-router'
-import { loading } from '@/utils/decorator/Loading'
-import { error } from '@/utils/decorator/Error'
-import { container } from 'tsyringe'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { toRef } from 'vue'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { read_link_org } from '@/service/api/chatbox/billing'
-import { get, keys, size } from 'lodash'
-import type { ModalPosition } from '@/service/interface/vue'
-import type { PageData } from '@/service/interface/app/page'
+import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { keys, map, pickBy, size } from 'lodash'
+import { container } from 'tsyringe'
+import { toRef } from 'vue'
+import { useRoute } from 'vue-router'
 
 export function usePageManager() {
   const pageStore = usePageStore()
@@ -60,8 +60,16 @@ export function usePageManager() {
         orgStore.selected_org_group[orgStore.selected_org_id || '']
       )
 
+      
+      pageStore.all_page_list = RES?.page_list || {}
+
       // lưu lại danh sách trang
-      pageStore.active_page_list = RES?.page_list || {}
+      // pageStore.active_page_list = this.filterPageByGroup(
+      //   pageStore.all_page_list || {},
+      //   pageManagerStore.pape_to_group_map,
+      //   pageStore?.map_orgs?.map_page_org || {},
+      //   orgStore.selected_org_group
+      // )
     }
     /**có hiển thị các nút của trang chọn page không */
     isShowSelectPageButton() {
@@ -89,8 +97,16 @@ export function usePageManager() {
       // nếu không có dữ liệu trang thì thôi
       if (!PAGE_DATA?.page_list) return
 
+      // lưu trữ dữ liệu trang
+      pageStore.all_page_list = PAGE_DATA?.page_list
+
       // lưu trữ danh sách trang hiện tại
-      pageStore.active_page_list = PAGE_DATA?.page_list
+      // pageStore.active_page_list = this.filterPageByGroup(
+      //   pageStore.all_page_list || {},
+      //   pageManagerStore.pape_to_group_map,
+      //   pageStore?.map_orgs?.map_page_org || {},
+      //   orgStore.selected_org_group
+      // )
 
       // lấy dữ liệu mapping tổ chức và trang
       pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
@@ -119,29 +135,21 @@ export function usePageManager() {
      * @param org_id: id của tổ chức
     */
     filterPageByGroup(
-      active_page_list: PageData[],
+      page_list: PageList,
       pape_to_group_map: Record<string, string>,
-      selected_org_group: Record<string, string>,
-      org_id?: string
+      page_to_org_map: Record<string, string>,
+      selected_org_group: Record<string, string>
     ) {
-      /** id của nhóm đang được chọn */
-      const GROUP_ID = selected_org_group[org_id || '']
-
-      // nếu không có id nhóm đang được chọn => đang chọn tất cả
-      if (!GROUP_ID) return active_page_list
 
       // nếu có thì lọc các trang có id nhóm trùng với id nhóm được chọn
-      return active_page_list?.filter(page => {
-        /** id của page hiện tại */
-        const PAGE_ID = page?.page?.page_id
+      return pickBy(page_list, (page, id) => {
+        const PAGE_ORG_ID = page_to_org_map[id]
+        const PAGE_GROUP_ID = pape_to_group_map[id]
 
-        // nếu không có id page thì ản
-        if (!PAGE_ID) return
+        if(!selected_org_group[PAGE_ORG_ID]) return true
 
-        /** id nhóm của page hiện tại */
-        const GROUP_ID_CURRENT_PAGE = pape_to_group_map[PAGE_ID]
+        return selected_org_group[PAGE_ORG_ID] === PAGE_GROUP_ID
 
-        return GROUP_ID_CURRENT_PAGE === GROUP_ID
       })
     }
   }
@@ -149,8 +157,8 @@ export function usePageManager() {
 
   return {
     toggleModalConnectPage: $main.toggleModalConnectPage,
-    getOrgPages: $main.getOrgPages,
-    getALlOrgAndPage: $main.getALlOrgAndPage,
+    getOrgPages: $main.getOrgPages.bind($main),
+    getALlOrgAndPage: $main.getALlOrgAndPage.bind($main),
     toggleDropdown: $main.toggleDropdown.bind($main),
     reloadPageData: $main.reloadPageData.bind($main),
     filterPageByGroup: $main.filterPageByGroup

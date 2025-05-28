@@ -98,7 +98,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
+import { useOrgStore, usePageManagerStore, usePageStore, useWidgetStore } from '@/stores'
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { getPageName } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
@@ -112,9 +112,11 @@ import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
 import type { ComponentRef } from '@/service/interface/vue'
 import type { PageData } from '@/service/interface/app/page'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
+const pageManagerStore = usePageManagerStore()
 const widgetStore = useWidgetStore()
 
 /**ref tổng của select */
@@ -125,6 +127,8 @@ const select_input_ref = ref<ComponentRef>()
 const is_show_option = ref<boolean>()
 /**giá trị của tìm kiếm */
 const search = ref<string>()
+
+const { filterPageByGroup } = usePageManager()
 
 // nạp dữ liệu trang của tổ chức hiện tại khi component được mount
 onMounted(() => {
@@ -163,7 +167,15 @@ async function getCurrentPageOrgInfo() {
   )
 
   // lưu lại danh sách trang
-  pageStore.active_page_list = RES?.page_list || {}
+  pageStore.all_page_list = RES?.page_list || {}
+
+  // lưu lại danh sách trang
+  // pageStore.active_page_list = filterPageByGroup(
+  //   pageStore.all_page_list || {},
+  //   pageManagerStore.pape_to_group_map,
+  //   pageStore?.map_orgs?.map_page_org || {},
+  //   orgStore.selected_org_group,
+  // )
 }
 /**ẩn hiện org theo tìm kiếm */
 function filterPage(page: PageData): boolean {

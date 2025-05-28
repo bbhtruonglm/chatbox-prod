@@ -4,7 +4,7 @@
     v-model="selected_group_id"
     class="bg-slate-100 rounded px-2 py-0.5 font-medium text-sm group-hover/org-item:visible"
     :class="{
-      'invisible': !orgStore?.selected_org_group?.[org_id],
+      invisible: !orgStore?.selected_org_group?.[org_id],
     }"
   >
     <option value="ALL">{{ $t('Tất cả Nhóm') }}</option>
@@ -28,9 +28,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, useOrgStore, usePageManagerStore } from '@/stores';
-import { BillingAppGroup } from '@/utils/api/Billing';
-import { computed, onMounted, ref, watch } from 'vue';
+import {
+  useChatbotUserStore,
+  useOrgStore,
+  usePageManagerStore,
+  usePageStore,
+} from '@/stores'
+import { BillingAppGroup } from '@/utils/api/Billing'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -43,9 +49,13 @@ const $props = withDefaults(
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 const pageManagerStore = usePageManagerStore()
-/**lấy danh sách trang đã kích hoạt */
+const pageStore = usePageStore()
+
+/** composable */
+const { filterPageByGroup } = usePageManager()
 
 /**
+ * lấy danh sách trang đã kích hoạt
  * @deprecated sử dụng getOrgPages trong composable usePageManager
  */
 // const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
@@ -69,10 +79,8 @@ class Main {
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[$props.org_id]
 
-    // lấy lại danh sách trang
-    // getALlOrgAndPage?.({
-    //   org_group: orgStore.selected_org_group,
-    // })
+    // cập nhật danh sách trang
+    this.updatePageList()
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
@@ -86,10 +94,10 @@ class Main {
     RES?.forEach(group => {
       group?.group_pages?.forEach(page_id => {
         // nếu không có id page hoặc id nhóm thì thôi
-        if (!page_id || !group?.group_id) return
+        if (!page_id || !group?.group_id || !group?.org_id) return
 
         // lưu ánh xạ từ id page tới id nhóm
-        pageManagerStore.pape_to_group_map[page_id] = group.group_id
+        pageManagerStore.pape_to_group_map[page_id] = group?.group_id
       })
     })
   }
@@ -103,10 +111,18 @@ class Main {
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[$props.org_id] = group_id
 
-    // lấy lại danh sách trang
-    // getALlOrgAndPage?.({
-    //   org_group: orgStore.selected_org_group,
-    // })
+    // cập nhật danh sách trang
+    this.updatePageList()
+  }
+
+  /** cập nhật danh sách trang */
+  updatePageList() {
+    // pageStore.active_page_list = filterPageByGroup(
+    //   pageStore.all_page_list || {},
+    //   pageManagerStore.pape_to_group_map,
+    //   pageStore?.map_orgs?.map_page_org || {},
+    //   orgStore.selected_org_group,
+    // )
   }
 }
 const $main = new Main()

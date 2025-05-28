@@ -75,6 +75,7 @@ import { loading } from '@/utils/decorator/Loading'
 import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import { storeToRefs } from 'pinia'
 import { container } from 'tsyringe'
+import { usePageManager } from './Dashboard/composables/usePageManager'
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
@@ -88,6 +89,7 @@ const { ref_dropdown_pick_connect_platform, connect_page_ref } =
 
 // composable
 const { getMeChatbotUser } = initRequireData()
+const { filterPageByGroup } = usePageManager()
 
 // /**ref của modal kết nối nền tảng */
 // const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
@@ -136,7 +138,15 @@ class Main {
     )
 
     // lưu lại danh sách trang
-    pageStore.active_page_list = RES?.page_list || {}
+    pageStore.all_page_list = RES?.page_list || {}
+
+    // lưu lại danh sách trang
+    // pageStore.active_page_list = filterPageByGroup(
+    //   pageStore.all_page_list || {},
+    //   pageManagerStore.pape_to_group_map,
+    //   pageStore?.map_orgs?.map_page_org || {},
+    //   orgStore.selected_org_group,
+    // )
   }
   /**có hiển thị các nút của trang chọn page không */
   isShowSelectPageButton() {
@@ -164,8 +174,15 @@ class Main {
     // nếu không có dữ liệu trang thì thôi
     if (!PAGE_DATA?.page_list) return
 
+    pageStore.all_page_list = PAGE_DATA?.page_list
+
     // lưu trữ danh sách trang hiện tại
-    pageStore.active_page_list = PAGE_DATA?.page_list
+    // pageStore.active_page_list = filterPageByGroup(
+    //   pageStore.all_page_list || {},
+    //   pageManagerStore.pape_to_group_map,
+    //   pageStore?.map_orgs?.map_page_org || {},
+    //   orgStore.selected_org_group,
+    // )
 
     // lấy dữ liệu mapping tổ chức và trang
     pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
