@@ -56,9 +56,6 @@ class Main {
 
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[orgStore.selected_org_id]
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
@@ -74,9 +71,6 @@ class Main {
 
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[orgStore.selected_org_id] = group_id
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**lấy id nhóm đang được chọn */
   getSelectedGroupId(): string | undefined {
