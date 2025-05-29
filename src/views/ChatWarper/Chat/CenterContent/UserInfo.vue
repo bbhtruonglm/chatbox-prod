@@ -164,12 +164,15 @@ watch(
   () => commonStore.keyboard_shortcut,
   value => {
     /** xem thông tin người dùng */
-    const IS_VIEW_CLIENT_INFO = value === 'view_client_info';
+    const IS_VIEW_CLIENT_INFO = value === 'view_client_info'
     /** toggle trạng thái đọc */
-    const IS_TOGGLE_UNREAD = value === 'toggle_unread';
+    const IS_TOGGLE_UNREAD = value === 'toggle_unread'
+    /** toggle block người dùng */
+    const IS_TOGGLE_BLOCK_USER = value === 'toggle_block_user'
 
-    // nếu không phải xem thông tin hoặc toggle trạng thái chưa đọc thì bỏ qua
-    if (!IS_VIEW_CLIENT_INFO && !IS_TOGGLE_UNREAD) return
+    // nếu không phải các hành động thực hiện trong module thì thôi
+    if (!IS_VIEW_CLIENT_INFO && !IS_TOGGLE_UNREAD && !IS_TOGGLE_BLOCK_USER)
+      return
 
     // nếu là xem thông tin
     if (IS_VIEW_CLIENT_INFO) client_menu_ref.value?.openClientInfo()
@@ -186,7 +189,7 @@ watch(
       if (!SELECTED?.is_force_unread) {
         // gọi api đánh dấu hội thoại chưa đọc
         $main.unreadConversation()
-      } 
+      }
       // nếu là chưa đọc
       else {
         /** id của hội thoại đang chọn */
@@ -195,6 +198,12 @@ watch(
         // chọn lại hội thoại này
         selectConversation(CONVERSATION_LIST?.[KEY])
       }
+    }
+
+    // nếu là toggle block người dùng
+    if (IS_TOGGLE_BLOCK_USER) {
+      // gọi api block người dùng
+      client_menu_ref.value?.toggleSpam()
     }
 
     // clear data

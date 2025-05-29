@@ -1,13 +1,17 @@
 import { confirm } from '@/service/helper/alert'
 import { signout } from '@/service/helper/oauth'
 import { useCommonStore, useConversationStore } from '@/stores'
+import { Clipboard } from '@/utils/helper/Clipboard'
 import { tinykeys } from 'tinykeys'
-import { onMounted, onUnmounted } from 'vue'
+import { container } from 'tsyringe'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 /** xử lý logic lắng nghe các phím tắt */
 export function useKeyboardShortcut() {
+  const $clipboard = container.resolve(Clipboard)
+
   /** router */
   const $router = useRouter()
   const $route = useRoute()
@@ -18,6 +22,15 @@ export function useKeyboardShortcut() {
   /** store */
   const commonStore = useCommonStore()
   const conversationStore = useConversationStore()
+
+  /**sdt cuối của khách */
+  const last_client_phone = computed(
+    () => conversationStore.select_conversation?.client_phone
+  )
+  /**email cuối của khách */
+  const last_client_email = computed(
+    () => conversationStore.select_conversation?.client_email
+  )
 
   /** hàm quay lại màn chọn trang */
   const backToSelectPage = () => {
@@ -123,6 +136,30 @@ export function useKeyboardShortcut() {
     e.preventDefault()
   }
 
+  /** toggle chặn người dùng */
+  const toggleBlockUser = (e: KeyboardEvent) => {
+    commonStore.keyboard_shortcut = 'toggle_block_user'
+    e.preventDefault()
+  }
+
+  /** sao chép số điện thoại */
+  const copyPhone = (e: KeyboardEvent) => {
+    // nếu không có số điện thoại thì thôi
+    if(!last_client_phone.value) return
+    //copy số điện thoại vào clipboard
+    $clipboard.copy(last_client_phone.value)
+    e.preventDefault()
+  }
+
+  /** sao chép email */
+  const copyEmail = (e: KeyboardEvent) => {
+    // nếu không có email thì thôi
+    if(!last_client_email.value) return
+    //copy email vào clipboard
+    $clipboard.copy(last_client_phone.value)
+    e.preventDefault()
+  }
+
   /** hàm clean up sự kiện lắng nghe các phím tắt */
   let unsubscribe: () => void
 
@@ -167,7 +204,7 @@ export function useKeyboardShortcut() {
     'Control+Digit2': {
       '/': togglePostMode,
     },
-    'Control+K': {
+    'Alt+K': {
       '/': toggleSearch,
     },
     'Shift+L': {
@@ -178,6 +215,15 @@ export function useKeyboardShortcut() {
     },
     'Control+R': {
       '/': toggleUnread,
+    },
+    'Control+X': {
+      '/': toggleBlockUser,
+    },
+    'Shift+P': {
+      '/': copyPhone,
+    },
+    'Shift+E': {
+      '/': copyEmail,
     },
   }
 
