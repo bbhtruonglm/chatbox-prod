@@ -117,11 +117,11 @@ const SHORTCUT_LIST = [
       //   name: 'Khóa màn hình',
       //   key: ['Ctrl', 'L'],
       // },
-      // {
-      //   icon: BellSlashIcon,
-      //   name: 'Đăng xuất',
-      //   key: ['Ctrl', 'E'],
-      // },
+      {
+        icon: BellSlashIcon,
+        name: 'Đăng xuất',
+        key: ['Ctrl', 'Shift' ,'E'],
+      },
     ],
   },
   {
@@ -176,68 +176,68 @@ const SHORTCUT_LIST = [
       },
     ],
   },
-  // {
-  //   type: 'Hội thoại',
-  //   list: [
-  //     {
-  //       icon: ChatBubbleOvalLeftEllipsisIcon,
-  //       name: 'Chế độ Chat',
-  //       key: ['Ctrl', '1'],
-  //     },
-  //     {
-  //       icon: NewspaperIcon,
-  //       name: 'Chế độ Bài viết',
-  //       key: ['Ctrl', '2'],
-  //     },
-  //     {
-  //       icon: MagnifyingGlassIcon,
-  //       name: 'Tìm kiếm',
-  //       key: ['Ctrl', 'K'],
-  //     },
-  //     {
-  //       icon: SwatchIcon,
-  //       name: 'Ẩn/hiện nhãn',
-  //       key: ['Shift', 'L'],
-  //     },
-  //   ],
-  // },
-  // {
-  //   type: 'Tin nhắn',
-  //   list: [
-  //     {
-  //       icon: UserCircleIcon,
-  //       name: 'Xem hồ sơ',
-  //       key: ['Ctrl', 'P'],
-  //     },
-  //     {
-  //       icon: EnvelopeIcon,
-  //       name: 'Đọc / chưa đọc',
-  //       key: ['Ctrl', 'R'],
-  //     },
-  //     {
-  //       icon: MinusCircleIcon,
-  //       name: 'Chặn người dùng',
-  //       key: ['Ctrl', 'X'],
-  //     },
-  //     {
-  //       icon: Square2StackIcon,
-  //       name: 'Chép số điện thoại',
-  //       key: ['Shift', 'P'],
-  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
-  //     },
-  //     {
-  //       icon: Square2StackIcon,
-  //       name: 'Chép email',
-  //       key: ['Shift', 'E'],
-  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
-  //     },
-  //     {
-  //       icon: BoltIcon,
-  //       name: 'Đăng xuất',
-  //       key: ['/'],
-  //     },
-  //   ],
-  // },
+  {
+    type: 'Hội thoại',
+    list: [
+      {
+        icon: ChatBubbleOvalLeftEllipsisIcon,
+        name: 'Chế độ Chat',
+        key: ['Ctrl', '1'],
+      },
+      {
+        icon: NewspaperIcon,
+        name: 'Chế độ Bài viết',
+        key: ['Ctrl', '2'],
+      },
+      {
+        icon: MagnifyingGlassIcon,
+        name: 'Tìm kiếm',
+        key: ['Alt', 'K'],
+      },
+      {
+        icon: SwatchIcon,
+        name: 'Ẩn/hiện nhãn',
+        key: ['Shift', 'L'],
+      },
+    ],
+  },
+  {
+    type: 'Tin nhắn',
+    list: [
+      {
+        icon: UserCircleIcon,
+        name: 'Xem hồ sơ',
+        key: ['Ctrl', 'P'],
+      },
+      {
+        icon: EnvelopeIcon,
+        name: 'Đọc / chưa đọc',
+        key: ['Ctrl', 'R'],
+      },
+      {
+        icon: MinusCircleIcon,
+        name: 'Chặn người dùng',
+        key: ['Ctrl', 'X'],
+      },
+      {
+        icon: Square2StackIcon,
+        name: 'Chép số điện thoại',
+        key: ['Shift', 'P'],
+        color: 'bg-blue-100 border-blue-200 text-blue-700',
+      },
+      {
+        icon: Square2StackIcon,
+        name: 'Chép email',
+        key: ['Shift', 'E'],
+        color: 'bg-blue-100 border-blue-200 text-blue-700',
+      },
+      {
+        icon: BoltIcon,
+        name: 'Trả lời nhanh',
+        key: ['/'],
+      },
+    ],
+  },
   // {
   //   type: 'Widget',
   //   list: [
