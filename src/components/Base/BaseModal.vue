@@ -83,9 +83,7 @@ class Main {
   private clearEventListener?: Fn
 
   /**ẩn hiển modal */
-  toggleModal() {
-    console.log(123);
-    
+  toggleModal() {    
     // nếu modal đang mở thì đóng
     if (is_open.value) {
       // đóng modal

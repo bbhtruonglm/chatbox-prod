@@ -215,6 +215,11 @@ const filter_show_with_shortcut = ref('')
 watch(
   () => commonStore.filter_show_with_shortcut,
   new_value => {
+    // nếu là xóa bộ lọc và đang lọc thì xóa hết các bộ lọc
+    if (new_value === 'clear_all_filter' && isFilterActive()) {
+      $main.clearAllFilter()
+    }
+
     /** id của bộ lọc đang bật */
     let old_value = ''
 

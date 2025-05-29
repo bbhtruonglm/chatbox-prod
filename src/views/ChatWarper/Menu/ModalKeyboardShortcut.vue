@@ -8,7 +8,7 @@
   >
     <!-- <template #header> Phím tắt </template> -->
     <template #body>
-      <header class="flex justify-between items-center py-2.5 px-2 border-b">
+      <header class="flex justify-between items-center py-2.5 px-2 border-b sticky top-0 bg-white">
         <h2 class="text-base font-semibold">Phím tắt</h2>
         <button>
           <XMarkIcon class="w-7 h-7" 
@@ -94,34 +94,34 @@ const SHORTCUT_LIST = [
       {
         icon: ArrowLeftCircleIcon,
         name: 'Quay lại chọn trang',
-        key: ['Ctrl', '←'],
+        key: ['Shift', '←'],
         color: 'bg-blue-100 border-blue-200 text-blue-700',
       },
-      {
-        icon: ArrowsPointingInIcon,
-        name: 'Thu nhỏ',
-        key: ['Ctrl', '-'],
-      },
-      {
-        icon: ArrowsPointingOutIcon,
-        name: 'Phóng to',
-        key: ['Ctrl', '+'],
-      },
-      {
-        icon: BellSlashIcon,
-        name: 'Tắt/bật thông báo',
-        key: ['Ctrl', 'B'],
-      },
-      {
-        icon: LockClosedIcon,
-        name: 'Khóa màn hình',
-        key: ['Ctrl', 'L'],
-      },
-      {
-        icon: BellSlashIcon,
-        name: 'Đăng xuất',
-        key: ['Ctrl', 'E'],
-      },
+      // {
+      //   icon: ArrowsPointingInIcon,
+      //   name: 'Thu nhỏ',
+      //   key: ['Ctrl', '-'],
+      // },
+      // {
+      //   icon: ArrowsPointingOutIcon,
+      //   name: 'Phóng to',
+      //   key: ['Ctrl', '+'],
+      // },
+      // {
+      //   icon: BellSlashIcon,
+      //   name: 'Tắt/bật thông báo',
+      //   key: ['Ctrl', 'B'],
+      // },
+      // {
+      //   icon: LockClosedIcon,
+      //   name: 'Khóa màn hình',
+      //   key: ['Ctrl', 'L'],
+      // },
+      // {
+      //   icon: BellSlashIcon,
+      //   name: 'Đăng xuất',
+      //   key: ['Ctrl', 'E'],
+      // },
     ],
   },
   {
@@ -176,119 +176,119 @@ const SHORTCUT_LIST = [
       },
     ],
   },
-  {
-    type: 'Hội thoại',
-    list: [
-      {
-        icon: ChatBubbleOvalLeftEllipsisIcon,
-        name: 'Chế độ Chat',
-        key: ['Ctrl', '1'],
-      },
-      {
-        icon: NewspaperIcon,
-        name: 'Chế độ Bài viết',
-        key: ['Ctrl', '2'],
-      },
-      {
-        icon: MagnifyingGlassIcon,
-        name: 'Tìm kiếm',
-        key: ['Ctrl', 'K'],
-      },
-      {
-        icon: SwatchIcon,
-        name: 'Ẩn/hiện nhãn',
-        key: ['Shift', 'L'],
-      },
-    ],
-  },
-  {
-    type: 'Tin nhắn',
-    list: [
-      {
-        icon: UserCircleIcon,
-        name: 'Xem hồ sơ',
-        key: ['Ctrl', 'P'],
-      },
-      {
-        icon: EnvelopeIcon,
-        name: 'Đọc / chưa đọc',
-        key: ['Ctrl', 'R'],
-      },
-      {
-        icon: MinusCircleIcon,
-        name: 'Chặn người dùng',
-        key: ['Ctrl', 'X'],
-      },
-      {
-        icon: Square2StackIcon,
-        name: 'Chép số điện thoại',
-        key: ['Shift', 'P'],
-        color: 'bg-blue-100 border-blue-200 text-blue-700',
-      },
-      {
-        icon: Square2StackIcon,
-        name: 'Chép email',
-        key: ['Shift', 'E'],
-        color: 'bg-blue-100 border-blue-200 text-blue-700',
-      },
-      {
-        icon: BoltIcon,
-        name: 'Đăng xuất',
-        key: ['/'],
-      },
-    ],
-  },
-  {
-    type: 'Widget',
-    list: [
-      {
-        icon: QueueListIcon,
-        name: 'Mở Widget đầu tiên',
-        key: ['Alt', 'Q'],
-      },
-      {
-        icon: QueueListIcon,
-        name: 'Mở Widget thứ 2',
-        key: ['Alt', 'W'],
-      },
-      {
-        icon: QueueListIcon,
-        name: 'Mở Widget thứ 3',
-        key: ['Alt', 'E'],
-      },
-      {
-        icon: ToggleRight,
-        name: 'Ẩn/hiện tất cả',
-        key: ['Alt', '~'],
-        color: 'bg-blue-100 border-blue-200 text-blue-700',
-      },
-      {
-        icon: BellAlertIcon,
-        name: 'Lập lịch',
-        key: ['Alt', 'S'],
-      },
-      {
-        icon: BookmarkSquareIcon,
-        name: 'CRM',
-        key: ['Alt', 'M'],
-      },
-      {
-        icon: ShoppingBagIcon,
-        name: 'Tạo đơn hàng',
-        key: ['Alt', 'O'],
-      },
-      {
-        icon: SparklesIcon,
-        name: 'Trợ lý ảo',
-        key: ['Alt', 'A'],
-      },
-      {
-        icon: RectangleGroupIcon,
-        name: 'Cài đặt',
-        key: ['Alt', 'Shift', 'M'],
-      },
-    ],
-  },
+  // {
+  //   type: 'Hội thoại',
+  //   list: [
+  //     {
+  //       icon: ChatBubbleOvalLeftEllipsisIcon,
+  //       name: 'Chế độ Chat',
+  //       key: ['Ctrl', '1'],
+  //     },
+  //     {
+  //       icon: NewspaperIcon,
+  //       name: 'Chế độ Bài viết',
+  //       key: ['Ctrl', '2'],
+  //     },
+  //     {
+  //       icon: MagnifyingGlassIcon,
+  //       name: 'Tìm kiếm',
+  //       key: ['Ctrl', 'K'],
+  //     },
+  //     {
+  //       icon: SwatchIcon,
+  //       name: 'Ẩn/hiện nhãn',
+  //       key: ['Shift', 'L'],
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: 'Tin nhắn',
+  //   list: [
+  //     {
+  //       icon: UserCircleIcon,
+  //       name: 'Xem hồ sơ',
+  //       key: ['Ctrl', 'P'],
+  //     },
+  //     {
+  //       icon: EnvelopeIcon,
+  //       name: 'Đọc / chưa đọc',
+  //       key: ['Ctrl', 'R'],
+  //     },
+  //     {
+  //       icon: MinusCircleIcon,
+  //       name: 'Chặn người dùng',
+  //       key: ['Ctrl', 'X'],
+  //     },
+  //     {
+  //       icon: Square2StackIcon,
+  //       name: 'Chép số điện thoại',
+  //       key: ['Shift', 'P'],
+  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
+  //     },
+  //     {
+  //       icon: Square2StackIcon,
+  //       name: 'Chép email',
+  //       key: ['Shift', 'E'],
+  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
+  //     },
+  //     {
+  //       icon: BoltIcon,
+  //       name: 'Đăng xuất',
+  //       key: ['/'],
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: 'Widget',
+  //   list: [
+  //     {
+  //       icon: QueueListIcon,
+  //       name: 'Mở Widget đầu tiên',
+  //       key: ['Alt', 'Q'],
+  //     },
+  //     {
+  //       icon: QueueListIcon,
+  //       name: 'Mở Widget thứ 2',
+  //       key: ['Alt', 'W'],
+  //     },
+  //     {
+  //       icon: QueueListIcon,
+  //       name: 'Mở Widget thứ 3',
+  //       key: ['Alt', 'E'],
+  //     },
+  //     {
+  //       icon: ToggleRight,
+  //       name: 'Ẩn/hiện tất cả',
+  //       key: ['Alt', '~'],
+  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
+  //     },
+  //     {
+  //       icon: BellAlertIcon,
+  //       name: 'Lập lịch',
+  //       key: ['Alt', 'S'],
+  //     },
+  //     {
+  //       icon: BookmarkSquareIcon,
+  //       name: 'CRM',
+  //       key: ['Alt', 'M'],
+  //     },
+  //     {
+  //       icon: ShoppingBagIcon,
+  //       name: 'Tạo đơn hàng',
+  //       key: ['Alt', 'O'],
+  //     },
+  //     {
+  //       icon: SparklesIcon,
+  //       name: 'Trợ lý ảo',
+  //       key: ['Alt', 'A'],
+  //     },
+  //     {
+  //       icon: RectangleGroupIcon,
+  //       name: 'Cài đặt',
+  //       key: ['Alt', 'Shift', 'M'],
+  //     },
+  //   ],
+  // },
 ]
 
 /** Ref của modal */

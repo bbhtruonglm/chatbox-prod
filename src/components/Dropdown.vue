@@ -82,9 +82,6 @@ function closeOnEsc($event: KeyboardEvent) {
 }
 /**dịch chuyển dropdown đến vị trí */
 function teleportToTarget($event?: MouseEvent) {
-  console.log(dropdown_ref.value);
-  
-
   // tịnh tiến vị trí
   const TARGET = $event?.currentTarget as HTMLElement
 
@@ -99,10 +96,6 @@ function teleportToTarget($event?: MouseEvent) {
   nextTick(() => {
     // bên phải
     if ($props.position === 'RIGHT') {
-
-      console.log(x, y, width, height);
-      
-
       // khoảng cách left: left của target + độ rộng target + khoảng cách thêm
       const LEFT = x + width + $props.distance + TRIANGLE_SIZE
 
@@ -170,9 +163,7 @@ function teleportToTarget($event?: MouseEvent) {
 /**ẩn hiện modal */
 function toggleDropdown($event?: MouseEvent) {
   // mở modal
-  if (!is_open.value) {
-    console.log($event);
-    
+  if (!is_open.value) {    
     // khi component được render thì lắng nghe sự kiện nhấn esc
     document.addEventListener('keyup', closeOnEsc)
 
