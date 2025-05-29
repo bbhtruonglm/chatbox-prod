@@ -108,6 +108,24 @@ const onSearchConversation = debounce((value?: string) => {
 // theo dõi giá trị ô tìm kiếm
 watch(() => search_conversation.value, onSearchConversation)
 
+// läng nghe trạng thái của phím tắt
+watch(
+  () => commonStore.keyboard_shortcut,
+  (value) => {
+    // nếu không phải tìm kiếm thì bỏ qua
+    if(value !== 'search_conversation') return
+
+    // nếu chưa search thì bật chế độ search
+    if(!is_search.value) $main.toggleSearch()
+
+    // nếu đã có search rồi thi focus vào ô tìm kiếm
+    else ref_search_conversation.value?.focus()
+
+    // clear data
+    commonStore.keyboard_shortcut = ''
+  }
+)
+
 class Main {
   /**chuyển đổi tab đang kích hoạt */
   activeTab(tab: IActiveTab) {

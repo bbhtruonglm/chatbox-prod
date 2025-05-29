@@ -30,6 +30,7 @@ import { error } from './utils/decorator/Error'
 import { container } from 'tsyringe'
 import { QueryString, type IQueryString } from './utils/helper/QueryString'
 import { useKeyboardShortcut } from '@/views/composables/useKeyboardShortcut'
+import { confirm } from './service/helper/alert'
 
 const commonStore = useCommonStore()
 const $toast = container.resolve(Toast)

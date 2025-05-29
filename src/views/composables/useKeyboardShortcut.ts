@@ -1,6 +1,9 @@
-import { useCommonStore } from '@/stores'
+import { confirm } from '@/service/helper/alert'
+import { signout } from '@/service/helper/oauth'
+import { useCommonStore, useConversationStore } from '@/stores'
 import { tinykeys } from 'tinykeys'
 import { onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 /** xử lý logic lắng nghe các phím tắt */
@@ -9,8 +12,12 @@ export function useKeyboardShortcut() {
   const $router = useRouter()
   const $route = useRoute()
 
+  /** i18n */
+  const { t } = useI18n()
+
   /** store */
   const commonStore = useCommonStore()
+  const conversationStore = useConversationStore()
 
   /** hàm quay lại màn chọn trang */
   const backToSelectPage = () => {
@@ -20,61 +27,112 @@ export function useKeyboardShortcut() {
     }
   }
 
+  /** hàm xử lý đăng xuất */
+  const handleSignout = () => {
+    confirm(
+      'question',
+      t('Xác nhận đăng xuất?'),
+      '',
+      (is_cancel) => {
+        if(!is_cancel) signout()
+      }
+      ,
+      t('Xác nhận'),
+      t('Hủy'),
+    )
+  }
+
   /** hàm bật lọc tương tác */
   const toggleInteract = () => {
-    commonStore.filter_show_with_shortcut = 'interact'
+    commonStore.keyboard_shortcut = 'interact'
   }
 
   /** hàm bật lọc trạng thái */
   const toggleMessage = () => {
-    commonStore.filter_show_with_shortcut = 'message'
+    commonStore.keyboard_shortcut = 'message'
   }
 
   /** hàm bật lọc số điện thoại */
   const togglePhone = () => {
-    commonStore.filter_show_with_shortcut = 'phone'
+    commonStore.keyboard_shortcut = 'phone'
   }
 
   /** hàm bật lọc thời gian */
   const toggleDate = () => {
-    commonStore.filter_show_with_shortcut = 'date'
+    commonStore.keyboard_shortcut = 'date'
   }
 
   /** hàm bật lọc gắn nhãn */
   const toggleTag = () => {
-    commonStore.filter_show_with_shortcut = 'tag'
+    commonStore.keyboard_shortcut = 'tag'
   }
 
   /** hàm bật lọc loại trừ nhãn */
   const toggleNotTag = () => {
-    commonStore.filter_show_with_shortcut = 'not_tag'
+    commonStore.keyboard_shortcut = 'not_tag'
   }
 
   /** hàm bật lọc nhân viên */
   const toggleStaff = () => {
-    commonStore.filter_show_with_shortcut = 'staff'
+    commonStore.keyboard_shortcut = 'staff'
   }
 
   /** hàm bật lọc bài viết */
   const togglePost = () => {
-    commonStore.filter_show_with_shortcut = 'post'
+    commonStore.keyboard_shortcut = 'post'
   }
 
   /** hàm xóa bộ lọc */
   const clearFilter = () => {
-    commonStore.filter_show_with_shortcut = 'clear_all_filter'
+    commonStore.keyboard_shortcut = 'clear_all_filter'
   }
 
-  /** hàm xóa lọc */
-  const deleteLabel = () => {}
+  /** chuyển chế độ chat */
+  const toggleChatMode = (e: KeyboardEvent) => {
+    conversationStore.option_filter_page_data.conversation_type = 'CHAT'
+    // chặn hành động mặc định của 
+    e.preventDefault()
+  }
+
+  /** chuyển chế độ bài viết */
+  const togglePostMode = (e: KeyboardEvent) => {
+    conversationStore.option_filter_page_data.conversation_type = 'POST'
+    e.preventDefault()
+  }
+
+  /** toggle trạng thái tìm kiếm */
+  const toggleSearch = (e: KeyboardEvent) => {
+    commonStore.keyboard_shortcut = 'search_conversation'
+    e.preventDefault()
+  }
+
+  /** toggle hiện thị danh sách nhãn */
+  const toggleLabel = () => {
+    commonStore.keyboard_shortcut = 'toggle_labels'
+  }
+
+  /** mở xem hồ sở của khách hiện tại */
+  const openClientInfo = (e: KeyboardEvent) => {
+    commonStore.keyboard_shortcut = 'view_client_info'
+    e.preventDefault()
+  }
+
+  /** toggle trạng thái chưa xem */
+  const toggleUnread = (e: KeyboardEvent) => {
+    commonStore.keyboard_shortcut = 'toggle_unread'
+    e.preventDefault()
+  }
 
   /** hàm clean up sự kiện lắng nghe các phím tắt */
   let unsubscribe: () => void
 
   /** danh sách các phím tắt */
-  const KEYMAP: Record<string, Record<string, () => void>> = {
+  const KEYMAP: Record<string, Record<string, (e: KeyboardEvent) => void>> = {
     'Shift+ArrowLeft': {
       ALL: backToSelectPage,
+    },
+    'Control+Shift+E': {
+      ALL: handleSignout,
     },
     'Alt+Digit1': {
       '/': toggleInteract,
@@ -102,6 +160,24 @@ export function useKeyboardShortcut() {
     },
     'Alt+X': {
       '/': clearFilter,
+    },
+    'Control+Digit1': {
+      '/': toggleChatMode,
+    },
+    'Control+Digit2': {
+      '/': togglePostMode,
+    },
+    'Control+K': {
+      '/': toggleSearch,
+    },
+    'Shift+L': {
+      '/': toggleLabel,
+    },
+    'Control+P': {
+      '/': openClientInfo,
+    },
+    'Control+R': {
+      '/': toggleUnread,
     },
   }
 

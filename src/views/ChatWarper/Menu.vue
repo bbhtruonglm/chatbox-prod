@@ -212,17 +212,10 @@ const filter_post = ref<InstanceType<typeof FilterPost>>()
 /** id của bộ lọc đã bật gần nhất */
 const filter_show_with_shortcut = ref('')
 
+/** lắng nghe trạng thái của bộ lọc */
 watch(
-  () => commonStore.filter_show_with_shortcut,
+  () => commonStore.keyboard_shortcut,
   new_value => {
-    // nếu là xóa bộ lọc và đang lọc thì xóa hết các bộ lọc
-    if (new_value === 'clear_all_filter' && isFilterActive()) {
-      $main.clearAllFilter()
-    }
-
-    /** id của bộ lọc đang bật */
-    let old_value = ''
-
     /** map từ key shortcut sang ref của dropdown */ 
     const FILTER_MAP: Record<string, {
       filter_dropdown_ref?: { is_open: boolean }
@@ -236,6 +229,17 @@ watch(
       staff:    filter_staff.value,
       post:     filter_post.value,
     }
+
+    // nếu không liên quan đến lọc thì thôi
+    if (!FILTER_MAP[new_value]) return
+
+    // nếu là xóa bộ lọc và đang lọc thì xóa hết các bộ lọc
+    if (new_value === 'clear_all_filter' && isFilterActive()) {
+      $main.clearAllFilter()
+    }
+
+    /** id của bộ lọc đang bật */
+    let old_value = ''
 
     /** id của bộ lọc đã bật gần nhất */
     const KEY = filter_show_with_shortcut.value
@@ -274,7 +278,7 @@ watch(
     filter_show_with_shortcut.value = new_value
 
     // clear data
-    commonStore.filter_show_with_shortcut = ''
+    commonStore.keyboard_shortcut = ''
   }
 )
 

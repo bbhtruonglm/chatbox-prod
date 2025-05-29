@@ -113,8 +113,8 @@
   <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
-import { useConversationStore } from '@/stores'
-import { ref, computed } from 'vue'
+import { useCommonStore, useConversationStore } from '@/stores'
+import { ref, computed, watch } from 'vue'
 import { container } from 'tsyringe'
 import { Clipboard } from '@/utils/helper/Clipboard'
 import { Toast } from '@/utils/helper/Alert/Toast'
@@ -137,9 +137,11 @@ import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
 import { UsersIcon } from '@heroicons/vue/24/outline'
 import { PhoneIcon } from '@heroicons/vue/24/solid'
+import { selectConversation } from '@/service/function'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 
+const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const $clipboard = container.resolve(Clipboard)
 const $toast = container.resolve(Toast)
@@ -156,6 +158,49 @@ const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
 const is_loading_unread_conversation = ref(false)
 /** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
 const is_admin = computed(() => conversationStore.isCurrentStaffAdmin())
+
+// lắng nghe trạng thái của phím tắt
+watch(
+  () => commonStore.keyboard_shortcut,
+  value => {
+    /** xem thông tin người dùng */
+    const IS_VIEW_CLIENT_INFO = value === 'view_client_info';
+    /** toggle trạng thái đọc */
+    const IS_TOGGLE_UNREAD = value === 'toggle_unread';
+
+    // nếu không phải xem thông tin hoặc toggle trạng thái chưa đọc thì bỏ qua
+    if (!IS_VIEW_CLIENT_INFO && !IS_TOGGLE_UNREAD) return
+
+    // nếu là xem thông tin
+    if (IS_VIEW_CLIENT_INFO) client_menu_ref.value?.openClientInfo()
+
+    // nếu là toggle trạng thái đọc
+    if (IS_TOGGLE_UNREAD) {
+      /** hội thoại được chọn */
+      const SELECTED = conversationStore.select_conversation
+
+      /** danh sách hội thoại */
+      const CONVERSATION_LIST = conversationStore.conversation_list
+
+      // nếu là đã đọc
+      if (!SELECTED?.is_force_unread) {
+        // gọi api đánh dấu hội thoại chưa đọc
+        $main.unreadConversation()
+      } 
+      // nếu là chưa đọc
+      else {
+        /** id của hội thoại đang chọn */
+        const KEY = SELECTED?.data_key || ''
+
+        // chọn lại hội thoại này
+        selectConversation(CONVERSATION_LIST?.[KEY])
+      }
+    }
+
+    // clear data
+    commonStore.keyboard_shortcut = ''
+  }
+)
 
 /**class chính */
 class Main {
