@@ -41,6 +41,10 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Áp dụng':'Áp dụng',
+  'Kéo thả biểu tượng _ để sắp xếp lại vị trí': 'Kéo thả biểu tượng {icon} để sắp xếp lại vị trí',
+  'Chỉnh sửa vị trí': 'Chỉnh sửa vị trí',
+  'Chợ ứng dụng':'Chợ ứng dụng',
   name: 'Tiếng Việt',
   v1: {
     common: {

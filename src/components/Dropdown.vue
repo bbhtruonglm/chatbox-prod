@@ -7,6 +7,7 @@
       <div
         @click="toggleDropdown()"
         class="w-full h-full"
+        :class="class_background"
       ></div>
       <div
         ref="triangle_ref"
@@ -51,6 +52,8 @@ const $props = withDefaults(
     back?: number
     /**class thêm cho nội dung */
     class_content?: string
+    /** class của background */
+    class_background?: string
   }>(),
   {
     teleport_to: 'body',

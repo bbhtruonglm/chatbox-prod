@@ -3,6 +3,7 @@
     <div class="flex-shrink-0 flex items-center gap-3">
       <SelectOrg class="rounded-lg" />
       <SelectPageOrg class="rounded-lg" />
+      <button @click="modal?.toggleModal">Mở modal</button>
     </div>
     <div class="flex-grow min-h-0 overflow-y-auto">
       <CardItem>
@@ -55,6 +56,7 @@
     @done="linkApp"
     ref="confirm_re_connect_ref"
   />
+  <ArrangeWidget ref="modal" :widgets="app_installed_list"/>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
@@ -84,8 +86,11 @@ import ArrowRightLeftIcon from '@/components/Icons/ArrowRightLeft.vue'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { CbError } from '@/service/interface/function'
+import ArrangeWidget from './ArrangeWidget.vue'
 
 const $emit = defineEmits(['is_loading'])
+
+const modal= ref()
 
 const pageStore = usePageStore()
 const widgetStore = useWidgetStore()

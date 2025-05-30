@@ -240,6 +240,10 @@ const source: Language = {
   'Thành viên nhóm': ' Group members',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Áp dụng':'Apply',
+  'Kéo thả biểu tượng _ để sắp xếp lại vị trí': 'Drag the icon {icon} to rearrange the position',
+  'Chỉnh sửa vị trí': 'Edit position',
+  'Chợ ứng dụng':'Application market',
   name: 'English',
   v1: {
     common: {

@@ -11,25 +11,40 @@
     /> -->
     <template v-else>
       <AiJourney />
-      <template v-for="widget of pageStore.widget_list">
+      <template v-for="(widget, index) of pageStore.widget_list">
         <div
           v-if="!widget.is_hidden"
           :class="{
             'flex-grow': widget.is_show,
           }"
-          class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col"
+          class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col group"
+          v-show="view === 'widgets'"
         >
           <button
             @click="toggleWidget(widget)"
             class="w-full py-2.5 px-3 text-sm font-semibold flex items-center justify-between sticky top-0 flex-shrink-0"
           >
             {{ widget.snap_app?.name }}
-            <ArrowDown
-              :class="{
-                '-rotate-90': !widget.is_show,
-              }"
-              class="w-3 text-slate-500 duration-300 mr-1"
-            />
+            <div class="flex gap-3">
+              <button @click.stop="widget_dropdown_ref?.toggleDropdown">
+                <EllipsisHorizontalIcon
+                  v-if="index"
+                  class="w-5 h-5 text-slate-500 hover:text-slate-900 hidden group-hover:block"
+                  v-tooltip.top="$t('Thiết lập')"
+                />
+                <EllipsisHorizontalIcon
+                  v-else
+                  class="w-5 h-5 text-slate-500 hover:text-slate-900 hidden group-hover:block"
+                  v-tooltip.bottom="$t('Thiết lập')"
+                />
+              </button>
+              <ChevronDownIcon
+                :class="{
+                  '-rotate-90': !widget.is_show,
+                }"
+                class="w-5 h-5 text-slate-500 duration-300 mr-1"
+              />
+            </div>
           </button>
           <div
             v-if="widget.is_show"
@@ -50,27 +65,79 @@
           </div>
         </div>
       </template>
+      <WidgetSorting
+        :back-to-list="() => (view = 'widgets')"
+        v-show="view === 'sorting'"
+      />
     </template>
+
+    <Dropdown
+      ref="widget_dropdown_ref"
+      width="200px"
+      height="auto"
+      :is_fit="false"
+      position="BOTTOM"
+      :back="150"
+      class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 font-medium text-sm"
+      class_background="bg-slate-900/10"
+    >
+      <div
+        @click="openWidgetSorting"
+        class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
+      >
+        <div class="p-1.5 rounded-full bg-gray-100">
+          <Square3Stack3DIcon class="w-5 h-5" />
+        </div>
+        <p>{{ $t('Chỉnh sửa vị trí') }}</p>
+      </div>
+      <div class="border-t h-1"></div>
+      <div
+        @click="openWidgetStore"
+        class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
+      >
+        <div class="p-1.5 rounded-full bg-gray-100">
+          <Squares2X2Icon class="w-5 h-5" />
+        </div>
+        <p>{{ $t('Chợ ứng dụng') }}</p>
+      </div>
+    </Dropdown>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, watch } from 'vue'
-import { useConversationStore, usePageStore } from '@/stores'
 import { getIframeUrl, getPageWidget } from '@/service/function'
-import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
+import { useConversationStore, usePageStore } from '@/stores'
+import { sortBy } from 'lodash'
+import { nextTick, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import PostAnalytic from '@/views/ChatWarper/Chat/RightBar/PostAnalytic.vue'
-import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
-import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
+import Dropdown from '@/components/Dropdown.vue'
 import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
+import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
+import WidgetSorting from '@/views/ChatWarper/Chat/RightBar/WidgetSorting.vue'
 
-import ArrowDown from '@/components/Icons/ArrowDown.vue'
+import {
+  ChevronDownIcon,
+  EllipsisHorizontalIcon,
+  Square3Stack3DIcon,
+  Squares2X2Icon,
+} from '@heroicons/vue/24/solid'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 
+const $router = useRouter()
+
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
+
+/** màn hình hiển thị
+ * - widgets: danh sách widget
+ * - sorting: sắp xếp widget
+ */
+const view = ref<'widgets' | 'sorting'>('widgets')
+
+/** ref của dropdown widget */
+const widget_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
 
 watch(
   () => conversationStore.list_widget_token?.data,
@@ -185,5 +252,19 @@ function sendEventToIframe(widget: AppInstalledInfo, payload: any) {
 
   // gửi sự kiện đến iframe để load lại dữ liệu cần thiết
   IFRAME?.contentWindow?.postMessage(payload, '*')
+}
+
+/** mở màn chợ ứng dụng */
+function openWidgetStore() {
+  $router.push(`/dashboard/widget`)
+}
+
+/** mở màn sắp xếp thứ tự widget */
+function openWidgetSorting() {
+  // lưu giá trị là màn sắp xếp thứ tự widget
+  view.value = 'sorting'
+
+  // toggle trạng thái của dropdown
+  widget_dropdown_ref.value?.toggleDropdown()
 }
 </script>
