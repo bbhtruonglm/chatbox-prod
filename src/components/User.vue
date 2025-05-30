@@ -92,35 +92,35 @@
   <ModalKeyboardShortcut ref="modal_keyboard_shortcut" />
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { onMounted, ref, watch } from 'vue'
-import { signout } from '@/service/helper/oauth'
-import { useRouter } from 'vue-router'
 import { count_noti } from '@/service/api/chatbox/billing'
-import { container } from 'tsyringe'
+import { signout } from '@/service/helper/oauth'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
+import { Device } from '@/utils/helper/Device'
 import { ExternalSite } from '@/utils/helper/ExternalSite'
+import { container } from 'tsyringe'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import Dropdown from '@/components/Dropdown.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import Badge from '@/components/Badge.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import Alert from '@/components/User/Alert.vue'
 import UserInfo from '@/components/User/UserInfo.vue'
 import ModalKeyboardShortcut from '@/views/ChatWarper/Menu/ModalKeyboardShortcut.vue'
 
-import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
-import UsersIcon from '@/components/Icons/Users.vue'
-import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
-import UserIcon from '@/components/Icons/User.vue'
 import BellIcon from '@/components/Icons/Bell.vue'
-import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
+import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
+import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
 import LogOutIcon from '@/components/Icons/LogOut.vue'
+import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
+import UserIcon from '@/components/Icons/User.vue'
+import UsersIcon from '@/components/Icons/Users.vue'
+import { QuestionMarkCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { ModalPosition } from '@/service/interface/vue'
-import { Device } from '@/utils/helper/Device'
-import { QuestionMarkCircleIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
   defineProps<{
@@ -192,10 +192,7 @@ function openUserInfoModal() {
 /** mở modal phím tắt */
 function openKeyboardShortcutModal() {
   // tắt menu dropdown
-  user_menu_ref.value?.toggleDropdown()
-
-  console.log(modal_keyboard_shortcut.value);
-  
+  user_menu_ref.value?.toggleDropdown()  
 
   // mở modal phím tắt
   modal_keyboard_shortcut.value?.toggleModal?.()

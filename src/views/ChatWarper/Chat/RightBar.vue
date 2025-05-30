@@ -59,7 +59,7 @@ import { copy } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
 import { useWidget } from '@/views/composables/useWidget'
 import { sortBy } from 'lodash'
-import { nextTick, onMounted, watch } from 'vue'
+import { nextTick, watch } from 'vue'
 
 import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
 import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
