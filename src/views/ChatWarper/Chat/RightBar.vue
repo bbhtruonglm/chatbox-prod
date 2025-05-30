@@ -17,7 +17,7 @@
           :class="{
             'flex-grow': widget.is_show,
           }"
-          class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col group"
+          class="rounded-lg bg-white overflow-hidden flex-shrink-0 flex flex-col group hover:bg-slate-50"
           v-show="view === 'widgets'"
         >
           <button

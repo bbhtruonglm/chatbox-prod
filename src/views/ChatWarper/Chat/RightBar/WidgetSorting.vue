@@ -23,7 +23,7 @@
       class="flex flex-col gap-3"
     >
       <draggable
-        class="flex gap-3 flex-col"
+        class="flex gap-2 flex-col"
         v-model="pageStore.widget_list"
         group="people"
         @start="true"
