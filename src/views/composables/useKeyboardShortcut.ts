@@ -1,7 +1,8 @@
 import { confirm } from '@/service/helper/alert'
 import { signout } from '@/service/helper/oauth'
-import { useCommonStore, useConversationStore } from '@/stores'
+import { useCommonStore, useConversationStore, usePageStore } from '@/stores'
 import { Clipboard } from '@/utils/helper/Clipboard'
+import { useWidget } from '@/views/composables/useWidget'
 import { tinykeys } from 'tinykeys'
 import { container } from 'tsyringe'
 import { computed, onMounted, onUnmounted } from 'vue'
@@ -20,8 +21,12 @@ export function useKeyboardShortcut() {
   const { t } = useI18n()
 
   /** store */
+  const pageStore = usePageStore()
   const commonStore = useCommonStore()
   const conversationStore = useConversationStore()
+
+  // composable
+  const { toggleWidget, toggleAllWidget } = useWidget()
 
   /**sdt cuối của khách */
   const last_client_phone = computed(
@@ -46,12 +51,11 @@ export function useKeyboardShortcut() {
       'question',
       t('Xác nhận đăng xuất?'),
       '',
-      (is_cancel) => {
-        if(!is_cancel) signout()
-      }
-      ,
+      is_cancel => {
+        if (!is_cancel) signout()
+      },
       t('Xác nhận'),
-      t('Hủy'),
+      t('Hủy')
     )
   }
 
@@ -103,7 +107,7 @@ export function useKeyboardShortcut() {
   /** chuyển chế độ chat */
   const toggleChatMode = (e: KeyboardEvent) => {
     conversationStore.option_filter_page_data.conversation_type = 'CHAT'
-    // chặn hành động mặc định của 
+    // chặn hành động mặc định của
     e.preventDefault()
   }
 
@@ -145,7 +149,7 @@ export function useKeyboardShortcut() {
   /** sao chép số điện thoại */
   const copyPhone = (e: KeyboardEvent) => {
     // nếu không có số điện thoại thì thôi
-    if(!last_client_phone.value) return
+    if (!last_client_phone.value) return
     //copy số điện thoại vào clipboard
     $clipboard.copy(last_client_phone.value)
     e.preventDefault()
@@ -154,10 +158,36 @@ export function useKeyboardShortcut() {
   /** sao chép email */
   const copyEmail = (e: KeyboardEvent) => {
     // nếu không có email thì thôi
-    if(!last_client_email.value) return
+    if (!last_client_email.value) return
     //copy email vào clipboard
     $clipboard.copy(last_client_phone.value)
     e.preventDefault()
+  }
+
+  /** mở widget theo số thứ tự
+   * @param position: vị trí của widget trong danh sách
+   */
+  const openWidget = (e: KeyboardEvent, position: number) => {
+    // chặn hành động mặc định của phím
+    e.preventDefault()
+
+    /** widget với vị trí truyền vào */
+    const WIDGET = pageStore.widget_list?.[position]
+
+    // nếu không có widget thì thôi
+    if (!WIDGET) return
+
+    // mở hoặc đóng widget
+    toggleWidget(pageStore.widget_list[position])
+  }
+
+  /** mở thiết lập widget */
+  const openWidgetConfig = (e: KeyboardEvent) => {
+    // chặn hành động mặc định của phím
+    e.preventDefault()
+    // mở hoặc đóng widget
+    // chuyển đến trang
+    $router.push(`/dashboard/widget`)
   }
 
   /** hàm clean up sự kiện lắng nghe các phím tắt */
@@ -224,6 +254,21 @@ export function useKeyboardShortcut() {
     },
     'Shift+E': {
       '/': copyEmail,
+    },
+    'Alt+Q': {
+      '/': (e) => openWidget(e, 0),
+    },
+    'Alt+W': {
+      '/': (e) => openWidget(e, 1),
+    },
+    'Alt+E': {
+      '/': (e) => openWidget(e, 2),
+    },
+    'Alt+`': {
+      '/': toggleAllWidget,
+    },
+    'Alt+Shift+M': {
+      '/': openWidgetConfig,
     },
   }
 

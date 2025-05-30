@@ -40,13 +40,13 @@
             "
             class="w-full border-t flex-grow"
           >
-            <iframe
-              :id="`widget-${widget._id}`"
-              class="w-full h-full"
-              :src="widget.url"
-              frameborder="0"
-              allow="microphone; camera; autoplay; speaker"
-            />
+              <iframe
+                :id="`widget-${widget._id}`"
+                class="w-full h-full"
+                :src="widget.url"
+                frameborder="0"
+                allow="microphone; camera; autoplay; speaker"
+              />
           </div>
         </div>
       </template>
@@ -54,16 +54,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, watch } from 'vue'
-import { useConversationStore, usePageStore } from '@/stores'
 import { getIframeUrl, getPageWidget } from '@/service/function'
-import { sortBy } from 'lodash'
 import { copy } from '@/service/helper/format'
+import { useConversationStore, usePageStore } from '@/stores'
+import { useWidget } from '@/views/composables/useWidget'
+import { sortBy } from 'lodash'
+import { nextTick, onMounted, watch } from 'vue'
 
-import PostAnalytic from '@/views/ChatWarper/Chat/RightBar/PostAnalytic.vue'
-import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
-import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
 import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
+import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 
 import ArrowDown from '@/components/Icons/ArrowDown.vue'
 
@@ -72,36 +71,14 @@ import type { AppInstalledInfo } from '@/service/interface/app/widget'
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
 
+// composables
+const { toggleWidget } = useWidget()
+
 watch(
   () => conversationStore.list_widget_token?.data,
   () => getListWidget()
 )
 
-/**ẩn hiện widget */
-function toggleWidget(widget: AppInstalledInfo) {
-  // loop danh sách widget để xử lý
-  pageStore.widget_list?.forEach(item => {
-    // toggle widget được chọn
-    if (widget._id === item._id) {
-      /**widget được toggle là hiển thị hay tắt */
-      const IS_SHOW = !item.is_show
-
-      // tạo lại token cho widget nếu
-      if (
-        // widget bị tắt
-        !IS_SHOW &&
-        // và widget này post message
-        item.snap_app?.is_post_message
-      )
-        item.url = getIframeUrl(item)
-
-      // gán giá trị hiển thị mới
-      item.is_show = IS_SHOW
-    }
-    // ẩn tất cả các widget còn lại
-    else item.is_show = false
-  })
-}
 /**đọc danh sách các widget của trang này */
 async function getListWidget() {
   /**id trang */

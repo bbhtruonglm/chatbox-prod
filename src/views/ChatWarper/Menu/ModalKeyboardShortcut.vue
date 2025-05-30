@@ -238,57 +238,57 @@ const SHORTCUT_LIST = [
       },
     ],
   },
-  // {
-  //   type: 'Widget',
-  //   list: [
-  //     {
-  //       icon: QueueListIcon,
-  //       name: 'Mở Widget đầu tiên',
-  //       key: ['Alt', 'Q'],
-  //     },
-  //     {
-  //       icon: QueueListIcon,
-  //       name: 'Mở Widget thứ 2',
-  //       key: ['Alt', 'W'],
-  //     },
-  //     {
-  //       icon: QueueListIcon,
-  //       name: 'Mở Widget thứ 3',
-  //       key: ['Alt', 'E'],
-  //     },
-  //     {
-  //       icon: ToggleRight,
-  //       name: 'Ẩn/hiện tất cả',
-  //       key: ['Alt', '~'],
-  //       color: 'bg-blue-100 border-blue-200 text-blue-700',
-  //     },
-  //     {
-  //       icon: BellAlertIcon,
-  //       name: 'Lập lịch',
-  //       key: ['Alt', 'S'],
-  //     },
-  //     {
-  //       icon: BookmarkSquareIcon,
-  //       name: 'CRM',
-  //       key: ['Alt', 'M'],
-  //     },
-  //     {
-  //       icon: ShoppingBagIcon,
-  //       name: 'Tạo đơn hàng',
-  //       key: ['Alt', 'O'],
-  //     },
-  //     {
-  //       icon: SparklesIcon,
-  //       name: 'Trợ lý ảo',
-  //       key: ['Alt', 'A'],
-  //     },
-  //     {
-  //       icon: RectangleGroupIcon,
-  //       name: 'Cài đặt',
-  //       key: ['Alt', 'Shift', 'M'],
-  //     },
-  //   ],
-  // },
+  {
+    type: 'Widget',
+    list: [
+      {
+        icon: QueueListIcon,
+        name: 'Mở Widget đầu tiên',
+        key: ['Alt', 'Q'],
+      },
+      {
+        icon: QueueListIcon,
+        name: 'Mở Widget thứ 2',
+        key: ['Alt', 'W'],
+      },
+      {
+        icon: QueueListIcon,
+        name: 'Mở Widget thứ 3',
+        key: ['Alt', 'E'],
+      },
+      {
+        icon: ToggleRight,
+        name: 'Ẩn/hiện tất cả',
+        key: ['Alt', '~'],
+        color: 'bg-blue-100 border-blue-200 text-blue-700',
+      },
+      // {
+      //   icon: BellAlertIcon,
+      //   name: 'Lập lịch',
+      //   key: ['Alt', 'S'],
+      // },
+      // {
+      //   icon: BookmarkSquareIcon,
+      //   name: 'CRM',
+      //   key: ['Alt', 'M'],
+      // },
+      // {
+      //   icon: ShoppingBagIcon,
+      //   name: 'Tạo đơn hàng',
+      //   key: ['Alt', 'O'],
+      // },
+      // {
+      //   icon: SparklesIcon,
+      //   name: 'Trợ lý ảo',
+      //   key: ['Alt', 'A'],
+      // },
+      {
+        icon: RectangleGroupIcon,
+        name: 'Cài đặt',
+        key: ['Alt', 'Shift', 'M'],
+      },
+    ],
+  },
 ]
 
 /** Ref của modal */
