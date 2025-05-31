@@ -52,8 +52,11 @@
     <SparklesIcon class="size-5" />
     <ClipIcon class="size-5" />
     <p class="w-full text-slate-700 py-1.5 px-1">
-      Đã quá 7 ngày kể từ tin nhắn cuối cùng.
-      <span class="text-sky-800">(Tìm hiểu thêm)</span>
+      <i18n-t keypath="Đã quá 7 ngày kể từ tin nhắn cuối cùng. _">
+        <template #link>
+          <span class="text-sky-800">({{ $t('Tìm hiểu thêm') }}.)</span>
+        </template>
+      </i18n-t>
     </p>
     <SlashQuareIcon class="size-5" />
   </div>

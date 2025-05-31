@@ -1,19 +1,19 @@
+import { getLocal, saveLocal } from '@/service/helper/store'
+import { useOrgStore } from '@/stores/dashboard'
+import { usePageStore } from '@/stores/page'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type {
   ConversationInfo,
   ConversationList,
   FilterConversation,
 } from '@/service/interface/app/conversation'
-import { usePageStore } from './page'
-import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import type { ClientInfo } from '@/utils/api/Chatbot'
 import type { ILabel } from '@/service/interface/app/label'
 import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
-import { useOrgStore } from './dashboard'
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { ClientInfo } from '@/utils/api/Chatbot'
 
 export const useConversationStore = defineStore('conversation_store', () => {
   /** router */

@@ -41,6 +41,8 @@ const source: Language = {
   'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Đã quá 7 ngày kể từ tin nhắn cuối cùng. _': 'Đã quá 7 ngày kể từ tin nhắn cuối cùng. {link}',
+  'Tìm hiểu thêm': 'Tìm hiểu thêm',
   name: 'Tiếng Việt',
   v1: {
     common: {
