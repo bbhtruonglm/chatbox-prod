@@ -3,7 +3,6 @@
     <div class="flex-shrink-0 flex items-center gap-3">
       <SelectOrg class="rounded-lg" />
       <SelectPageOrg class="rounded-lg" />
-      <button @click="modal?.toggleModal">Mở modal</button>
     </div>
     <div class="flex-grow min-h-0 overflow-y-auto">
       <CardItem>
@@ -56,7 +55,6 @@
     @done="linkApp"
     ref="confirm_re_connect_ref"
   />
-  <ArrangeWidget ref="modal" :widgets="app_installed_list"/>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
@@ -67,7 +65,7 @@ import {
 import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { toggle_loading } from '@/service/helper/async'
-import { confirm, toast, toastError } from '@/service/helper/alert'
+import { toast, toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
 import { map, remove } from 'lodash'
 import { getPageName, openPopup } from '@/service/function'
@@ -86,11 +84,8 @@ import ArrowRightLeftIcon from '@/components/Icons/ArrowRightLeft.vue'
 
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { CbError } from '@/service/interface/function'
-import ArrangeWidget from './ArrangeWidget.vue'
 
 const $emit = defineEmits(['is_loading'])
-
-const modal= ref()
 
 const pageStore = usePageStore()
 const widgetStore = useWidgetStore()
