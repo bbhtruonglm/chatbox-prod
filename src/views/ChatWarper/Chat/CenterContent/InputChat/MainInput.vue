@@ -1,13 +1,13 @@
 <template>
   <div
+    v-if="!is_disable_input"
     id="main_input_chat"
     :class="{
       'pr-3': isVisibleSendBtn(),
       '!rounded-xl':
         (is_visible_ai_answer || is_loading_ai_answer) &&
         !commonStore.is_typing &&
-        conversationStore.getPage()?.quick_reply?.is_complete_sentence
-        ,
+        conversationStore.getPage()?.quick_reply?.is_complete_sentence,
       'hover:rounded-xl': is_loading_ai_answer,
     }"
     class="flex flex-col gap-1 bg-white rounded-3xl group py-2 px-4 transition-all"
@@ -15,7 +15,7 @@
     <AiAnswer v-model:is_loading="is_loading_ai_answer" />
     <div class="flex items-end">
       <div class="flex gap-2 items-end flex-grow min-w-0">
-        <!-- <AiManager /> -->
+        <AiManager />
         <AttachmentMenu />
         <Input
           ref="input_chat_ref"
@@ -45,6 +45,18 @@
       <QuickAnswer ref="quick_answer_ref" />
     </div>
   </div>
+  <div
+    v-else
+    class="flex gap-2 text-sm py-2 px-4 rounded-full bg-white text-slate-400 items-center cursor-not-allowed"
+  >
+    <SparklesIcon class="size-5" />
+    <ClipIcon class="size-5" />
+    <p class="w-full text-slate-700 py-1.5 px-1">
+      Đã quá 7 ngày kể từ tin nhắn cuối cùng.
+      <span class="text-sky-800">(Tìm hiểu thêm)</span>
+    </p>
+    <SlashQuareIcon class="size-5" />
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, provide, ref } from 'vue'
@@ -60,6 +72,9 @@ import Input from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/Inp
 
 import SendIcon from '@/components/Icons/Send.vue'
 import StopIcon from '@/components/Icons/Stop.vue'
+import ClipIcon from '@/components/Icons/Clip.vue'
+import { SparklesIcon } from '@heroicons/vue/24/outline'
+import SlashQuareIcon from '@/components/Icons/SlashQuare.vue'
 
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
@@ -73,14 +88,45 @@ const quick_answer_ref = ref<InstanceType<typeof QuickAnswer>>()
 
 /**có đang tạo câu trả lời không */
 const is_loading_ai_answer = ref<boolean>(false)
+
 /**hội thoại hiện tại đang dược chọn */
 const conversation = computed(() => conversationStore.select_conversation)
+
 /**câu trả lời hiện tại */
 const ai_answer = computed(() => conversation.value?.ai_answer)
+
 /**câu trả lời tồn tại và không phải là khoảng trắng */
 const is_visible_ai_answer = computed(
   () => ai_answer.value && ai_answer.value !== ' '
 )
+
+/** nếu quá hạn 7 ngày liên hệ với nền tảng facebook */
+const is_disable_input = computed(() => {
+  console.log(conversation.value?.platform_type, commonStore.extension_status);
+  
+  // nếu không phải nền tảng facebook thì bỏ qua
+  if (conversation.value?.platform_type !== 'FB_MESS') return false
+
+  // nếu đã cài extension thì bỏ qua
+  if (commonStore.extension_status === 'FOUND') return false
+
+  /** thời điểm gửi tin nhắn cuối cùng */
+  const LAST_MESS_TIME = conversation.value?.last_message_time || Date.now()
+
+  /** khoảng thời gian từ tin nhắn cuối cùng đến hiện tại */
+  const DISTANCE_TO_LAST_MESS = Date.now() - LAST_MESS_TIME
+
+  /** khoảng thời gian 7 ngày */
+  const DISTANCE_7_DAY = 7 * 24 * 60 * 60 * 1000
+
+  console.log(DISTANCE_TO_LAST_MESS < DISTANCE_7_DAY);
+  
+
+  // nếu vẫn trong khoảng 7 ngày từ tin nhắn cuối thì bỏ qua
+  if (DISTANCE_TO_LAST_MESS < DISTANCE_7_DAY) return false
+
+  return true
+})
 
 /**có hiển thị nút gửi tin không */
 function isVisibleSendBtn() {

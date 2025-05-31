@@ -13,9 +13,9 @@ import type { AppInstalledInfo } from '@/service/interface/app/widget'
 import type { ClientInfo } from '@/utils/api/Chatbot'
 import type { ILabel } from '@/service/interface/app/label'
 import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
+import { useOrgStore } from './dashboard'
 
 export const useConversationStore = defineStore('conversation_store', () => {
-
   /** router */
   const $route = useRoute()
 
@@ -43,15 +43,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
     })
 
     // kiểm tra query string có tab bằng post hay không
-    if ($route .query.tab === 'POST') {
+    if ($route.query.tab === 'POST') {
       option_filter_page_data.conversation_type = 'POST'
-    } 
+    }
     // nếu không có thì mặc định là tab chat
     else {
       option_filter_page_data.conversation_type = 'CHAT'
     }
 
-    return option_filter_page_data  
+    return option_filter_page_data
   }
 
   /**lấy thông tin nhân viên được gán cho hội thoại này */
@@ -65,12 +65,16 @@ export const useConversationStore = defineStore('conversation_store', () => {
         select_conversation.value?.fb_staff_id
     )
   }
-  /**kiểm tra staff hiện tại có phải là admin của page của hội thoại này không */
+  /**kiểm tra staff hiện tại có phải là admin của page hoặc admin của tổ chức của hội thoại này không */
   function isCurrentStaffAdmin() {
     const pageStore = usePageStore()
+    const orgStore = useOrgStore()
 
     // trả về kết quả kiểm tra
-    return pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id)
+    return (
+      pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id) ||
+      orgStore.isAdminOrg()
+    )
   }
   /**lấy dữ liệu trang của hội thoại này */
   function getPage() {
