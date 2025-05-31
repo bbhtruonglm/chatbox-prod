@@ -26,15 +26,26 @@
           >
             {{ widget.snap_app?.name }}
             <div class="flex gap-3">
-              <button @click.stop="widget_dropdown_ref?.toggleDropdown">
+              <button
+                @click.stop="
+                  e => {
+                    selected_widget_id = widget._id || ''
+                    widget_dropdown_ref?.toggleDropdown(e)
+                  }
+                "
+                class="hidden group-hover:block"
+                :class="{
+                  '!block': widget._id === selected_widget_id && widget_dropdown_ref?.is_open,
+                }"
+              >
                 <EllipsisHorizontalIcon
-                  v-if="index"
-                  class="w-5 h-5 text-slate-500 hover:text-slate-900 hidden group-hover:block"
+                  v-if="index || widget_dropdown_ref?.is_open"
+                  class="size-5 text-slate-500 hover:text-slate-900"
                   v-tooltip.top="$t('Thiết lập')"
                 />
                 <EllipsisHorizontalIcon
                   v-else
-                  class="w-5 h-5 text-slate-500 hover:text-slate-900 hidden group-hover:block"
+                  class="size-5 text-slate-500 hover:text-slate-900"
                   v-tooltip.bottom="$t('Thiết lập')"
                 />
               </button>
@@ -42,7 +53,7 @@
                 :class="{
                   '-rotate-90': !widget.is_show,
                 }"
-                class="w-5 h-5 text-slate-500 duration-300 mr-1"
+                class="size-5 text-slate-500 duration-300 mr-1"
               />
             </div>
           </button>
@@ -73,11 +84,10 @@
 
     <Dropdown
       ref="widget_dropdown_ref"
-      width="200px"
+      width="220px"
       height="auto"
       :is_fit="false"
-      position="BOTTOM"
-      :back="150"
+      :back="180"
       class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 font-medium text-sm"
       class_background="bg-slate-900/10"
     >
@@ -86,19 +96,69 @@
         class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
       >
         <div class="p-1.5 rounded-full bg-gray-100">
-          <Square3Stack3DIcon class="w-5 h-5" />
+          <Square3Stack3DIcon class="size-5" />
         </div>
         <p>{{ $t('Chỉnh sửa vị trí') }}</p>
       </div>
-      <div class="border-t h-1"></div>
       <div
+        @click="change_mode_dropdown_ref?.toggleDropdown"
+        class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
+      >
+        <div class="p-1.5 rounded-full bg-gray-100">
+          <RectangleStackIcon
+            v-if="current_visible_widgets.includes(selected_widget_id)"
+            class="size-5"
+          />
+          <RectangleGroupIcon
+            v-else
+            class="size-5"
+          />
+        </div>
+        <div class="flex justify-between items-center w-full">
+          <p v-if="current_visible_widgets.includes(selected_widget_id)">
+            {{ $t('Luôn hiển thị') }}
+          </p>
+          <p v-else>{{ $t('Hiển thị tự động') }}</p>
+          <ChevronDownIcon class="size-4" />
+        </div>
+      </div>
+      <div v-if="is_admin" class="border-t h-1"></div>
+      <div
+        v-if="is_admin"
         @click="openWidgetStore"
         class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
       >
         <div class="p-1.5 rounded-full bg-gray-100">
-          <Squares2X2Icon class="w-5 h-5" />
+          <Squares2X2Icon class="size-5" />
         </div>
         <p>{{ $t('Chợ ứng dụng') }}</p>
+      </div>
+    </Dropdown>
+
+    <Dropdown
+      ref="change_mode_dropdown_ref"
+      width="200px"
+      height="auto"
+      :is_fit="false"
+      class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 font-medium text-sm"
+    >
+      <div
+        @click="changeModeWidgetView('ALWAYS')"
+        class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
+      >
+        <div class="p-1.5 rounded-full bg-gray-100">
+          <RectangleStackIcon class="size-5" />
+        </div>
+        <p>{{ $t('Luôn hiển thị') }}</p>
+      </div>
+      <div
+        @click="changeModeWidgetView('AUTO')"
+        class="flex gap-3 items-center cursor-pointer py-1.5 px-2 rounded-md hover:bg-slate-100"
+      >
+        <div class="p-1.5 rounded-full bg-gray-100">
+          <RectangleGroupIcon class="size-5" />
+        </div>
+        <p>{{ $t('Hiển thị tự động') }}</p>
       </div>
     </Dropdown>
   </div>
@@ -108,8 +168,10 @@ import { getIframeUrl, getPageWidget } from '@/service/function'
 import { copy } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
 import { sortBy } from 'lodash'
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
+import { container } from 'tsyringe'
 
 import Dropdown from '@/components/Dropdown.vue'
 import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
@@ -119,6 +181,8 @@ import WidgetSorting from '@/views/ChatWarper/Chat/RightBar/WidgetSorting.vue'
 import {
   ChevronDownIcon,
   EllipsisHorizontalIcon,
+  RectangleGroupIcon,
+  RectangleStackIcon,
   Square3Stack3DIcon,
   Squares2X2Icon,
 } from '@heroicons/vue/24/solid'
@@ -130,6 +194,9 @@ const $router = useRouter()
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
 
+/** quản lý local */
+const $local_storage = container.resolve(LocalStorage)
+
 /** màn hình hiển thị
  * - widgets: danh sách widget
  * - sorting: sắp xếp widget
@@ -138,6 +205,28 @@ const view = ref<'widgets' | 'sorting'>('widgets')
 
 /** ref của dropdown widget */
 const widget_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
+/**ref của dropdown change mode */
+const change_mode_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
+/** các widget hiển thị mặc định */
+const default_visible_widgets = ref<Record<string, string[]>>(
+  $local_storage.getItem('default_visible_widgets', {})
+)
+
+/** id widget đang chọn */
+const selected_widget_id = ref<string>('')
+
+/** danh sách widget hiển thị của page hiện tại */
+const current_visible_widgets = computed(() => {
+  /** id trang hiện tại */
+  const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+
+  return default_visible_widgets.value?.[PAGE_ID || ''] || []
+})
+
+/** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
+const is_admin = computed(() => conversationStore.isCurrentStaffAdmin())
 
 watch(
   () => conversationStore.list_widget_token?.data,
@@ -165,8 +254,10 @@ function toggleWidget(widget: AppInstalledInfo) {
       // gán giá trị hiển thị mới
       item.is_show = IS_SHOW
     }
-    // ẩn tất cả các widget còn lại
-    else item.is_show = false
+    // ẩn tất cả các widget chế độ tự động
+    else if(!current_visible_widgets.value?.includes(item?._id || '')) {
+      item.is_show = false
+    }
   })
 }
 /**đọc danh sách các widget của trang này */
@@ -176,6 +267,7 @@ async function getListWidget() {
   /**danh sách token của widget */
   const LIST_WIDGET_TOKEN = conversationStore.list_widget_token
 
+  // nếu không có id trang thì thôi
   if (!PAGE_ID) return
 
   if (
@@ -225,8 +317,8 @@ async function getListWidget() {
 
   // thêm dữ liệu cần thiết cho widget sau khi lọc
   temp_list_widget = temp_list_widget?.map(widget => {
-    // mặc định ẩn tất cả các widget
-    widget.is_show = false
+    // nếu có trong danh sách luôn hiện không thì ẩn
+    widget.is_show = current_visible_widgets.value?.includes(widget?._id || '')
 
     // thêm token cho url
     widget.url = getIframeUrl(widget)
@@ -237,8 +329,9 @@ async function getListWidget() {
   // sắp xếp lại danh sách widget theo index
   temp_list_widget = sortBy(temp_list_widget, 'index_position')
 
-  // chỉ hiển thị widget đầu tiên
-  if (temp_list_widget?.[0]) temp_list_widget[0].is_show = true
+  // chỉ hiển thị widget đầu tiên nếu không có widget luôn hiển thị nào
+  if (temp_list_widget?.[0] && !current_visible_widgets.value?.length) 
+    temp_list_widget[0].is_show = true
 
   // render lại danh sách
   pageStore.widget_list = copy(temp_list_widget)
@@ -266,5 +359,50 @@ function openWidgetSorting() {
 
   // toggle trạng thái của dropdown
   widget_dropdown_ref.value?.toggleDropdown()
+}
+
+/** hàm đổi chế độ hiển thị của widget
+ * @param widget : widget mục tiêu
+ * @param type : luôn hiển thị (ALWAYS) hoặc tự động (AUTO)
+ */
+function changeModeWidgetView(type: 'ALWAYS' | 'AUTO') {
+  /** id trang hiện tại */
+  const PAGE_ID = conversationStore.select_conversation?.fb_page_id
+
+  /** id widget mức tiêu */
+  const WIDGET_ID = selected_widget_id.value
+
+  // nếu không có id widget hoặc id trang thì thôi
+  if (!WIDGET_ID || !PAGE_ID) return
+
+  /** danh sách id các widget luôn hiển thị */
+  const WIDGET_IDS = default_visible_widgets.value?.[PAGE_ID || ''] || []
+
+  // nếu là luôn hiện thì thêm vào mảng
+  if (type === 'ALWAYS') {
+    default_visible_widgets.value[PAGE_ID || ''] = [...WIDGET_IDS, WIDGET_ID]
+  }
+
+  // nếu là tự động thì xóa khỏi mảng
+  if (type === 'AUTO') {
+    default_visible_widgets.value[PAGE_ID || ''] = WIDGET_IDS.filter(
+      (id: string) => id !== WIDGET_ID
+    )
+  }
+
+  // tắt dropdown thay đổi chế độ hiển thị
+  change_mode_dropdown_ref.value?.toggleDropdown()
+
+  // tắt dropdown widget
+  widget_dropdown_ref.value?.toggleDropdown()
+
+  // lưu lại danh sách mới vào localStorag
+  $local_storage.setItem(
+    'default_visible_widgets',
+    default_visible_widgets.value
+  )
+
+  // clear id widget hien tai
+  selected_widget_id.value = ''
 }
 </script>
