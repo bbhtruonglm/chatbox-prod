@@ -244,6 +244,8 @@ const source: Language = {
   'Kéo thả biểu tượng _ để sắp xếp lại vị trí': 'Drag the icon {icon} to rearrange the position',
   'Chỉnh sửa vị trí': 'Edit position',
   'Chợ ứng dụng':'Application market',
+  'Hiển thị tự động': 'Auto display',
+  'Luôn hiển thị': 'Always visible',
   name: 'English',
   v1: {
     common: {

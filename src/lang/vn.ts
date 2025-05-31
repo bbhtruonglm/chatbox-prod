@@ -45,6 +45,8 @@ const source: Language = {
   'Kéo thả biểu tượng _ để sắp xếp lại vị trí': 'Kéo thả biểu tượng {icon} để sắp xếp lại vị trí',
   'Chỉnh sửa vị trí': 'Chỉnh sửa vị trí',
   'Chợ ứng dụng':'Chợ ứng dụng',
+  'Hiển thị tự động': 'Hiển thị tự động',
+  'Luôn hiển thị': 'Luôn hiển thị',
   name: 'Tiếng Việt',
   v1: {
     common: {
