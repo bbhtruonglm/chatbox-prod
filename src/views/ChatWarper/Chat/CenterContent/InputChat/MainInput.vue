@@ -105,8 +105,6 @@ const is_visible_ai_answer = computed(
 
 /** nếu quá hạn 7 ngày liên hệ với nền tảng facebook */
 const is_disable_input = computed(() => {
-  console.log(conversation.value?.platform_type, commonStore.extension_status);
-  
   // nếu không phải nền tảng facebook thì bỏ qua
   if (conversation.value?.platform_type !== 'FB_MESS') return false
 
@@ -121,9 +119,6 @@ const is_disable_input = computed(() => {
 
   /** khoảng thời gian 7 ngày */
   const DISTANCE_7_DAY = 7 * 24 * 60 * 60 * 1000
-
-  console.log(DISTANCE_TO_LAST_MESS < DISTANCE_7_DAY);
-  
 
   // nếu vẫn trong khoảng 7 ngày từ tin nhắn cuối thì bỏ qua
   if (DISTANCE_TO_LAST_MESS < DISTANCE_7_DAY) return false
