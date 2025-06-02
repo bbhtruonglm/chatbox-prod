@@ -1,6 +1,6 @@
 <template>
   <input
-    v-if="true_value && false_value"
+    v-if="true_value || false_value"
     @click.stop
     v-model="model"
     ref="checkbox_ref"
@@ -19,7 +19,7 @@
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -31,6 +31,11 @@ const $props = withDefaults(
   {}
 )
 
+onMounted(() => {
+  console.log($props);
+  
+})
+
 /** Khai báo v-model */
 const model = defineModel<any>()
 
@@ -38,7 +43,7 @@ const model = defineModel<any>()
 const checkbox_ref = ref<HTMLInputElement>()
 
 /**click vào checkbox */
-function click() {
+function click() {  
   checkbox_ref.value?.click()
 }
 
