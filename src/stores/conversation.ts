@@ -113,7 +113,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
   const conversation_list = ref<ConversationList>({})
 
   /** số lượng các hội thoại của các trang đã chọn và bộ lọc đã lọc */
-  const total_conversation = ref<number>(0)
+  const count_conversation = ref<{
+    /** số lượng hội thoại chat */
+    chat: number
+    /** số lượng hội thoại post */
+    post: number
+  }>({
+    chat: 0,
+    post: 0
+  })
 
   /**widget được chọn để mở */
   const select_widget = ref<AppInstalledInfo>()
@@ -158,7 +166,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     select_conversation_post,
     select_conversation_post_analytic,
     conversation_list,
-    total_conversation,
+    count_conversation,
     select_widget,
     list_widget_token,
     is_edit_info,

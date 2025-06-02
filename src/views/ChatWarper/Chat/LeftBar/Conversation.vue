@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { find, keys, map, mapValues, pick, set, size } from 'lodash'
 import {
   read_conversation,
@@ -100,6 +100,13 @@ const after = ref<number[]>()
 /**thời gian component được render */
 const mounted_time = ref<Date>(new Date())
 
+/** dữ liệu lọc trừ conversation_type */
+const option_filter_page_data = computed(() => {
+  const { conversation_type, ...rest } =
+    conversationStore.option_filter_page_data
+  return JSON.stringify(rest)
+})
+
 class Main {
   /**
    * @param API_CONVERSATION API của hội thoại
@@ -166,7 +173,7 @@ class Main {
     // chỉ cho hiện hội thoại của nhân viên và
     // nếu không phải là chế độ xem bài viết
     if (
-      SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff && 
+      SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff &&
       conversationStore.option_filter_page_data.conversation_type !== 'POST'
     ) {
       // tạo ra filter nhân viên
@@ -229,7 +236,7 @@ class Main {
    */
   @loadingV2(is_loading, 'value')
   @error()
-  async countConversation(){
+  async countConversation(conversation_type: 'CHAT' | 'POST') {
     // nếu đang mất mạng thì không cho gọi api
     if (!commonStore.is_connected_internet) return
 
@@ -258,17 +265,21 @@ class Main {
     }
 
     /**lấy dữ liệu hội thoại */
-    const RES = await this.API_CONVERSATION.countConversation(
-      PAGE_IDS,
-      {
-        ...conversationStore.option_filter_page_data,
-        ...OVERWRITE_FILTER,
-      }
-    )
+    const RES = await this.API_CONVERSATION.countConversation(PAGE_IDS, {
+      ...conversationStore.option_filter_page_data,
+      ...OVERWRITE_FILTER,
+      conversation_type,
+    })
 
-    // lưu lại dữ liệu vào store
-    conversationStore.total_conversation = RES || 0
-    
+    // nếu là đếm số bài viết
+    if (conversation_type === 'POST') {
+      conversationStore.count_conversation.post = RES || 0
+    }
+
+    // nếu là đếm số hội thoại chat
+    if (conversation_type === 'CHAT') {
+      conversationStore.count_conversation.chat = RES || 0
+    }
   }
 
   /**xử lý socket conversation */
@@ -383,8 +394,17 @@ class Main {
   /**đọc danh sách hội thoại lần đầu tiên */
   async loadConversationFirstTime(
     is_first_time?: boolean,
+    is_count_conversation?: boolean,
     is_pick_first?: boolean
   ) {
+    // nếu có đếm hội thoại thì reset các giá trị
+    if (is_count_conversation) {
+      conversationStore.count_conversation = {
+        chat: 0,
+        post: 0,
+      }
+    }
+
     // reset data
     conversationStore.conversation_list = {}
 
@@ -396,8 +416,14 @@ class Main {
 
     await this.getConversation(is_first_time, is_pick_first)
 
-    // lấy số lượng các hội thoại
-    await this.countConversation()
+    // nếu không cần đếm hội thoại thì thôi
+    if (!is_count_conversation) return
+
+    // lấy số lượng các hội thoại chat
+    await this.countConversation('CHAT')
+
+    // lấy số lượng các hội thoại zalo
+    await this.countConversation('POST')
   }
   /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
   selectDefaultConversation(is_pick_first?: boolean) {
@@ -612,16 +638,23 @@ onUnmounted(() => {
   window.removeEventListener('focus', $main.autoRefreshPage.bind($main))
 })
 
-// khi thay đổi giá trị lọc tin nhắn thì load lại dữ liệu
+// khi thay đổi giá trị lọc tin nhắn(trừ field conversation_type) thì load lại dữ liệu
 watch(
-  () => conversationStore.option_filter_page_data,
-  () => $main.loadConversationFirstTime(true, true),
+  () => option_filter_page_data.value,
+  () => $main.loadConversationFirstTime(true, true, true),
   { deep: true }
 )
+
+// lắng nghe thay đổi loại hội thoại
+watch(
+  () => conversationStore.option_filter_page_data?.conversation_type,
+  () => $main.loadConversationFirstTime(true, false, true)
+)
+
 // khi có data page được chọn thì tính toán danh sách conversation
 watch(
   () => pageStore.selected_page_list_info,
-  () => $main.loadConversationFirstTime(true)
+  () => $main.loadConversationFirstTime(true, true)
 )
 // khi thay đổi hội thoại, nếu hội thoại trước đó còn tin nhắn chưa đọc thì reset
 watch(
