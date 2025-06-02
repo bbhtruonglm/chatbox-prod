@@ -115,6 +115,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { preGoToChat } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { map } from 'lodash'
+import { useEmbedChat } from '@/views/composables/useEmbedChat'
 
 import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 import Loading from '@/components/Loading.vue'
@@ -151,6 +152,9 @@ const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
 const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 /**mở modal connect page */
 const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
+
+// cắm bong bóng chat vào trang
+useEmbedChat()
 
 computed(() => selectPageStore.current_menu)
 
