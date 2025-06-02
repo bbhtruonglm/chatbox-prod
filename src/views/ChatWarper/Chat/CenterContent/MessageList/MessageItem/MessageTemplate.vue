@@ -47,6 +47,7 @@
       /> -->
 
       <div
+        class="enter-line"
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
         v-html="fixXss($markdown.render(renderText(data_source?.content)))"

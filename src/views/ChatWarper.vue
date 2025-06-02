@@ -511,6 +511,20 @@ function validateConversation(
   )
     return
 
+  // đang lọc bạn bè
+  if (
+    conversationStore.option_filter_page_data.display_style === 'FRIEND' &&
+    conversation?.is_group
+  )
+    return
+
+  // đang lọc nhóm
+  if (
+    conversationStore.option_filter_page_data.display_style === 'GROUP' &&
+    !conversation?.is_group
+  )
+    return
+
   // lọc theo search: tên, sdt, email
   if (
     conversationStore.option_filter_page_data.search &&
