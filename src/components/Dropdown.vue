@@ -11,7 +11,7 @@
       ></div>
       <div
         ref="triangle_ref"
-        class="absolute z-10 rotate-45 w-4 h-4 bg-white shadow-[0px_0px_45px]"
+        class="absolute z-30 rotate-45 w-4 h-4 bg-white"  
       />
       <div
         ref="dropdown_ref"
@@ -20,7 +20,7 @@
           height: _height,
         }"
         :class="class_content"
-        class="absolute shadow-lg rounded-md p-2 bg-white z-20"
+        class="absolute shadow-[0px_0px_20px_rgba(0,0,0,0.3)] rounded-md p-2 bg-white z-20"
       >
         <slot />
       </div>
@@ -113,8 +113,11 @@ function teleportToTarget($event?: MouseEvent) {
       // căn lại kích thước nếu cần
       if ($props.is_fit) _height.value = `${height}px`
     }
-    // bên dưới hoặc bị trí bấm nằm phía trên
-    if ($props.position === 'BOTTOM' || y <= window.innerHeight / 2) {
+    // bên dưới hoặc vị trí bấm nằm phía trên
+    if (
+      $props.position === 'BOTTOM' ||
+      ($props.position === 'TOP' && y <= window.innerHeight / 2)
+    ) {
       /**khoảng cách top: top của target + độ cao target + độ cao tam giác + khoảng cách thêm */
       const TOP = y + height + TRIANGLE_SIZE + $props.distance
 
@@ -142,7 +145,10 @@ function teleportToTarget($event?: MouseEvent) {
       if ($props.is_fit) _height.value = `${height}px`
     }
     // bên trên hoặc vị trí bấm nằm ở phía dưới
-    if ($props.position === 'TOP' || y > window.innerHeight / 2) {
+    if (
+      $props.position === 'TOP' ||
+      ($props.position === 'BOTTOM' && y > window.innerHeight / 2)
+    ) {
       // căn chỉnh vị trí
       dropdown_ref.value.style.left = `${x - $props.back}px`
       dropdown_ref.value.style.top = `${

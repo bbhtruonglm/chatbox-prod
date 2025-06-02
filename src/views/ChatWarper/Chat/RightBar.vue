@@ -88,8 +88,7 @@
       height="auto"
       :is_fit="false"
       :back="180"
-      class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 font-medium text-sm"
-      class_background="bg-slate-900/10"
+      class_content="flex flex-col gap-1 rounded-md p-1 gap-1 font-medium text-sm"
     >
       <div
         @click="openWidgetSorting"
@@ -140,7 +139,7 @@
       width="200px"
       height="auto"
       :is_fit="false"
-      class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 font-medium text-sm"
+      class_content="flex flex-col gap-1 rounded-md p-1 gap-1 font-medium text-sm"
     >
       <div
         @click="changeModeWidgetView('ALWAYS')"
