@@ -12,7 +12,7 @@
     />
     <FilterCheckbox
       v-model="conversationStore.option_filter_page_data.display_style"
-      :true_value="'INBOX'"
+      true_value="INBOX"
       :false_value="undefined"
       :icon="ChatDotIcon"
       :title="$t('v1.view.main.dashboard.chat.filter.interact.message')"

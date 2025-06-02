@@ -19,7 +19,7 @@
   />
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -30,11 +30,6 @@ const $props = withDefaults(
   }>(),
   {}
 )
-
-onMounted(() => {
-  console.log($props);
-  
-})
 
 /** Khai báo v-model */
 const model = defineModel<any>()
