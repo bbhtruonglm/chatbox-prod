@@ -28,7 +28,7 @@ const ENV: IEnv = {
   external_link: {
     setting: 'https://bbh-setting-dev.vercel.app',
     analytic: 'https://bbh-chart-nu.vercel.app',
-    chatbot: 'https://chatbot.sellingpage.net/#',
+    chatbot: 'https://chatbot-dashboard-nine.vercel.app/#',
     chatbox: 'https://chat-dev.botbanhang.vn',
     download: 'https://sellingpage.net/download',
     merchant: 'https://merchant.vn',
