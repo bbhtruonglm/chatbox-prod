@@ -47,7 +47,7 @@
   </div>
   <div
     v-else
-    class="flex gap-2 text-sm py-2 px-4 rounded-full bg-white text-slate-400 items-center cursor-not-allowed"
+    class="flex gap-2 text-sm py-2 px-4 rounded-full bg-slate-50 text-slate-400 items-center cursor-not-allowed"
   >
     <SparklesIcon class="size-5" />
     <ClipIcon class="size-5" />
