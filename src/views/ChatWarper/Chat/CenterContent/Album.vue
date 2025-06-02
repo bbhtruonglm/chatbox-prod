@@ -146,8 +146,11 @@
         <button
           @click="selectAllFile(false)"
           class="custom-btn bg-slate-700"
+          :class="{
+            'invisible': !countSelectFile(),
+          }"
         >
-          {{ $t('v1.common.cancel') }}
+          {{ $t('v1.common.deselect') }}
         </button>
         <button
           @click="pickFile"

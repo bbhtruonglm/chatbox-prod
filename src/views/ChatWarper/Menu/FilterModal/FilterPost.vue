@@ -3,7 +3,7 @@
     ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
-    height="570px"
+    height="auto"
     position="RIGHT"
     :back="400"
   >
@@ -88,7 +88,7 @@
       </div>
     </div>
     <div
-      class="w-full mt-5 mb-5"
+      class="w-full py-5"
       v-if="!filter_post"
     >
       <div class="grid grid-cols-3 mb-3 gap-3">
@@ -211,7 +211,7 @@
         class="flex items-center justify-between cursor-pointer"
         @click="date_picket_ref?.toggle"
       >
-        <div class="text-sm text-black">Chọn thời gian</div>
+        <div class="text-sm text-black">{{ $t('Chọn thời gian') }}</div>
         <div class="cursor-pointer">
           <img
             :src="ArrowRightIcon"
@@ -221,7 +221,7 @@
         </div>
       </div>
     </div>
-    <div class="w-full flex justify-end absolute bottom-3 right-3">
+    <div class="w-full flex justify-end">
       <button
         @click="cancelFilter"
         class="text-white bg-gray-500 px-3 py-1 rounded-lg mr-3"
@@ -247,22 +247,22 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { debounce, keys } from 'lodash'
+import { ref, onMounted, computed, watch } from 'vue'
+import { debounce, keys, omit } from 'lodash'
 import { useConversationStore, usePageStore } from '@/stores'
-import { format } from 'date-fns'
-import { container } from 'tsyringe'
 import { N4SerivceAppPost } from '@/utils/api/N4Service/Post'
 import { Cdn } from '@/utils/helper/Cdn'
+import { format } from 'date-fns'
+import { container } from 'tsyringe'
 
-import Popover from '@/components/Popover.vue'
 import FilterDateOfPost from '@/components/Main/Dashboard/FilterDateOfPost.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
+import Popover from '@/components/Popover.vue'
 
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
 
-import type { ComponentRef } from '@/service/interface/vue'
 import type { IPost } from '@/service/interface/app/message'
+import type { ComponentRef } from '@/service/interface/vue'
 
 /** Interface của bài post */
 interface IFilterPost extends IPost {
@@ -305,6 +305,18 @@ const filter_timerange = ref<boolean>(false)
 
 onMounted(() => $main.getPostList())
 
+/** lắng nghe khi clear filter */
+watch(
+  () => conversationStore.option_filter_page_data.post_id,
+  value => {
+    // nếu có giá trị thì thôi
+    if (value) return
+
+    // loại bỏ gắn cờ
+    cancelFilter()
+  }
+)
+
 /** Xoá lọc */
 function clearThisFilter() {
   cancelFilter()
@@ -323,18 +335,42 @@ function updateFilterTime(start_time: number, end_time: number) {
 }
 /** Hủy lọc */
 function cancelFilter() {
-  filter_keys.value = {
-    is_reply: '',
-    have_email: '',
-    have_phone: '',
-    is_private_reply: '',
-    post_id: '',
-  }
-  conversationStore.option_filter_page_data = {
-    ...conversationStore.option_filter_page_data,
-    ...filter_keys.value,
-    ...{ post_id: '', time_range: undefined },
-  }
+  // filter_keys.value = {
+  //   is_reply: '',
+  //   have_email: '',
+  //   have_phone: '',
+  //   is_private_reply: '',
+  //   post_id: '',
+  // }
+
+  /** các trường sẽ bị xóa */
+  const DELETE_FIELDS = [
+    'is_reply',
+    'have_email',
+    'have_phone',
+    'is_private_reply',
+    'post_id',
+    'time_range',
+  ]
+
+  // Xóa bộ lọc của bài post
+  conversationStore.option_filter_page_data = omit(
+    conversationStore.option_filter_page_data,
+    DELETE_FIELDS
+  )
+
+  // cập nhật lại giá trj lưu tạm của bộ lọc
+  filter_keys.value = omit(
+    filter_keys.value,
+    DELETE_FIELDS
+  )
+
+  // conversationStore.option_filter_page_data = {
+  //   ...conversationStore.option_filter_page_data,
+  //   ...filter_keys.value,
+  //   ...{ post_id: '', time_range: undefined },
+  // }
+
   posts.value = posts.value.map(item => {
     item.is_selected = false
     return item
