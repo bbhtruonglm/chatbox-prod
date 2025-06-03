@@ -66,13 +66,13 @@
             "
             class="w-full border-t flex-grow"
           >
-            <iframe
-              :id="`widget-${widget._id}`"
-              class="w-full h-full"
-              :src="widget.url"
-              frameborder="0"
-              allow="microphone; camera; autoplay; speaker"
-            />
+              <iframe
+                :id="`widget-${widget._id}`"
+                class="w-full h-full"
+                :src="widget.url"
+                frameborder="0"
+                allow="microphone; camera; autoplay; speaker"
+              />
           </div>
         </div>
       </template>
@@ -166,16 +166,18 @@
 import { getIframeUrl, getPageWidget } from '@/service/function'
 import { copy } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
 import { sortBy } from 'lodash'
+import { container } from 'tsyringe'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { LocalStorage } from '@/utils/helper/LocalStorage'
-import { container } from 'tsyringe'
 
 import Dropdown from '@/components/Dropdown.vue'
 import AiJourney from '@/views/ChatWarper/Chat/CenterContent/MessageList/AiJourney.vue'
 import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import WidgetSorting from '@/views/ChatWarper/Chat/RightBar/WidgetSorting.vue'
+import { useWidget } from '@/views/composables/useWidget'
+
 
 import {
   ChevronDownIcon,
@@ -226,39 +228,14 @@ const current_visible_widgets = computed(() => {
 
 /** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
 const is_admin = computed(() => conversationStore.isCurrentStaffAdmin())
+// composables
+const { toggleWidget } = useWidget()
 
 watch(
   () => conversationStore.list_widget_token?.data,
   () => getListWidget()
 )
 
-/**ẩn hiện widget */
-function toggleWidget(widget: AppInstalledInfo) {
-  // loop danh sách widget để xử lý
-  pageStore.widget_list?.forEach(item => {
-    // toggle widget được chọn
-    if (widget._id === item._id) {
-      /**widget được toggle là hiển thị hay tắt */
-      const IS_SHOW = !item.is_show
-
-      // tạo lại token cho widget nếu
-      if (
-        // widget bị tắt
-        !IS_SHOW &&
-        // và widget này post message
-        item.snap_app?.is_post_message
-      )
-        item.url = getIframeUrl(item)
-
-      // gán giá trị hiển thị mới
-      item.is_show = IS_SHOW
-    }
-    // ẩn tất cả các widget chế độ tự động
-    else if(!current_visible_widgets.value?.includes(item?._id || '')) {
-      item.is_show = false
-    }
-  })
-}
 /**đọc danh sách các widget của trang này */
 async function getListWidget() {
   /**id trang */

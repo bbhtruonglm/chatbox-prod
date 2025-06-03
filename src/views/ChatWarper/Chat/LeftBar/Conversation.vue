@@ -45,6 +45,7 @@ import {
   usePageStore,
   useChatbotUserStore,
   useMessageStore,
+  useOrgStore,
 } from '@/stores'
 import { toastError } from '@/service/helper/alert'
 import { useRoute, useRouter } from 'vue-router'
@@ -88,6 +89,7 @@ const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
 const chatbotUserStore = useChatbotUserStore()
 const messageStore = useMessageStore()
+const orgStore = useOrgStore()
 
 /**có đang load hội thoại hay không */
 const is_loading = ref(false)
@@ -161,8 +163,12 @@ class Main {
     /**ghi đè 1 số lọc tin nhắn */
     const OVERWRITE_FILTER: FilterConversation = {}
 
-    // chỉ cho hiện hội thoại của nhân viên
-    if (SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff) {
+    // chỉ cho hiện hội thoại của nhân viên và
+    // nếu không phải là chế độ xem bài viết
+    if (
+      SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff && 
+      conversationStore.option_filter_page_data.conversation_type !== 'POST'
+    ) {
       // tạo ra filter nhân viên
       OVERWRITE_FILTER.staff_id = []
 
@@ -217,6 +223,54 @@ class Main {
     // tự động chọn khách hàng cho lần đầu tiên
     if (is_first_time) $main.selectDefaultConversation(is_pick_first)
   }
+
+  /**
+   * đếm số lượng hội thoại
+   */
+  @loadingV2(is_loading, 'value')
+  @error()
+  async countConversation(){
+    // nếu đang mất mạng thì không cho gọi api
+    if (!commonStore.is_connected_internet) return
+
+    /**danh sách id page */
+    const PAGE_IDS = keys(pageStore.selected_page_id_list)
+    /**cấu hình trang đặc biệt */
+    const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
+
+    /**ghi đè 1 số lọc tin nhắn */
+    const OVERWRITE_FILTER: FilterConversation = {}
+
+    // chỉ cho hiện hội thoại của nhân viên
+    if (SPECIAL_PAGE_CONFIG.is_only_visible_client_of_staff) {
+      // tạo ra filter nhân viên
+      OVERWRITE_FILTER.staff_id = []
+
+      // thêm id mới
+      if (chatbotUserStore.chatbot_user?.user_id)
+        OVERWRITE_FILTER.staff_id?.push(chatbotUserStore.chatbot_user?.user_id)
+
+      // thêm id cũ, tránh lỗi
+      if (chatbotUserStore.chatbot_user?.fb_staff_id)
+        OVERWRITE_FILTER.staff_id?.push(
+          chatbotUserStore.chatbot_user?.fb_staff_id
+        )
+    }
+
+    /**lấy dữ liệu hội thoại */
+    const RES = await this.API_CONVERSATION.countConversation(
+      PAGE_IDS,
+      {
+        ...conversationStore.option_filter_page_data,
+        ...OVERWRITE_FILTER,
+      }
+    )
+
+    // lưu lại dữ liệu vào store
+    conversationStore.total_conversation = RES || 0
+    
+  }
+
   /**xử lý socket conversation */
   onRealtimeUpdateConversation({ detail }: CustomEvent) {
     // nếu không có dữ liệu thì thôi
@@ -341,6 +395,9 @@ class Main {
     is_done.value = false
 
     await this.getConversation(is_first_time, is_pick_first)
+
+    // lấy số lượng các hội thoại
+    await this.countConversation()
   }
   /**tự động chọn một khách hàng để hiển thị danh sách tin nhắn */
   selectDefaultConversation(is_pick_first?: boolean) {
@@ -364,7 +421,7 @@ class Main {
 
       // reset lại widget
       pageStore.widget_list = []
-      
+
       // lấy phần tử đầu tiên của hội thoại từ store
       const FIRST_CONVERSATION = map(conversationStore.conversation_list)?.[0]
 
@@ -419,6 +476,29 @@ class Main {
             },
             (e, r) => {
               if (e) return cb(e)
+
+              /** dữ liệu của hội thoại tìm được */
+              const CONVERSATION = r?.conversation?.[data_key]
+
+              /** id của nhân sự hiện tại */
+              const CURRENT_STAFF_ID =
+                chatbotUserStore.chatbot_user?.user_id ||
+                conversationStore.select_conversation?.fb_staff_id
+
+              /** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
+              const IS_ADMIN = conversationStore.isCurrentStaffAdmin()
+
+              // nếu bật chỉ hiện hội thoại với nhân viên được assign và
+              // id hiện tại không phải của nhân sự đó và
+              // không phải admin thì dừng lại
+              if (
+                orgStore.selected_org_info?.org_config
+                  ?.org_is_only_visible_client_of_staff &&
+                CONVERSATION?.fb_staff_id !== CURRENT_STAFF_ID &&
+                !IS_ADMIN
+              ) {
+                cb()
+              }
 
               conversation = r?.conversation?.[data_key]
               cb()

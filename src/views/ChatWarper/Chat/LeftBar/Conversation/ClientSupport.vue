@@ -46,7 +46,7 @@
       <!-- Nếu AI bật và thiết lập AI bật thì mới hiển thị icon -->
       <SparklesIcon 
         v-if="
-          calcStatus?.(source?.bot_resume_at) && 
+          calcStatus?.(source) && 
           getPageInfo(source?.fb_page_id)?.is_active_ai_agent
         " 
         class="size-3"

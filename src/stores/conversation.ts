@@ -1,21 +1,21 @@
+import { getLocal, saveLocal } from '@/service/helper/store'
+import { useOrgStore } from '@/stores/dashboard'
+import { usePageStore } from '@/stores/page'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type {
   ConversationInfo,
   ConversationList,
   FilterConversation,
 } from '@/service/interface/app/conversation'
-import { usePageStore } from './page'
-import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import type { ClientInfo } from '@/utils/api/Chatbot'
 import type { ILabel } from '@/service/interface/app/label'
 import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import type { ClientInfo } from '@/utils/api/Chatbot'
 
 export const useConversationStore = defineStore('conversation_store', () => {
-
   /** router */
   const $route = useRoute()
 
@@ -43,15 +43,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
     })
 
     // kiểm tra query string có tab bằng post hay không
-    if ($route .query.tab === 'POST') {
+    if ($route.query.tab === 'POST') {
       option_filter_page_data.conversation_type = 'POST'
-    } 
+    }
     // nếu không có thì mặc định là tab chat
     else {
       option_filter_page_data.conversation_type = 'CHAT'
     }
 
-    return option_filter_page_data  
+    return option_filter_page_data
   }
 
   /**lấy thông tin nhân viên được gán cho hội thoại này */
@@ -65,12 +65,16 @@ export const useConversationStore = defineStore('conversation_store', () => {
         select_conversation.value?.fb_staff_id
     )
   }
-  /**kiểm tra staff hiện tại có phải là admin của page của hội thoại này không */
+  /**kiểm tra staff hiện tại có phải là admin của page hoặc admin của tổ chức của hội thoại này không */
   function isCurrentStaffAdmin() {
     const pageStore = usePageStore()
+    const orgStore = useOrgStore()
 
     // trả về kết quả kiểm tra
-    return pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id)
+    return (
+      pageStore.isCurrentStaffAdmin(select_conversation.value?.fb_page_id) ||
+      orgStore.isAdminOrg()
+    )
   }
   /**lấy dữ liệu trang của hội thoại này */
   function getPage() {
@@ -79,6 +83,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
     // trả về dữ liệu trang
     return pageStore.getPage(select_conversation.value?.fb_page_id)?.page
   }
+
+  /** lấy dữ liệu trang với id trang trong hội thoại */
+  function getPageById(page_id: string) {
+    const pageStore = usePageStore()
+
+    // trả về dữ liệu trang
+    return pageStore.getPage(page_id)?.page
+  }
+
   /**lấy danh sách nhãn của trang của hội thoại này */
   function getLabels(): Record<string, ILabel> | undefined {
     const pageStore = usePageStore()
@@ -102,6 +115,9 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
   /**danh sách hội thoại đang hiển thị */
   const conversation_list = ref<ConversationList>({})
+
+  /** số lượng các hội thoại của các trang đã chọn và bộ lọc đã lọc */
+  const total_conversation = ref<number>(0)
 
   /**widget được chọn để mở */
   const select_widget = ref<AppInstalledInfo>()
@@ -146,6 +162,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     select_conversation_post,
     select_conversation_post_analytic,
     conversation_list,
+    total_conversation,
     select_widget,
     list_widget_token,
     is_edit_info,
@@ -157,5 +174,6 @@ export const useConversationStore = defineStore('conversation_store', () => {
     getLabels,
     getActiveLabelIds,
     getPage,
+    getPageById
   }
 })
