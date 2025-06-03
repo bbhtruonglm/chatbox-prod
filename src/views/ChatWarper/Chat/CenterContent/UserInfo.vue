@@ -47,7 +47,10 @@
             class="text-xs text-slate-500 flex items-center gap-1 min-w-0"
           >
             <div
-              v-if="conversationStore.select_conversation?.fb_staff_id"
+              v-if="
+                conversationStore.select_conversation?.fb_staff_id &&
+                conversationStore.getAssignStaff()?.name?.trim()
+              "
               class="truncate"
             >
               {{ conversationStore.getAssignStaff()?.name }}
@@ -68,9 +71,7 @@
       v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5"
     >
-      <ChatbotStatus
-        v-if="conversationStore.getPage()?.is_active_ai_agent"
-      />
+      <ChatbotStatus v-if="conversationStore.getPage()?.is_active_ai_agent" />
       <!--  -->
       <button
         v-if="orgStore.selected_org_info?.org_package?.org_allow_message_action"

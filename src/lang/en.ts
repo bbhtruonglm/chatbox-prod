@@ -242,6 +242,8 @@ const source: Language = {
   'Hủy': 'Cancel',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
+  'Đã quá 7 ngày kể từ tin nhắn cuối cùng. _': 'More than 7 days from the last message. {link}',
+  'Tìm hiểu thêm': 'Learn more',
   'Không trả lời': 'No reply',
   'Trả lời ngay': 'Reply now',
   'Trả lời sau _': 'Reply after {duration}',

@@ -1,7 +1,12 @@
 <template>
   <div class="flex items-center justify-between gap-3">
     <div class="flex items-center flex-grow gap-1 min-w-0">
-      <template v-if="source?.user_id || source?.fb_staff_id">
+      <template
+        v-if="
+          (source?.user_id || source?.fb_staff_id) &&
+          getStaffInfo(source?.fb_page_id, source?.fb_staff_id)
+        "
+      >
         <StaffAvatar
           v-tooltip="
             getStaffInfo(source?.fb_page_id, source?.fb_staff_id)?.name

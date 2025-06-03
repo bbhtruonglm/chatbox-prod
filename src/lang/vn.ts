@@ -43,6 +43,8 @@ const source: Language = {
   'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Vui lòng chọn trang và khách hàng trước khi thực hiện',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
+  'Đã quá 7 ngày kể từ tin nhắn cuối cùng. _': 'Đã quá 7 ngày kể từ tin nhắn cuối cùng. {link}',
+  'Tìm hiểu thêm': 'Tìm hiểu thêm',
   'Không trả lời': 'Không trả lời',
   'Trả lời ngay': 'Trả lời ngay',
   'Trả lời sau _': 'Trả lời sau {duration}',
