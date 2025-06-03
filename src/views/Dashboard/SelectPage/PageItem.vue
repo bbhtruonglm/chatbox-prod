@@ -7,6 +7,7 @@
     :page_info="page_info"
     @click="selectPage"
     class="border border-slate-200 cursor-pointer"
+    :class="container_class"
     :org_id
   >
     <template #after-name>
@@ -79,6 +80,8 @@ const $props = withDefaults(
     filter?: string
     /** id tổ chức */
     org_id?: string
+    /**class container */
+    container_class?: string
   }>(),
   {}
 )
