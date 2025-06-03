@@ -37,7 +37,7 @@
     <template v-else>
       <button
         @click="$main.quickGroupAllPage"
-        class="text-sm font-medium items-center gap-1 hover:text-blue-700 hidden group-hover/org-item:flex"
+        class="text-sm font-medium items-center gap-1 hover:text-blue-700 flex invisible group-hover/org-item:visible"
       >
         {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
         <ArrowUpCircleIcon class="w-5 h-5 rotate-90" />

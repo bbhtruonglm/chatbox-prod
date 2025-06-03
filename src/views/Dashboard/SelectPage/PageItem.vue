@@ -22,7 +22,7 @@
           :page_name="page_info?.name"
           :selected_page="page_info"
         />
-        <div @click.stop="togglePagePriority()">
+        <div @click.stop="togglePagePriority()" v-tooltip="$t('Ưu tiên')">
           <StarIcon
             class="w-4 h-4 text-yellow-500"
             v-if="page_info?.is_priority"
@@ -181,7 +181,7 @@ function togglePagePriority() {
       },
     ],
     undefined,
-    true
+    false
   )
 }
 </script>

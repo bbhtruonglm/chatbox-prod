@@ -9,7 +9,7 @@
         selectPageStore.is_group_page_mode,
     }"
     class="group/org-item"
-    class_title="flex items-center gap-2 flex-grow min-w-0"
+    class_title="flex items-center gap-2 flex-grow min-w-0 w-full overflow-hidden"
   >
     <template #icon>
       <img
@@ -23,7 +23,7 @@
       />
     </template>
     <template #title>
-      <div class="flex-shrink-0 h-6">
+      <div class="flex-shrink-0">
         {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
       </div>
       <Group :org_id />
@@ -83,10 +83,8 @@ const active_page_list = defineModel<PageData[]>('active_page_list')
 class Main {
   /**sắp xếp page gắn sao lên đầu */
   getListPage() {
-    console.log('pre active_page_list.value',sortListPage?.());
     // lọc ra các page thuộc về nhóm này
     active_page_list.value = sortListPage?.()?.filter(this.isVisible.bind(this))
-    console.log('active_page_list.value',active_page_list.value);
   }
   /**có hiển thị trang không */
   isVisible(page?: PageData): boolean {

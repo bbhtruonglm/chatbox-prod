@@ -1,6 +1,6 @@
 <template>
-  <select
-    v-if="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
+  <!-- <select
+    
     v-model="selected_group_id"
     class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate group-hover/org-item:visible"
     :class="{
@@ -14,14 +14,47 @@
     >
       {{ group?.group_name }}
     </option>
-  </select>
+  </select> -->
+  <section
+    v-show="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
+    class="flex text-xs w-full overflow-hidden"
+    ref="ref_groups"
+  >
+    <ul class="flex font-medium">
+      <li
+        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        :class="{
+          'bg-slate-100 !text-black': selected_group_id === 'ALL',
+        }"
+        @click="selected_group_id = 'ALL'"
+      >
+        {{ $t('Tất cả Nhóm') }}
+      </li>
+      <li
+        v-for="group of visible_groups"
+        class="max-w-48 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        :class="{
+          'bg-slate-100 !text-black': group?.group_id === selected_group_id,
+        }"
+        @click="selected_group_id = group?.group_id || ''"
+      >
+        {{ group?.group_name }}
+      </li>
+    </ul>
+    <div
+      class="max-w-24 flex items-center gap-1 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+    >
+      <p>Thêm</p>
+      <ChevronDownIcon class="size-3" />
+    </div>
+  </section>
   <div
-    v-else
-    class="group-hover/org-item:flex items-center gap-1 flex-grow min-w-0 overflow-hidden overflow-x-auto hidden"
+    v-show="!(org?.current_ms?.ms_role === 'ADMIN' && groups?.length)"
+    class="flex items-center gap-1 flex-grow min-w-0 overflow-hidden overflow-x-auto"
   >
     <div
       v-for="group of access_groups"
-      class="py-1 px-3 rounded bg-gray-100 text-xs font-normal"
+      class="py-1 px-3 rounded bg-slate-100 text-xs font-medium"
     >
       {{ group?.group_name }}
     </div>
@@ -36,7 +69,9 @@ import {
 } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import { computed, onMounted, ref, watch } from 'vue'
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
+import { nextTick } from 'async'
+import { computed, h, onMounted, onUnmounted, ref, watch } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -67,6 +102,22 @@ const { filterPageByGroup } = usePageManager()
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
+
+/** thẻ chứa các nhóm của tổ chức */
+const ref_groups = ref<HTMLUListElement>()
+
+/** danh sách các nhóm hiển thị */
+const visible_groups = ref<IGroup[]>([])
+
+/** danh sách các nhóm ẩn */
+const hidden_groups = ref<IGroup[]>([])
+
+/** mảng lưu độ rộng của từng nhóm */
+const group_widths = ref<number[]>([])
+
+/** độ rộng của dropdown */
+const DROP_DOWN_WIDTH = 200
+
 /**dữ liệu của tổ chức */
 const org = computed(() => orgStore.findOrg($props.org_id))
 
@@ -112,7 +163,21 @@ class Main {
 const $main = new Main()
 
 // lấy danh sách nhóm khi thành phần được khởi tạo
-onMounted(() => $main.readGroup())
+onMounted(async () => {
+  await $main.readGroup()
+  group_widths.value = measureAllGroupWidths()
+
+  nextTick(() => {
+    updateGroups()
+
+    // Lắng nghe resize
+    window.addEventListener('resize', updateGroups)
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateGroups)
+})
 
 watch(
   () => $props.org_id,
@@ -148,6 +213,92 @@ const access_groups = computed(() => {
     group?.group_staffs?.includes(user_id.value || '')
   )
 })
+
+/** hàm đo độ rộng của từng thẻ nhóm */
+function measureAllGroupWidths() {
+  /** danh sách ảo tạo ra để tính toán độ rộng của các thẻ nhóm */
+  const VISTUAL_CONTAINER = document.createElement('div')
+  VISTUAL_CONTAINER.style.position = 'absolute'
+  VISTUAL_CONTAINER.style.left = '-9999px'
+  VISTUAL_CONTAINER.style.top = '0'
+  VISTUAL_CONTAINER.style.visibility = 'hidden'
+  VISTUAL_CONTAINER.className = 'flex font-medium overflow-hidden'
+
+  // lặp qua danh sách các nhóm để tạo các thẻ nhóm ảo
+  groups.value?.forEach(group => {
+    const ITEM = document.createElement('li')
+    ITEM.className = 'max-w-48 truncate py-1 px-3 rounded'
+    ITEM.innerText = group?.group_name || ''
+    VISTUAL_CONTAINER.appendChild(ITEM)
+  })
+
+  // thêm danh sách ảo vào body
+  document.body.appendChild(VISTUAL_CONTAINER)
+
+  /** danh sách các độ rộng của các thẻ nhóm */
+  const WIDTHS: number[] = []
+  Array.from(VISTUAL_CONTAINER.children).forEach(child => {
+    /** thẻ nhóm ảo */
+    const EL = child as HTMLElement
+    // thêm chiều rộng vào mảng
+    WIDTHS.push(EL.offsetWidth)
+  })
+
+  // xóa danh sách ảo tạo ra
+  document.body.removeChild(VISTUAL_CONTAINER)
+  return WIDTHS
+}
+
+/** hàm update ẩn hiện các nhóm */
+function updateGroups() {
+  // đảm bảo container đã render
+  nextTick(() => {
+    // nếu không có container thì thôi
+    if (!ref_groups.value) return
+
+    /** thẻ bọc danh sách nhóm */
+    const CONTAINER_WIDTH = ref_groups.value.clientWidth
+
+    console.log('CONTAINER_WIDTH', CONTAINER_WIDTH)
+
+    /** các độ rộng của các thẻ nhóm */
+    const WIDGETS = group_widths.value
+
+    /** tổng chiều rộng của các thẻ hiện */
+    let used = 0
+    /** số lượng thẻ hiện */
+    let visible_count = 0
+
+    // 1) Tính giả sử chưa cần dropdown
+    for (let i = 0; i < WIDGETS.length; i++) {
+      // nếu chưa vượt chiều rộng container thì thêm với
+      if (used + WIDGETS[i] <= CONTAINER_WIDTH) {
+        used += WIDGETS[i]
+        visible_count++
+      } else {
+        break
+      }
+    }
+    console.log('used', used, groups.value?.[0]?.group_name);
+    
+
+    // Nếu tất cả tab vừa
+    if (visible_count === groups.value?.length) {
+      visible_groups.value = [...(groups.value || [])]
+      hidden_groups.value = []
+      return
+    }
+
+    // 2) Nếu overflow, giảm dần cho vừa chỗ dropdown
+    while (visible_count > 0 && used + DROP_DOWN_WIDTH > CONTAINER_WIDTH) {
+      visible_count--
+      used -= WIDGETS[visible_count]
+    }
+
+    visible_groups.value = groups.value?.slice(0, visible_count) || []
+    hidden_groups.value = groups.value?.slice(visible_count) || []
+  })
+}
 </script>
 <style lang="scss" scoped>
 .group__btn--base {
