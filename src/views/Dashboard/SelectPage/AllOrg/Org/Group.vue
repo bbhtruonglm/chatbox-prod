@@ -26,26 +26,31 @@
         :class="{
           'bg-slate-100 !text-black': selected_group_id === 'ALL',
         }"
-        @click="selected_group_id = 'ALL'"
+        @click="selectGroup($event, {group_id: 'ALL'}, 'visible')"
       >
         {{ $t('Tất cả Nhóm') }}
       </li>
       <li
         v-for="group of visible_groups"
-        class="max-w-48 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
         :class="{
           'bg-slate-100 !text-black': group?.group_id === selected_group_id,
         }"
-        @click="selected_group_id = group?.group_id || ''"
+        @click="selectGroup($event, group, 'visible')"
       >
         {{ group?.group_name }}
       </li>
     </ul>
     <div
+      v-if="hidden_groups?.length"
       class="max-w-24 flex items-center gap-1 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+      :class="{
+        'bg-slate-100 !text-black': selected_hidden_group?.group_id,
+      }"
+      @click="dropdown_ref?.toggleDropdown"
     >
-      <p>Thêm</p>
-      <ChevronDownIcon class="size-3" />
+      <p class="truncate">{{ selected_hidden_group?.group_name || $t('Thêm') }}</p>
+      <ChevronDownIcon class="size-3 flex-shrink-0" />
     </div>
   </section>
   <div
@@ -59,19 +64,38 @@
       {{ group?.group_name }}
     </div>
   </div>
+  <Dropdown
+    ref="dropdown_ref"
+    width="250px"
+    height="auto"
+    :is_fit="false"
+    :back="150"
+    class_content="flex flex-col gap-1"
+  >
+    <ul class="flex flex-col gap-1 text-sm">
+      <li
+        v-for="group of hidden_groups"
+        class="truncate py-1.5 px-3 hover:bg-slate-100 cursor-pointer rounded"
+        @click="selectGroup($event, group, 'hidden')"
+      >
+        {{ group?.group_name }}
+      </li>
+    </ul>
+  </Dropdown>
 </template>
 <script setup lang="ts">
 import {
   useChatbotUserStore,
   useOrgStore,
-  usePageManagerStore,
-  usePageStore,
+  usePageManagerStore
 } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
-import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import { nextTick } from 'async'
-import { computed, h, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+
+import Dropdown from '@/components/Dropdown.vue'
+
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
   defineProps<{
@@ -84,24 +108,15 @@ const $props = withDefaults(
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 const pageManagerStore = usePageManagerStore()
-const pageStore = usePageStore()
-
-/** composable */
-const { filterPageByGroup } = usePageManager()
-
-/**
- * lấy danh sách trang đã kích hoạt
- * @deprecated sử dụng getOrgPages trong composable usePageManager
- */
-// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-
-/**
- * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
- */
-// const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
+
+/** dropdown chọn nhóm */
+const dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
+/** loại nhóm đang được chọn */
+const selected_hidden_group = ref<IGroup>({})
 
 /** thẻ chứa các nhóm của tổ chức */
 const ref_groups = ref<HTMLUListElement>()
@@ -214,20 +229,41 @@ const access_groups = computed(() => {
   )
 })
 
+/** hàm chọn nhóm */
+function selectGroup(
+  e: MouseEvent,
+  group: IGroup,
+  type: 'hidden' | 'visible'
+) {
+  selected_group_id.value = group?.group_id || ''
+
+  // nếu là các nhóm trong dropdown thì tắt dropdown
+  if (type === 'hidden') {
+    selected_hidden_group.value = group
+    // tắt dropdown
+    dropdown_ref.value?.toggleDropdown(e)
+  } else {
+    // nội dung trong dropdown
+    selected_hidden_group.value = {}
+  }
+}
+
 /** hàm đo độ rộng của từng thẻ nhóm */
 function measureAllGroupWidths() {
   /** danh sách ảo tạo ra để tính toán độ rộng của các thẻ nhóm */
   const VISTUAL_CONTAINER = document.createElement('div')
-  VISTUAL_CONTAINER.style.position = 'absolute'
+
+  // set các thuộc tính cho thẻ container ảo
+  VISTUAL_CONTAINER.style.position = 'fixed'
   VISTUAL_CONTAINER.style.left = '-9999px'
   VISTUAL_CONTAINER.style.top = '0'
   VISTUAL_CONTAINER.style.visibility = 'hidden'
-  VISTUAL_CONTAINER.className = 'flex font-medium overflow-hidden'
+  VISTUAL_CONTAINER.className = 'flex font-medium'
 
   // lặp qua danh sách các nhóm để tạo các thẻ nhóm ảo
   groups.value?.forEach(group => {
-    const ITEM = document.createElement('li')
-    ITEM.className = 'max-w-48 truncate py-1 px-3 rounded'
+    const ITEM = document.createElement('div')
+    ITEM.className = 'max-w-24 truncate py-1 px-3 rounded text-xs'
     ITEM.innerText = group?.group_name || ''
     VISTUAL_CONTAINER.appendChild(ITEM)
   })
@@ -257,9 +293,7 @@ function updateGroups() {
     if (!ref_groups.value) return
 
     /** thẻ bọc danh sách nhóm */
-    const CONTAINER_WIDTH = ref_groups.value.clientWidth
-
-    console.log('CONTAINER_WIDTH', CONTAINER_WIDTH)
+    const CONTAINER_WIDTH = ref_groups.value.offsetWidth
 
     /** các độ rộng của các thẻ nhóm */
     const WIDGETS = group_widths.value
@@ -279,20 +313,18 @@ function updateGroups() {
         break
       }
     }
-    console.log('used', used, groups.value?.[0]?.group_name);
-    
+
+    // 2) Nếu overflow, giảm dần cho vừa chỗ dropdown
+    while (visible_count > 0 && used + DROP_DOWN_WIDTH > CONTAINER_WIDTH) {
+      visible_count--
+      used -= WIDGETS[visible_count]
+    }
 
     // Nếu tất cả tab vừa
     if (visible_count === groups.value?.length) {
       visible_groups.value = [...(groups.value || [])]
       hidden_groups.value = []
       return
-    }
-
-    // 2) Nếu overflow, giảm dần cho vừa chỗ dropdown
-    while (visible_count > 0 && used + DROP_DOWN_WIDTH > CONTAINER_WIDTH) {
-      visible_count--
-      used -= WIDGETS[visible_count]
     }
 
     visible_groups.value = groups.value?.slice(0, visible_count) || []
