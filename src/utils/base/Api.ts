@@ -1,4 +1,5 @@
 import { getItem } from '@/service/helper/localStorage'
+import { ErrorHandler } from '@/utils/helper/Conversation/ErrorHandler'
 
 /**quản lý API của ứng dụng */
 export class ApiManager {
@@ -12,7 +13,7 @@ export class ApiManager {
     this.#URI = uri
 
     // lưu lại header
-    this.#HEADERS = headers
+    this.#HEADERS = headers || {}
   }
 
   /**thực hiện gọi API */
@@ -78,16 +79,14 @@ export class ApiManager {
       // nếu là raw thì trả về nguyên bản
       // if (is_raw) return RESULT
 
-      // fix riêng cho trường hợp này
-      if (RESULT?.data === false) return RESULT?.data
+      // fix falsy value
+      if (RESULT?.data === false || RESULT?.data === 0 || RESULT?.data === '')
+        return RESULT?.data
 
       // trả về dữ liệu
       return RESULT?.data || RESULT
     } catch (e: any) {
-      // nếu là raw thì ném ra luôn
-      if (is_raw_error) throw e
-      // nếu có lỗi thì ưu tiên ném ra thông báo lỗi
-      else throw e?.mean || e?.message || e
+      throw ErrorHandler.parse(e, is_raw_error)
     }
   }
 

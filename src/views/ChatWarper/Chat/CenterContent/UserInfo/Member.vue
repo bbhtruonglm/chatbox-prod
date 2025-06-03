@@ -1,24 +1,24 @@
 <template>
   <Dropdown
-    ref="client_menu_ref"
-     width="280px"
+    ref="member_ref"
+    width="280px"
     height="auto"
     :is_fit="false"
     position="BOTTOM"
     :back="210"
     :distance="9"
-    class_content="flex flex-col gap-1 max-h-[210px] overflow-hidden overflow-y-auto"
+    class_content="flex flex-col  gap-1 max-h-[210px] overflow-hidden overflow-y-auto"
   >
     <div
       v-if="is_loading"
       class="relative z-10"
     >
-      <div class="absolute top-6 left-1/2 translate-x-1/2">
+      <div class="absolute top-6 left-[43%] translate-x-1/2">
         <Loading class="mx-auto" />
       </div>
     </div>
 
-    <!-- Lặp qua conversationList và hiển thị từng memberItem -->
+    <!-- Lặp qua member_lists và hiển thị từng memberItem -->
     <MemberItem
       v-for="(item, index) in member_lists"
       :key="index"
@@ -26,20 +26,20 @@
       :name_member="item.client_name"
     />
 
-    <!-- Nếu không có cuộc gọi nào thì hiển thị thông báo -->
+    <!-- Nếu không có thành viên nào thì hiển thị thông báo -->
     <div
       v-if="member_lists.length === 0"
-      class="text-gray-500 text-center py-4"
+      class="text-gray-500 text-center py-8"
     >
-      Chưa có thành viên nào!
+      <p v-if="!is_loading">{{ $t('Chưa có thành viên nào') }}</p>
     </div>
   </Dropdown>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
 import { container } from 'tsyringe'
+import { ref } from 'vue'
 
 /**component*/
 import Dropdown from '@/components/Dropdown.vue'
@@ -63,21 +63,11 @@ const $toast = container.resolve(Toast)
 
 const { t: $t } = useI18n()
 
-/**ref của dropdown danh sách cuộc gọi của khách hàng */
-const client_menu_ref = ref<InstanceType<typeof Dropdown>>()
+/**ref của dropdown danh sách thành viên nhóm */
+const member_ref = ref<InstanceType<typeof Dropdown>>()
 
 /**Biến lưu danh sách api đang trả về*/
 const member_lists = ref<any[]>([])
-
-/** Ẩn/hiện dropdown danh sách cuộc gọi của khách hàng */
-function toggle($event?: MouseEvent) {
-  // Gọi phương thức toggleDropdown() trên component menu để ẩn/hiện dropdown
-  client_menu_ref.value?.toggleDropdown($event)
-  // Reset danh sách thành viên trước khi gọi API
-  member_lists.value = []
-  // Gọi lại API lấy danh sách thành viên mỗi khi toggle (dù là mở hay đóng)
-  $main.fetchGroupMenbers()
-}
 
 class Main {
   /**
@@ -85,9 +75,21 @@ class Main {
    */
   constructor(
     private readonly API = container.resolve(N4SerivceAppZaloPersonal)
-  ) {}
+  )  {
+    this.toggle = this.toggle.bind(this) 
+  }
 
-  /** Lấy danh sách cuộc gọi */
+  /** Ẩn/hiện dropdown danh sách thành viên của nhóm */
+  toggle($event?: MouseEvent) {
+    // Gọi phương thức toggleDropdown() ẩn/hiện dropdown
+    member_ref.value?.toggleDropdown($event)
+    // Reset danh sách thành viên trước khi gọi API
+    member_lists.value = []
+    // Gọi lại API lấy danh sách thành viên mỗi khi mở
+    this.fetchGroupMenbers()
+  }
+
+  /** Lấy danh sách thành viên của nhóm */
   async fetchGroupMenbers() {
     // Bật loading
     is_loading.value = true
@@ -105,18 +107,18 @@ class Main {
           $t('Vui lòng chọn trang và khách hàng trước khi thực hiện')
         )
         // Tắt loading nếu có lỗi
-        is_loading.value = false 
+        is_loading.value = false
         return
       }
 
-      /** Gọi API để lấy danh sách cuộc gọi */
-      const RES = await this.API.getGroupMenbers( PAGE_ID, GROUP_ID)
-      
+      /** Gọi API để lấy danh sách thành viên của nhóm */
+      const RES = await this.API.getGroupMenbers(PAGE_ID, GROUP_ID)
+
       // Kiểm tra xem API có trả về dữ liệu không
       if (RES) {
-        // Nếu có, gán dữ liệu vào biến conversation_lists
+        // Nếu có, gán dữ liệu vào biến member_lists
         member_lists.value = RES
-       
+      
       } else {
         // Nếu không có, hiển thị thông báo
         $toast.error($t('Không có dữ liệu'))
@@ -129,7 +131,8 @@ class Main {
     }
   }
 }
+
 const $main = new Main()
 
-defineExpose({ toggle })
+defineExpose({ toggle: $main.toggle })
 </script>

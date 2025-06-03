@@ -56,6 +56,18 @@ watch(
   () => getLabelList()
 )
 
+/** lắng nghe khi clear filter */
+watch(
+  () => conversationStore.option_filter_page_data.label_id,
+  (value) => {
+    // nếu có giá trị thì thôi
+    if(value) return
+
+    // loại bỏ gắn cờ
+    unselectLabel()
+  }
+)
+
 onMounted(() => {
   /**Trường hợp điều kiện lọc theo nhãn and là string thì ghi đè lại thành boolean  */
   if (isString(conversationStore.option_filter_page_data.label_and)) {
@@ -69,12 +81,18 @@ function clearThisFilter() {
   delete conversationStore.option_filter_page_data.label_id
 
   // loại bỏ gắn cờ
+  unselectLabel()
+}
+
+/** loại bỏ gắn cờ */
+function unselectLabel() {
   label_list.value = label_list.value.map(label => {
     label.is_selected = false
 
     return label
   })
 }
+
 /** Lấy danh sách nhãn */
 function getLabelList() {
   // lưu lại danh sách nhãn gốc dưới dạng obj

@@ -43,29 +43,23 @@
           class="w-3 h-3"
         />
       </template>
-      <!-- <div
+      <!-- Nếu AI bật và thiết lập AI bật thì mới hiển thị icon -->
+      <SparklesIcon 
+        v-if="
+          calcStatus?.(source) && 
+          getPageInfo(source?.fb_page_id)?.is_active_ai_agent
+        " 
+        class="size-3"
+        v-tooltip.bottom="$t('AI đang bật')"
+      />
+      <div
         v-tooltip.bottom="$t('v1.common.' + getPageInfo(source?.fb_page_id)?.type?.toLowerCase() as string)"
-        class="ml-1"
       >
-        <img
-          v-if="source?.platform_type === 'FB_MESS'"
-          src="@/assets/icons/facebook.svg"
-          width="13"
-          height="13"
+        <PageTypeIcon
+          :page_type="source?.platform_type"
+          class="flex-shrink-0 size-3"
         />
-        <img
-          v-if="source?.platform_type === 'WEBSITE'"
-          src="@/assets/icons/website-2.svg"
-          width="13"
-          height="13"
-        />
-        <img
-          v-if="source?.platform_type === 'ZALO_OA'"
-          src="@/assets/icons/zalo.svg"
-          width="13"
-          height="13"
-        />
-      </div> -->
+      </div>
     </div>
   </div>
   <Popover
@@ -85,6 +79,7 @@
   </Popover>
 </template>
 <script setup lang="ts">
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
 import { ref } from 'vue'
 import { getLabelValid, getPageInfo } from '@/service/function'
 import { useExtensionStore } from '@/stores'
@@ -92,9 +87,12 @@ import { useExtensionStore } from '@/stores'
 import Label from '@/views/ChatWarper/Chat/LeftBar/Conversation/Label.vue'
 import Loading from '@/components/Loading.vue'
 import Popover from '@/components/Popover.vue'
+import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 
-import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { SparklesIcon } from '@heroicons/vue/24/solid'
+
 import type { ComponentRef } from '@/service/interface/vue'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
 
 const $props = withDefaults(
   defineProps<{
@@ -104,6 +102,9 @@ const $props = withDefaults(
 )
 
 const extensionStore = useExtensionStore()
+
+/** logic bật/tắt bot */
+const { calcStatus } = composableService(true)
 
 /**ref của popover */
 const label_popover_ref = ref<ComponentRef>()

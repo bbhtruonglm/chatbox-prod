@@ -26,6 +26,11 @@
         v-html="content?.price_discount_year"
         class="pl-2"
       />
+      <li
+        v-if="is_full_year && orgStore.hasDiscount()"
+        v-html="content?.price_year"
+        class="pl-2"
+      />
       <li class="pl-2">
         {{ $t('v1.view.main.dashboard.org.pay.upgrade.page') }}
         <span class="font-semibold">

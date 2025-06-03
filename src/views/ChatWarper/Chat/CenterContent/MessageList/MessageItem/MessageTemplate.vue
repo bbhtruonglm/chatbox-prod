@@ -39,12 +39,21 @@
       >
         {{ data_source?.title }}
       </div>
-      <div
+      <!-- <div
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
         v-html="fixXss(renderText(data_source?.content))"
         class="enter-line"
+      /> -->
+
+      <div
+        class="enter-line"
+        v-if="data_source?.content"
+        @click="clickCopyPhoneEmail"
+        v-html="fixXss($markdown.render(renderText(data_source?.content)))"
       />
+        <!-- class="enter-line" -->
+
     </div>
     <Action
       v-if="data_source?.list_button?.length"
@@ -56,11 +65,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { clickCopyPhoneEmail, renderText } from '@/service/function'
+import { MarkedService } from '@/utils/helper/Markdown'
 import DOMPurify from 'dompurify'
+import { container } from 'tsyringe'
+import { ref, watch } from 'vue'
 
-import Media from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
+import Media from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Media.vue'
 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import ArrowRightIcon from '@/components/Icons/ArrowRight.vue'
@@ -70,7 +82,6 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
-import { clickCopyPhoneEmail, renderText } from '@/service/function'
 
 const $props = withDefaults(
   defineProps<{
@@ -87,6 +98,9 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+/** service render markdown */
+const $markdown = container.resolve(MarkedService)
 
 /**
  * có hiển thị content không

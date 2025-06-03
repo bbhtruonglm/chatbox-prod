@@ -10,7 +10,7 @@
       ></div>
       <div
         ref="triangle_ref"
-        class="absolute z-30 rotate-45 w-4 h-4 shadow-[inset-y-lg] bg-white"
+        class="absolute z-10 rotate-45 w-4 h-4 shadow-[inset-y-lg] bg-white"
       />
       <div
         ref="dropdown_ref"

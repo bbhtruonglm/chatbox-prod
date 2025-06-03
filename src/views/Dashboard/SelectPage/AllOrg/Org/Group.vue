@@ -2,7 +2,7 @@
   <select
     v-if="org?.current_ms?.ms_role === 'ADMIN'"
     v-model="selected_group_id"
-    class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs"
+    class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate"
   >
     <option value="ALL">{{ $t('Tất cả Nhóm') }}</option>
     <option

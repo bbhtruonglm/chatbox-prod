@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type {
@@ -14,13 +15,15 @@ import type { ILabel } from '@/service/interface/app/label'
 import type { IPost, IPostAnalytic } from '@/service/interface/app/message'
 
 export const useConversationStore = defineStore('conversation_store', () => {
+
+  /** router */
+  const $route = useRoute()
+
   /**lưu dữ liệu lọc hội thoại */
   const option_filter_page_data = ref<FilterConversation>(
-    getLocal('option_filter_page_data', {
-      is_spam_fb: 'NO',
-      conversation_type: 'CHAT',
-    })
+    getOptionFilterPageData()
   )
+
   // lưu dữ liệu xuống local
   saveLocal(option_filter_page_data, 'option_filter_page_data')
 
@@ -30,6 +33,26 @@ export const useConversationStore = defineStore('conversation_store', () => {
   const select_conversation_post = ref<IPost>()
   /**thống kê bài viết đang được chọn */
   const select_conversation_post_analytic = ref<IPostAnalytic>()
+
+  /** lấy dữ liệu lọc hội thoại */
+  function getOptionFilterPageData(): FilterConversation {
+    /** dữ liệu lọc hội thoại lấy ở localstorage */
+    let option_filter_page_data = getLocal('option_filter_page_data', {
+      is_spam_fb: 'NO',
+      conversation_type: 'CHAT',
+    })
+
+    // kiểm tra query string có tab bằng post hay không
+    if ($route .query.tab === 'POST') {
+      option_filter_page_data.conversation_type = 'POST'
+    } 
+    // nếu không có thì mặc định là tab chat
+    else {
+      option_filter_page_data.conversation_type = 'CHAT'
+    }
+
+    return option_filter_page_data  
+  }
 
   /**lấy thông tin nhân viên được gán cho hội thoại này */
   function getAssignStaff() {
@@ -56,6 +79,15 @@ export const useConversationStore = defineStore('conversation_store', () => {
     // trả về dữ liệu trang
     return pageStore.getPage(select_conversation.value?.fb_page_id)?.page
   }
+
+  /** lấy dữ liệu trang với id trang trong hội thoại */
+  function getPageById(page_id: string) {
+    const pageStore = usePageStore()
+
+    // trả về dữ liệu trang
+    return pageStore.getPage(page_id)?.page
+  }
+
   /**lấy danh sách nhãn của trang của hội thoại này */
   function getLabels(): Record<string, ILabel> | undefined {
     const pageStore = usePageStore()
@@ -79,6 +111,9 @@ export const useConversationStore = defineStore('conversation_store', () => {
 
   /**danh sách hội thoại đang hiển thị */
   const conversation_list = ref<ConversationList>({})
+
+  /** số lượng các hội thoại của các trang đã chọn và bộ lọc đã lọc */
+  const total_conversation = ref<number>(0)
 
   /**widget được chọn để mở */
   const select_widget = ref<AppInstalledInfo>()
@@ -123,6 +158,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     select_conversation_post,
     select_conversation_post_analytic,
     conversation_list,
+    total_conversation,
     select_widget,
     list_widget_token,
     is_edit_info,
@@ -134,5 +170,6 @@ export const useConversationStore = defineStore('conversation_store', () => {
     getLabels,
     getActiveLabelIds,
     getPage,
+    getPageById
   }
 })

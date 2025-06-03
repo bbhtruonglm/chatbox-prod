@@ -55,18 +55,36 @@ watch(
   () => getStaffs()
 )
 
+/** lắng nghe khi clear filter */
+watch(
+  () => conversationStore.option_filter_page_data.staff_id,
+  (value) => {
+    // nếu có giá trị thì thôi
+    if(value) return
+
+    // loại bỏ gắn cờ
+    unselectStaff()
+  }
+)
+
 /** Xoá lọc */
 function clearThisFilter() {
   // xoá store lọc
   delete conversationStore.option_filter_page_data.staff_id
 
   // loại bỏ gắn cờ
+  unselectStaff()
+}
+
+/** loại bỏ gắn cờ */
+function unselectStaff() {
   staff_list.value = staff_list.value.map(staff => {
     staff.is_selected = false
 
     return staff
   })
 }
+
 /** Lấy danh sách nhân viên */
 function getStaffs() {
   // lưu lại danh sách nhãn gốc dưới dạng obj

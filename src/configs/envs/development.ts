@@ -21,9 +21,12 @@ const ENV: IEnv = {
     n13_zalo_personal: 'https://dev-api.botbanhang.vn/v1/n13_zalo_personal',
     n13_zalo_personal_socket: 'wss://dev-api.botbanhang.vn/zalo-personal-qr',
     agent_config: 'https://bbh-setting-dev.vercel.app/embed/virtual-assistant',
+    merchant: {
+      contact: 'https://api-contact.merchant.vn'
+    }
   },
   external_link: {
-    setting: 'https://setting-dev.vercel.app',
+    setting: 'https://bbh-setting-dev.vercel.app',
     analytic: 'https://bbh-chart-nu.vercel.app',
     chatbot: 'https://chatbot.sellingpage.net/#',
     chatbox: 'https://chat-dev.botbanhang.vn',

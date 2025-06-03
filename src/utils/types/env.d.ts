@@ -36,6 +36,11 @@ declare global {
       n13_zalo_personal_socket: string
       /**link thiết lập trợ lý ảo cho tổ chức */
       agent_config: string
+      /**hệ thống merchant */
+      merchant: {
+        /**liên hệ */
+        contact: string
+      }
     }
     external_link: IExternalLink
     /**cài đặt cho riêng facebook */

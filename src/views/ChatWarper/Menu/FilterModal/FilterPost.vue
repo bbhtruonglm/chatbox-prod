@@ -3,7 +3,7 @@
     ref="filter_popover_ref"
     :is_fit="false"
     width="450px"
-    height="570px"
+    height="auto"
     position="RIGHT"
     :back="400"
   >
@@ -37,9 +37,14 @@ import { keys } from 'lodash'
 import { container } from 'tsyringe'
 import { onMounted, ref } from 'vue'
 
-import Popover from '@/components/Popover.vue'
 import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover.vue'
 import Post from '@/views/ChatWarper/Menu/FilterModal/Content/Post.vue'
+
+import { omit } from 'lodash'
+import { watch } from 'vue'
+
+
 
 import type { IPost } from '@/service/interface/app/message'
 
@@ -73,24 +78,60 @@ const filter_keys = ref<{ [index: string]: string }>({
 
 onMounted(() => $main.getPostList())
 
+/** lắng nghe khi clear filter */
+watch(
+  () => conversationStore.option_filter_page_data.post_id,
+  value => {
+    // nếu có giá trị thì thôi
+    if (value) return
+
+    // loại bỏ gắn cờ
+    cancelFilter()
+  }
+)
+
 /** Xoá lọc */
 function clearThisFilter() {
   cancelFilter()
 }
 /** Hủy lọc */
 function cancelFilter() {
-  filter_keys.value = {
-    is_reply: '',
-    have_email: '',
-    have_phone: '',
-    is_private_reply: '',
-    post_id: '',
-  }
-  conversationStore.option_filter_page_data = {
-    ...conversationStore.option_filter_page_data,
-    ...filter_keys.value,
-    ...{ post_id: '', time_range: undefined },
-  }
+  // filter_keys.value = {
+  //   is_reply: '',
+  //   have_email: '',
+  //   have_phone: '',
+  //   is_private_reply: '',
+  //   post_id: '',
+  // }
+
+  /** các trường sẽ bị xóa */
+  const DELETE_FIELDS = [
+    'is_reply',
+    'have_email',
+    'have_phone',
+    'is_private_reply',
+    'post_id',
+    'time_range',
+  ]
+
+  // Xóa bộ lọc của bài post
+  conversationStore.option_filter_page_data = omit(
+    conversationStore.option_filter_page_data,
+    DELETE_FIELDS
+  )
+
+  // cập nhật lại giá trj lưu tạm của bộ lọc
+  filter_keys.value = omit(
+    filter_keys.value,
+    DELETE_FIELDS
+  )
+
+  // conversationStore.option_filter_page_data = {
+  //   ...conversationStore.option_filter_page_data,
+  //   ...filter_keys.value,
+  //   ...{ post_id: '', time_range: undefined },
+  // }
+
   posts.value = posts.value.map(item => {
     item.is_selected = false
     return item

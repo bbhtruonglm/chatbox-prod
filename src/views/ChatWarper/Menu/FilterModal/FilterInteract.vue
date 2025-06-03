@@ -22,11 +22,11 @@
   </Dropdown>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useConversationStore } from '@/stores'
+import { useConversationStore } from '@/stores';
+import { ref } from 'vue';
 
-import Popover from '@/components/Popover.vue'
-import Dropdown from '@/components/Dropdown.vue'
+import Dropdown from '@/components/Dropdown.vue';
+import Popover from '@/components/Popover.vue';
 import Interact from '@/views/ChatWarper/Menu/FilterModal/Content/Interact.vue';
 
 const conversationStore = useConversationStore()

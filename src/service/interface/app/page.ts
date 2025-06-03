@@ -262,6 +262,7 @@ export interface IBusinessHourConfig {
     '6'?: IBusinessHourDayConfig
   }
 }
+
 /**thiết lập chung > thời gian làm việc */
 export interface IPageGeneralBusinessHourConfig {
   /**
@@ -546,6 +547,183 @@ export interface IPageQuickReplyConfig {
     is_complete_sentence?: boolean
   }
 }
+
+/**
+ * cách trợ lý ảo sẽ trả lời khách hàng
+ * - CONFIRM_BEFORE_START: trợ lý ảo sẽ trả lời khách hàng sau khi xác nhận
+ * - SEND_DIRECTLY: trợ lý ảo sẽ trả lời khách hàng ngay lập tức
+ */
+export const AI_AGENT_ANSWER_CLIENT_TYPE = [
+  'CONFIRM_BEFORE_START',
+  'SEND_DIRECTLY',
+] as const
+
+/**cách trợ lý ảo sẽ trả lời khách hàng */
+export type IAiAgentAnswerClientType =
+  (typeof AI_AGENT_ANSWER_CLIENT_TYPE)[number]
+
+/**các hành động bổ sung của trợ lý ảo */
+export const AI_AGENT_WELCOME_MESSAGE_ACTION_TYPE = [
+  'ACTIVE_AI_AGENT',
+  'GET_PRODUCT_LIST',
+  'FEEDBACK',
+] as const
+/**các hành động bổ sung của trợ lý ảo */
+export type IAiAgentWelcomeMessageActionType =
+  (typeof AI_AGENT_WELCOME_MESSAGE_ACTION_TYPE)[number]
+
+/**các hành động bổ sung của trợ lý ảo */
+export interface IPageWelcomeAction {
+  /**loại hành động */
+  type?: IAiAgentWelcomeMessageActionType
+  /**nội dung hành động theo i18n */
+  source?: Record<string, string>
+  /**có kích hoạt không */
+  is_active?: boolean
+}
+
+/**cách trợ lý ảo trả lời với giờ hành chính */
+export const AI_AGENT_WORKING_HOUR_TYPE = [
+  'SEND_DIRECTLY',
+  'NOT_ANSWER',
+  'ANSWER_AFTER_AWHILE',
+] as const
+/**cách trợ lý ảo trả lời với giờ hành chính */
+export type IAiAgentWorkingHourType =
+  (typeof AI_AGENT_WORKING_HOUR_TYPE)[number]
+
+/**thiết lập AI trả lời với giờ hành chính */
+export interface IAgentWorkingHour {
+  /**
+   * cách trợ lý ảo trả lời
+   * - trả lời ngay lập tức: SEND_DIRECTLY
+   * - không trả lời: NOT_ANSWER
+   * - trả lời sau 1 khoảng thời gian: ANSWER_AFTER_AWHILE
+   */
+  type?: IAiAgentWorkingHourType
+  /**thời gian chờ trước khi trợ lý ảo trả lời - ms */
+  time?: number
+}
+export interface IAgentWorkingHourConfig {
+  /**trong giờ hành chính */
+  in_working_hour?: IAgentWorkingHour
+  /**ngoài giờ hành chính */
+  out_working_hour?: IAgentWorkingHour
+}
+
+/**hành động khi AI không có câu trả lời */
+const AI_AGENT_NO_RESULT_TYPE = ['FIXED_MESSAGE', 'NOT_ANSWER'] as const
+/**hành động khi AI không có câu trả lời */
+export type IAiAgentNoResultType = (typeof AI_AGENT_NO_RESULT_TYPE)[number]
+
+/**các thiết lập về trợ lý ảo AI của trang */
+export interface IPageAiAgent {
+  /**có kích hoạt trợ lý ảo không */
+  is_active_ai_agent?: boolean
+  /**id của trợ lý ảo mà trang sử dụng */
+  ai_agent_id?: string
+  /**tin nhắn chào mừng khi bắt đầu chat vơi trợ lý ảo */
+  ai_agent_welcome_message?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**nội dung tin nhắn theo các ngôn ngữ */
+    source?: Record<string, string>
+    /**các hành động bổ sung */
+    actions?: IPageWelcomeAction[]
+  }
+
+  /**cho phép trợ lý ảo trả lời khách hàng */
+  allow_ai_agent_answer_client?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**cách thức trả lời */
+    type?: IAiAgentAnswerClientType
+  }
+  /**cho phép trợ lý ảo trả lời câu hỏi từ nhân viên */
+  is_staff_assistant?: boolean
+  /**thông tin về trợ lý ảo */
+  ai_agent_info?: {
+    /**tên của trợ lý ảo */
+    name?: string
+    /**link ảnh đại diện của trợ lý ảo */
+    avatar?: string
+  }
+  /**dừng trợ lý ảo nếu có nhân viên online */
+  is_ai_agent_stop_if_staff_online?: boolean
+  /**tự động bật trợ lý ảo sau một khoảng thời gian bị tắt bởi nhân viên */
+  auto_start_ai_agent_after_awhile?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**thời gian chờ trước khi bật trợ lý ảo - ms */
+    time?: number
+  }
+  /**trợ lý ảo chỉ trả lời nếu ngoài giờ làm việc */
+  is_ai_agent_just_answer_outside_working_time?: boolean
+  /**lời chào mừng khi trợ lý ảo khời động */
+  ai_agent_start_message?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**nội dung tin nhắn theo các ngôn ngữ */
+    source?: Record<string, string>
+  }
+  /**cho phép trợ lý ảo kèm theo biểu tượng cảm xúc khi trả lời */
+  is_ai_agent_use_emotion?: boolean
+  /**tự động đề xuất các gợi ý trả lời nhanh */
+  ai_agent_auto_suggest_quick_reply?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**phạm vi áp dụng */
+    apply?: IAiApplyType
+    /**số gợi ý */
+    number_of_suggest?: number
+  }
+  /**cho phép sử dụng kiến thức bên ngoài LLM để trả lời */
+  ai_agent_use_external_knowledge?: {
+    /**có kích hoạt không */
+    is_active?: boolean
+    /**phạm vi áp dụng */
+    apply?: IAiApplyType
+  }
+  /**ngôn ngữ trợ lý ảo sẽ dùng để trả lời cho khách hàng */
+  ai_agent_language?: 'AUTO' | string
+  /**trợ lý ảo tự động trả lời khách hàng nếu sau xx phút nhân viên không trả lời */
+  // ai_agent_auto_answer_after_awhile?: {
+  //   /**có kích hoạt không */
+  //   is_active?: boolean
+  //   /**thời gian chờ trước khi trợ lý ảo trả lời - ms */
+  //   time?: number
+  // }
+  /**nhân viên đã xem hội thoại thì AI không trả lời hội thoại */
+  is_ai_agent_not_answer_if_staff_seen?: boolean
+  /**thiết lập AI trả lời với giờ hành chính */
+  ai_agent_working_hour_answer?: IAgentWorkingHourConfig
+  /**hành động khi AI không có câu trả lời */
+  ai_agent_no_result?: {
+    type?: IAiAgentNoResultType
+    /**nội dung trả lời */
+    source?: Record<string, string>
+  }
+  /**tên của trợ lý ảo */
+  ai_agent_name?: string
+  /**tông giọng */
+  ai_agent_tone?: string
+  /**agent tự gọi bản thân là */
+  ai_agent_self?: string
+  /**agent gọi khách là */
+  ai_agent_user?: string
+  /**giới hạn độ dài câu trả lời */
+  ai_agent_limit_response_length?: string
+  /**tự động chia nhỏ câu trả lời */
+  ai_agent_is_auto_chunking?: boolean
+  /**thời gian AI chờ khách hàng nhắn xong rồi mới trả lời */
+  ai_agent_typing_wait?: number
+  /**có sử dụng prompt riêng khác hệ thống không */
+  ai_agent_is_custom_prompt?: boolean
+  /**nội dung của prompt riêng */
+  ai_agent_custom_prompt?: string
+}
+
+
 /**thiết lập chat website */
 export interface IPageWebsiteConfig
   extends IPageWebsiteGeneralConfig,
@@ -562,7 +740,8 @@ export interface IPage
     IPageQuickReplyConfig,
     IPagePlatformConfig,
     IPageDeprecatedConfig,
-    IPageCopySetting {}
+    IPageCopySetting,
+    IPageAiAgent {}
 
 export interface PageData {
   /**tạo data key cho vitual scroll */

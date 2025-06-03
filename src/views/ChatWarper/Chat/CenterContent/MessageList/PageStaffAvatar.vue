@@ -44,7 +44,7 @@ function getStaffId() {
   staff_id.value = $props.message?.message_metadata?.split('__')?.[2]
 
   // nếu không có id nhân viên thì thôi
-  if (!staff_id.value) return false
+  if (!staff_id.value || staff_id.value === 'undefined') return false
 
   // trả về true để hiển thị avatar nhân viên
   return true
