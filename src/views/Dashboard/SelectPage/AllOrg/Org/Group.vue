@@ -2,7 +2,7 @@
   <select
     v-if="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
     v-model="selected_group_id"
-    class="bg-slate-100 rounded px-2 py-0.5 font-medium text-sm group-hover/org-item:visible"
+    class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate group-hover/org-item:visible"
     :class="{
       invisible: !orgStore?.selected_org_group?.[org_id],
     }"
