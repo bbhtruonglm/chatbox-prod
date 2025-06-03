@@ -1,6 +1,6 @@
 <template>
   <CardItem
-    v-if="active_page_list?.length"
+    v-if="active_page_list?.length || orgStore.selected_org_group?.[org_id]"
     id="all-org__org-item"
     :class="{
       'opacity-50':
@@ -83,8 +83,10 @@ const active_page_list = defineModel<PageData[]>('active_page_list')
 class Main {
   /**sắp xếp page gắn sao lên đầu */
   getListPage() {
+    console.log('pre active_page_list.value',sortListPage?.());
     // lọc ra các page thuộc về nhóm này
     active_page_list.value = sortListPage?.()?.filter(this.isVisible.bind(this))
+    console.log('active_page_list.value',active_page_list.value);
   }
   /**có hiển thị trang không */
   isVisible(page?: PageData): boolean {

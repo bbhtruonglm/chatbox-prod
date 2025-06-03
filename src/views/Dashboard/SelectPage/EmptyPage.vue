@@ -46,6 +46,7 @@ import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import { ArrowDownCircleIcon } from '@heroicons/vue/24/solid'
 
 import { Device, type IDevice } from '@/utils/helper/Device'
+import { usePageManager } from '../composables/usePageManager'
 
 const $props = withDefaults(
   defineProps<{
@@ -57,10 +58,16 @@ const $props = withDefaults(
 const $router = useRouter()
 const $device = container.resolve(Device)
 
-/**hàm mở dropdown tiền chọn nền tảng kết nối */
-const toggleDropdownPickConnectPlatform = inject(
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM
-)
+// /**
+//  * hàm mở dropdown tiền chọn nền tảng kết nối 
+//  * @deprecated sử dụng toggleDropdown trong composable usePageManager
+// */
+// const toggleDropdownPickConnectPlatform = inject(
+//   KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM
+// )
+
+/** composable */
+const { toggleDropdown } = usePageManager()
 
 class Main {
   /**
@@ -78,7 +85,7 @@ class Main {
     if (this.SERVICE_DEVICE.isMobile()) return $router.push('/download-app')
 
     // mở dropdown tiền chọn nền tảng kết nối
-    toggleDropdownPickConnectPlatform?.($event, 'RIGHT', )
+    toggleDropdown?.($event, 'RIGHT', )
   }
 }
 const $main = new Main()

@@ -29,8 +29,8 @@
     <DropdownPickConnectPlatform
       @done="$main.reloadPageData()"
       ref="ref_dropdown_pick_connect_platform"
-      :position
-      :back
+      :position="pageManagerStore.position"
+      :back="pageManagerStore.back"
     />
     <ConnectPage
       @done="$main.reloadPageData()"
@@ -40,54 +40,66 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref, toRef } from 'vue'
+import {
+  useOrgStore,
+  usePageManagerStore,
+  usePageStore,
+  useSelectPageStore,
+} from '@/stores'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { Toast } from '@/utils/helper/Alert/Toast'
 import { initRequireData } from '@/views/composable'
 import {
-  KEY_GET_CHATBOT_USER_FUNCT,
-  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
-  KEY_GET_ORG_PAGES_FN,
   KEY_GET_ALL_ORG_AND_PAGE_FN,
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
+  KEY_GET_CHATBOT_USER_FUNCT,
+  KEY_GET_ORG_PAGES_FN,
   KEY_RELOAD_PAGE_DATA,
+  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
+  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
 } from '@/views/Dashboard/symbol'
-import { usePageStore, useSelectPageStore, useOrgStore } from '@/stores'
 import { keys, size } from 'lodash'
-import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast, ToastSingleton } from '@/utils/helper/Alert/Toast'
+import { provide, toRef } from 'vue'
 import { useRoute } from 'vue-router'
 
-import DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPickConnectPlatform.vue'
-import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
-import Header from '@/views/Dashboard/Header.vue'
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
+import Header from '@/views/Dashboard/Header.vue'
+import ReChargeBtn from '@/views/Dashboard/Org/ReChargeBtn.vue'
+import DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPickConnectPlatform.vue'
 
-import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import { loading } from '@/utils/decorator/Loading'
-import { error } from '@/utils/decorator/Error'
-import { container } from 'tsyringe'
 import { read_link_org } from '@/service/api/chatbox/billing'
 import type { ModalPosition } from '@/service/interface/vue'
+import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
+import { storeToRefs } from 'pinia'
+import { container } from 'tsyringe'
+import { usePageManager } from './Dashboard/composables/usePageManager'
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
+const pageManagerStore = usePageManagerStore()
 const $route = useRoute()
 const $toast = container.resolve(Toast)
 
+const { ref_dropdown_pick_connect_platform, connect_page_ref } =
+  storeToRefs(pageManagerStore)
+
 // composable
 const { getMeChatbotUser } = initRequireData()
+const { filterPageByGroup } = usePageManager()
 
-/**ref của modal kết nối nền tảng */
-const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
-/**ref của dropdown tiền chọn nền tảng để kết nối */
-const ref_dropdown_pick_connect_platform =
-  ref<InstanceType<typeof DropdownPickConnectPlatform>>()
-/**vị trí của dropdown */
-const position = ref<ModalPosition>()
-/**lùi lại bao nhiêu */
-const back = ref<number>()
+// /**ref của modal kết nối nền tảng */
+// const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
+// /**ref của dropdown tiền chọn nền tảng để kết nối */
+// const ref_dropdown_pick_connect_platform =
+//   ref<InstanceType<typeof DropdownPickConnectPlatform>>()
+// /**vị trí của dropdown */
+// const position = ref<ModalPosition>()
+// /**lùi lại bao nhiêu */
+// const back = ref<number>()
 
 class Main {
   /**nạp lại dữ liệu trang */
@@ -107,7 +119,7 @@ class Main {
   }
   /**ẩn hiện modal kết nối nền tảng */
   toggleModalConnectPage(key?: string) {
-    connect_page_ref.value?.toggleModal?.(key)
+    pageManagerStore.connect_page_ref?.toggleModal?.(key)
   }
   /**lấy toàn bộ các page đang được kích hoạt của 1 tổ chức */
   @loading(toRef(selectPageStore, 'is_loading'))
@@ -126,7 +138,8 @@ class Main {
     )
 
     // lưu lại danh sách trang
-    pageStore.active_page_list = RES?.page_list || {}
+    pageStore.all_page_list = RES?.page_list || {}
+
   }
   /**có hiển thị các nút của trang chọn page không */
   isShowSelectPageButton() {
@@ -148,17 +161,16 @@ class Main {
 
     /**toàn bộ các trang của người dùng */
     const PAGE_DATA = await new N4SerivceAppPage().getListPage({
-      org_group: orgStore.selected_org_group,
+      // org_group: orgStore.selected_org_group,
     })
 
     // nếu không có dữ liệu trang thì thôi
     if (!PAGE_DATA?.page_list) return
 
-    // lưu trữ danh sách trang hiện tại
-    pageStore.active_page_list = PAGE_DATA?.page_list
+    pageStore.all_page_list = PAGE_DATA?.page_list
 
     // lấy dữ liệu mapping tổ chức và trang
-    pageStore.map_orgs = await read_link_org(keys(pageStore.active_page_list))
+    pageStore.map_orgs = await read_link_org(keys(pageStore.all_page_list))
   }
   /**ẩn hiện dropdown */
   toggleDropdown(
@@ -167,11 +179,11 @@ class Main {
     _back?: number
   ) {
     // truyền vị trí và lùi lại
-    position.value = _position || 'BOTTOM'
-    back.value = _back || 236
+    pageManagerStore.position = _position || 'BOTTOM'
+    pageManagerStore.back = _back || 236
 
     // sử dùng hàm của dropdown
-    ref_dropdown_pick_connect_platform.value?.toggleDropdown($event)
+    pageManagerStore.ref_dropdown_pick_connect_platform?.toggleDropdown($event)
   }
 }
 const $main = new Main()
