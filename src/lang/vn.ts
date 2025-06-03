@@ -33,12 +33,14 @@ const source: Language = {
   'Bằng việc tiếp tục, bạn đồng ý với _ và _ của chúng tôi':
     'Bằng việc tiếp tục, bạn đồng ý với <u id="term">Chính sách</u> và <u id="privacy">Điều khoản</u> của chúng tôi',
   '_ không hợp lệ': '{name} không hợp lệ',
+  'Thành viên nhóm': 'Thành viên nhóm',
+  'Xác nhận': 'Xác nhận',
+  'Hủy': 'Hủy',
   'AI đang bật': 'AI đang bật',
   'Tạo':'Tạo',
   'Gọi lần cuối':'Gọi lần cuối',
   'Gọi điện thoại':'Gọi điện thoại',
   'Vui lòng chọn trang và khách hàng trước khi thực hiện':'Vui lòng chọn trang và khách hàng trước khi thực hiện',
-  'Thành viên nhóm':'Thành viên nhóm',
   'Chưa có thành viên nào':'Chưa có thành viên nào',
   'Chưa có cuộc gọi nào':'Chưa có cuộc gọi nào',
   'Không trả lời': 'Không trả lời',
@@ -178,6 +180,7 @@ const source: Language = {
               alert: 'Thông báo',
               setting: 'Thiết lập',
               logout: 'Đăng xuất',
+              keyboard_shortcut: 'Phím tắt',
             },
             noti: {
               title: 'Thông báo',

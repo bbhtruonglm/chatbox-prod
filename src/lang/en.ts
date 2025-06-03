@@ -238,6 +238,8 @@ const source: Language = {
   'Vui lòng chọn trang và khách hàng trước khi thực hiện':
     'Please select page and customer before proceeding.',
   'Thành viên nhóm': ' Group members',
+  'Xác nhận': 'Confirm',
+  'Hủy': 'Cancel',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
   'Không trả lời': 'No reply',
@@ -377,6 +379,7 @@ const source: Language = {
               alert: 'Alerts',
               setting: 'Settings',
               logout: 'Logout',
+              keyboard_shortcut: 'Keyboard shortcuts',
             },
             noti: {
               title: 'Notifications',

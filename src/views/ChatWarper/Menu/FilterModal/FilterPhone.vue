@@ -7,43 +7,39 @@
     height="auto"
     class_content="flex flex-col gap-1"
   >
-    <MenuTitle :title="$t('v1.view.main.dashboard.chat.filter.phone.title')" />
-    <FilterCheckbox
-      true_value="YES"
-      :false_value="undefined"
-      v-model="conversationStore.option_filter_page_data.have_phone"
-      :icon="PhoneIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.phone.include_phone')"
-    />
-    <FilterCheckbox
-      true_value="NO"
-      :false_value="undefined"
-      v-model="conversationStore.option_filter_page_data.have_phone"
-      :icon="MinusIcon"
-      :title="$t('v1.view.main.dashboard.chat.filter.phone.exclude_phone')"
-    />
+    <Phone />
   </Popover>
+  <Dropdown
+    ref="filter_dropdown_ref"
+    position="RIGHT"
+    :is_fit="false"
+    width="349px"
+    height="auto"
+    class_content="flex flex-col gap-1"
+  >
+    <Phone />
+  </Dropdown>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useConversationStore } from '@/stores'
+import { ref } from 'vue'
 
 import Popover from '@/components/Popover.vue'
-import FilterCheckbox from '@/views/ChatWarper/Menu/FilterModal/FilterCheckbox.vue'
-import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
-
-import PhoneIcon from '@/components/Icons/Phone.vue'
-import MinusIcon from '@/components/Icons/Minus.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import Phone from '@/views/ChatWarper/Menu/FilterModal/Content/Phone.vue'
 
 const conversationStore = useConversationStore()
 
 /**ref của popover */
 const filter_popover_ref = ref<InstanceType<typeof Popover>>()
 
+/**ref của dropdown */
+const filter_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
 /**xoá lọc này */
 function clearThisFilter() {
   delete conversationStore.option_filter_page_data.have_phone
 }
 
-defineExpose({ filter_popover_ref, clearThisFilter })
+defineExpose({ filter_popover_ref, filter_dropdown_ref, clearThisFilter })
 </script>
