@@ -36,15 +36,22 @@ export const confirm = (
   icon: SweetAlertIcon,
   title: string,
   text: string,
-  proceed: Cb
+  proceed: Cb,
+  confirm_text?: string,
+  cancel_text?: string
 ) =>
-  Swal.fire({ title, text, icon, showCancelButton: true }).then(
-    ({ isConfirmed }: { isConfirmed: boolean }) => {
-      if (!isConfirmed) return proceed(true)
+  Swal.fire({
+    title,
+    text,
+    icon,
+    showCancelButton: true,
+    ...(confirm_text && { confirmButtonText: confirm_text }),
+    ...(cancel_text && { cancelButtonText: cancel_text })
+  }).then(({ isConfirmed }: { isConfirmed: boolean }) => {
+    if (!isConfirmed) return proceed(true)
 
-      proceed()
-    }
-  )
+    proceed()
+  })
 /**thông báo dạng confirm */
 export const confirmSync = async (
   icon: SweetAlertIcon,

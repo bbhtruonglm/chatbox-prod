@@ -109,15 +109,14 @@
 import { preGoToChat } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import { useEmbedChat } from '@/views/composables/useEmbedChat'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import {
   KEY_GO_TO_CHAT_FUNCT,
   KEY_SORT_LIST_PAGE_FUNCT,
 } from '@/views/Dashboard/SelectPage/symbol'
 import {
-  KEY_GET_CHATBOT_USER_FUNCT,
-  KEY_GET_ORG_PAGES_FN,
-  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
+  KEY_GET_CHATBOT_USER_FUNCT
 } from '@/views/Dashboard/symbol'
 import { map } from 'lodash'
 import { computed, inject, onMounted, provide, watch } from 'vue'
@@ -168,6 +167,9 @@ const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
  * @deprecated sử dụng toggleModalConnectPage trong composable usePageManager
  */
 // const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
+
+// cắm bong bóng chat vào trang
+useEmbedChat()
 
 computed(() => selectPageStore.current_menu)
 

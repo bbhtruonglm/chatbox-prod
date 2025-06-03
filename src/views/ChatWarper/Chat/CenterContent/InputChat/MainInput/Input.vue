@@ -239,19 +239,22 @@ class Main {
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
 
-    // xử lý luồng bình luận riêng nếu có, và dừng tiến trình luôn
-    switch (messageStore.reply_comment?.type) {
-      // trả lời bình luận
-      case 'REPLY':
-        return this.replyComment(PAGE_ID, TEXT)
+    // nếu có nội dung tin nhắn
+    if (TEXT) {
+      // xử lý luồng bình luận riêng nếu có, và dừng tiến trình luôn
+      switch (messageStore.reply_comment?.type) {
+        // trả lời bình luận
+        case 'REPLY':
+          return this.replyComment(PAGE_ID, TEXT)
+  
+        // trả lời tin nhắn bí mật
+        case 'PRIVATE_REPLY':
+          return this.privateReply(PAGE_ID, CLIENT_ID, TEXT)
+      }
 
-      // trả lời tin nhắn bí mật
-      case 'PRIVATE_REPLY':
-        return this.privateReply(PAGE_ID, CLIENT_ID, TEXT)
+      // gửi text
+      this.sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
     }
-
-    // gửi text
-    if (TEXT) this.sendText(PAGE_ID, CLIENT_ID, TEXT, INPUT)
 
     // gửi file
     if (size(messageStore.upload_file_list)) this.sendFile(PAGE_ID, CLIENT_ID)
@@ -305,6 +308,11 @@ class Main {
       messageStore.reply_comment?.root_comment_id,
       text
     )
+
+    // nếu có lỗi thì throw ra
+    if(get(RES, 'error')) {
+      throw get(RES, 'error')
+    }
 
     /**bình luận được trả lời */
     const COMMENT =
