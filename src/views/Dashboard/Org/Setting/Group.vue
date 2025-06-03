@@ -39,7 +39,7 @@
           v-for="group of groups"
           @click="$main.selectGroup(group.group_id)"
           :class="{ active: selected_group?.group_id === group.group_id }"
-          class="group-item"
+          class="group-item truncate max-w-40"
         >
           {{ $t('Nhóm') }} {{ group?.group_name }}
         </button>

@@ -238,10 +238,26 @@ const source: Language = {
   'Vui lòng chọn trang và khách hàng trước khi thực hiện':
     'Please select page and customer before proceeding.',
   'Thành viên nhóm': ' Group members',
+  'Xác nhận': 'Confirm',
+  'Hủy': 'Cancel',
   'Chưa có thành viên nào': 'No members yet',
   'Chưa có cuộc gọi nào': 'No calls yet',
   'Đã quá 7 ngày kể từ tin nhắn cuối cùng. _': 'More than 7 days from the last message. {link}',
   'Tìm hiểu thêm': 'Learn more',
+  'Không trả lời': 'No reply',
+  'Trả lời ngay': 'Reply now',
+  'Trả lời sau _': 'Reply after {duration}',
+  'Lọc':'Filter',
+  'Nhãn':'Tag',
+  'Trừ nhãn':'Not tag',
+  'Thời gian':'Date',
+  'Nhân viên':'Staff',
+  'Lọc bài viết':'Filter posts',
+  'Không thể kết nối. Vui lòng thử lại': 'Unable to connect. Please try again',
+  'Chọn thời gian': 'Select time',
+  'Thêm thành viên': 'Add members',
+  'Số thành viên đạt giới hạn': 'Maximum number of members',
+  'Tên nhóm không hợp lệ': 'Invalid group name',
   name: 'English',
   v1: {
     common: {
@@ -365,6 +381,7 @@ const source: Language = {
               alert: 'Alerts',
               setting: 'Settings',
               logout: 'Logout',
+              keyboard_shortcut: 'Keyboard shortcuts',
             },
             noti: {
               title: 'Notifications',
@@ -563,6 +580,8 @@ const source: Language = {
                 title: 'Filter by interaction',
                 message: 'Interaction from messages',
                 comment: 'Interaction from comments',
+                friend: 'Interaction from friends',
+                group: 'Interaction from groups',
               },
               message: {
                 title: 'Filter by message status',

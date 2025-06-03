@@ -1,23 +1,54 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { saveIndexedDB, getIndexedDB } from '@/service/helper/store'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
-import { filter, map, size } from 'lodash'
+import { filter, map, set, size } from 'lodash'
 import type {
   AppInfo,
   AppInstalledInfo,
   ListPageIsInstall,
 } from '@/service/interface/app/widget'
 import type { StaffInfo } from '@/service/interface/app/staff'
-import type { OwnerShipInfo, PageOrgInfoMap } from '@/service/interface/app/billing'
+import type {
+  OwnerShipInfo,
+  PageOrgInfoMap,
+} from '@/service/interface/app/billing'
 import type { ILabel } from '@/service/interface/app/label'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { useOrgStore, usePageManagerStore } from './dashboard'
 
 export const usePageStore = defineStore('page_store', () => {
   /** -------------- STAGE -------------- */
-  /**lưu dữ liệu của các page được kích hoạt của user này */
-  const active_page_list = ref<PageList>({})
+
+  const orgStore = useOrgStore()
+  const pageManagerStore = usePageManagerStore()
+
+  const {filterPageByGroup} = usePageManager()
+
+  /** dữ liệu của tất cả các page người dùng cho thể truy cập */
+  const all_page_list = ref<PageList>({})
+
+  /**mapping trang và tổ chức */
+  const map_orgs = ref<PageOrgInfoMap>()
+
+  /** lưu dữ liệu của các page được kích hoạt của user này */
+  // const active_page_list = ref<PageList>({})
+  const active_page_list = computed({
+    get: () => {
+      return filterPageByGroup(
+        all_page_list.value,
+        pageManagerStore.pape_to_group_map,
+        map_orgs.value?.map_page_org || {},
+        orgStore.selected_org_group
+      )
+    },
+    set: val => {
+      all_page_list.value = val
+    },
+  })
+
   // đọc dữ liệu được lưu ở indexeddb
   getIndexedDB(
     'active_page_list',
@@ -27,8 +58,6 @@ export const usePageStore = defineStore('page_store', () => {
   // lưu dữ liệu xuống indexed khi có thay đổi
   saveIndexedDB(active_page_list, 'active_page_list')
 
-  /**mapping trang và tổ chức */
-  const map_orgs = ref<PageOrgInfoMap>()
   // đọc dữ liệu được lưu ở indexeddb
   getIndexedDB('map_orgs', undefined, (e, r) => (map_orgs.value = r))
   // lưu dữ liệu xuống indexed khi có thay đổi
@@ -142,6 +171,7 @@ export const usePageStore = defineStore('page_store', () => {
   }
 
   return {
+    all_page_list,
     active_page_list,
     selected_page_id_list,
     selected_page_list_info,

@@ -3,7 +3,7 @@
     :to="teleport_to"
     v-if="is_open"
   >
-    <div class="absolute top-0 left-0 h-screen w-screen z-20">
+    <div class="absolute top-0 left-0 h-screen w-screen z-20" :class="class_container">
       <div
         @click="toggleDropdown()"
         class="w-full h-full"
@@ -51,6 +51,8 @@ const $props = withDefaults(
     back?: number
     /**class thêm cho nội dung */
     class_content?: string
+    /** class container */
+    class_container?: string
   }>(),
   {
     teleport_to: 'body',
@@ -103,7 +105,7 @@ function teleportToTarget($event?: MouseEvent) {
       dropdown_ref.value.style.top = `${y - $props.back}px`
 
       // left của modal - kích thước tam giác
-      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px`
+      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px` 
       // top của target + một nửa độ cao của target - kích thước tam giác
       triangle_ref.value.style.top = `${y + height / 2 - TRIANGLE_SIZE}px`
 
@@ -161,7 +163,7 @@ function teleportToTarget($event?: MouseEvent) {
 /**ẩn hiện modal */
 function toggleDropdown($event?: MouseEvent) {
   // mở modal
-  if (!is_open.value) {
+  if (!is_open.value) {    
     // khi component được render thì lắng nghe sự kiện nhấn esc
     document.addEventListener('keyup', closeOnEsc)
 

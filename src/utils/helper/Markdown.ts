@@ -48,6 +48,12 @@ export class MarkedService implements IMarkdownService {
       },
       async: false
     });
+
+    // Thiết lập xuống dòng khi có \n
+    marked.setOptions({
+      breaks: true,
+    });
+
   }
 
   /**

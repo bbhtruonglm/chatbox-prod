@@ -83,7 +83,7 @@ class Main {
   private clearEventListener?: Fn
 
   /**ẩn hiển modal */
-  toggleModal() {
+  toggleModal() {    
     // nếu modal đang mở thì đóng
     if (is_open.value) {
       // đóng modal

@@ -4,6 +4,7 @@
       v-model="model"
       type="checkbox"
       class="sr-only peer"
+      :disabled="$props.disabled"
     />
     <div
       :class="class_toggle"
@@ -22,6 +23,7 @@ const $props = withDefaults(
   defineProps<{
     /**màu của checkbox */
     class_toggle?: string
+    disabled?: boolean
   }>(),
   {
     class_toggle: 'peer-checked:bg-orange-500',

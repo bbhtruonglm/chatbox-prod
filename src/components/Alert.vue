@@ -75,5 +75,5 @@ function toggleModal() {
 }
 
 // public chức năng ẩn hiện modal để có thể được gọi từ bên ngoài component
-defineExpose({ toggleModal })
+defineExpose({ is_open, toggleModal })
 </script>
