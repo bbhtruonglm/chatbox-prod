@@ -3,18 +3,20 @@
     id="select-page__all-org"
     class="overflow-y-auto flex flex-col gap-6 pb-16"
   >
-    <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
-      <Org
-        v-if="org?.org_id"
-        :key="org?.org_id"
-        :org_id="org?.org_id"
-        v-model:active_page_list="active_pages_of_orgs[org?.org_id]"
+    <SkeletonGroupPage v-if="selectPageStore.is_loading" />
+    <template v-else>
+      <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
+        <Org
+          v-if="org?.org_id"
+          :key="org?.org_id"
+          :org_id="org?.org_id"
+          v-model:active_page_list="active_pages_of_orgs[org?.org_id]"
+        />
+      </template>
+      <EmptyPage
+        v-if="$main.isVisibleEmptyPage() && !selectPageStore.is_loading"
       />
     </template>
-    <EmptyPage
-      v-if="$main.isVisibleEmptyPage() && !selectPageStore.is_loading"
-    />
-    <SkeletonGroupPage v-if="selectPageStore.is_loading" />
   </div>
 </template>
 <script setup lang="ts">
@@ -93,7 +95,7 @@ class Main {
 const $main = new Main()
 
 // lấy toàn bộ dữ liệu tổ chức và trang khi component được mount
-onMounted(() => getALlOrgAndPage?.())
+onMounted(() => getALlOrgAndPage())
 
 // cung cấp hàm xử lý khi chọn trang
 provide(KEY_ADVANCE_SELECT_AGE_FUNCT, $main.triggerSelectPage)

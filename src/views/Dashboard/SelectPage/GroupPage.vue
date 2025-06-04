@@ -46,14 +46,14 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { ref, watch, computed, onMounted, inject } from 'vue'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
-import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
+import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 
 import type { IPage, PageData } from '@/service/interface/app/page'
 import type { Component } from 'vue'
@@ -81,8 +81,8 @@ const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
+/** composable */
+const { sortListPage } = usePageManager()
 
 /**danh sách page sau khi được lọc */
 const active_page_list = ref<PageData[]>()
@@ -163,7 +163,7 @@ function getListPage() {
   const IS_RECENT = $props.filter === 'RECENT'
 
   /**các trang của nhóm này */
-  let pages = sortListPage?.()?.filter(
+  let pages = sortListPage()?.filter(
     page =>
       // nếu là các page gần đây thì tạm thời không lọc
       IS_RECENT ||

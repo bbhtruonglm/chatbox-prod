@@ -106,22 +106,13 @@
 </template>
 
 <script setup lang="ts">
-import { preGoToChat } from '@/service/function'
-import { nonAccentVn } from '@/service/helper/format'
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { useEmbedChat } from '@/views/composables/useEmbedChat'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import {
-  KEY_GO_TO_CHAT_FUNCT,
-  KEY_SORT_LIST_PAGE_FUNCT,
-} from '@/views/Dashboard/SelectPage/symbol'
-import {
-  KEY_GET_CHATBOT_USER_FUNCT
-} from '@/views/Dashboard/symbol'
-import { map } from 'lodash'
-import { computed, inject, onMounted, provide, watch } from 'vue'
+import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
+import { computed, inject, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 import HotAlert from '@/components/HotAlert.vue'
 import Loading from '@/components/Loading.vue'
@@ -143,12 +134,9 @@ import WebIcon from '@/components/Icons/Web.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { FlagIcon } from '@heroicons/vue/24/solid'
 
-import type { PageData } from '@/service/interface/app/page'
-
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
-const $router = useRouter()
 const $route = useRoute()
 const orgStore = useOrgStore()
 
@@ -229,93 +217,4 @@ function triggerConnectPlatform() {
   // mở modal connect zalo
   toggleModalConnectPage?.(CONNECT_PAGE)
 }
-/**chuyển đến trang chat */
-function goToChat() {
-  // chuyển đến trang chat
-  preGoToChat(() => $router.push('/chat'))
-}
-/**sắp xếp page gắn sao lên đầu */
-function sortListPage(): PageData[] {
-  // object -> array
-  let array_page_list = map(pageStore.active_page_list, page_data => {
-    // tạo data key cho vitual scroll
-    page_data.data_key = page_data.page?.fb_page_id
-
-    return page_data
-  })
-
-  /**
-   * lọc các page phù hợp điều kiện tìm kiếm
-   * - tìm kiếm theo tên hoặc id
-   */
-  array_page_list = array_page_list.filter(page_data => {
-    // chuyển dữ liệu tìm kiếm về tiếng việt không dấu
-    let formated_page_name = nonAccentVn(page_data.page?.name || '')
-    let page_id = page_data.page?.fb_page_id || ''
-    let formated_search_value = nonAccentVn(selectPageStore.search)
-
-    // tìm kiếm theo tên hoặc id
-    if (
-      formated_page_name.includes(formated_search_value) ||
-      page_id.includes(formated_search_value)
-    )
-      return true
-
-    return false
-  })
-
-  /**
-   * sắp xếp lại mảng theo quy tắc:
-   * - ưu tiên sắp xếp các page được chọn trước
-   * - sau đó sắp xếp theo các page được đánh dấu sao
-   */
-  let sort_priority_page_list = array_page_list.sort((page_a, page_b) => {
-    /**sắp xếp các page có gắn dấu sao */
-    const sortPriority = () => {
-      const priority_a = page_a.page?.is_priority
-      const priority_b = page_b.page?.is_priority
-
-      // nếu cả 2 page đều gắn dấu sao thì giữ nguyên vị trí
-      if (priority_a && priority_b) return 0
-
-      // nếu chỉ page 1 gắn dấu sao thì ưu tiên page 1
-      if (priority_a) return 1
-
-      // nếu chỉ page 2 gắn dấu sao thì ưu tiên page 2
-      if (priority_b) return -1
-
-      // nếu không có page nào gắn sao thì giữ nguyên vị trí
-      return 0
-    }
-
-    /**sắp xếp các page được chọn */
-    const sortPageIsSelected = () => {
-      const selected_a =
-        pageStore.selected_page_id_list?.[page_a.page?.fb_page_id || '']
-      const selected_b =
-        pageStore.selected_page_id_list?.[page_b.page?.fb_page_id || '']
-
-      // nếu cả 2 page được chọn thì tính dấu sao
-      if (selected_a && selected_b) return sortPriority()
-
-      // nếu chỉ page 1 được chọn thì chọn page 1
-      if (selected_a) return 1
-
-      // nếu chỉ page 2 được chọn thì chọn page 2
-      if (selected_b) return -1
-
-      // nếu không có page nào được chọn thì tính độ ưu tiên
-      return sortPriority()
-    }
-
-    return sortPageIsSelected()
-  })
-
-  // đảo chiều mảng, vì hàm sort chạy theo ASC
-  return sort_priority_page_list.reverse()
-}
-
-// xuất hàm cho component con sử dụng
-provide(KEY_GO_TO_CHAT_FUNCT, goToChat)
-provide(KEY_SORT_LIST_PAGE_FUNCT, sortListPage)
 </script>

@@ -23,7 +23,10 @@
           :page_name="page_info?.name"
           :selected_page="page_info"
         />
-        <div @click.stop="togglePagePriority()" v-tooltip="$t('Ưu tiên')">
+        <div
+          @click.stop="togglePagePriority()"
+          v-tooltip="$t('Ưu tiên')"
+        >
           <StarIcon
             class="w-4 h-4 text-yellow-500"
             v-if="page_info?.is_priority"
@@ -45,28 +48,27 @@
   <ExpiredAlert ref="expired_alert_modal_ref" />
 </template>
 <script setup lang="ts">
-import { usePageStore, useSelectPageStore } from '@/stores'
-// import { isActivePage } from '@/service/helper/pricing'
-import { set } from 'lodash'
 import { update_page } from '@/service/api/chatbox/n4-service'
-import { useI18n } from 'vue-i18n'
 import { flow } from '@/service/helper/async'
-import { computed, inject, ref } from 'vue'
-import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
+import { usePageStore, useSelectPageStore } from '@/stores'
+import { Device } from '@/utils/helper/Device'
+import { Page } from '@/utils/helper/Page'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { set } from 'lodash'
+import { container } from 'tsyringe'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 import PageItem from '@/components/Main/Dashboard/PageItem.vue'
-import HidePage from '@/views/Dashboard/SelectPage/PageItem/HidePage.vue'
 import ExpiredAlert from '@/views/Dashboard/SelectPage/PageItem/ExpiredAlert.vue'
+import HidePage from '@/views/Dashboard/SelectPage/PageItem/HidePage.vue'
 
 import StarIcon from '@/components/Icons/Star.vue'
 import StarOutlineIcon from '@/components/Icons/StarOutline.vue'
 
+import type { IPage, PageData } from '@/service/interface/app/page'
 import type { CbError } from '@/service/interface/function'
-import type { IPage, PageData, PageInfo } from '@/service/interface/app/page'
-import { Page } from '@/utils/helper/Page'
-import { Device } from '@/utils/helper/Device'
-import { container } from 'tsyringe'
-import { useRouter } from 'vue-router'
 
 const $emit = defineEmits(['select_page', 'sort_list_page'])
 
@@ -92,8 +94,8 @@ const selectPageStore = useSelectPageStore()
 const $device = container.resolve(Device)
 const $router = useRouter()
 
-/**hàm đi đến trang chat */
-const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
+/** composable */
+const { goToChat } = usePageManager()
 
 /**modal cảnh báo trang đã hết hạn */
 const expired_alert_modal_ref = ref<InstanceType<typeof ExpiredAlert>>()
@@ -149,7 +151,7 @@ function selectOnePage() {
   pageStore.selected_page_id_list = temp
 
   // chuyển đến trang chat
-  goToChat?.()
+  goToChat()
 }
 /**đánh dấu sao page ưu tiên lên đầu */
 function togglePagePriority() {

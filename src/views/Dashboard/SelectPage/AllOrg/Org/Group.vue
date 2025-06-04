@@ -49,7 +49,7 @@
       }"
       @click="dropdown_ref?.toggleDropdown"
     >
-      <p class="truncate">{{ selected_hidden_group?.group_name || $t('Thêm') }}</p>
+      <p class="truncate font-medium">{{ selected_hidden_group?.group_name || $t('Thêm') }}</p>
       <ChevronDownIcon class="size-3 flex-shrink-0" />
     </div>
   </section>
@@ -147,11 +147,18 @@ class Main {
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
+    
     /** toàn bộ nhóm từ server */
     const RES = await new BillingAppGroup().readGroup($props.org_id)
 
     // lưu lại vào reactive để hiển thị
     groups.value = RES
+
+    // tính toán lại độ rộng các nhóm
+    group_widths.value = measureAllGroupWidths()
+
+    // cập nhật lại các nhóm hiển thị
+    updateGroups()
 
     // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
     RES?.forEach(group => {
@@ -180,11 +187,7 @@ const $main = new Main()
 // lấy danh sách nhóm khi thành phần được khởi tạo
 onMounted(async () => {
   await $main.readGroup()
-  group_widths.value = measureAllGroupWidths()
-
   nextTick(() => {
-    updateGroups()
-
     // Lắng nghe resize
     window.addEventListener('resize', updateGroups)
   })
@@ -228,6 +231,9 @@ const access_groups = computed(() => {
     group?.group_staffs?.includes(user_id.value || '')
   )
 })
+
+/** hàm lấy lại danh sách các nhóm */
+
 
 /** hàm chọn nhóm */
 function selectGroup(

@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { read_link_org } from '@/service/api/chatbox/billing'
 import {
   useOrgStore,
   usePageManagerStore,
@@ -47,17 +48,14 @@ import {
   useSelectPageStore,
 } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { initRequireData } from '@/views/composable'
-import {
-  KEY_GET_ALL_ORG_AND_PAGE_FN,
-  KEY_GET_CHATBOT_USER_FUNCT,
-  KEY_GET_ORG_PAGES_FN,
-  KEY_RELOAD_PAGE_DATA,
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
-  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
-} from '@/views/Dashboard/symbol'
+import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
 import { keys, size } from 'lodash'
+import { storeToRefs } from 'pinia'
+import { container } from 'tsyringe'
 import { provide, toRef } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -68,14 +66,9 @@ import DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPi
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import { read_link_org } from '@/service/api/chatbox/billing'
-import type { ModalPosition } from '@/service/interface/vue'
-import { error } from '@/utils/decorator/Error'
-import { loading } from '@/utils/decorator/Loading'
 import { ChevronDownIcon } from '@heroicons/vue/24/solid'
-import { storeToRefs } from 'pinia'
-import { container } from 'tsyringe'
-import { usePageManager } from './Dashboard/composables/usePageManager'
+
+import type { ModalPosition } from '@/service/interface/vue'
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
@@ -89,17 +82,6 @@ const { ref_dropdown_pick_connect_platform, connect_page_ref } =
 
 // composable
 const { getMeChatbotUser } = initRequireData()
-const { filterPageByGroup } = usePageManager()
-
-// /**ref của modal kết nối nền tảng */
-// const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
-// /**ref của dropdown tiền chọn nền tảng để kết nối */
-// const ref_dropdown_pick_connect_platform =
-//   ref<InstanceType<typeof DropdownPickConnectPlatform>>()
-// /**vị trí của dropdown */
-// const position = ref<ModalPosition>()
-// /**lùi lại bao nhiêu */
-// const back = ref<number>()
 
 class Main {
   /**nạp lại dữ liệu trang */
@@ -139,7 +121,6 @@ class Main {
 
     // lưu lại danh sách trang
     pageStore.all_page_list = RES?.page_list || {}
-
   }
   /**có hiển thị các nút của trang chọn page không */
   isShowSelectPageButton() {
@@ -190,14 +171,6 @@ const $main = new Main()
 
 // cung cấp hàm này cho component con dùng
 provide(KEY_GET_CHATBOT_USER_FUNCT, getMeChatbotUser)
-provide(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT, $main.toggleModalConnectPage)
-provide(KEY_GET_ORG_PAGES_FN, $main.getOrgPages)
-provide(KEY_GET_ALL_ORG_AND_PAGE_FN, $main.getALlOrgAndPage)
-provide(
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
-  $main.toggleDropdown.bind($main)
-)
-provide(KEY_RELOAD_PAGE_DATA, $main.reloadPageData.bind($main))
 </script>
 <style scoped lang="scss">
 .dashboard-header {

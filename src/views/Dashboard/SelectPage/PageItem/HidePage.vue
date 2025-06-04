@@ -50,21 +50,18 @@
   />
 </template>
 <script setup lang="ts">
-import { usePageStore, useCommonStore } from '@/stores'
-import { update_page } from '@/service/api/chatbox/n4-service'
+import { useCommonStore, usePageStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { flow } from '@/service/helper/async'
-import { inject, ref } from 'vue'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
 import Alert from '@/components/Alert.vue'
 import ConfirmInactive from '@/views/Dashboard/Org/Setting/Page/ConfirmInactive.vue'
 
-import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
+import MinusOutlineIcon from '@/components/Icons/MinusOutline.vue'
 
-import type { CbError } from '@/service/interface/function'
-import type { IPage, PageInfo } from '@/service/interface/app/page'
+import type { IPage } from '@/service/interface/app/page'
 
 const $props = withDefaults(
   defineProps<{
@@ -82,8 +79,8 @@ const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
+/** composable */
+const { sortListPage } = usePageManager()
 
 /**modal xác nhận huỷ trang */
 const confirm_unactive_modal_ref = ref<InstanceType<typeof Alert>>()
@@ -99,7 +96,7 @@ async function doneInactivePage() {
   delete pageStore.selected_page_id_list[$props.page_id!]
 
   // sort lại danh sách trang
-  sortListPage?.()
+  sortListPage()
 }
 // /**huỷ kích hoạt page này | ẩn page */
 // function inactivePage() {
@@ -133,7 +130,7 @@ async function doneInactivePage() {
 //         delete pageStore.selected_page_id_list[$props.page_id!]
 
 //         // sort lại danh sách trang
-//         sortListPage?.()
+//         sortListPage()
 
 //         cb()
 //       },

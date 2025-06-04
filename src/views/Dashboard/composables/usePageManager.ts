@@ -1,6 +1,5 @@
 import { read_link_org } from '@/service/api/chatbox/billing'
-import type { PageList } from '@/service/interface/app/page'
-import type { ModalPosition } from '@/service/interface/vue'
+import { preGoToChat } from '@/service/function'
 import {
   useOrgStore,
   usePageManagerStore,
@@ -14,14 +13,21 @@ import { Toast } from '@/utils/helper/Alert/Toast'
 import { keys, map, pickBy, size } from 'lodash'
 import { container } from 'tsyringe'
 import { toRef } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+
+import type { PageData, PageList } from '@/service/interface/app/page'
+import type { ModalPosition } from '@/service/interface/vue'
+import { nonAccentVn } from '@/service/helper/format'
 
 export function usePageManager() {
   const pageStore = usePageStore()
   const selectPageStore = useSelectPageStore()
   const orgStore = useOrgStore()
   const pageManagerStore = usePageManagerStore()
+
+  const $router = useRouter()
   const $route = useRoute()
+
   const $toast = container.resolve(Toast)
 
   class Main {
@@ -60,7 +66,6 @@ export function usePageManager() {
         orgStore.selected_org_group[orgStore.selected_org_id || '']
       )
 
-      
       pageStore.all_page_list = RES?.page_list || {}
     }
     /**có hiển thị các nút của trang chọn page không */
@@ -111,13 +116,13 @@ export function usePageManager() {
       )
     }
 
-    /** 
-     * hàm lọc các trang theo nhóm 
+    /**
+     * hàm lọc các trang theo nhóm
      * @param active_page_list: danh sách trang được kích hoạt của 1 tổ chức
      * @param pape_to_group_map: mapping trang với nhóm
      * @param selected_org_group: nhóm đang được chọn
      * @param org_id: id của tổ chức
-    */
+     */
     filterPageByGroup(
       page_list: PageList,
       pape_to_group_map: Record<string, string>,
@@ -132,11 +137,98 @@ export function usePageManager() {
         const PAGE_GROUP_ID = pape_to_group_map[id]
 
         /** nếu tổ chức đó đang không lọc theo nhóm thì thôi */
-        if(!selected_org_group[PAGE_ORG_ID]) return true
+        if (!selected_org_group[PAGE_ORG_ID]) return true
 
         /** nếu có thì cần lọc đúng những page của nhóm đã chọn */
         return selected_org_group[PAGE_ORG_ID] === PAGE_GROUP_ID
       })
+    }
+
+    /**chuyển đến trang chat */
+    goToChat() {
+      // chuyển đến trang chat
+      preGoToChat(() => $router.push('/chat'))
+    }
+
+    /**sắp xếp page gắn sao lên đầu */
+    sortListPage(): PageData[] {
+      // object -> array
+      let array_page_list = map(pageStore.active_page_list, page_data => {
+        // tạo data key cho vitual scroll
+        page_data.data_key = page_data.page?.fb_page_id
+
+        return page_data
+      })
+
+      /**
+       * lọc các page phù hợp điều kiện tìm kiếm
+       * - tìm kiếm theo tên hoặc id
+       */
+      array_page_list = array_page_list.filter(page_data => {
+        // chuyển dữ liệu tìm kiếm về tiếng việt không dấu
+        let formated_page_name = nonAccentVn(page_data.page?.name || '')
+        let page_id = page_data.page?.fb_page_id || ''
+        let formated_search_value = nonAccentVn(selectPageStore.search)
+
+        // tìm kiếm theo tên hoặc id
+        if (
+          formated_page_name.includes(formated_search_value) ||
+          page_id.includes(formated_search_value)
+        )
+          return true
+
+        return false
+      })
+
+      /**
+       * sắp xếp lại mảng theo quy tắc:
+       * - ưu tiên sắp xếp các page được chọn trước
+       * - sau đó sắp xếp theo các page được đánh dấu sao
+       */
+      let sort_priority_page_list = array_page_list.sort((page_a, page_b) => {
+        /**sắp xếp các page có gắn dấu sao */
+        const sortPriority = () => {
+          const priority_a = page_a.page?.is_priority
+          const priority_b = page_b.page?.is_priority
+
+          // nếu cả 2 page đều gắn dấu sao thì giữ nguyên vị trí
+          if (priority_a && priority_b) return 0
+
+          // nếu chỉ page 1 gắn dấu sao thì ưu tiên page 1
+          if (priority_a) return 1
+
+          // nếu chỉ page 2 gắn dấu sao thì ưu tiên page 2
+          if (priority_b) return -1
+
+          // nếu không có page nào gắn sao thì giữ nguyên vị trí
+          return 0
+        }
+
+        /**sắp xếp các page được chọn */
+        const sortPageIsSelected = () => {
+          const selected_a =
+            pageStore.selected_page_id_list?.[page_a.page?.fb_page_id || '']
+          const selected_b =
+            pageStore.selected_page_id_list?.[page_b.page?.fb_page_id || '']
+
+          // nếu cả 2 page được chọn thì tính dấu sao
+          if (selected_a && selected_b) return sortPriority()
+
+          // nếu chỉ page 1 được chọn thì chọn page 1
+          if (selected_a) return 1
+
+          // nếu chỉ page 2 được chọn thì chọn page 2
+          if (selected_b) return -1
+
+          // nếu không có page nào được chọn thì tính độ ưu tiên
+          return sortPriority()
+        }
+
+        return sortPageIsSelected()
+      })
+
+      // đảo chiều mảng, vì hàm sort chạy theo ASC
+      return sort_priority_page_list.reverse()
     }
   }
   const $main = new Main()
@@ -147,6 +239,8 @@ export function usePageManager() {
     getALlOrgAndPage: $main.getALlOrgAndPage.bind($main),
     toggleDropdown: $main.toggleDropdown.bind($main),
     reloadPageData: $main.reloadPageData.bind($main),
-    filterPageByGroup: $main.filterPageByGroup
+    filterPageByGroup: $main.filterPageByGroup,
+    goToChat: $main.goToChat,
+    sortListPage: $main.sortListPage,
   }
 }
