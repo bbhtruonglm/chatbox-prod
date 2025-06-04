@@ -9,7 +9,10 @@
   >
     <button
       v-if="pageStore.zlp_oss?.length"
-      @click="modal_zalo_personal_ref?.toggleModal()"
+      @click="()=>{
+        message_data = message
+        modal_zalo_personal_ref?.toggleModal()
+      }"
       class="w-6 h-6 flex justify-center items-center rounded-full border border-blue-700 bg-blue-100"
     >
       <Zalo class="w-3 h-3"></Zalo>
@@ -25,15 +28,15 @@
       ref="modal_widget_ref"
       :selected_widget
     />
-    <ZaloPersonalModal
+    <!-- <ZaloPersonalModal
       :message
       ref="modal_zalo_personal_ref"
-    />
+    /> -->
   </div>
 </template>
 <script setup lang="ts">
 import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Widget.vue'
-import ZaloPersonalModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue'
+// import ZaloPersonalModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue'
 import { computed, ref } from 'vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
@@ -61,7 +64,7 @@ const message_type = computed(() => $props.message?.message_type)
 /**ref của modal widget */
 const modal_widget_ref = ref<InstanceType<typeof Widget>>()
 /**ref của modal zlp */
-const modal_zalo_personal_ref = ref<InstanceType<typeof ZaloPersonalModal>>()
+// const modal_zalo_personal_ref = ref<InstanceType<typeof ZaloPersonalModal>>()
 /**dữ liệu của widget được chọn */
 const selected_widget = ref<AppInstalledInfo>()
 
@@ -99,4 +102,8 @@ class Main {
   openZalo() {}
 }
 const $main = new Main()
+
+import { useCommonStore } from '@/stores';
+import { storeToRefs } from 'pinia';
+const { modal_zalo_personal_ref, message_data } = storeToRefs(useCommonStore());
 </script>

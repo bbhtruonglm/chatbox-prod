@@ -10,6 +10,10 @@
   <template>
     <!-- <AttachmentViewModal /> -->
     <StaffReadModal />
+    <ZaloPersonalModal
+      :message="message_data"
+      ref="modal_zalo_personal_ref"
+    />
   </template>
 </template>
 <script setup lang="ts">
@@ -19,4 +23,12 @@ import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
 // import AttachmentViewModal from '@/views/ChatWarper/Chat/CenterContent/AttachmentViewModal.vue'
 import StaffReadModal from '@/views/ChatWarper/Chat/CenterContent/StaffReadModal.vue'
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
+
+
+
+
+import ZaloPersonalModal from './CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue';
+import { useCommonStore } from '@/stores';
+import { storeToRefs } from 'pinia';
+const { modal_zalo_personal_ref, message_data } = storeToRefs(useCommonStore());
 </script>
