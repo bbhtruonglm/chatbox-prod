@@ -21,9 +21,8 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { flatten, omitBy, sortBy, values } from 'lodash'
-import { onMounted, provide, ref } from 'vue'
+import { provide, ref } from 'vue'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
 
 import Org from '@/views/Dashboard/SelectPage/AllOrg/Org.vue'
@@ -44,9 +43,6 @@ const orgStore = useOrgStore()
 
 /**danh sách page của từng tổ chức */
 const active_pages_of_orgs = ref<Record<string, PageData[]>>({})
-
-/** composable */
-const { getALlOrgAndPage } = usePageManager()
 
 class Main {
   /**có hiện ui không có page không */
@@ -93,9 +89,6 @@ class Main {
   }
 }
 const $main = new Main()
-
-// lấy toàn bộ dữ liệu tổ chức và trang khi component được mount
-onMounted(() => getALlOrgAndPage())
 
 // cung cấp hàm xử lý khi chọn trang
 provide(KEY_ADVANCE_SELECT_AGE_FUNCT, $main.triggerSelectPage)

@@ -1,5 +1,6 @@
 import { read_link_org } from '@/service/api/chatbox/billing'
 import { preGoToChat } from '@/service/function'
+import { nonAccentVn } from '@/service/helper/format'
 import {
   useOrgStore,
   usePageManagerStore,
@@ -17,7 +18,6 @@ import { useRoute, useRouter } from 'vue-router'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
 import type { ModalPosition } from '@/service/interface/vue'
-import { nonAccentVn } from '@/service/helper/format'
 
 export function usePageManager() {
   const pageStore = usePageStore()
@@ -34,9 +34,10 @@ export function usePageManager() {
     /**nạp lại dữ liệu trang */
     reloadPageData() {
       // nếu chọn tất cả tổ chức
-      if (orgStore.is_selected_all_org) this.getALlOrgAndPage()
-      // nếu chọn 1 tổ chức
-      else this.getOrgPages(orgStore.selected_org_id)
+      this.getALlOrgAndPage()
+      // if (orgStore.is_selected_all_org) 
+      // // nếu chọn 1 tổ chức
+      // else this.getOrgPages(orgStore.selected_org_id)
     }
     /**vào chế độ chat nhiều trang */
     toggleModelGroupPage() {
@@ -66,7 +67,7 @@ export function usePageManager() {
         orgStore.selected_org_group[orgStore.selected_org_id || '']
       )
 
-      pageStore.all_page_list = RES?.page_list || {}
+      pageStore.active_page_list = RES?.page_list || {}
     }
     /**có hiển thị các nút của trang chọn page không */
     isShowSelectPageButton() {
@@ -128,7 +129,7 @@ export function usePageManager() {
       pape_to_group_map: Record<string, string>,
       page_to_org_map: Record<string, string>,
       selected_org_group: Record<string, string>
-    ) {
+    ): PageList {
       return pickBy(page_list, (page, id) => {
         /** id của tổ chức của trang hiện tại */
         const PAGE_ORG_ID = page_to_org_map[id]

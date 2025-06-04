@@ -4,7 +4,7 @@
     class="bg-white rounded-b-lg flex flex-col gap-3"
   >
     <template v-for="(group, key) of grouped_page_list">
-      <div class="text-xs flex flex-col gap-0.5 group">
+      <div class="text-xs flex flex-col gap-0.5 group/platform">
         <div
           class="flex justify-between items-center rounded bg-slate-100 px-1 py-0.5"
         >
@@ -18,7 +18,7 @@
             </p>
           </div>
           <button
-            class="flex gap-1 invisible group-hover:visible hover:text-blue-700"
+            class="flex gap-1 invisible group-hover/platform:visible hover:text-blue-700"
             @click="$main.quickGroupAllPlatformPage(group)"
           >
             {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}

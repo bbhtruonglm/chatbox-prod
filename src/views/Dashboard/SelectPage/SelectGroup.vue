@@ -30,21 +30,11 @@
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
-import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { Cog6ToothIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref, watch } from 'vue'
 import Group from './AllOrg/Org/Group.vue'
 
 const orgStore = useOrgStore()
-
-/** composable */
-const { getOrgPages } = usePageManager()
-
-/**
- * lấy danh sách trang đã kích hoạt 
- * @deprecated sử dụng getOrgPages trong composable usePageManager
-*/
-// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()

@@ -41,7 +41,7 @@
         v-if="selectPageStore.is_loading"
         class="absolute left-1/2 -translate-x-1/2 top-14"
       >
-        <Loading class="mx-auto" />
+        <!-- <Loading class="mx-auto" /> -->
       </div>
       <template v-if="orgStore.is_selected_all_org">
         <AllOrg />
@@ -66,37 +66,50 @@
         >
           <SelectGroup v-if="orgStore.isAdminOrg()" />
           <SkeletonGroupPage v-if="selectPageStore.is_loading" />
-          <!-- <GroupPage
-            filter="RECENT"
-            :icon="ClockIcon"
-            :title="$t('v1.common.recent')"
-            tab="PAGE"
-          /> -->
-          <GroupPage
-            filter="FB_MESS"
-            :icon="FacebookIcon"
-            :title="$t('v1.common.fb_mess')"
-            tab="FB_MESS"
-          />
-          <GroupPage
-            filter="WEBSITE"
-            :icon="WebIcon"
-            :title="$t('v1.common.website')"
-            tab="WEBSITE"
-          />
-          <GroupPage
-            filter="FB_INSTAGRAM"
-            :icon="InstagramIcon"
-            :title="`Instagram`"
-            tab="FB_INSTAGRAM"
-          />
-
-          <GroupPage
-            filter="ZALO"
-            :icon="ZaloIcon"
-            :title="`Zalo`"
-            tab="ZALO"
-          />
+          <template v-else>
+            <!-- <GroupPage
+              filter="RECENT"
+              :icon="ClockIcon"
+              :title="$t('v1.common.recent')"
+              tab="PAGE"
+            /> -->
+            <GroupPage
+              filter="FB_MESS"
+              :icon="FacebookIcon"
+              :title="$t('v1.common.fb_mess')"
+              tab="FB_MESS"
+              :advanced-filter="(page) => 
+                pageStore.map_orgs?.map_page_org?.[page?.page?.fb_page_id!] === orgStore.selected_org_id
+              "
+            />
+            <GroupPage
+              filter="WEBSITE"
+              :icon="WebIcon"
+              :title="$t('v1.common.website')"
+              tab="WEBSITE"
+              :advanced-filter="(page) => 
+                pageStore.map_orgs?.map_page_org?.[page?.page?.fb_page_id!] === orgStore.selected_org_id
+              "
+            />
+            <GroupPage
+              filter="FB_INSTAGRAM"
+              :icon="InstagramIcon"
+              :title="`Instagram`"
+              tab="FB_INSTAGRAM"
+              :advanced-filter="(page) => 
+                pageStore.map_orgs?.map_page_org?.[page?.page?.fb_page_id!] === orgStore.selected_org_id
+              "
+            />
+            <GroupPage
+              filter="ZALO"
+              :icon="ZaloIcon"
+              :title="`Zalo`"
+              tab="ZALO"
+              :advanced-filter="(page) => 
+                pageStore.map_orgs?.map_page_org?.[page?.page?.fb_page_id!] === orgStore.selected_org_id
+              "
+            />
+          </template>
 
           <GroupPageAction />
         </div>
@@ -115,7 +128,6 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 import HotAlert from '@/components/HotAlert.vue'
-import Loading from '@/components/Loading.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
 import SelectOrg from '@/components/Main/Dashboard/SelectOrg.vue'
@@ -141,58 +153,15 @@ const $route = useRoute()
 const orgStore = useOrgStore()
 
 /** composable */
-const { toggleModalConnectPage, getOrgPages } = usePageManager()
+const { toggleModalConnectPage, getALlOrgAndPage } = usePageManager()
 
 /**hàm load lại thông tin chatbot user từ component cha */
 const getMeChatbotUser = inject(KEY_GET_CHATBOT_USER_FUNCT)
-/**
- * lấy danh sách trang đã kích hoạt
- * @deprecated sử dụng getOrgPages trong composable usePageManager
- * */
-// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-/**
- * mở modal connect page
- * @deprecated sử dụng toggleModalConnectPage trong composable usePageManager
- */
-// const toggleModalConnectPage = inject(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT)
 
 // cắm bong bóng chat vào trang
 useEmbedChat()
 
 computed(() => selectPageStore.current_menu)
-
-// xử lý khi thay đổi từ tất cả tổ chức xuống 1 tổ chức
-watch(
-  [() => orgStore.is_selected_all_org, () => orgStore.selected_org_id],
-  (
-    [new_is_selected_all_org, new_selected_org_id],
-    [old_is_selected_all_org, old_selected_org_id]
-  ) => {
-    // nếu chọn tất cả tổ chức thỉ thôi
-    if (new_is_selected_all_org) return
-
-    // nếu cờ chọn tất cả tổ chức không đổi thì thôi
-    if (new_is_selected_all_org === old_is_selected_all_org) return
-
-    // nếu chọn 1 tổ chức nhưng khác tổ chức cũ thì thôi (chạy ở watch khác)
-    if (new_selected_org_id !== old_selected_org_id) return
-
-    // load danh sách page
-    getOrgPages?.(orgStore.selected_org_id)
-  }
-)
-
-// nếu thay đổi tổ chức, thì chọn lại danh sách trang
-watch(
-  () => orgStore.selected_org_id,
-  () => {
-    // nếu đang chọn all thì thôi
-    if (orgStore.is_selected_all_org) return
-
-    // load danh sách page
-    getOrgPages?.(orgStore.selected_org_id)
-  }
-)
 
 onMounted(() => {
   /**
@@ -204,6 +173,9 @@ onMounted(() => {
 
   // kích hoạt tự động mở kết nối nền tảng nếu cần
   triggerConnectPlatform()
+
+  // lấy toàn bộ dữ liệu tổ chức và trang khi component được mount
+  getALlOrgAndPage()
 })
 
 /**kích hoạt tự động mở kết nối nền tảng nếu cần */
