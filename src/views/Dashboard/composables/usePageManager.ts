@@ -126,22 +126,22 @@ export function usePageManager() {
      */
     filterPageByGroup(
       page_list: PageList,
-      pape_to_group_map: Record<string, string>,
+      pape_to_group_map: Record<string, string[]>,
       page_to_org_map: Record<string, string>,
       selected_org_group: Record<string, string>
     ): PageList {
-      return pickBy(page_list, (page, id) => {
+      return  pickBy(page_list, (page, id) => {
         /** id của tổ chức của trang hiện tại */
-        const PAGE_ORG_ID = page_to_org_map[id]
+        const PAGE_ORG_ID = page_to_org_map[id] 
 
         /** id của nhóm của trang hiện tại */
         const PAGE_GROUP_ID = pape_to_group_map[id]
 
         /** nếu tổ chức đó đang không lọc theo nhóm thì thôi */
         if (!selected_org_group[PAGE_ORG_ID]) return true
-
+        
         /** nếu có thì cần lọc đúng những page của nhóm đã chọn */
-        return selected_org_group[PAGE_ORG_ID] === PAGE_GROUP_ID
+        return PAGE_GROUP_ID?.includes(selected_org_group[PAGE_ORG_ID])
       })
     }
 

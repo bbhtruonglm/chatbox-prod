@@ -287,7 +287,7 @@ export const usePageManagerStore = defineStore('page_manager_store', () => {
   /**lùi lại bao nhiêu */
   const back = ref<number>()
   /** map pape_id -> group_id */
-  const pape_to_group_map = ref<Record<string, string>>({})
+  const pape_to_group_map = ref<Record<string, string[]>>({})
 
   return {
     connect_page_ref,

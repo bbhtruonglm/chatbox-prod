@@ -167,7 +167,10 @@ class Main {
         if (!page_id || !group?.group_id || !group?.org_id) return
 
         // lưu ánh xạ từ id page tới id nhóm
-        pageManagerStore.pape_to_group_map[page_id] = group?.group_id
+        pageManagerStore.pape_to_group_map[page_id] = [
+          ...pageManagerStore.pape_to_group_map[page_id] || [],
+          group?.group_id
+        ]
       })
     })
   }
