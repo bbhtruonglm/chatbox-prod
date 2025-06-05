@@ -48,7 +48,6 @@
           >
             <div
               v-if="
-                conversationStore.select_conversation?.fb_staff_id &&
                 conversationStore.getAssignStaff()?.name?.trim()
               "
               class="truncate"
