@@ -24,7 +24,7 @@ import type { MessageInfo } from '@/service/interface/app/message'
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu tin nhắn */
-    message: MessageInfo
+    message?: MessageInfo
   }>(),
   {}
 )

@@ -38,13 +38,15 @@
 import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Widget.vue'
 // import ZaloPersonalModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue'
 import { computed, ref } from 'vue'
+import { storeToRefs } from 'pinia';
 
 import type { MessageInfo } from '@/service/interface/app/message'
 import { Parser } from '@/utils/helper/Parser'
+
 //* icon
 import Zalo from '@/components/Icons/Zalo.vue'
 import type { AppInstalledInfo } from '@/service/interface/app/widget'
-import { useConversationStore, useOrgStore, usePageStore } from '@/stores'
+import { useConversationStore, useMessageStore, useOrgStore, usePageStore } from '@/stores'
 import { PhoneIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
@@ -58,6 +60,8 @@ const $props = withDefaults(
 const pageStore = usePageStore()
 const conversationStore = useConversationStore()
 const orgStore = useOrgStore()
+
+const { modal_zalo_personal_ref, message_data } = storeToRefs(useMessageStore())
 
 /**tin nhắn này thuộc về dạng nào */
 const message_type = computed(() => $props.message?.message_type)
@@ -102,8 +106,4 @@ class Main {
   openZalo() {}
 }
 const $main = new Main()
-
-import { useCommonStore } from '@/stores';
-import { storeToRefs } from 'pinia';
-const { modal_zalo_personal_ref, message_data } = storeToRefs(useCommonStore());
 </script>

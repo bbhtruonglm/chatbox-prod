@@ -49,10 +49,6 @@ export const useCommonStore = defineStore('common_store', () => {
     /**dữ liệu đối tác */
     const partner = ref<IPartner>()
 
-
-    const message_data = ref()
-    const modal_zalo_personal_ref = ref()
-
     return {
         is_loading_full_screen,
         dashboard_toggle_nav,
@@ -67,8 +63,5 @@ export const useCommonStore = defineStore('common_store', () => {
         keyboard_shortcut,
 
         triggerRequirePricing,
-
-        message_data,
-        modal_zalo_personal_ref
     }
 })

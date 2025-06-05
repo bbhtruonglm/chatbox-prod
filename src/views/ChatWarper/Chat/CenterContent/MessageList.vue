@@ -23,7 +23,7 @@
     <div
       v-else
       @scroll="onScrollMessage"
-      id="list-message"
+      :id="id_list_message"
       class="pt-14 pb-5 pl-2 pr-3 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
@@ -192,7 +192,10 @@ import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnRea
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 import ChatIcon from '@/components/Icons/Chat.vue'
 
-import type { MessageInfo, TempSendMessage } from '@/service/interface/app/message'
+import type {
+  MessageInfo,
+  TempSendMessage,
+} from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 import type { DebouncedFunc } from 'lodash'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
@@ -202,7 +205,10 @@ interface CustomEvent extends Event {
   detail?: MessageInfo
 }
 
-const $props = defineProps<{ conversation?: ConversationInfo }>()
+const $props = defineProps<{ 
+  /** hội thoại được hiện lên nếu mở từ modal */
+  conversation?: ConversationInfo 
+}>()
 
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -227,20 +233,30 @@ const list_debounce_staff = ref<{
   [index: string]: DebouncedFunc<any>
 }>({})
 
+/** danh sách các tin nhắn nếu mở bằng modal */
+const list_message = ref<MessageInfo[]>([])
+
+/** danh sách các tin nhắn chờ nếu mở bằng modal */
+const send_message_list = ref<TempSendMessage[]>([])
+
+/** kiểm tra xem có mở bằng modal không */
+const is_modal = computed(() => {
+  return !!$props.conversation
+})
+
 /** hội thoại đang chọn */
 const select_conversation = computed(() => {
   return $props.conversation || conversationStore.select_conversation
 })
 
-const list_message = ref<MessageInfo[]>([])
-
-const send_message_list = ref<TempSendMessage[]>([])
+/** id của danh sách tin nhắn */
+const id_list_message = computed(() =>
+  is_modal.value ? 'conversation__message-list' : 'list-message'
+)
 
 /** danh sách tin nhắn */
 const show_list_message = computed(() => {
-  return $props.conversation
-    ? list_message.value
-    : messageStore.list_message
+  return is_modal.value ? list_message.value : messageStore.list_message
 })
 
 /**vị trí của tin nhắn cuối cùng nhân viên gửi */
@@ -253,9 +269,10 @@ const last_client_message_index = computed(() =>
 
 // lắng nghe sự kiện từ socket khi component được tạo ra
 onMounted(() => {
-  // * reset danh sách tin nhắn lúc mới vào
-  if(!$props.conversation) messageStore.list_message = []
-  else{
+  // * reset danh sách tin nhắn lúc mới vào nếu không mở bằng modal
+  if (!is_modal.value) messageStore.list_message = []
+  // nếu mở bằng modal thì lấy danh sách tin nhắn
+  else {
     // * reset danh sách tin nhắn khi đổi khách hàng
     list_message.value = []
 
@@ -293,16 +310,19 @@ onUnmounted(() => {
 watch(
   () => select_conversation.value,
   (new_val, old_val) => {
-    if(!$props.conversation) {
+    // nếu không phải mở bằng modal
+    if (!is_modal.value) {
       // * reset danh sách tin nhắn khi đổi khách hàng
       messageStore.list_message = []
-  
+
       // * reset danh sách tin nhắn chờ
       messageStore.send_message_list = []
-    } else {
+    } 
+    // nếu được mở bằng modal
+    else {
       // * reset danh sách tin nhắn khi đổi khách hàng
       list_message.value = []
-  
+
       // * reset danh sách tin nhắn chờ
       send_message_list.value = []
     }
@@ -382,7 +402,7 @@ function socketNewMessage({ detail }: CustomEvent) {
       message => message.message_id === detail?.message_mid
     )
 
-  scrollToBottomMessage()
+  scrollToBottomMessage(id_list_message.value)
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
 function socketUpdateMssage({ detail }: CustomEvent) {
@@ -487,8 +507,8 @@ function getListMessage(is_scroll?: boolean) {
             // đảo chiều mảng
             r.reverse()
 
-            if(!$props.conversation){
-              // thêm dữ liệu đã đảo chiều lên đầu
+            // thêm dữ liệu đã đảo chiều lên đầu
+            if (!is_modal.value) {
               messageStore.list_message.unshift(...r)
             } else {
               list_message.value.unshift(...r)
@@ -529,9 +549,9 @@ function getListMessage(is_scroll?: boolean) {
 
       // load lần đầu thì tự động cuộn xuống
       if (is_scroll) {
-        scrollToBottomMessage()
+        scrollToBottomMessage(id_list_message.value)
 
-        setTimeout(() => scrollToBottomMessage(), 500)
+        setTimeout(() => scrollToBottomMessage(id_list_message.value), 500)
       }
 
       if (e) {

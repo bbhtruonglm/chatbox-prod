@@ -24,7 +24,7 @@
       </select>
     </div>
     <MessageList
-      class="h-[70dvh]"
+      class="!h-[70dvh] overflow-auto"
       :conversation="FAKE_CONVERSATION"
     />
     <div
@@ -65,7 +65,7 @@ import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 const $props = withDefaults(
   defineProps<{
     /**dữ liệu tin nhắn */
-    message: MessageInfo
+    message?: MessageInfo
   }>(),
   {}
 )
@@ -109,7 +109,7 @@ class Main {
       return $toast.error($t('Trang zalo bạn chọn đang bị mất kết nối'))
 
     // nếu chưa chọn id trang thì dừng
-    if (!selected_page_id.value) return
+    if (!selected_page_id.value || !$props.message) return
 
     // gửi kết bạn
     const RES = await this.API.sendFriendRequest(

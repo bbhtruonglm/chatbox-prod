@@ -1,7 +1,10 @@
+import { remove } from 'lodash'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { remove } from 'lodash'
 
+import type ZaloPersonalModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue'
+
+import type { UploadFile } from '@/service/interface/app/album'
 import type {
   AttachmentCacheList,
   AttachmentInfo,
@@ -9,7 +12,6 @@ import type {
   MessageInfo,
   TempSendMessage,
 } from '@/service/interface/app/message'
-import type { UploadFile } from '@/service/interface/app/album'
 
 export const useMessageStore = defineStore('message_store', () => {
   /**danh sách tin nhắn hiện tại */
@@ -41,6 +43,12 @@ export const useMessageStore = defineStore('message_store', () => {
 
   /**dữ liệu cần thiết để trả lời bình luận */
   const reply_comment = ref<IReplyComment>()
+
+  /** dữ liệu tin nhắn đang được chọn */
+  const message_data = ref<MessageInfo>()
+
+  /** Địa chỉ trỏ tới hội thoại zalo */
+  const modal_zalo_personal_ref = ref<InstanceType<typeof ZaloPersonalModal>>()
 
   /**xoá dữ liệu trả lời bình luận */
   function clearReplyComment() {
@@ -75,6 +83,8 @@ export const useMessageStore = defineStore('message_store', () => {
     is_show_to_bottom,
     is_input_run_ai,
     reply_comment,
+    message_data,
+    modal_zalo_personal_ref,
 
     updateTempMessage,
     removeTempMessage,
