@@ -87,7 +87,7 @@ class Main {
     active_page_list.value = sortListPage()?.filter(this.isVisible.bind(this))
   }
   /**có hiển thị trang không */
-  isVisible(page?: PageData): boolean {
+  isVisible(page?: PageData): boolean {    
     // không có page thì không hiển thị
     if (!page?.page?.fb_page_id) return false
 
@@ -120,7 +120,7 @@ class Main {
       page?.page?.type !== current_selected_platform
     )
       return false
-
+      
     // cho phép hiển thị
     return true
   }
