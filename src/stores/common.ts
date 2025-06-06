@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import type { IPartner } from '@/utils/api/N4Service/Partner'
+import type AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 
 export const useCommonStore = defineStore('common_store', () => {
     /**toggle loading toàn trang */
@@ -48,6 +49,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const is_show_quick_answer = ref(false)
     /**dữ liệu đối tác */
     const partner = ref<IPartner>()
+    /** ref modal cảnh báo đạt giới hạn gói */
+    const ref_alert_reach_limit = ref<InstanceType<typeof AlertAccountLimitReached>>()
 
     return {
         is_loading_full_screen,
@@ -61,6 +64,7 @@ export const useCommonStore = defineStore('common_store', () => {
         is_show_quick_answer,
         partner,
         keyboard_shortcut,
+        ref_alert_reach_limit,
 
         triggerRequirePricing,
     }
