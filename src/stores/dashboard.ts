@@ -239,7 +239,7 @@ export const useOrgStore = defineStore('org_store', () => {
     // số nhân viên quá giới hạn
     const QUOTA_STAFF = ORG?.org_package?.org_quota_staff || 0
 
-    return CURRENT_PAGE + 2 > QUOTA_PAGE || CURRENT_STAFF > QUOTA_STAFF
+    return CURRENT_PAGE > QUOTA_PAGE || CURRENT_STAFF > QUOTA_STAFF
   }
 
   return {
