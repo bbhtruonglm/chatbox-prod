@@ -3,6 +3,7 @@ import {
   usePageStore,
   useMessageStore,
   useOrgStore,
+  useCommonStore,
 } from '@/stores'
 import { identity, isEqual, keys, omit, pickBy, size, sortBy } from 'lodash'
 import { flow, toggle_loading } from '@/service/helper/async'
@@ -35,6 +36,14 @@ import type { IPage } from '@/service/interface/app/page'
 export const preGoToChat = (proceed: Cb) => {
   const pageStore = usePageStore()
   const conversationStore = useConversationStore()
+  const orgStore = useOrgStore()
+  const commonStore = useCommonStore()
+
+  // nếu vượt quá giới hạn gói hiện tại thì hiện modal cảnh báo
+  if(orgStore.isOverLimit()) {
+    commonStore.ref_alert_reach_limit?.toggleModal()
+    return 
+  }
 
   flow(
     [
