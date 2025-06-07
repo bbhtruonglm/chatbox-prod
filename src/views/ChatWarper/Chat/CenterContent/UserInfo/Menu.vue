@@ -16,17 +16,17 @@
     />
     <template v-if="uid">
       <MenuItem
-        @click="openFbProfile"
-        :icon="FacebookIcon"
-        class_icon="size-4"
-        :title="$t('v1.view.main.dashboard.chat.action.open_facebook')"
+        @click="openPageInbox"
+        :icon="InboxIcon"
+        :title="$t('v1.view.main.dashboard.chat.action.open_inbox')"
       >
         <NewTabIcon class="w-4 h-4 text-gray-500" />
       </MenuItem>
       <MenuItem
-        @click="openPageInbox"
-        :icon="InboxIcon"
-        :title="$t('v1.view.main.dashboard.chat.action.open_inbox')"
+        @click="openFbProfile"
+        :icon="FacebookIcon"
+        class_icon="size-4"
+        :title="$t('v1.view.main.dashboard.chat.action.open_facebook')"
       >
         <NewTabIcon class="w-4 h-4 text-gray-500" />
       </MenuItem>

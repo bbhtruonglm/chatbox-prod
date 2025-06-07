@@ -6,7 +6,6 @@
     class_body="bg-white rounded-md flex flex-col px-2"
     class_footer="flex justify-end"
   >
-    <!-- <template #header> Phím tắt </template> -->
     <template #body>
       <header class="flex justify-between items-center py-2.5 px-2 border-b sticky top-0 bg-white">
         <h2 class="text-base font-semibold">Phím tắt</h2>
@@ -18,9 +17,9 @@
       </header>
       <section
         v-for="shortcut in SHORTCUT_LIST"
-        class="font-medium pt-2 pb-4 grid grid-cols-3 gap-x-12 gap-y-3"
+        class="font-medium pt-2 pb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-3"
       >
-        <h3 class="px-2 text-xs text-slate-500 col-span-3">
+        <h3 class="px-2 text-xs text-slate-500 sm:col-span-2 lg:col-span-3">
           {{ shortcut.type }}
         </h3>
         <div
@@ -42,7 +41,7 @@
                   : 'bg-slate-100 border-slate-200 text-slate-700'
               "
             >
-              {{ key }}
+              {{ KEYS?.[key]?.[PLATFORM] || key }}
             </p>
           </div>
         </div>
@@ -291,12 +290,33 @@ const SHORTCUT_LIST = [
   },
 ]
 
+/** các phím của mac và window */
+const KEYS: Record<string, Record<string, string>> = {
+  'Alt': {
+    mac: 'Option',
+    win: 'Alt',
+  },
+  'Ctrl': {
+    mac: 'Control',
+    win: 'Ctrl',
+  },
+}
+
+const PLATFORM = isMac() ? 'mac' : 'win'
+
 /** Ref của modal */
 const base_modal = ref<InstanceType<typeof BaseModal>>()
 
 /** bật modal */
 function toggleModal() {
   base_modal.value?.toggleModal()
+}
+
+/** kiểm tra thiết vị là mac hay window */
+function isMac() {
+  console.log(navigator.userAgent, /macintosh|macintel|macppc|mac68k|macppc64/i.test(navigator.userAgent));
+  
+  return /macintosh|macintel|macppc|mac68k|macppc64/i.test(navigator.userAgent)
 }
 
 defineExpose({ toggleModal })
