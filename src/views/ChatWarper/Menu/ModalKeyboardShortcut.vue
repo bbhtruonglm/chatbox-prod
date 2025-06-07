@@ -1,7 +1,7 @@
 <template>
   <BaseModal
     ref="base_modal"
-    class_modal="w-[960px] max-h-[90dvh] gap-2 text-sm font-medium bg-gradient-primary p-2"
+    class_modal="w-[960px] max-h-[90dvh] gap-2 text-sm font-medium p-2 bg-glass"
     class_close="rounded-lg bg-slate-100"
     class_body="bg-white rounded-md flex flex-col px-2"
     class_footer="flex justify-end"
