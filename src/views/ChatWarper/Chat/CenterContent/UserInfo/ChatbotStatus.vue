@@ -2,6 +2,9 @@
   <div
     v-tooltip.bottom="$t('Trợ lý AI')"
     class="flex flex-col items-end"
+    :class="{
+      'text-slate-400': !is_enable,
+    }"
   >
     <div class="flex items-center gap-1">
       <SparklesIcon class="size-4" />

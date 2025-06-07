@@ -35,7 +35,9 @@
                 "
                 class="hidden group-hover:block"
                 :class="{
-                  '!block': widget._id === selected_widget_id && widget_dropdown_ref?.is_open,
+                  '!block':
+                    widget._id === selected_widget_id &&
+                    widget_dropdown_ref?.is_open,
                 }"
               >
                 <EllipsisHorizontalIcon
@@ -49,12 +51,14 @@
                   v-tooltip.bottom="$t('Thiết lập')"
                 />
               </button>
-              <ChevronDownIcon
-                :class="{
-                  '-rotate-90': !widget.is_show,
-                }"
-                class="size-5 text-slate-500 duration-300 mr-1"
-              />
+              <button class="hover:bg-slate-100 mr-1 h-fit p-0.5 rounded">
+                <ChevronDownIcon
+                  :class="{
+                    '-rotate-90': !widget.is_show,
+                  }"
+                  class="size-4 text-slate-500 duration-300"
+                />
+              </button>
             </div>
           </button>
           <div
@@ -66,13 +70,13 @@
             "
             class="w-full border-t flex-grow"
           >
-              <iframe
-                :id="`widget-${widget._id}`"
-                class="w-full h-full"
-                :src="widget.url"
-                frameborder="0"
-                allow="microphone; camera; autoplay; speaker"
-              />
+            <iframe
+              :id="`widget-${widget._id}`"
+              class="w-full h-full"
+              :src="widget.url"
+              frameborder="0"
+              allow="microphone; camera; autoplay; speaker"
+            />
           </div>
         </div>
       </template>
@@ -121,7 +125,10 @@
           <ChevronDownIcon class="size-4" />
         </div>
       </div>
-      <div v-if="is_admin" class="border-t h-1"></div>
+      <div
+        v-if="is_admin"
+        class="border-t h-1"
+      ></div>
       <div
         v-if="is_admin"
         @click="openWidgetStore"
@@ -178,9 +185,8 @@ import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import WidgetSorting from '@/views/ChatWarper/Chat/RightBar/WidgetSorting.vue'
 import { useWidget } from '@/views/composables/useWidget'
 
-
+import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 import {
-  ChevronDownIcon,
   EllipsisHorizontalIcon,
   RectangleGroupIcon,
   RectangleStackIcon,
@@ -306,7 +312,7 @@ async function getListWidget() {
   temp_list_widget = sortBy(temp_list_widget, 'index_position')
 
   // chỉ hiển thị widget đầu tiên nếu không có widget luôn hiển thị nào
-  if (temp_list_widget?.[0] && !current_visible_widgets.value?.length) 
+  if (temp_list_widget?.[0] && !current_visible_widgets.value?.length)
     temp_list_widget[0].is_show = true
 
   // render lại danh sách
