@@ -1,14 +1,13 @@
 import { read_me_chatbot_user } from '@/service/api/chatbox/n4-service'
-import { flow } from '@/service/helper/async'
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { onMounted } from 'vue'
-import { signout } from '@/service/helper/oauth'
+import { getCurrentOrgInfo } from '@/service/function'
 import { toastError } from '@/service/helper/alert'
+import { flow } from '@/service/helper/async'
+import { getItem } from '@/service/helper/localStorage'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
+import { BillingAppOrganization } from '@/utils/api/Billing'
+import { onMounted, ref } from 'vue'
 
 import type { CbError } from '@/service/interface/function'
-import { BillingAppOrganization } from '@/utils/api/Billing'
-import { getCurrentOrgInfo } from '@/service/function'
-import { getItem } from '@/service/helper/localStorage'
 
 /**load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
@@ -66,4 +65,9 @@ export function initRequireData() {
   }
 
   return { getMeChatbotUser }
+}
+
+/** logic check giới hạn trang và nhân viên của tổ chức */
+export function useCheckLimit() {
+  return { }
 }

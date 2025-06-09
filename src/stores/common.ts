@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { saveLocal, getLocal } from '@/service/helper/store'
 import type { IPartner } from '@/utils/api/N4Service/Partner'
+import type AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 
 export const useCommonStore = defineStore('common_store', () => {
     /**toggle loading toàn trang */
@@ -20,6 +21,9 @@ export const useCommonStore = defineStore('common_store', () => {
      */
     const dashboard_toggle_nav = ref(getLocal('dashboard_toggle_nav', false))
     const chat_toggle_nav = ref(getLocal('chat_toggle_nav', false))
+
+    /** Trạng thái khi nhấn tổ hợp phím tắt */
+    const keyboard_shortcut = ref('')
 
     /** lưu toggle xuống local, để khi f5 trang không bị mất */
     saveLocal(dashboard_toggle_nav, 'dashboard_toggle_nav')
@@ -45,6 +49,8 @@ export const useCommonStore = defineStore('common_store', () => {
     const is_show_quick_answer = ref(false)
     /**dữ liệu đối tác */
     const partner = ref<IPartner>()
+    /** ref modal cảnh báo đạt giới hạn gói */
+    const ref_alert_reach_limit = ref<InstanceType<typeof AlertAccountLimitReached>>()
 
     return {
         is_loading_full_screen,
@@ -57,6 +63,8 @@ export const useCommonStore = defineStore('common_store', () => {
         is_typing,
         is_show_quick_answer,
         partner,
+        keyboard_shortcut,
+        ref_alert_reach_limit,
 
         triggerRequirePricing,
     }

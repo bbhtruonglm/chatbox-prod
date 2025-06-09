@@ -1,6 +1,6 @@
 <template>
   <CardItem
-    v-if="active_page_list?.length"
+    v-if="active_page_list?.length || orgStore.selected_org_group?.[org_id]"
     id="all-org__org-item"
     :class="{
       'opacity-50':
@@ -9,7 +9,7 @@
         selectPageStore.is_group_page_mode,
     }"
     class="group/org-item"
-    class_title="flex items-center gap-2 flex-grow min-w-0"
+    class_title="flex items-center gap-2 flex-grow min-w-0 w-full overflow-hidden"
   >
     <template #icon>
       <img
@@ -23,7 +23,7 @@
       />
     </template>
     <template #title>
-      <div class="flex-shrink-0 h-6">
+      <div class="flex-shrink-0">
         {{ pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_name }}
       </div>
       <Group :org_id />
@@ -46,23 +46,19 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { size } from 'lodash'
-import { inject, onMounted, ref, watch } from 'vue'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '../symbol'
+import { onMounted, ref, watch } from 'vue'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
-import OrgTitleAction from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitleAction.vue'
-import OrgPages from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgPages.vue'
 import Group from '@/views/Dashboard/SelectPage/AllOrg/Org/Group.vue'
+import OrgPages from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgPages.vue'
+import OrgTitleAction from '@/views/Dashboard/SelectPage/AllOrg/Org/OrgTitleAction.vue'
 
 import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
 
-import type { ISelectPlatform } from '../type'
 import type { PageData } from '@/service/interface/app/page'
-
-const orgStore = useOrgStore()
-const pageStore = usePageStore()
-const selectPageStore = useSelectPageStore()
+import type { ISelectPlatform } from '@/views/Dashboard/SelectPage/type'
 
 const $props = withDefaults(
   defineProps<{
@@ -72,8 +68,12 @@ const $props = withDefaults(
   {}
 )
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
+const orgStore = useOrgStore()
+const pageStore = usePageStore()
+const selectPageStore = useSelectPageStore()
+
+/** composable */
+const { sortListPage } = usePageManager()
 
 /**lọc theo nền tảng */
 const selected_platform = ref<ISelectPlatform>('ALL_PLATFORM')
@@ -84,10 +84,10 @@ class Main {
   /**sắp xếp page gắn sao lên đầu */
   getListPage() {
     // lọc ra các page thuộc về nhóm này
-    active_page_list.value = sortListPage?.()?.filter(this.isVisible.bind(this))
+    active_page_list.value = sortListPage()?.filter(this.isVisible.bind(this))
   }
   /**có hiển thị trang không */
-  isVisible(page?: PageData): boolean {
+  isVisible(page?: PageData): boolean {    
     // không có page thì không hiển thị
     if (!page?.page?.fb_page_id) return false
 
@@ -120,7 +120,7 @@ class Main {
       page?.page?.type !== current_selected_platform
     )
       return false
-
+      
     // cho phép hiển thị
     return true
   }

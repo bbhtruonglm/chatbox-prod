@@ -3,14 +3,15 @@
     :to="teleport_to"
     v-if="is_open"
   >
-    <div class="absolute top-0 left-0 h-screen w-screen z-20">
+    <div class="absolute top-0 left-0 h-screen w-screen z-20" :class="class_container">
       <div
         @click="toggleDropdown()"
         class="w-full h-full"
+        :class="class_background"
       ></div>
       <div
         ref="triangle_ref"
-        class="absolute z-10 rotate-45 w-4 h-4 shadow-[inset-y-lg] bg-white"
+        class="absolute z-30 rotate-45 w-4 h-4 bg-white"  
       />
       <div
         ref="dropdown_ref"
@@ -19,7 +20,7 @@
           height: _height,
         }"
         :class="class_content"
-        class="absolute shadow-lg rounded-md p-2 bg-white z-20"
+        class="absolute shadow-[0px_0px_20px_rgba(0,0,0,0.3)] rounded-md p-2 bg-white z-20"
       >
         <slot />
       </div>
@@ -51,6 +52,10 @@ const $props = withDefaults(
     back?: number
     /**class thêm cho nội dung */
     class_content?: string
+    /** class của background */
+    class_background?: string
+    /** class container */
+    class_container?: string
   }>(),
   {
     teleport_to: 'body',
@@ -103,15 +108,18 @@ function teleportToTarget($event?: MouseEvent) {
       dropdown_ref.value.style.top = `${y - $props.back}px`
 
       // left của modal - kích thước tam giác
-      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px`
+      triangle_ref.value.style.left = `${LEFT - TRIANGLE_SIZE}px` 
       // top của target + một nửa độ cao của target - kích thước tam giác
       triangle_ref.value.style.top = `${y + height / 2 - TRIANGLE_SIZE}px`
 
       // căn lại kích thước nếu cần
       if ($props.is_fit) _height.value = `${height}px`
     }
-    // bên dưới
-    if ($props.position === 'BOTTOM') {
+    // bên dưới hoặc vị trí bấm nằm phía trên
+    if (
+      $props.position === 'BOTTOM' ||
+      ($props.position === 'TOP' && y <= window.innerHeight / 2)
+    ) {
       /**khoảng cách top: top của target + độ cao target + độ cao tam giác + khoảng cách thêm */
       const TOP = y + height + TRIANGLE_SIZE + $props.distance
 
@@ -138,8 +146,11 @@ function teleportToTarget($event?: MouseEvent) {
       // căn lại kích thước nếu cần
       if ($props.is_fit) _height.value = `${height}px`
     }
-    // bên trên
-    if ($props.position === 'TOP') {
+    // bên trên hoặc vị trí bấm nằm ở phía dưới
+    if (
+      $props.position === 'TOP' ||
+      ($props.position === 'BOTTOM' && y > window.innerHeight / 2)
+    ) {
       // căn chỉnh vị trí
       dropdown_ref.value.style.left = `${x - $props.back}px`
       dropdown_ref.value.style.top = `${
@@ -161,7 +172,7 @@ function teleportToTarget($event?: MouseEvent) {
 /**ẩn hiện modal */
 function toggleDropdown($event?: MouseEvent) {
   // mở modal
-  if (!is_open.value) {
+  if (!is_open.value) {    
     // khi component được render thì lắng nghe sự kiện nhấn esc
     document.addEventListener('keyup', closeOnEsc)
 

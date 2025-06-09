@@ -1,6 +1,6 @@
 <template>
   <input
-    v-if="true_value && false_value"
+    v-if="true_value || false_value"
     @click.stop
     v-model="model"
     ref="checkbox_ref"
@@ -38,7 +38,7 @@ const model = defineModel<any>()
 const checkbox_ref = ref<HTMLInputElement>()
 
 /**click vào checkbox */
-function click() {
+function click() {  
   checkbox_ref.value?.click()
 }
 

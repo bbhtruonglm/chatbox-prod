@@ -71,6 +71,11 @@
       </MenuItem>
     </template>
     <MenuItem
+      @click="openKeyboardShortcutModal()"
+      :icon="QuestionMarkCircleIcon"
+      :title="$t('v1.view.main.dashboard.header.menu.keyboard_shortcut')"
+    />
+    <MenuItem
       v-if="chatbotUserStore.isBbhMember()"
       @click="$external_site.openSystemDashboard()"
       :icon="ServerSettingIcon"
@@ -84,35 +89,38 @@
   </Dropdown>
   <Alert ref="modal_alert_ref" />
   <UserInfo ref="modal_user_info_ref" />
+  <ModalKeyboardShortcut ref="modal_keyboard_shortcut" />
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { onMounted, ref, watch } from 'vue'
-import { signout } from '@/service/helper/oauth'
-import { useRouter } from 'vue-router'
 import { count_noti } from '@/service/api/chatbox/billing'
-import { container } from 'tsyringe'
+import { signout } from '@/service/helper/oauth'
+import { useChatbotUserStore, useOrgStore } from '@/stores'
+import { Device } from '@/utils/helper/Device'
 import { ExternalSite } from '@/utils/helper/ExternalSite'
+import { container } from 'tsyringe'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import Dropdown from '@/components/Dropdown.vue'
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
-import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import Badge from '@/components/Badge.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import Alert from '@/components/User/Alert.vue'
 import UserInfo from '@/components/User/UserInfo.vue'
+import ModalKeyboardShortcut from '@/views/ChatWarper/Menu/ModalKeyboardShortcut.vue'
 
-import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
-import UsersIcon from '@/components/Icons/Users.vue'
-import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
-import UserIcon from '@/components/Icons/User.vue'
 import BellIcon from '@/components/Icons/Bell.vue'
-import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
+import BriefCaseIcon from '@/components/Icons/BriefCase.vue'
+import CheckBadgeIcon from '@/components/Icons/CheckBadge.vue'
 import LogOutIcon from '@/components/Icons/LogOut.vue'
+import ServerSettingIcon from '@/components/Icons/ServerSetting.vue'
 import SquareIcon from '@/components/Icons/Square.vue'
+import UserIcon from '@/components/Icons/User.vue'
+import UsersIcon from '@/components/Icons/Users.vue'
+import { QuestionMarkCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { ModalPosition } from '@/service/interface/vue'
-import { Device } from '@/utils/helper/Device'
 
 const $props = withDefaults(
   defineProps<{
@@ -136,6 +144,8 @@ const user_menu_ref = ref<InstanceType<typeof Dropdown>>()
 const modal_alert_ref = ref<InstanceType<typeof Alert>>()
 /** Ref của modal thông tin người dùng */
 const modal_user_info_ref = ref<InstanceType<typeof UserInfo>>()
+/** Ref của modal keyboard shortcut */
+const modal_keyboard_shortcut = ref<InstanceType<typeof ModalKeyboardShortcut>>()
 
 // đếm số thông báo khi khởi động
 onMounted(countNotiCurrentOrg)
@@ -178,6 +188,16 @@ function openUserInfoModal() {
   // mở modal thông tin người dùng
   modal_user_info_ref.value?.toggleModal()
 }
+
+/** mở modal phím tắt */
+function openKeyboardShortcutModal() {
+  // tắt menu dropdown
+  user_menu_ref.value?.toggleDropdown()  
+
+  // mở modal phím tắt
+  modal_keyboard_shortcut.value?.toggleModal?.()
+}
+
 /**mở modal của noti */
 function openNoti() {
   // tắt dropdown

@@ -1,5 +1,8 @@
 <template>
-  <CardItem v-if="filterPlatform()">
+  <CardItem
+    v-if="filterPlatform()"
+    class="group/org-item"
+  >
     <template #icon>
       <component
         #icon
@@ -8,12 +11,9 @@
       />
     </template>
     <template #title>
-      {{ title }}
+      <p>{{ title }}</p>
     </template>
-    <template
-      v-if="!orgStore.is_selected_all_org"
-      #action
-    >
+    <template #action>
       <label
         v-if="selectPageStore.is_group_page_mode"
         class="flex items-center gap-1 px-6 cursor-pointer"
@@ -23,6 +23,14 @@
         </div>
         <Checkbox v-model="is_select_all_page" />
       </label>
+      <button
+        v-else
+        @click="quickGroupPage()"
+        class="text-sm font-medium items-center gap-1 hover:text-blue-700 hidden group-hover/org-item:flex"
+      >
+        {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
+        <ArrowRightCircleIcon class="size-5" />
+      </button>
     </template>
     <template #item>
       <div class="grid gap-6 grid-cols-1 md:grid-cols-4">
@@ -46,17 +54,20 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { ref, watch, computed, onMounted, inject } from 'vue'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { KEY_SORT_LIST_PAGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 import Checkbox from '@/components/Checkbox.vue'
-import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
+import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
+import PageItem from '@/views/Dashboard/SelectPage/PageItem.vue'
 
 import type { IPage, PageData } from '@/service/interface/app/page'
 import type { Component } from 'vue'
+import { ArrowRightCircleIcon } from '@heroicons/vue/24/solid'
+import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
+import { set } from 'lodash'
 
 const $emit = defineEmits(['select_page'])
 
@@ -81,8 +92,11 @@ const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
 
-/**hàm sort lại danh sách trang của component cha */
-const sortListPage = inject(KEY_SORT_LIST_PAGE_FUNCT)
+/**xử lý khi trang được chọn ở chế độ nhiều */
+const triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
+
+/** composable */
+const { sortListPage, goToChat } = usePageManager()
 
 /**danh sách page sau khi được lọc */
 const active_page_list = ref<PageData[]>()
@@ -124,19 +138,17 @@ const is_select_all_page = computed({
 // load danh sách trang khi component được tạo
 onMounted(() => getListPage())
 
-// lọc danh sách page khi được tìm kiếm
 watch(
-  () => selectPageStore.search,
-  () => getListPage()
-)
-// nạp lại danh sách page thì có thay đổi
-watch(
-  () => pageStore.active_page_list,
-  () => getListPage()
-)
-// nạp lại danh sách page thì có thay đổi ở trang toàn bộ tổ chức
-watch(
-  () => pageStore.map_orgs,
+  [
+    // lọc danh sách page khi được tìm kiếm
+    () => selectPageStore.search,
+    // nạp lại danh sách page thì có thay đổi
+    () => pageStore.active_page_list,
+    // nạp lại danh sách page khi tổ chức thay đổi
+    () => orgStore.selected_org_id,
+    // nạp lại danh sách page thì có thay đổi ở trang toàn bộ tổ chức
+    () => pageStore.map_orgs,
+  ],
   () => getListPage()
 )
 
@@ -157,13 +169,14 @@ function loopPageOfGroup(proceed: (page?: IPage) => void) {
     proceed(page?.page)
   })
 }
+
 /**sắp xếp page gắn sao lên đầu */
 function getListPage() {
   /**có phải là nhóm gần đây không */
   const IS_RECENT = $props.filter === 'RECENT'
 
   /**các trang của nhóm này */
-  let pages = sortListPage?.()?.filter(
+  let pages = sortListPage()?.filter(
     page =>
       // nếu là các page gần đây thì tạm thời không lọc
       IS_RECENT ||
@@ -181,6 +194,7 @@ function getListPage() {
   // lưu lại danh sách page
   active_page_list.value = pages
 }
+
 /**chỉ hiện các group page được chọn */
 function filterPlatform(): boolean {
   // nếu không có page nào thì không hiển thị
@@ -192,5 +206,32 @@ function filterPlatform(): boolean {
   // nếu không phải chọn đúng nhóm mới được hiển thị
   return selectPageStore.current_menu.includes($props.filter)
   // return selectPageStore.current_menu === $props.filter
+}
+
+/** vào chế độ gộp trang */
+function quickGroupPage(){
+  // reset lại danh sách các trang
+  pageStore.selected_page_id_list = {}
+
+  // lặp qua từng trang khả thi của tổ chức này
+  active_page_list.value?.forEach(page => {
+    /**id trang */
+    const PAGE_ID = page?.page?.fb_page_id
+
+    // nếu không có id trang thì bỏ qua
+    if (!PAGE_ID) return
+
+    // chọn trang này
+    set(pageStore.selected_page_id_list, PAGE_ID, true)
+  })
+
+  /**trang đầu tiên của tổ chức */
+  const FIRST_PAGE = active_page_list.value?.[0]
+
+  // gọi hàm xử lý khi trang được chọn ở chế độ nhiều
+  if (FIRST_PAGE) triggerSelectPage?.(FIRST_PAGE)
+
+  // vào chat luôn
+  goToChat()
 }
 </script>

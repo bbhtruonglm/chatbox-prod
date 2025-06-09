@@ -37,7 +37,7 @@
     <template v-else>
       <button
         @click="$main.quickGroupAllPage"
-        class="text-sm font-medium items-center gap-1 hover:text-blue-700 hidden group-hover/org-item:flex"
+        class="text-sm font-medium items-center gap-1 hover:text-blue-700 flex invisible group-hover/org-item:visible"
       >
         {{ $t('v1.view.main.dashboard.select_page.munti_chat_page') }}
         <ArrowUpCircleIcon class="w-5 h-5 rotate-90" />
@@ -47,14 +47,14 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { set, values } from 'lodash'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
+import { set, values } from 'lodash'
 import { inject } from 'vue'
-import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
 
-import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
-import CheckCircelIcon from '@/components/Icons/CheckCircel.vue'
 import ArrowUpCircleIcon from '@/components/Icons/ArrowUpCircle.vue'
+import CheckCircelIcon from '@/components/Icons/CheckCircel.vue'
+import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 
@@ -72,8 +72,8 @@ const pageStore = usePageStore()
 const orgStore = useOrgStore()
 const selectPageStore = useSelectPageStore()
 
-/**hàm đi đến trang chat */
-const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
+/** composable */
+const { goToChat } = usePageManager()
 
 class Main {
   /**vào chế độ gộp trang + chọn toàn bộ các trang */
@@ -82,13 +82,16 @@ class Main {
     this.selectAllOrgPage()
 
     // vào chat luôn
-    goToChat?.()
+    goToChat()
   }
   /**xử lý khi trang được chọn ở chế độ nhiều */
   triggerSelectPage = inject(KEY_ADVANCE_SELECT_AGE_FUNCT)
 
   /**chọn toàn bộ trang của tổ chức này */
   selectAllOrgPage() {
+    // clear danh sách các page đang được chọn
+    pageStore.selected_page_id_list = {}
+
     // lặp qua từng trang khả thi của tổ chức này
     $props.active_page_list?.map(page => {
       /**id trang */
