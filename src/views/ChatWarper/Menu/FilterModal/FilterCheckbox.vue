@@ -7,8 +7,8 @@
     <Checkbox
       ref="checkbox_ref"
       v-model="model"
-      :true-value="true_value"
-      :false-value="false_value"
+      :true_value="true_value"
+      :false_value="false_value"
     />
   </MenuItem>
 </template>

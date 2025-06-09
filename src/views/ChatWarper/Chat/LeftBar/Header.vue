@@ -27,12 +27,15 @@
               conversationStore.option_filter_page_data.conversation_type ===
                 'CHAT',
           }"
-          class="h-full"
+          class="h-full flex gap-1 items-center"
         >
-          {{ $t('Chat') }}
-          <span v-if="conversationStore.total_conversation" class="rounded-full bg-red-500 text-white text-xxs px-1">
-            {{ conversationStore.total_conversation }}
-          </span>
+          <p>{{ $t('Chat') }}</p>
+          <p
+            v-if="conversationStore.count_conversation?.chat"
+            class="rounded-full bg-red-500 text-white text-xxs px-1 leading-[14px] max-w-20 truncate"
+          >
+            {{ currency(conversationStore.count_conversation.chat) }}
+          </p>
         </button>
         <button
           @click="$main.activeTab('POST')"
@@ -41,9 +44,15 @@
               conversationStore.option_filter_page_data.conversation_type ===
               'POST',
           }"
-          class="h-ful"
+          class="h-full flex gap-1 items-center"
         >
-          {{ $t('Bài viết') }}
+          <p>{{ $t('Bài viết') }}</p>
+          <p
+            v-if="conversationStore.count_conversation?.post"
+            class="rounded-full bg-red-500 text-white text-xxs px-1 leading-[14px] max-w-20 truncate"
+          >
+            {{ currency(conversationStore.count_conversation.post) }}
+          </p>
         </button>
       </div>
       <button
@@ -81,7 +90,7 @@
   >
     <div class="flex gap-2 w-full min-w-0">
       <FunnelIcon class="w-3.5 h-3.5 flex-shrink-0" />
-    <p class="truncate">{{ filter }}</p>
+      <p class="truncate">{{ filter }}</p>
     </div>
     <button @click="$filter_service.clearAllFilter()">
       <XMarkIcon class="w-3.5 h-3.5 flex-shrink-0" />
@@ -90,6 +99,7 @@
 </template>
 <script setup lang="ts">
 import { isFilterActive } from '@/service/function'
+import { currency } from '@/service/helper/format'
 import {
   useCommonStore,
   useConversationStore,
@@ -250,7 +260,11 @@ const filter = computed(() => {
   /** nội dung của các bộ lọc */
   const RESULT: string[] = []
   // thêm nội dung lọc chung
-  addContent(RESULT, FILTER_GENERAL, $t('v1.view.main.dashboard.chat.filter.post.filter'))
+  addContent(
+    RESULT,
+    FILTER_GENERAL,
+    $t('v1.view.main.dashboard.chat.filter.post.filter')
+  )
   // thêm nội dung lọc nhãn
   addContent(RESULT, FILTER_TAG, $t('Nhãn'))
   // thêm nội dung lọc trừ nhãn
