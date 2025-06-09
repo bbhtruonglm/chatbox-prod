@@ -65,7 +65,7 @@ import {
 import { useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { toggle_loading } from '@/service/helper/async'
-import { confirm, toast, toastError } from '@/service/helper/alert'
+import { toast, toastError } from '@/service/helper/alert'
 import { waterfall } from 'async'
 import { map, remove } from 'lodash'
 import { getPageName, openPopup } from '@/service/function'
