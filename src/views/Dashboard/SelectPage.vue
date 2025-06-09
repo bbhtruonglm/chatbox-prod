@@ -12,6 +12,7 @@
           'PAGE_EXPIRED_SESSION',
         ]"
       />
+      <AlertAccountLimitReached ref="ref_alert_reach_limit" />
       <div
         class="gap-2 flex flex-col md:flex-row md:justify-between flex-shrink-0"
       >
@@ -119,14 +120,21 @@
 </template>
 
 <script setup lang="ts">
-import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import {
+  useCommonStore,
+  useOrgStore,
+  usePageStore,
+  useSelectPageStore,
+} from '@/stores'
+import { useCheckLimit } from '@/views/composable'
 import { useEmbedChat } from '@/views/composables/useEmbedChat'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
-import { computed, inject, onMounted, watch } from 'vue'
+import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
+import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 import HotAlert from '@/components/HotAlert.vue'
 import DashboardLayout from '@/components/Main/Dashboard/DashboardLayout.vue'
 import Search from '@/components/Main/Dashboard/Search.vue'
@@ -145,12 +153,14 @@ import InstagramIcon from '@/components/Icons/Instagram.vue'
 import WebIcon from '@/components/Icons/Web.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { FlagIcon } from '@heroicons/vue/24/solid'
+import { storeToRefs } from 'pinia'
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const $route = useRoute()
 const orgStore = useOrgStore()
+const { ref_alert_reach_limit } = storeToRefs(useCommonStore())
 
 /** composable */
 const { toggleModalConnectPage, getALlOrgAndPage } = usePageManager()

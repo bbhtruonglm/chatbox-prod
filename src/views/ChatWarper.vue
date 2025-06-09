@@ -18,65 +18,64 @@
       @confirm="goDashboard()"
       ref="ref_alert_reach_quota"
     />
+    <AlertAccountLimitReached ref="ref_alert_reach_limit" />
   </div>
 </template>
 <script setup lang="ts">
-import { initRequireData } from '@/views/composable'
-import { onMounted, onUnmounted, ref, toRef, watch } from 'vue'
 import HotAlert from '@/components/HotAlert.vue'
-import { useRouter } from 'vue-router'
-import {
-  useChatbotUserStore,
-  usePageStore,
-  useConversationStore,
-  useCommonStore,
-  useMessageStore,
-  useExtensionStore,
-  useOrgStore,
-} from '@/stores'
-import { flow, toggle_loading } from '@/service/helper/async'
-import { debounce, difference, intersection, keys, map, size } from 'lodash'
-import { useI18n } from 'vue-i18n'
-import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
-import {
-  ping as ext_ping,
-  listen as ext_listen,
-  getFbUserInfo,
-} from '@/service/helper/ext'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
+import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import {
   getCurrentOrgInfo,
   getPageInfo,
-  getPageWidget,
-  getSelectedPageInfo,
+  getPageWidget
 } from '@/service/function'
+import {
+  listen as ext_listen,
+  ping as ext_ping,
+  getFbUserInfo,
+} from '@/service/helper/ext'
 import { handleFileLocal } from '@/service/helper/file'
+import {
+  useChatbotUserStore,
+  useCommonStore,
+  useConversationStore,
+  useExtensionStore,
+  useMessageStore,
+  useOrgStore,
+  usePageStore,
+} from '@/stores'
+import { initRequireData } from '@/views/composable'
+import { debounce, difference, intersection, keys, map, size } from 'lodash'
+import { onMounted, onUnmounted, ref, toRef, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
-import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
+import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
+import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
 import Menu from '@/views/ChatWarper/Menu.vue'
-import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 
 import BellSound from '@/assets/sound/notification-sound.mp3'
 
-import type { CbError } from '@/service/interface/function'
-import type { StaffSocket } from '@/service/interface/app/staff'
-import type { MessageInfo } from '@/service/interface/app/message'
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-import type { SocketEvent } from '@/service/interface/app/common'
-import { N5AppV1AppApp } from '@/utils/api/N5App'
-import { loading } from '@/utils/decorator/Loading'
-import { error } from '@/utils/decorator/Error'
-import { container } from 'tsyringe'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { Delay } from '@/utils/helper/Delay'
-import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { User } from '@/utils/helper/User'
-import type { IAlert } from '@/utils/helper/Alert/type'
-import { LocalStorage } from '@/utils/helper/LocalStorage'
-import type { FacebookCommentPost } from '@/service/interface/app/post'
+import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 import { read_os } from '@/service/api/chatbox/billing'
+import type { SocketEvent } from '@/service/interface/app/common'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
+import type { MessageInfo } from '@/service/interface/app/message'
+import type { FacebookCommentPost } from '@/service/interface/app/post'
+import type { StaffSocket } from '@/service/interface/app/staff'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { N5AppV1AppApp } from '@/utils/api/N5App'
+import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import type { IAlert } from '@/utils/helper/Alert/type'
+import { Delay } from '@/utils/helper/Delay'
+import { User } from '@/utils/helper/User'
+import { storeToRefs } from 'pinia'
+import { container } from 'tsyringe'
 
 const $router = useRouter()
 const pageStore = usePageStore()
@@ -86,6 +85,9 @@ const commonStore = useCommonStore()
 const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
+
+const { ref_alert_reach_limit } = storeToRefs(commonStore)
+
 const { t: $t } = useI18n()
 const $delay = container.resolve(Delay)
 
@@ -107,6 +109,8 @@ watch(
 )
 
 onMounted(() => {
+  checkOverLimit()
+
   $main.getPageInfoToChat()
 
   $main.markOrgHaveZalo()
@@ -127,6 +131,13 @@ onUnmounted(() => {
   window.removeEventListener('focus', checkFocusChatTab)
   window.removeEventListener('blur', checkFocusChatTab)
 })
+
+/** hàm kiểm tra xem đã vượt giới hạn gói chưa */
+function checkOverLimit() {
+  if (orgStore.isOverLimit()) {
+    ref_alert_reach_limit.value?.toggleModal()
+  }
+}
 
 /**chuyển đến trang dashboard */
 function goDashboard() {

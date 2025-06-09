@@ -18,6 +18,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
 import type { ModalPosition } from '@/service/interface/vue'
+import { nextTick } from 'async'
 
 export function usePageManager() {
   const pageStore = usePageStore()
@@ -147,8 +148,10 @@ export function usePageManager() {
 
     /**chuyển đến trang chat */
     goToChat() {
-      // chuyển đến trang chat
-      preGoToChat(() => $router.push('/chat'))
+      nextTick(() => {
+        // chuyển đến trang chat
+        preGoToChat(() => $router.push('/chat'))
+      })
     }
 
     /**sắp xếp page gắn sao lên đầu */

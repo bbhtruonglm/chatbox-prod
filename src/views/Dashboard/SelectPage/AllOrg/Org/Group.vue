@@ -1,22 +1,7 @@
 <template>
-  <!-- <select
-    
-    v-model="selected_group_id"
-    class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate group-hover/org-item:visible"
-    :class="{
-      invisible: !orgStore?.selected_org_group?.[org_id],
-    }"
-  >
-    <option value="ALL">{{ $t('Tất cả Nhóm') }}</option>
-    <option
-      v-for="group of groups"
-      :value="group?.group_id"
-    >
-      {{ group?.group_name }}
-    </option>
-  </select> -->
+  <!-- v-show="org?.current_ms?.ms_role === 'ADMIN' && groups?.length" -->
   <section
-    v-show="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
+    v-show="access_groups?.length"
     class="flex text-xs w-full overflow-hidden"
     ref="ref_groups"
   >
@@ -26,13 +11,14 @@
         :class="{
           'bg-slate-100 !text-black': selected_group_id === 'ALL',
         }"
-        @click="selectGroup($event, {group_id: 'ALL'}, 'visible')"
+        @click="selectGroup($event, { group_id: 'ALL' }, 'visible')"
+        v-if="!is_single_group"
       >
         {{ $t('Tất cả Nhóm') }}
       </li>
       <li
         v-for="group of visible_groups"
-        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        class="max-w-48 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
         :class="{
           'bg-slate-100 !text-black': group?.group_id === selected_group_id,
         }"
@@ -49,11 +35,13 @@
       }"
       @click="dropdown_ref?.toggleDropdown"
     >
-      <p class="truncate font-medium">{{ selected_hidden_group?.group_name || $t('Thêm') }}</p>
+      <p class="truncate font-medium">
+        {{ selected_hidden_group?.group_name || $t('Thêm') }}
+      </p>
       <ChevronDownIcon class="size-3 flex-shrink-0" />
     </div>
   </section>
-  <div
+  <!-- <div
     v-show="!(org?.current_ms?.ms_role === 'ADMIN' && groups?.length)"
     class="flex items-center gap-1 flex-grow min-w-0 overflow-hidden overflow-x-auto"
   >
@@ -63,7 +51,7 @@
     >
       {{ group?.group_name }}
     </div>
-  </div>
+  </div> -->
   <Dropdown
     ref="dropdown_ref"
     width="250px"
@@ -84,11 +72,7 @@
   </Dropdown>
 </template>
 <script setup lang="ts">
-import {
-  useChatbotUserStore,
-  useOrgStore,
-  usePageManagerStore
-} from '@/stores'
+import { useChatbotUserStore, useOrgStore, usePageManagerStore } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { nextTick } from 'async'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -147,12 +131,16 @@ class Main {
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
-    
     /** toàn bộ nhóm từ server */
     const RES = await new BillingAppGroup().readGroup($props.org_id)
 
     // lưu lại vào reactive để hiển thị
     groups.value = RES
+
+    // nếu là group duy nhất và là tk nhân viên thì chọn group đó luôn
+    if (is_single_group.value) {
+      selected_group_id.value = groups.value[0]?.group_id || ''
+    }
 
     // tính toán lại độ rộng các nhóm
     group_widths.value = measureAllGroupWidths()
@@ -168,8 +156,8 @@ class Main {
 
         // lưu ánh xạ từ id page tới id nhóm
         pageManagerStore.pape_to_group_map[page_id] = [
-          ...pageManagerStore.pape_to_group_map[page_id] || [],
-          group?.group_id
+          ...(pageManagerStore.pape_to_group_map[page_id] || []),
+          group?.group_id,
         ]
       })
     })
@@ -230,20 +218,27 @@ const user_id = computed(() => chatbotUserStore.chatbot_user?.user_id)
 
 /**các nhóm người dùng hiện tại được phép truy cập */
 const access_groups = computed(() => {
+  // nếu là admin
+  if (org.value?.current_ms?.ms_role === 'ADMIN') {
+    return groups.value
+  }
+
+  // nếu không phải admin
   return groups.value?.filter(group =>
     group?.group_staffs?.includes(user_id.value || '')
   )
 })
 
-/** hàm lấy lại danh sách các nhóm */
-
+/** có 1 nhóm duy nhất với chế độ là nhân viên */
+const is_single_group = computed(() => {
+  return (
+    access_groups.value?.length === 1 &&
+    org.value?.current_ms?.ms_role !== 'ADMIN'
+  )
+})
 
 /** hàm chọn nhóm */
-function selectGroup(
-  e: MouseEvent,
-  group: IGroup,
-  type: 'hidden' | 'visible'
-) {
+function selectGroup(e: MouseEvent, group: IGroup, type: 'hidden' | 'visible') {
   selected_group_id.value = group?.group_id || ''
 
   // nếu là các nhóm trong dropdown thì tắt dropdown
@@ -330,14 +325,14 @@ function updateGroups() {
     }
 
     // Nếu tất cả tab vừa
-    if (visible_count === groups.value?.length) {
-      visible_groups.value = [...(groups.value || [])]
+    if (visible_count === access_groups.value?.length) {
+      visible_groups.value = [...(access_groups.value || [])]
       hidden_groups.value = []
       return
     }
 
-    visible_groups.value = groups.value?.slice(0, visible_count) || []
-    hidden_groups.value = groups.value?.slice(visible_count) || []
+    visible_groups.value = access_groups.value?.slice(0, visible_count) || []
+    hidden_groups.value = access_groups.value?.slice(visible_count) || []
   })
 }
 </script>
