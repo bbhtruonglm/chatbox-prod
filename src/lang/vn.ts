@@ -65,6 +65,7 @@ const source: Language = {
   'Thêm thành viên':'Thêm thành viên',
   'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
   'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
+  'Ưu tiên':'Ưu tiên',
   name: 'Tiếng Việt',
   v1: {
     common: {

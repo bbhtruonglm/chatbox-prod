@@ -1,6 +1,6 @@
 <template>
-  <select
-    v-if="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
+  <!-- <select
+    
     v-model="selected_group_id"
     class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate group-hover/org-item:visible"
     :class="{
@@ -14,29 +14,88 @@
     >
       {{ group?.group_name }}
     </option>
-  </select>
+  </select> -->
+  <section
+    v-show="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
+    class="flex text-xs w-full overflow-hidden"
+    ref="ref_groups"
+  >
+    <ul class="flex font-medium">
+      <li
+        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        :class="{
+          'bg-slate-100 !text-black': selected_group_id === 'ALL',
+        }"
+        @click="selectGroup($event, {group_id: 'ALL'}, 'visible')"
+      >
+        {{ $t('Tất cả Nhóm') }}
+      </li>
+      <li
+        v-for="group of visible_groups"
+        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        :class="{
+          'bg-slate-100 !text-black': group?.group_id === selected_group_id,
+        }"
+        @click="selectGroup($event, group, 'visible')"
+      >
+        {{ group?.group_name }}
+      </li>
+    </ul>
+    <div
+      v-if="hidden_groups?.length"
+      class="max-w-24 flex items-center gap-1 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+      :class="{
+        'bg-slate-100 !text-black': selected_hidden_group?.group_id,
+      }"
+      @click="dropdown_ref?.toggleDropdown"
+    >
+      <p class="truncate font-medium">{{ selected_hidden_group?.group_name || $t('Thêm') }}</p>
+      <ChevronDownIcon class="size-3 flex-shrink-0" />
+    </div>
+  </section>
   <div
-    v-else
-    class="group-hover/org-item:flex items-center gap-1 flex-grow min-w-0 overflow-hidden overflow-x-auto hidden"
+    v-show="!(org?.current_ms?.ms_role === 'ADMIN' && groups?.length)"
+    class="flex items-center gap-1 flex-grow min-w-0 overflow-hidden overflow-x-auto"
   >
     <div
       v-for="group of access_groups"
-      class="py-1 px-3 rounded bg-gray-100 text-xs font-normal"
+      class="py-1 px-3 rounded bg-slate-100 text-xs font-medium"
     >
       {{ group?.group_name }}
     </div>
   </div>
+  <Dropdown
+    ref="dropdown_ref"
+    width="250px"
+    height="auto"
+    :is_fit="false"
+    :back="150"
+    class_content="flex flex-col gap-1"
+  >
+    <ul class="flex flex-col gap-1 text-sm">
+      <li
+        v-for="group of hidden_groups"
+        class="truncate py-1.5 px-3 hover:bg-slate-100 cursor-pointer rounded"
+        @click="selectGroup($event, group, 'hidden')"
+      >
+        {{ group?.group_name }}
+      </li>
+    </ul>
+  </Dropdown>
 </template>
 <script setup lang="ts">
 import {
   useChatbotUserStore,
   useOrgStore,
-  usePageManagerStore,
-  usePageStore,
+  usePageManagerStore
 } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
-import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import { computed, onMounted, ref, watch } from 'vue'
+import { nextTick } from 'async'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+
+import Dropdown from '@/components/Dropdown.vue'
+
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 
 const $props = withDefaults(
   defineProps<{
@@ -49,24 +108,31 @@ const $props = withDefaults(
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
 const pageManagerStore = usePageManagerStore()
-const pageStore = usePageStore()
-
-/** composable */
-const { filterPageByGroup } = usePageManager()
-
-/**
- * lấy danh sách trang đã kích hoạt
- * @deprecated sử dụng getOrgPages trong composable usePageManager
- */
-// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-
-/**
- * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
- */
-// const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
+
+/** dropdown chọn nhóm */
+const dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
+/** loại nhóm đang được chọn */
+const selected_hidden_group = ref<IGroup>({})
+
+/** thẻ chứa các nhóm của tổ chức */
+const ref_groups = ref<HTMLUListElement>()
+
+/** danh sách các nhóm hiển thị */
+const visible_groups = ref<IGroup[]>([])
+
+/** danh sách các nhóm ẩn */
+const hidden_groups = ref<IGroup[]>([])
+
+/** mảng lưu độ rộng của từng nhóm */
+const group_widths = ref<number[]>([])
+
+/** độ rộng của dropdown */
+const DROP_DOWN_WIDTH = 200
+
 /**dữ liệu của tổ chức */
 const org = computed(() => orgStore.findOrg($props.org_id))
 
@@ -81,11 +147,18 @@ class Main {
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
+    
     /** toàn bộ nhóm từ server */
     const RES = await new BillingAppGroup().readGroup($props.org_id)
 
     // lưu lại vào reactive để hiển thị
     groups.value = RES
+
+    // tính toán lại độ rộng các nhóm
+    group_widths.value = measureAllGroupWidths()
+
+    // cập nhật lại các nhóm hiển thị
+    updateGroups()
 
     // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
     RES?.forEach(group => {
@@ -94,7 +167,10 @@ class Main {
         if (!page_id || !group?.group_id || !group?.org_id) return
 
         // lưu ánh xạ từ id page tới id nhóm
-        pageManagerStore.pape_to_group_map[page_id] = group?.group_id
+        pageManagerStore.pape_to_group_map[page_id] = [
+          ...pageManagerStore.pape_to_group_map[page_id] || [],
+          group?.group_id
+        ]
       })
     })
   }
@@ -112,7 +188,17 @@ class Main {
 const $main = new Main()
 
 // lấy danh sách nhóm khi thành phần được khởi tạo
-onMounted(() => $main.readGroup())
+onMounted(async () => {
+  await $main.readGroup()
+  nextTick(() => {
+    // Lắng nghe resize
+    window.addEventListener('resize', updateGroups)
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateGroups)
+})
 
 watch(
   () => $props.org_id,
@@ -148,6 +234,112 @@ const access_groups = computed(() => {
     group?.group_staffs?.includes(user_id.value || '')
   )
 })
+
+/** hàm lấy lại danh sách các nhóm */
+
+
+/** hàm chọn nhóm */
+function selectGroup(
+  e: MouseEvent,
+  group: IGroup,
+  type: 'hidden' | 'visible'
+) {
+  selected_group_id.value = group?.group_id || ''
+
+  // nếu là các nhóm trong dropdown thì tắt dropdown
+  if (type === 'hidden') {
+    selected_hidden_group.value = group
+    // tắt dropdown
+    dropdown_ref.value?.toggleDropdown(e)
+  } else {
+    // nội dung trong dropdown
+    selected_hidden_group.value = {}
+  }
+}
+
+/** hàm đo độ rộng của từng thẻ nhóm */
+function measureAllGroupWidths() {
+  /** danh sách ảo tạo ra để tính toán độ rộng của các thẻ nhóm */
+  const VISTUAL_CONTAINER = document.createElement('div')
+
+  // set các thuộc tính cho thẻ container ảo
+  VISTUAL_CONTAINER.style.position = 'fixed'
+  VISTUAL_CONTAINER.style.left = '-9999px'
+  VISTUAL_CONTAINER.style.top = '0'
+  VISTUAL_CONTAINER.style.visibility = 'hidden'
+  VISTUAL_CONTAINER.className = 'flex font-medium'
+
+  // lặp qua danh sách các nhóm để tạo các thẻ nhóm ảo
+  groups.value?.forEach(group => {
+    const ITEM = document.createElement('div')
+    ITEM.className = 'max-w-24 truncate py-1 px-3 rounded text-xs'
+    ITEM.innerText = group?.group_name || ''
+    VISTUAL_CONTAINER.appendChild(ITEM)
+  })
+
+  // thêm danh sách ảo vào body
+  document.body.appendChild(VISTUAL_CONTAINER)
+
+  /** danh sách các độ rộng của các thẻ nhóm */
+  const WIDTHS: number[] = []
+  Array.from(VISTUAL_CONTAINER.children).forEach(child => {
+    /** thẻ nhóm ảo */
+    const EL = child as HTMLElement
+    // thêm chiều rộng vào mảng
+    WIDTHS.push(EL.offsetWidth)
+  })
+
+  // xóa danh sách ảo tạo ra
+  document.body.removeChild(VISTUAL_CONTAINER)
+  return WIDTHS
+}
+
+/** hàm update ẩn hiện các nhóm */
+function updateGroups() {
+  // đảm bảo container đã render
+  nextTick(() => {
+    // nếu không có container thì thôi
+    if (!ref_groups.value) return
+
+    /** thẻ bọc danh sách nhóm */
+    const CONTAINER_WIDTH = ref_groups.value.offsetWidth
+
+    /** các độ rộng của các thẻ nhóm */
+    const WIDGETS = group_widths.value
+
+    /** tổng chiều rộng của các thẻ hiện */
+    let used = 0
+    /** số lượng thẻ hiện */
+    let visible_count = 0
+
+    // 1) Tính giả sử chưa cần dropdown
+    for (let i = 0; i < WIDGETS.length; i++) {
+      // nếu chưa vượt chiều rộng container thì thêm với
+      if (used + WIDGETS[i] <= CONTAINER_WIDTH) {
+        used += WIDGETS[i]
+        visible_count++
+      } else {
+        break
+      }
+    }
+
+    // 2) Nếu overflow, giảm dần cho vừa chỗ dropdown
+    while (visible_count > 0 && used + DROP_DOWN_WIDTH > CONTAINER_WIDTH) {
+      visible_count--
+      used -= WIDGETS[visible_count]
+    }
+
+    // Nếu tất cả tab vừa
+    if (visible_count === groups.value?.length) {
+      visible_groups.value = [...(groups.value || [])]
+      hidden_groups.value = []
+      return
+    }
+
+    visible_groups.value = groups.value?.slice(0, visible_count) || []
+    hidden_groups.value = groups.value?.slice(visible_count) || []
+  })
+}
 </script>
 <style lang="scss" scoped>
 .group__btn--base {

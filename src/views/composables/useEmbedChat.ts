@@ -1,8 +1,12 @@
 import { useChatbotUserStore } from '@/stores'
+import { Locale } from '@/utils/helper/Locale'
+import { container } from 'tsyringe'
 import { onMounted, onUnmounted } from 'vue'
 
 export function useEmbedChat() {
   const chatbotUserStore = useChatbotUserStore()
+
+  const $locale = container.resolve(Locale)
 
   class Main {
     /**id của sdk */
@@ -54,7 +58,9 @@ export function useEmbedChat() {
         // kích hoạt id trang chat
         page_id: '794843540615423',
         // thiết lập hiển thị - chưa có logic
-        config: {},
+        config: {
+          locale: $locale.get(),
+        },
         // cho phép gỡ lỗi
         is_debug: false,
       })
