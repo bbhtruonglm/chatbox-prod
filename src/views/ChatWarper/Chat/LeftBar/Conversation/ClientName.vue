@@ -1,11 +1,9 @@
 <template>
   <div class="flex items-center justify-between gap-3">
     <div class="flex items-center flex-grow gap-1 min-w-0">
-      <template v-if="source?.user_id || source?.fb_staff_id">
+      <template v-if="(source?.user_id || source?.fb_staff_id) && staff_info">
         <StaffAvatar
-          v-tooltip="
-            getStaffInfo(source?.fb_page_id, source?.fb_staff_id)?.name
-          "
+          v-tooltip="staff_info?.name"
           :id="source?.user_id || source?.fb_staff_id"
           class="rounded-full w-4 h-4 flex-shrink-0"
         />
@@ -32,7 +30,7 @@
 import { getStaffInfo } from '@/service/function'
 import { container } from 'tsyringe'
 import { DateHandle } from '@/utils/helper/DateHandle'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 
@@ -48,6 +46,14 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+/** thông tin của nhân sự được assign */
+const staff_info = computed(() => {
+  return getStaffInfo(
+    $props.source?.fb_page_id,
+    $props.source?.user_id || $props.source?.fb_staff_id
+  )
+})
 
 /**key của div để bắt buộc phần tử phải render lại khi cần thiết */
 const force_render_key = ref(0)

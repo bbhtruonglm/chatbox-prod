@@ -47,7 +47,9 @@
             class="text-xs text-slate-500 flex items-center gap-1 min-w-0"
           >
             <div
-              v-if="conversationStore.select_conversation?.fb_staff_id"
+              v-if="
+                conversationStore.getAssignStaff()?.name?.trim()
+              "
               class="truncate"
             >
               {{ conversationStore.getAssignStaff()?.name }}
@@ -68,9 +70,7 @@
       v-if="conversationStore.select_conversation?.conversation_type !== 'POST'"
       class="flex items-center flex-shrink-0 gap-3.5"
     >
-      <ChatbotStatus
-        v-if="conversationStore.getPage()?.is_active_ai_agent"
-      />
+      <ChatbotStatus v-if="conversationStore.getPage()?.is_active_ai_agent" />
       <!--  -->
       <button
         v-if="orgStore.selected_org_info?.org_package?.org_allow_message_action"
@@ -122,12 +122,12 @@
   <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
-import { useConversationStore, useOrgStore } from '@/stores'
+import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { Clipboard } from '@/utils/helper/Clipboard'
 import { container } from 'tsyringe'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 import Loading from '@/components/Loading.vue'
@@ -142,6 +142,7 @@ import Menu from '@/views/ChatWarper/Chat/CenterContent/UserInfo/Menu.vue'
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 import DotIcon from '@/components/Icons/Dot.vue'
 import MailOpenIcon from '@/components/Icons/MailOpen.vue'
+import { selectConversation } from '@/service/function'
 import { error } from '@/utils/decorator/Error'
 import { loading } from '@/utils/decorator/Loading'
 import { UsersIcon } from '@heroicons/vue/24/outline'
@@ -149,6 +150,7 @@ import { PhoneIcon } from '@heroicons/vue/24/solid'
 
 const $emit = defineEmits(['toggle_change_assign_staff'])
 
+const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const $clipboard = container.resolve(Clipboard)
 const $toast = container.resolve(Toast)
@@ -167,6 +169,58 @@ const change_staff_ref = ref<InstanceType<typeof ChangeStaff>>()
 const is_loading_unread_conversation = ref(false)
 /** trạng thái của tài khoản hiện tại có phải là admin hay ko? */
 const is_admin = computed(() => conversationStore.isCurrentStaffAdmin())
+
+// lắng nghe trạng thái của phím tắt
+watch(
+  () => commonStore.keyboard_shortcut,
+  value => {
+    /** xem thông tin người dùng */
+    const IS_VIEW_CLIENT_INFO = value === 'view_client_info'
+    /** toggle trạng thái đọc */
+    const IS_TOGGLE_UNREAD = value === 'toggle_unread'
+    /** toggle block người dùng */
+    const IS_TOGGLE_BLOCK_USER = value === 'toggle_block_user'
+
+    // nếu không phải các hành động thực hiện trong module thì thôi
+    if (!IS_VIEW_CLIENT_INFO && !IS_TOGGLE_UNREAD && !IS_TOGGLE_BLOCK_USER)
+      return
+
+    // nếu là xem thông tin
+    if (IS_VIEW_CLIENT_INFO) client_menu_ref.value?.openClientInfo()
+
+    // nếu là toggle trạng thái đọc
+    if (IS_TOGGLE_UNREAD) {
+      /** hội thoại được chọn */
+      const SELECTED = conversationStore.select_conversation
+
+      /** danh sách hội thoại */
+      const CONVERSATION_LIST = conversationStore.conversation_list
+
+      // nếu là đã đọc
+      if (!SELECTED?.is_force_unread) {
+        // gọi api đánh dấu hội thoại chưa đọc
+        $main.unreadConversation()
+      }
+      // nếu là chưa đọc
+      else {
+        /** id của hội thoại đang chọn */
+        const KEY = SELECTED?.data_key || ''
+
+        // chọn lại hội thoại này
+        selectConversation(CONVERSATION_LIST?.[KEY])
+      }
+    }
+
+    // nếu là toggle block người dùng
+    if (IS_TOGGLE_BLOCK_USER) {
+      // gọi api block người dùng
+      client_menu_ref.value?.toggleSpam()
+    }
+
+    // clear data
+    commonStore.keyboard_shortcut = ''
+  }
+)
 
 /**class chính */
 class Main {

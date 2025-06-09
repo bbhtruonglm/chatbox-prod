@@ -144,11 +144,6 @@ export function composableService(without_watch: boolean = false) {
         /** phút kết thúc làm việc */
         const END_MINUTE = DAY_OF_WEEK_CONFIG?.end_time?.minute
 
-        console.log(
-          this.isBeforeNow(START_HOUR, START_MINUTE),
-          this.isBeforeNow(END_HOUR, END_MINUTE)
-        )
-
         // nếu hiện trước giờ bắt đầu làm việc -> không trong giờ hành chính
         if (this.isBeforeNow(START_HOUR, START_MINUTE)) return false
 

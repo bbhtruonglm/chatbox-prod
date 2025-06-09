@@ -64,7 +64,7 @@ export function composableService() {
         })
 
       // nếu là dạng element (slider, file đã xử lý AI) -> tạo 1 mảng dữ liệu
-      if (SOURCE?.payload?.elements)
+      if (SOURCE?.payload?.elements && SOURCE?.payload?.template_type !== 'button') 
         result.push(
           ...SOURCE?.payload?.elements?.map((element, index) => {
             /**dữ liệu của 1 template */

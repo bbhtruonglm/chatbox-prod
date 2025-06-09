@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-1 rounded-md flex items-center gap-3">
-    <div class="flex-grow">
+    <!-- <div class="flex-grow">
       <button
         @click="$main.cancelGroup()"
         :class="$main.isHightlightGroup()"
@@ -12,11 +12,12 @@
         v-for="group of groups"
         @click="$main.selectGroup(group?.group_id)"
         :class="$main.isHightlightGroup(group?.group_id)"
-        class="group__btn--base"
+        class="group__btn--base w-24 truncate"
       >
         {{ group?.group_name }}
       </button>
-    </div>
+    </div> -->
+    <Group :org_id="orgStore?.selected_org_id || ''"/>
     <button class="px-5 flex-shrink-0">
       <Cog6ToothIcon
         v-tooltip="$t('Cài đặt nhóm')"
@@ -30,12 +31,10 @@
 import { useOrgStore } from '@/stores'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { Cog6ToothIcon } from '@heroicons/vue/24/solid'
-import { inject, onMounted, ref, watch } from 'vue'
-import { KEY_GET_ORG_PAGES_FN } from '@/views/Dashboard/symbol'
+import { onMounted, ref, watch } from 'vue'
+import Group from './AllOrg/Org/Group.vue'
 
 const orgStore = useOrgStore()
-/**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
@@ -48,9 +47,6 @@ class Main {
 
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[orgStore.selected_org_id]
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
@@ -66,9 +62,6 @@ class Main {
 
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[orgStore.selected_org_id] = group_id
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**lấy id nhóm đang được chọn */
   getSelectedGroupId(): string | undefined {

@@ -3,7 +3,7 @@
     v-tooltip.bottom="$t('Trợ lý AI')"
     class="flex flex-col items-end"
   >
-    <div class="flex items-center gap-1 after:!h-3">
+    <div class="flex items-center gap-1">
       <SparklesIcon class="size-4" />
       <Toggle
         v-model="is_enable"

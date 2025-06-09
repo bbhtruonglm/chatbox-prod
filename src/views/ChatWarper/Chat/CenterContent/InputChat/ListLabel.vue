@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { map, partition, sortBy } from 'lodash'
-import { useConversationStore, useOrgStore } from '@/stores'
+import { useCommonStore, useConversationStore, useOrgStore } from '@/stores'
 import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
 import { container } from 'tsyringe'
@@ -72,6 +72,7 @@ import {
   type ICounHiddenItem,
 } from '@/utils/helper/CountHiddenItem'
 
+const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const $toast = container.resolve(Toast)
 const orgStore = useOrgStore()
@@ -181,5 +182,18 @@ watch(
 watch(
   () => conversationStore.select_conversation?.label_id,
   () => $main.getLabels()
+)
+
+// lắng nghe trạng thái phím tắt
+watch(
+  () => commonStore.keyboard_shortcut,
+  (value) => {
+    // nếu không liên quan đến ẩn/hiện danh sách nhãn thì bỏ qua
+    if (value !== 'toggle_labels') return
+    $main.expandList()
+
+    // reset trạng thái phím tắt
+    commonStore.keyboard_shortcut = ''
+  }
 )
 </script>
