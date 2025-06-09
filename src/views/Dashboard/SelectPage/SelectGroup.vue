@@ -28,14 +28,22 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { Cog6ToothIcon } from '@heroicons/vue/24/solid'
 import { inject, onMounted, ref, watch } from 'vue'
 import { KEY_GET_ORG_PAGES_FN } from '@/views/Dashboard/symbol'
 
 const orgStore = useOrgStore()
-/**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
+
+/** composable */
+const { getOrgPages } = usePageManager()
+
+/**
+ * lấy danh sách trang đã kích hoạt 
+ * @deprecated sử dụng getOrgPages trong composable usePageManager
+*/
+// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
@@ -48,9 +56,6 @@ class Main {
 
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[orgStore.selected_org_id]
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
@@ -66,9 +71,6 @@ class Main {
 
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[orgStore.selected_org_id] = group_id
-
-    // lấy lại danh sách trang
-    getOrgPages?.(orgStore.selected_org_id)
   }
   /**lấy id nhóm đang được chọn */
   getSelectedGroupId(): string | undefined {

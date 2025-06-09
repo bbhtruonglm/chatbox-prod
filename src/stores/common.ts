@@ -21,6 +21,9 @@ export const useCommonStore = defineStore('common_store', () => {
     const dashboard_toggle_nav = ref(getLocal('dashboard_toggle_nav', false))
     const chat_toggle_nav = ref(getLocal('chat_toggle_nav', false))
 
+    /** Trạng thái khi nhấn tổ hợp phím tắt */
+    const keyboard_shortcut = ref('')
+
     /** lưu toggle xuống local, để khi f5 trang không bị mất */
     saveLocal(dashboard_toggle_nav, 'dashboard_toggle_nav')
     saveLocal(chat_toggle_nav, 'chat_toggle_nav')
@@ -57,6 +60,7 @@ export const useCommonStore = defineStore('common_store', () => {
         is_typing,
         is_show_quick_answer,
         partner,
+        keyboard_shortcut,
 
         triggerRequirePricing,
     }

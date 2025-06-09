@@ -89,6 +89,9 @@ class Main {
 
   /**chọn toàn bộ trang của tổ chức này */
   selectAllOrgPage() {
+
+    pageStore.selected_page_id_list = {}
+
     // lặp qua từng trang khả thi của tổ chức này
     $props.active_page_list?.map(page => {
       /**id trang */

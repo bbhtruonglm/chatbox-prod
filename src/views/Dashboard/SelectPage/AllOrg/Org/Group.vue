@@ -1,8 +1,11 @@
 <template>
   <select
-    v-if="org?.current_ms?.ms_role === 'ADMIN'"
+    v-if="org?.current_ms?.ms_role === 'ADMIN' && groups?.length"
     v-model="selected_group_id"
-    class="bg-slate-100 rounded px-2 py-1 font-medium text-xxs max-w-40 truncate"
+    class="bg-slate-100 rounded px-2 py-0.5 font-medium text-sm group-hover/org-item:visible"
+    :class="{
+      invisible: !orgStore?.selected_org_group?.[org_id],
+    }"
   >
     <option value="ALL">{{ $t('Tất cả Nhóm') }}</option>
     <option
@@ -25,13 +28,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { BillingAppGroup } from '@/utils/api/Billing'
-import { computed, inject, onMounted, provide, ref, watch } from 'vue'
 import {
-  KEY_GET_ALL_ORG_AND_PAGE_FN,
-  KEY_GET_ORG_PAGES_FN,
-} from '@/views/Dashboard/symbol'
+  useChatbotUserStore,
+  useOrgStore,
+  usePageManagerStore,
+  usePageStore,
+} from '@/stores'
+import { BillingAppGroup } from '@/utils/api/Billing'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const $props = withDefaults(
   defineProps<{
@@ -43,9 +48,22 @@ const $props = withDefaults(
 
 const orgStore = useOrgStore()
 const chatbotUserStore = useChatbotUserStore()
-/**lấy danh sách trang đã kích hoạt */
-const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
-const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
+const pageManagerStore = usePageManagerStore()
+const pageStore = usePageStore()
+
+/** composable */
+const { filterPageByGroup } = usePageManager()
+
+/**
+ * lấy danh sách trang đã kích hoạt
+ * @deprecated sử dụng getOrgPages trong composable usePageManager
+ */
+// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
+
+/**
+ * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
+ */
+// const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()
@@ -60,16 +78,25 @@ class Main {
 
     // xóa id nhóm được chọn của tổ chức này
     delete orgStore.selected_org_group[$props.org_id]
-
-    // lấy lại danh sách trang
-    getALlOrgAndPage?.({
-      org_group: orgStore.selected_org_group,
-    })
   }
   /**đọc danh sách nhóm */
   async readGroup(): Promise<void> {
-    // đọc toàn bộ nhóm từ server
-    groups.value = await new BillingAppGroup().readGroup($props.org_id)
+    /** toàn bộ nhóm từ server */
+    const RES = await new BillingAppGroup().readGroup($props.org_id)
+
+    // lưu lại vào reactive để hiển thị
+    groups.value = RES
+
+    // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
+    RES?.forEach(group => {
+      group?.group_pages?.forEach(page_id => {
+        // nếu không có id page hoặc id nhóm thì thôi
+        if (!page_id || !group?.group_id || !group?.org_id) return
+
+        // lưu ánh xạ từ id page tới id nhóm
+        pageManagerStore.pape_to_group_map[page_id] = group?.group_id
+      })
+    })
   }
   /**chọn nhóm */
   selectGroup(group_id?: string): void {
@@ -80,11 +107,6 @@ class Main {
 
     // chọn id nhóm cho tổ chức này
     orgStore.selected_org_group[$props.org_id] = group_id
-
-    // lấy lại danh sách trang
-    getALlOrgAndPage?.({
-      org_group: orgStore.selected_org_group,
-    })
   }
 }
 const $main = new Main()

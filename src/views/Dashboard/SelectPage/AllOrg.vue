@@ -19,14 +19,14 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { flatten, omitBy, sortBy, values } from 'lodash'
-import { inject, onMounted, provide, ref } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
-import { KEY_GET_ALL_ORG_AND_PAGE_FN } from '../symbol'
 
-import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 import Org from '@/views/Dashboard/SelectPage/AllOrg/Org.vue'
 import EmptyPage from '@/views/Dashboard/SelectPage/EmptyPage.vue'
+import SkeletonGroupPage from '@/views/Dashboard/SkeletonGroupPage.vue'
 
 import type { PageData } from '@/service/interface/app/page'
 
@@ -34,10 +34,17 @@ const selectPageStore = useSelectPageStore()
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
 
-const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
+// /**
+//  * hàm lấy dữ liệu tổ chức và trang 
+//  * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
+// */
+// const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
 
 /**danh sách page của từng tổ chức */
 const active_pages_of_orgs = ref<Record<string, PageData[]>>({})
+
+/** composable */
+const { getALlOrgAndPage } = usePageManager()
 
 class Main {
   /**có hiện ui không có page không */
