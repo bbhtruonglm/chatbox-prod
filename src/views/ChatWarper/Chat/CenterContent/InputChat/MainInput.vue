@@ -15,7 +15,7 @@
     <AiAnswer v-model:is_loading="is_loading_ai_answer" />
     <div class="flex items-end">
       <div class="flex gap-2 items-end flex-grow min-w-0">
-        <AiManager />
+        <!-- <AiManager /> -->
         <AttachmentMenu />
         <Input
           ref="input_chat_ref"
@@ -49,7 +49,7 @@
     v-else
     class="flex gap-2 text-sm py-2 px-4 rounded-full bg-slate-50 text-slate-400 items-center cursor-not-allowed"
   >
-    <SparklesIcon class="size-5" />
+    <!-- <SparklesIcon class="size-5" /> -->
     <ClipIcon class="size-5" />
     <p class="w-full text-slate-700 py-1.5 px-1">
       <i18n-t keypath="Đã quá 7 ngày kể từ tin nhắn cuối cùng. _">
