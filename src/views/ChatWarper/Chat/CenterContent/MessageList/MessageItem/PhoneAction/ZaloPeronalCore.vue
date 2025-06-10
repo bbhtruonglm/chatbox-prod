@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-100 rounded-xl p-2 flex flex-col relative w-full h-full gap-2"
+    class="bg-gray-100 rounded-xl p-2 flex flex-col relative w-full max-h-[80dvh] overflow-hidden gap-2"
   >
     <div
       class="bg-white py-2 px-3 rounded-lg gap-2 flex items-center text-sm text-slate-700"
@@ -24,8 +24,9 @@
       </select>
     </div>
     <MessageList
-      class="!h-[70dvh] overflow-auto"
-      :conversation="FAKE_CONVERSATION"
+      v-if="conversation"
+      class="h-full"
+      :conversation="conversation"
     />
     <div
       class="py-2 px-3 gap-2 rounded-md bg-blue-100 border border-blue-200 text-xs flex items-center"
@@ -61,6 +62,8 @@ import { Toast } from '@/utils/helper/Alert/Toast'
 import { useI18n } from 'vue-i18n'
 import type { IAlert } from '@/utils/helper/Alert/type'
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
+import { read_conversation } from '@/service/api/chatbox/n4-service'
 
 const $props = withDefaults(
   defineProps<{
@@ -86,9 +89,20 @@ const selected_page_info = computed(
     )?.page_info
 )
 
+/** dữ liệu hội thoại của khách(số đã nhắn trong tin) với trang zalo được chọn */
+const conversation = ref<ConversationInfo>()
+
 class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
     return super.error($t('Số điện thoại không chính xác'))
+  }
+}
+
+class NoneToast extends Toast implements IAlert {
+  public error(message: any): void {
+    // chỉ log ra chứ không hiển thị lên màn hình
+    console.log($t('Số điện thoại không chính xác'))
+    return
   }
 }
 
@@ -105,8 +119,7 @@ class Main {
   @error(new CustomToast())
   async sendFriendRequest() {
     // trang bị mất kết nối không
-    if (selected_page_info.value?.is_disconnected)
-      return $toast.error($t('Trang zalo bạn chọn đang bị mất kết nối'))
+    if (this.isDiconnect()) return
 
     // nếu chưa chọn id trang thì dừng
     if (!selected_page_id.value || !$props.message) return
@@ -126,6 +139,75 @@ class Main {
     // thông báo thành công
     $toast.success($t('Đã gửi lời mời kết bạn'))
   }
+
+  /** lấy id của khách */
+  async getClientId() {
+    // trang bị mất kết nối không
+    if (this.isDiconnect()) return
+
+    // nếu chưa chọn id trang thì dừng
+    if (!selected_page_id.value || !$props.message) return
+
+    // lấy id của khách với có số điện thoại trong tin nhắn và đã nhắn cho page
+    const RES = await this.API.getClientId(
+      selected_page_id.value,
+      $props.message?._id
+    )
+
+    return RES
+  }
+
+  /** kiểm tra xem trang zalo có bị mất kết nối không */
+  isDiconnect(): boolean {
+    // trang bị mất kết nối không
+    if (selected_page_info.value?.is_disconnected) {
+      $toast.error($t('Trang zalo bạn chọn đang bị mất kết nối'))
+      return true
+    }
+    return false
+  }
+
+  /** lấy dữ liệu hội thoại */
+  @loadingV2(commonStore, 'is_loading_full_screen')
+  @error(new NoneToast())
+  async getConversation() {
+    // trang bị mất kết nối không
+    if (this.isDiconnect()) return
+
+    // nếu chưa chọn id trang thì dừng
+    if (!selected_page_id.value || !$props.message) return
+
+    /** id của khách với số điện thoại trong tin nhắn */
+    const CLIENT_ID = await this.getClientId()
+
+    // nếu không có id nhân viên thì thôi
+    if (!CLIENT_ID) return
+
+    // lấy dữ liệu hội thoại
+    conversation.value = await new Promise((resolve, reject) => {
+      read_conversation(
+        {
+          page_id: [selected_page_id.value as string],
+          client_id: CLIENT_ID,
+          limit: 1,
+        },
+        (e, r) => {
+          /** id của hội thoại đầu tiên */
+          const FIRST_KEY_CONVERSATION = Object.keys(r?.conversation || {})?.[0]
+
+          /** lấy ra hội thoại đầu tiên */
+          const CONVERSATION = r?.conversation?.[FIRST_KEY_CONVERSATION]
+
+          // nếu có thì trả về không thì báo lỗi
+          if (CONVERSATION) {
+            resolve(CONVERSATION)
+          } else {
+            reject()
+          }
+        }
+      )
+    })
+  }
 }
 const $main = new Main()
 
@@ -134,40 +216,9 @@ onMounted(() => {
   selected_page_id.value = pageStore.zlp_oss?.[0]?.page_id
 
   // TODO nếu page hiện tại là zalo, thì mặc định chọn page hiện tại
-})
 
-const FAKE_CONVERSATION: any = {
-  fb_client_id: '8723389538644201700',
-  fb_page_id: '1789151085819210303',
-  __v: 0,
-  block_client: false,
-  conversation_type: 'CHAT',
-  createdAt: '2025-03-03T10:54:56.779Z',
-  is_have_fb_inbox: false,
-  is_have_fb_post: false,
-  is_re_assign: false,
-  is_spam_fb: false,
-  label_id: [],
-  last_message: 'image',
-  last_message_id: '68400fd1ae59f49b8f573723',
-  last_message_time: 1749028817144,
-  last_message_type: 'page',
-  list_fb_post_id: [],
-  platform_type: 'ZALO_PERSONAL',
-  staff_read: {
-    cfd89fe8645141c39bffbe16e1a21c98: 1741316503249,
-    '0454522c984e496786287b27b4bcd0af': 1749034778379,
-    '981064689416577': 1747881211033,
-    '91393716bc15451497e6c8b0643bf522': 1749037204464,
-    '44f8c06fe4b54b7dadfa38a41ad83582': 1748054535379,
-  },
-  unread_message_amount: 0,
-  updatedAt: '2025-06-04T11:40:04.465Z',
-  client_avatar:
-    'https://s120-ava-talk.zadn.vn/c/6/6/e/22/120/2175f76db375885f62d770cde39c91b5.jpg',
-  client_name: 'Minh Lươn',
-  is_allow_agent: false,
-  client_phone: '84333776915',
-  emotion: 'happy',
-}
+
+  // lấy dữ liệu hội thoại
+  $main.getConversation()
+})
 </script>
