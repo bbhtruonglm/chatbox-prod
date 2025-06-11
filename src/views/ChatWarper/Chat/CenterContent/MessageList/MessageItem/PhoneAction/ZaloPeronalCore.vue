@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-100 rounded-xl p-2 flex flex-col relative w-full h-[80dvh] overflow-hidden gap-2 text-sm"
+    class="bg-gray-100 rounded-xl p-2 flex flex-col relative w-full h-full overflow-hidden gap-2 text-sm"
   >
     <div
       class="bg-white py-2 px-3 rounded-lg gap-2 flex items-center text-slate-700"
@@ -14,7 +14,7 @@
       <select
         v-model="selected_page_id"
         class="focus:outline-none flex-grow"
-        @update:model-value="$main.getConversation()"
+        @update:model-value="$main.getClientId()"
       >
         <option
           v-for="zlp_os of zlp_oss"
@@ -67,51 +67,68 @@
         @click="is_show_send_friend_request = false"
       />
     </div>
+    <!-- <InputChat /> -->
     <MainInput />
   </div>
 </template>
 <script setup lang="ts">
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import { useCommonStore, usePageStore } from '@/stores'
-import { computed, onMounted, ref } from 'vue'
-
-// import { XMarkIcon } from '@heroicons/vue/24/solid'
-import { container } from 'tsyringe'
-import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
-import type { MessageInfo } from '@/service/interface/app/message'
-import { loadingV2 } from '@/utils/decorator/Loading'
-import { error } from '@/utils/decorator/Error'
-import { Toast } from '@/utils/helper/Alert/Toast'
-import { useI18n } from 'vue-i18n'
-import type { IAlert } from '@/utils/helper/Alert/type'
-import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
-import type { ConversationInfo } from '@/service/interface/app/conversation'
-import { read_conversation } from '@/service/api/chatbox/n4-service'
-import MainInput from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput.vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
-import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import { read_os } from '@/service/api/chatbox/billing'
+import { read_conversation } from '@/service/api/chatbox/n4-service'
+import { useCommonStore } from '@/stores'
+import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
+import { error } from '@/utils/decorator/Error'
+import { loadingV2 } from '@/utils/decorator/Loading'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { QueryString } from '@/utils/helper/QueryString'
+import { container } from 'tsyringe'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const $props = withDefaults(
-  defineProps<{
-    /** id page hiện tại */
-    actual_page_id?: string
-    /** client id của page hiện tại */
-    actual_client_id?: string
-    /** id tổ chức */
-    org_id?: string
-    /** id tin nhắn */
-    message_id?: string
-    /** id khách hàng */
-    client_id?: string
-  }>(),
-  {}
-)
+import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
+import MainInput from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput.vue'
+import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
+
+import { XMarkIcon } from '@heroicons/vue/24/outline'
+
+import type { OwnerShipInfo } from '@/service/interface/app/billing'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
+import type { IAlert } from '@/utils/helper/Alert/type'
+
+// const $props = withDefaults(
+//   defineProps<{
+//     /** id page hiện tại */
+//     actual_page_id?: string
+//     /** client id của page hiện tại */
+//     actual_client_id?: string
+//     /** id tổ chức */
+//     org_id?: string
+//     /** id tin nhắn */
+//     message_id?: string
+//     /** id khách hàng */
+//     client_id?: string
+//   }>(),
+//   {}
+// )
 
 // const pageStore = usePageStore()
 const commonStore = useCommonStore()
 const $toast = container.resolve(Toast)
 const { t: $t } = useI18n()
+
+/** đối tượng thao tác với query string */
+const $query_string = container.resolve(QueryString)
+
+/** dữ liệu query string */
+const query_string_data = ref({
+  org_id: '',
+  actual_client_id: '',
+  actual_page_id: '',
+  message_id: '',
+})
+
+/** id của khách hàng ở page zalo được chọn */
+const client_id = ref('')
 
 /** ẩn hiện nút gửi lời mời kết bạn */
 const is_show_send_friend_request = ref(true)
@@ -164,17 +181,17 @@ class Main {
     // nếu chưa chọn id trang thì dừng
     if (
       !selected_page_id.value ||
-      !$props.actual_page_id ||
-      !$props.actual_client_id
+      !query_string_data.value.actual_page_id ||
+      !query_string_data.value.actual_client_id
     )
       return
 
     // gửi kết bạn
     const RES = await this.API.sendFriendRequest(
       selected_page_id.value,
-      $props.actual_page_id,
-      $props.actual_client_id,
-      $props.message_id
+      query_string_data.value.actual_page_id,
+      query_string_data.value.actual_client_id,
+      query_string_data.value.message_id
     )
 
     // đã kết bạn
@@ -206,14 +223,14 @@ class Main {
     if (!selected_page_id.value) return
 
     // nếu không có id nhân viên thì thôi
-    if (!$props.client_id) return
+    if (!client_id.value) return
 
     // lấy dữ liệu hội thoại
     conversation.value = await new Promise((resolve, reject) => {
       read_conversation(
         {
           page_id: [selected_page_id.value as string],
-          client_id: $props.client_id,
+          client_id: client_id.value,
           limit: 1,
         },
         (e, r) => {
@@ -239,10 +256,10 @@ class Main {
   @error(new CustomToast())
   async getZaloPage() {
     // nếu không có id tổ chức thì thôi
-    if (!$props.org_id) return
+    if (!query_string_data.value.org_id) return
 
     /**lấy danh sách trang của tổ chức hiện tại */
-    const OSS = await read_os($props.org_id)
+    const OSS = await read_os(query_string_data.value.org_id)
 
     /**lọc ra các trang zalo cá nhân */
     zlp_oss.value = OSS.filter(os => os?.page_info?.type === 'ZALO_PERSONAL')
@@ -250,14 +267,75 @@ class Main {
     // mặc định chọn tài khoản zl đầu tiên
     selected_page_id.value = zlp_oss.value?.[0]?.page_id
   }
+
+  /** hàm lấy dữ liệu từ query string */
+  getDataFromQueryString() {
+    // lấy id tổ chức từ query string
+    this.getQueryStringByKey('org_id')
+    // lấy id khách hàng hiện tại từ query string
+    this.getQueryStringByKey('actual_client_id')
+    // lấy id trang hiện tại từ query string
+    this.getQueryStringByKey('actual_page_id')
+    // lấy id tin nhắn trong query string
+    this.getQueryStringByKey('message_id')
+  }
+
+  /** lấy dữ liệu từng field từ query string */
+  getQueryStringByKey(key: keyof typeof query_string_data.value) {
+    query_string_data.value[key] = $query_string.get(key) || ''
+  }
+
+  /** hàm gửi sự kiện để lấy id khách hàng từ iframe cha */
+  getClientId() {
+    // reset hội thoại
+    conversation.value = undefined
+
+    window.parent.postMessage(
+      {
+        type: 'get.client_id',
+        from: 'ZALO_PERSONAL_CORE',
+        data: {
+          page_id: selected_page_id.value,
+        }
+      },
+      '*'
+    )
+  }
+
+  /** hàm xử lý sự kiện khi nhận được từ iframe cha */
+  handleEvent(event: MessageEvent) {
+    console.log(event.data);
+    if(event.data?.from !== 'ZALO_PERSONAL_CONTAINER') return
+
+    if(event.data?.type === 'get.client_id') {
+      client_id.value = event.data?.data?.client_id
+    }
+
+    this.getConversation()
+  }
 }
 const $main = new Main()
 
 onMounted(async () => {
+  // hàm lấy dữ liệu từ query string
+  $main.getDataFromQueryString()
+
   // lấy danh sách các page zalo của tổ chức hiện tại
   await $main.getZaloPage()
 
+  // gửi iframe đến trang cha
+  $main.getClientId()
+
+  // lắng nghe sự kiện từ iframe cha
+  window.parent.addEventListener('message', $main.handleEvent.bind($main))
+
   // lấy dữ liệu hội thoại
-  $main.getConversation()
+  // $main.getConversation()
+
+})
+
+onUnmounted(() => {
+  // hủy lắng nghe sự kiện từ iframe cha
+  window.removeEventListener('message', $main.handleEvent.bind($main))
 })
 </script>

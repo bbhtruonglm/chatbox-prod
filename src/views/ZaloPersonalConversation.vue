@@ -1,44 +1,54 @@
 <template>
-  <ZaloPeronalCore :message />
+  <ZaloPeronalCore
+    :org_id="query_string_data.org_id"
+    :actual_client_id="query_string_data.actual_client_id"
+    :actual_page_id="query_string_data.actual_page_id"
+    :client_id="client_id"
+    :message_id="query_string_data.message_id"
+  />
 </template>
 
 <script setup lang="ts">
-import type { MessageInfo } from '@/service/interface/app/message'
-import ZaloPeronalCore from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPeronalCore.vue'
+import { QueryString } from '@/utils/helper/QueryString';
+import { container } from 'tsyringe';
+import { onMounted, ref } from 'vue';
 
-const message: MessageInfo = {
-  _id: '6847bc5acb593b5459124523',
-  fb_page_id: '414786618395170',
-  fb_client_id: '9459754374055328',
-  platform_type: 'FB_MESS',
-  message_type: 'client',
-  time: '2025-06-10T05:02:18.302Z',
-  reply_comments: [],
-  message_mid:
-    'm_nk2R93Xi9i0pwn9YLJf260fnkKji4xjABl3yiOTM_CZ9t8U3GO0tGWy2Jwod7KJnrlneuX-AmsN4dSUUD7ZgjA',
-  message_attachments: [
-    {
-      payload: {
-        elements: [
-          {
-            buttons: [
-              {
-                type: 'bbh_phone',
-              },
-              {
-                type: 'bbh_place_order',
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-  message_text: '***6915',
-  attachment_size: [],
-  createdAt: '2025-06-10T05:02:18.888Z',
-  client_phone: '***6915',
-  is_ai_slow_reply: true,
-  is_system_slow_reply: true,
-}
+import ZaloPeronalCore from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPeronalCore.vue';
+
+/** đối tượng thao tác với query string */
+const $query_string = container.resolve(QueryString)
+
+/** dữ liệu query string */
+const query_string_data = ref({
+  org_id: '',
+  actual_client_id: '',
+  actual_page_id: '',
+  message_id: '',
+})
+
+/** id của khách hàng ở page zalo được chọn */
+const client_id = ref('')
+
+onMounted(() => {
+  // lấy id tổ chức từ query string
+  query_string_data.value.org_id = $query_string.get('org_id') || ''
+  // lấy id khách hàng hiện tại từ query string
+  query_string_data.value.actual_client_id = $query_string.get('actual_client_id') || ''
+  // lấy id trang hiện tại từ query string
+  query_string_data.value.actual_page_id = $query_string.get('actual_page_id') || ''
+  // lấy id tin nhắn trong query string
+  query_string_data.value.message_id = $query_string.get('message_id') || ''
+
+  console.log(123);
+  
+  window.parent.postMessage({
+    type: 'zalo_get_client_id',
+    data: {
+      org_id: query_string_data.value.org_id,
+      actual_client_id: query_string_data.value.actual_client_id,
+      actual_page_id: query_string_data.value.actual_page_id,
+    }
+  }, '*')
+
+})
 </script>

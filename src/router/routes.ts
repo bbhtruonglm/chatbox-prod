@@ -43,7 +43,7 @@ import DownloadApp from '@/views/DownloadApp.vue'
 import TakeControl from '@/views/TakeControl.vue'
 import PostAnalyticIframe from '@/views/PostAnalyticIframe.vue'
 import InstagramRedirectUri from '@/views/InstagramRedirectUri.vue'
-import ZaloPersonalConversation from '@/views/ZaloPersonalConversation.vue'
+import ZaloPeronalCore from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPeronalCore.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },
@@ -121,7 +121,7 @@ export const routes = [
   { path: '/deauthorize-instagram', component: DeauthorizeInstagram },
   { path: '/post-analytic', component: PostAnalyticIframe },
   { path: '/instagram-redirect-uri', component: InstagramRedirectUri },
-  { path: '/zalo-personal-conversation', component: ZaloPersonalConversation },
+  { path: '/zalo-personal-conversation', component: ZaloPeronalCore },
   { path: '/404', component: PageNotFound },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: PageNotFound },
 ]

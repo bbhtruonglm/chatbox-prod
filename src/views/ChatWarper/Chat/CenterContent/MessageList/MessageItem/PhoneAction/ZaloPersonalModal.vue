@@ -2,35 +2,32 @@
   <Modal
     ref="modal_widget_ref"
     class_modal="w-[432px]"
-    class_body="py-2 flex gap-2"
+    class_body="py-2 flex gap-2 h-[80dvh]"
   >
     <template #header>
       {{ $t('Zalo cá nhân') }}
       <!-- {{ $t('Hội thoại Zalo cá nhân') }} -->
     </template>
     <template #body>
-      <ZaloPeronalCore
-        :org_id="orgStore.selected_org_id"
-        :actual_client_id="message?.fb_client_id"
-        :actual_page_id="message?.fb_page_id"
-        :client_id="client_id"
-        :message_id="message?._id"
-      />
+      <iframe
+        class="w-full"
+        :src="`https://localhost:8000/zalo-personal-conversation?org_id=${orgStore.selected_org_id}&actual_client_id=${message?.fb_client_id}&actual_page_id=${message?.fb_page_id}&message_id=${message?._id}`"
+        frameborder="0"
+      ></iframe>
     </template>
   </Modal>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageStore } from '@/stores';
+import { useOrgStore, usePageStore } from '@/stores'
 
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue'
 
-import Modal from '@/components/Modal.vue';
-import ZaloPeronalCore from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPeronalCore.vue';
+import Modal from '@/components/Modal.vue'
 
-import type { MessageInfo } from '@/service/interface/app/message';
-import { container } from 'tsyringe';
-import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal';
-import { nextTick } from 'async';
+import type { MessageInfo } from '@/service/interface/app/message'
+import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
+import { nextTick } from 'async'
+import { container } from 'tsyringe'
 
 const $props = withDefaults(
   defineProps<{
@@ -43,8 +40,6 @@ const $props = withDefaults(
 const orgStore = useOrgStore()
 const pageStore = usePageStore()
 
-const client_id = ref('')
-
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
 
@@ -54,43 +49,56 @@ class Main {
   ) {}
 
   /** lấy id của khách */
-  async getClientId() {
-    /** page đầu tiên không bị mất kết nối */
-    const FIRST_PAGE_CONNECTED = this.getFirstPageConnected()
-
-    console.log(FIRST_PAGE_CONNECTED, $props.message);
-    
+  async getClientId(page_id?:string) {
 
     // nếu không có trang nào thì thôi
-    if (!FIRST_PAGE_CONNECTED?.page_id || !$props.message) return
+    if (!page_id || !$props.message) return
 
     // lấy id của khách với có số điện thoại trong tin nhắn và đã nhắn cho page
     const RES = await this.API.getClientId(
-      FIRST_PAGE_CONNECTED?.page_id,
+      page_id,
       $props.message?._id
     )
 
-    client_id.value = RES
+    return RES
   }
 
-  /** lấy dữ liệu của page đầu tiên không bị mất kết nối */
-  getFirstPageConnected() {
-    return pageStore.zlp_oss?.filter(os => os?.page_info?.type === 'ZALO_PERSONAL' && !os?.page_info?.is_disconnected)?.[0]
-  }
-  
   /**ẩn hiện modal của component */
   toggleModal() {
-    nextTick(async ()=>{
-      if(!modal_widget_ref.value?.is_open) {
-        await this.getClientId()
-      }
-      modal_widget_ref.value?.toggleModal()
-    })
-    
+    modal_widget_ref.value?.toggleModal()
+  }
+
+  /** hàm xử lý khi nhân được sự kiện từ iframe zalo personal core */
+  async handleEvent(event: MessageEvent) {
+    // nếu không phải từ zalo personal core thi thôi
+    if (event.data?.from !== 'ZALO_PERSONAL_CORE') return
+
+    // id của trang cần lấy id khách hàng
+    const CLIENT_ID = await $main.getClientId(event.data.data.page_id)
+
+    // gửi id khách hàng vào iframe zalo personal core
+    window.postMessage(
+      {
+        type: 'get.client_id',
+        from: 'ZALO_PERSONAL_CONTAINER',
+        data: {
+          client_id: CLIENT_ID,
+        },
+      },
+      '*'
+    )
   }
 }
 
 const $main = new Main()
+
+onMounted(() => {
+  window.addEventListener('message', $main.handleEvent.bind($main))
+})
+
+onUnmounted(() => {
+  window.removeEventListener('message', $main.handleEvent.bind($main))
+})
 
 // cung cấp hàm toggle modal cho component cha
 defineExpose({ toggleModal: $main.toggleModal.bind($main) })
