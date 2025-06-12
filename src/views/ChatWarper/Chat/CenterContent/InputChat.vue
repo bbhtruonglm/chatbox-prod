@@ -1,10 +1,11 @@
 <template>
   <div
-    v-if="$route.query.user_id"
+    v-if="client_id"
     id="chat__input-chat"
     class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
   >
-    <ScrollToBottomBtn />
+    <ScrollToBottomBtn :list_message_id="list_message_id"/>
+    <!-- Trả lời bình luận bài viết fb -->
     <ReplyComment v-if="messageStore.reply_comment?.root_comment_id" />
     <ListLabel v-else />
     <PreviewAttachment />
@@ -21,6 +22,17 @@ import ListLabel from '@/views/ChatWarper/Chat/CenterContent/InputChat/ListLabel
 import PreviewAttachment from '@/views/ChatWarper/Chat/CenterContent/InputChat/PreviewAttachment.vue'
 import MainInput from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput.vue'
 import ReplyComment from '@/views/ChatWarper/Chat/CenterContent/InputChat/ReplyComment.vue'
+
+const $props = defineProps({
+  client_id:{
+    type: String,
+    default: '',
+  },
+  list_message_id: {
+    type: String,
+    default: '',
+  }
+})
 
 const messageStore = useMessageStore()
 const conversationStore = useConversationStore()

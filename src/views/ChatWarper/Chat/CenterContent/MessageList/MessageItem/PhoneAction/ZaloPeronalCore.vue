@@ -28,9 +28,9 @@
     <!-- Hội thoại -->
     <div class="h-full w-full overflow-hidden">
       <MessageList
-        v-if="conversation"
+        v-if="conversationStore.select_conversation"
         class="h-full"
-        :conversation="conversation"
+        :list_message_id="'iframe-message-list'"
       />
       <div
         v-else
@@ -67,22 +67,24 @@
         @click="is_show_send_friend_request = false"
       />
     </div>
+
+    <InputChat :client_id="client_id"  />
   </div>
 </template>
 <script setup lang="ts">
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import { read_os } from '@/service/api/chatbox/billing'
 import { read_conversation } from '@/service/api/chatbox/n4-service'
-import { useCommonStore } from '@/stores'
+import { useCommonStore, useConversationStore, usePageStore } from '@/stores'
 import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { QueryString } from '@/utils/helper/QueryString'
 import { container } from 'tsyringe'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 
 import { XMarkIcon } from '@heroicons/vue/24/outline'
@@ -90,9 +92,12 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 
-// const pageStore = usePageStore()
+const pageStore = usePageStore()
 const commonStore = useCommonStore()
+const conversationStore = useConversationStore()
 const $toast = container.resolve(Toast)
 const { t: $t } = useI18n()
 
@@ -122,9 +127,6 @@ const selected_page_info = computed(
     zlp_oss.value?.find(zlp_os => zlp_os?.page_id === selected_page_id.value)
       ?.page_info
 )
-
-/** dữ liệu hội thoại của khách(số đã nhắn trong tin) với trang zalo được chọn */
-const conversation = ref<ConversationInfo>()
 
 /** danh sách các trang zalo của tổ chức hiện tại */
 const zlp_oss = ref<OwnerShipInfo[]>()
@@ -206,7 +208,7 @@ class Main {
     if (!client_id.value) return
 
     // lấy dữ liệu hội thoại
-    conversation.value = await new Promise((resolve, reject) => {
+    conversationStore.select_conversation = await new Promise((resolve, reject) => {
       read_conversation(
         {
           page_id: [selected_page_id.value as string],
@@ -248,6 +250,26 @@ class Main {
     selected_page_id.value = zlp_oss.value?.[0]?.page_id
   }
 
+  /** lấy thông tin của các page zalo */
+  @loadingV2(commonStore, 'is_loading_full_screen')
+  @error(new CustomToast())
+  async getZaloPageInfo() {
+    /** danh sách các page zalo */
+    const SELECTED_PAGE_IDS = zlp_oss.value?.map(os => os.page_id || '')
+
+    /** nếu không có page nào thì thôi */
+    if (!SELECTED_PAGE_IDS) return
+
+    /**dữ liệu các trang đang chọn */
+    const PAGES = await new N4SerivceAppPage().getPageInfoToChat(
+      query_string_data.value.org_id,
+      SELECTED_PAGE_IDS,
+      true
+    )
+
+    pageStore.selected_page_list_info = PAGES
+  }
+
   /** hàm lấy dữ liệu từ query string */
   getDataFromQueryString() {
     // lấy id tổ chức từ query string
@@ -268,7 +290,7 @@ class Main {
   /** hàm gửi sự kiện để lấy id khách hàng từ iframe cha */
   getClientId() {
     // reset hội thoại
-    conversation.value = undefined
+    conversationStore.select_conversation = undefined
 
     // gửi sự kiện get.client_id đến iframe cha với id page đã chọn
     window.parent.postMessage(
@@ -308,6 +330,9 @@ onMounted(async () => {
 
   // lấy danh sách các page zalo của tổ chức hiện tại
   await $main.getZaloPage()
+
+  // lấy thông tin của các page zalo
+  $main.getZaloPageInfo()
 
   // gửi iframe đến trang cha
   $main.getClientId()
