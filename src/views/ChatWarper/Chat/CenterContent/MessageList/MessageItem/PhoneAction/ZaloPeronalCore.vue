@@ -67,8 +67,6 @@
         @click="is_show_send_friend_request = false"
       />
     </div>
-    <!-- <InputChat /> -->
-    <MainInput />
   </div>
 </template>
 <script setup lang="ts">
@@ -85,8 +83,6 @@ import { container } from 'tsyringe'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
-import MainInput from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput.vue'
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 
 import { XMarkIcon } from '@heroicons/vue/24/outline'
@@ -94,22 +90,6 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { IAlert } from '@/utils/helper/Alert/type'
-
-// const $props = withDefaults(
-//   defineProps<{
-//     /** id page hiện tại */
-//     actual_page_id?: string
-//     /** client id của page hiện tại */
-//     actual_client_id?: string
-//     /** id tổ chức */
-//     org_id?: string
-//     /** id tin nhắn */
-//     message_id?: string
-//     /** id khách hàng */
-//     client_id?: string
-//   }>(),
-//   {}
-// )
 
 // const pageStore = usePageStore()
 const commonStore = useCommonStore()
@@ -290,6 +270,7 @@ class Main {
     // reset hội thoại
     conversation.value = undefined
 
+    // gửi sự kiện get.client_id đến iframe cha với id page đã chọn
     window.parent.postMessage(
       {
         type: 'get.client_id',
@@ -304,17 +285,22 @@ class Main {
 
   /** hàm xử lý sự kiện khi nhận được từ iframe cha */
   handleEvent(event: MessageEvent) {
-    console.log(event.data);
+    // nếu không phải là thẻ bọc của iframe zalo personal core thi thôi
     if(event.data?.from !== 'ZALO_PERSONAL_CONTAINER') return
 
+    // nếu là sự kiện get.client_id thì lưu lại id khách hàng
     if(event.data?.type === 'get.client_id') {
       client_id.value = event.data?.data?.client_id
     }
 
+    // lấy dữ liệu hội thoại của khách hàng đó
     this.getConversation()
   }
 }
 const $main = new Main()
+
+/** hàm xử lý sự kiện khi nhân được từ iframe zalo personal container */
+const handleEvent = $main.handleEvent.bind($main)
 
 onMounted(async () => {
   // hàm lấy dữ liệu từ query string
@@ -327,15 +313,12 @@ onMounted(async () => {
   $main.getClientId()
 
   // lắng nghe sự kiện từ iframe cha
-  window.parent.addEventListener('message', $main.handleEvent.bind($main))
-
-  // lấy dữ liệu hội thoại
-  // $main.getConversation()
+  window.parent.addEventListener('message', handleEvent)
 
 })
 
 onUnmounted(() => {
   // hủy lắng nghe sự kiện từ iframe cha
-  window.removeEventListener('message', $main.handleEvent.bind($main))
+  window.removeEventListener('message', handleEvent)
 })
 </script>

@@ -18,16 +18,14 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageStore } from '@/stores'
-
+import { useOrgStore } from '@/stores'
+import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
+import { container } from 'tsyringe'
 import { onMounted, onUnmounted, ref } from 'vue'
 
 import Modal from '@/components/Modal.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
-import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
-import { nextTick } from 'async'
-import { container } from 'tsyringe'
 
 const $props = withDefaults(
   defineProps<{
@@ -38,7 +36,6 @@ const $props = withDefaults(
 )
 
 const orgStore = useOrgStore()
-const pageStore = usePageStore()
 
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
@@ -92,12 +89,15 @@ class Main {
 
 const $main = new Main()
 
+/** hàm xử lý sự kiện khi nhân được từ iframe zalo personal core */
+const handleMessage = $main.handleEvent.bind($main)
+
 onMounted(() => {
-  window.addEventListener('message', $main.handleEvent.bind($main))
+  window.addEventListener('message', handleMessage)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('message', $main.handleEvent.bind($main))
+  window.removeEventListener('message', handleMessage)
 })
 
 // cung cấp hàm toggle modal cho component cha
