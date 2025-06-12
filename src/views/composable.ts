@@ -1,16 +1,17 @@
 import { read_me_chatbot_user } from '@/service/api/chatbox/n4-service'
-import { flow } from '@/service/helper/async'
-import { useChatbotUserStore, useOrgStore } from '@/stores'
-import { onMounted } from 'vue'
-import { signout } from '@/service/helper/oauth'
+import { getCurrentOrgInfo } from '@/service/function'
 import { toastError } from '@/service/helper/alert'
+import { flow } from '@/service/helper/async'
+import { handleFileLocal } from '@/service/helper/file'
+import { getItem } from '@/service/helper/localStorage'
+import { useChatbotUserStore, useMessageStore, useOrgStore } from '@/stores'
+import { BillingAppOrganization } from '@/utils/api/Billing'
+import { map } from 'lodash'
+import { onMounted } from 'vue'
 
 import type { CbError } from '@/service/interface/function'
-import { BillingAppOrganization } from '@/utils/api/Billing'
-import { getCurrentOrgInfo } from '@/service/function'
-import { getItem } from '@/service/helper/localStorage'
 
-/**load các dữ liệu cần thiết của giao diện */
+/** load các dữ liệu cần thiết của giao diện */
 export function initRequireData() {
   const chatbotUserStore = useChatbotUserStore()
   const orgStore = useOrgStore()
@@ -66,4 +67,25 @@ export function initRequireData() {
   }
 
   return { getMeChatbotUser }
+}
+
+
+/** xử lý kéo thả file */
+export function useDropFile() {
+  const messageStore = useMessageStore()
+
+  /**xử lý sự kiện vứt file vào để gửi */
+  function onDropFile($event: DragEvent) {
+    // chặn các hành động mặc định, vd như mở file ở tab mới
+    $event.stopPropagation()
+    $event.preventDefault()
+
+    // đang gửi thì không cho chọn lại file để bị lỗi
+    if (messageStore.is_send_file) return
+
+    map($event.dataTransfer?.files, file => handleFileLocal(file))
+  }
+  return {
+    onDropFile
+  }
 }
