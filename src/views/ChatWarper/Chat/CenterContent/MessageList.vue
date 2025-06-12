@@ -431,35 +431,7 @@ function getListMessage(is_scroll?: boolean) {
         cb()
       },
       // * đọc dữ liệu từ api
-      (cb: CbError) =>
-        read_message(
-          {
-            page_id: conversationStore.select_conversation?.fb_page_id,
-            client_id: conversationStore.select_conversation?.fb_client_id,
-            skip: skip.value,
-            limit: LIMIT,
-          },
-          (e, r) => {
-            if (e) return cb(e)
-            if (!r || !r.length) {
-              // gắn cờ đã load hết dữ liệu
-              is_done.value = true
-
-              return cb()
-            }
-
-            // đảo chiều mảng
-            r.reverse()
-
-            // thêm dữ liệu đã đảo chiều lên đầu
-            messageStore.list_message.unshift(...r)
-
-            // trang tiếp theo
-            skip.value += LIMIT
-
-            cb()
-          }
-        ),
+      (cb: CbError) => tryLoadUntilScrollable(cb),
       // * làm cho scroll to top mượt hơn
       (cb: CbError) => {
         // chạy infinitve loading scroll
@@ -546,6 +518,59 @@ function visibleLastStaffReadAvatar(staff_id: string) {
       else element.style.display = 'block'
     })
   }
+}
+
+/** hàm load dữ liệu cho đến khi danh sách có thể scroll */
+const tryLoadUntilScrollable = (cb: CbError) => {
+  read_message(
+    {
+      page_id: conversationStore.select_conversation?.fb_page_id,
+      client_id: conversationStore.select_conversation?.fb_client_id,
+      skip: skip.value,
+      limit: LIMIT,
+    },
+    (e, r) => {
+      // nếu lỗi thì thôi
+      if (e) return cb(e)
+
+      // không có kết quả thì thôi hoặc đã lấy hết dữ liệu thì thôi
+      if (!r || !r.length) {
+        is_done.value = true
+        return cb()
+      }
+
+      // đảo ngược mảng
+      r.reverse()
+
+      // thêm vào danh sách lên đầu
+      messageStore.list_message.unshift(...r)
+
+      // trang tiếp theo
+      skip.value += LIMIT
+
+      // ⚠️ Gọi lại nếu chưa scroll được
+      // Dùng nextTick nếu Vue chưa render kịp
+      nextTick(() => {
+        // lấy div chưa danh sách tin nhắn
+        const LIST_MESSAGE = document.getElementById('list-message')
+
+        // nếu không có thì thôi
+        if (!LIST_MESSAGE) return
+
+        // nếu chưa thể scroll thì load tiếp
+        if (
+          LIST_MESSAGE.scrollHeight <= LIST_MESSAGE.clientHeight &&
+          !is_done.value
+        ) {
+          // chưa scroll được, tiếp tục load thêm
+          tryLoadUntilScrollable(cb)
+        } else {
+          // đã scroll được, hoặc đã hết dữ liệu
+          cb()
+        }
+      })
+    }
+  )
 }
 </script>
 <style scoped lang="scss">
