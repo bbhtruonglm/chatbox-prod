@@ -22,7 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import HotAlert from '@/components/HotAlert.vue'
+import { read_os } from '@/service/api/chatbox/billing'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import {
@@ -35,23 +35,33 @@ import {
   ping as ext_ping,
   getFbUserInfo,
 } from '@/service/helper/ext'
-import { handleFileLocal } from '@/service/helper/file'
 import {
   useChatbotUserStore,
   useCommonStore,
   useConversationStore,
   useExtensionStore,
-  useMessageStore,
   useOrgStore,
-  usePageStore,
+  usePageStore
 } from '@/stores'
-import { initRequireData } from '@/views/composable'
+import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { N5AppV1AppApp } from '@/utils/api/N5App'
+import { error } from '@/utils/decorator/Error'
+import { loading } from '@/utils/decorator/Loading'
+import { Toast } from '@/utils/helper/Alert/Toast'
+import { Delay } from '@/utils/helper/Delay'
+import { Socket } from '@/utils/helper/Socket'
+import { User } from '@/utils/helper/User'
+import { initRequireData, useDropFile } from '@/views/composable'
 import { debounce, difference, intersection, keys, map, size } from 'lodash'
+import { storeToRefs } from 'pinia'
+import { container } from 'tsyringe'
 import { onMounted, onUnmounted, ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
+import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
+import HotAlert from '@/components/HotAlert.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
@@ -59,45 +69,33 @@ import Menu from '@/views/ChatWarper/Menu.vue'
 
 import BellSound from '@/assets/sound/notification-sound.mp3'
 
-import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
-import { read_os } from '@/service/api/chatbox/billing'
 import type { SocketEvent } from '@/service/interface/app/common'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { MessageInfo } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
-import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { N5AppV1AppApp } from '@/utils/api/N5App'
-import { error } from '@/utils/decorator/Error'
-import { loading } from '@/utils/decorator/Loading'
-import { Toast } from '@/utils/helper/Alert/Toast'
 import type { IAlert } from '@/utils/helper/Alert/type'
-import { Delay } from '@/utils/helper/Delay'
-import { User } from '@/utils/helper/User'
-import { storeToRefs } from 'pinia'
-import { container } from 'tsyringe'
 
-const $router = useRouter()
+// store
 const pageStore = usePageStore()
 const chatbotUserStore = useChatbotUserStore()
 const conversationStore = useConversationStore()
 const commonStore = useCommonStore()
-const messageStore = useMessageStore()
 const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
 
 const { ref_alert_reach_limit } = storeToRefs(commonStore)
 
+// utils
 const { t: $t } = useI18n()
+const $router = useRouter()
 const $delay = container.resolve(Delay)
+const $socket = container.resolve(Socket)
 
 // composable
 initRequireData()
+const { onDropFile } = useDropFile()
 
-/**kết nối socket đến server */
-const socket_connection = ref<WebSocket>()
-/**gắn cờ đóng kết nối hoàn toàn */
-const is_force_close_socket = ref(false)
 /**cờ xác định người dùng có đang focus vào tab chat không */
 const is_focus_chat_tab = ref(true)
 /**ref modal cảnh báo hết gói */
@@ -125,7 +123,8 @@ onMounted(() => {
 })
 // tiêu huỷ kết nối socket khi thoát khỏi component này
 onUnmounted(() => {
-  closeSocketConnect()
+  // đóng socket
+  $socket.close()
 
   // huỷ lắng nghe focus chat
   window.removeEventListener('focus', checkFocusChatTab)
@@ -147,17 +146,6 @@ function goDashboard() {
 function checkFocusChatTab($event: FocusEvent) {
   // nếu type của sự kiện là focus thì đánh dấu đang focus, ngược lại thì không
   is_focus_chat_tab.value = $event.type === 'focus'
-}
-/**xử lý sự kiện vứt file vào để gửi */
-function onDropFile($event: DragEvent) {
-  // chặn các hành động mặc định, vd như mở file ở tab mới
-  $event.stopPropagation()
-  $event.preventDefault()
-
-  // đang gửi thì không cho chọn lại file để bị lỗi
-  if (messageStore.is_send_file) return
-
-  map($event.dataTransfer?.files, file => handleFileLocal(file))
 }
 /**gắn cờ nếu ext được kích hoạt + xử lý các logic */
 function initExtensionLogic() {
@@ -319,118 +307,67 @@ const debounceRefreshConversationTime = debounce(() => {
   // thông báo cho component cập nhật lại thời gian
   window.dispatchEvent(new CustomEvent('chatbox_conversation_refresh_time'))
 }, 1000 * 5)
-/**lắng nghe sự kiện từ socket */
-function onSocketFromChatboxServer() {
-  /**tạo kết nối đến socket */
-  const CONNECTION = new WebSocket($env.host.n3_socket)
-  socket_connection.value = CONNECTION
-  /**lưu lại id vòng lặp ping */
-  let ping_interval_id: number
 
-  // khi kết nối thành công
-  CONNECTION.onopen = () => {
-    // gửi danh sách page lên socket
-    CONNECTION.send(
-      JSON.stringify({
-        list_page: keys(pageStore.selected_page_id_list),
-        fb_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
+/** hàm xử lý sự kiện nhận được từ socket */
+function handleSocketEvent(socket_data: {
+  /**dữ liệu của khách hàng */
+  conversation?: ConversationInfo
+  /**dữ liệu tin nhắn mới */
+  message?: MessageInfo
+  /**dữ liệu nhân viên */
+  staff?: StaffSocket
+  /**tên sự kiện */
+  event?: SocketEvent
+  /**dữ liệu tin nhắn cần cập nhật */
+  update_message?: MessageInfo
+  /**dữ liệu comment cập nhật */
+  update_comment?: FacebookCommentPost
+}) {
+  let { conversation, message, update_message, update_comment, event } =
+    socket_data
+
+  // gửi thông điệp đến component xử lý danh sách hội thoại
+  if (validateConversation(conversation, message))
+    window.dispatchEvent(
+      new CustomEvent('chatbox_socket_conversation', {
+        detail: {
+          conversation,
+          event,
+        },
       })
     )
 
-    // tự động ping socket liên tục - 30s
-    ping_interval_id = setInterval(() => CONNECTION.send('ping'), 1000 * 30)
+  // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
+  if (size(message)) {
+    // socket tin nhắn mới cho các component
+    window.dispatchEvent(
+      new CustomEvent('chatbox_socket_message', { detail: message })
+    )
+
+    // render lại thời gian của hội thoại
+    debounceRefreshConversationTime()
   }
 
-  // khi kết nối bị đóng
-  CONNECTION.onclose = () => {
-    // loại bỏ vòng lặp tự động ping socket cũ
-    clearInterval(ping_interval_id)
+  // gửi thông điệp cập nhật tin nhắn đã có
+  if (size(update_message))
+    window.dispatchEvent(
+      new CustomEvent('chatbox_socket_update_message', {
+        detail: update_message,
+      })
+    )
 
-    // nếu đóng kết hoàn toàn thì không cho kết nối tự mở lại nữa
-    if (is_force_close_socket.value) return
+  // gửi thông điệp cập nhật comment
+  if (size(update_comment))
+    window.dispatchEvent(
+      new CustomEvent('chatbox_socket_update_comment', {
+        detail: update_comment,
+      })
+    )
 
-    // khởi tạo lại kết nối sau 100ms
-    setTimeout(() => onSocketFromChatboxServer(), 100)
-  }
-
-  // nếu có lỗi xảy ra
-  CONNECTION.onerror = () => {
-    // đóng kết nối đến socket
-    CONNECTION.close()
-  }
-
-  // khi có thông điệp từ socket gửi xuống
-  CONNECTION.onmessage = ({ data }) => {
-    if (!data || data === 'pong') return
-
-    /**dữ liệu socket nhận được */
-    let socket_data: {
-      /**dữ liệu của khách hàng */
-      conversation?: ConversationInfo
-      /**dữ liệu tin nhắn mới */
-      message?: MessageInfo
-      /**dữ liệu nhân viên */
-      staff?: StaffSocket
-      /**tên sự kiện */
-      event?: SocketEvent
-      /**dữ liệu tin nhắn cần cập nhật */
-      update_message?: MessageInfo
-      /**dữ liệu comment cập nhật */
-      update_comment?: FacebookCommentPost
-    } = {}
-
-    // cố gắng giải mã dữ liệu
-    try {
-      socket_data = JSON.parse(data)
-    } catch (e) {}
-
-    if (!size(socket_data)) return
-
-    let { conversation, message, update_message, update_comment, event } =
-      socket_data
-
-    // gửi thông điệp đến component xử lý danh sách hội thoại
-    if (validateConversation(conversation, message))
-      window.dispatchEvent(
-        new CustomEvent('chatbox_socket_conversation', {
-          detail: {
-            conversation,
-            event,
-          },
-        })
-      )
-
-    // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
-    if (size(message)) {
-      // socket tin nhắn mới cho các component
-      window.dispatchEvent(
-        new CustomEvent('chatbox_socket_message', { detail: message })
-      )
-
-      // render lại thời gian của hội thoại
-      debounceRefreshConversationTime()
-    }
-
-    // gửi thông điệp cập nhật tin nhắn đã có
-    if (size(update_message))
-      window.dispatchEvent(
-        new CustomEvent('chatbox_socket_update_message', {
-          detail: update_message,
-        })
-      )
-
-    // gửi thông điệp cập nhật comment
-    if (size(update_comment))
-      window.dispatchEvent(
-        new CustomEvent('chatbox_socket_update_comment', {
-          detail: update_comment,
-        })
-      )
-
-    // thông báo cho người dùng nếu là tin nhắn của khách hàng gửi cho page
-    if (message?.message_type === 'client') triggerAlert(conversation)
-  }
+  // thông báo cho người dùng nếu là tin nhắn của khách hàng gửi cho page
+  if (message?.message_type === 'client') triggerAlert(conversation)
 }
+
 /**gửi thông báo cho nhân viên hiện tại */
 function triggerAlert(conversation?: ConversationInfo) {
   // nếu người dùng đang focus vào tab chat thì không cần thông báo
@@ -640,13 +577,6 @@ function validateConversation(
 
   return true
 }
-/**đóng kết nối socket */
-function closeSocketConnect() {
-  // gắn cờ ngăn chặn kết nối mở lại
-  is_force_close_socket.value = true
-
-  socket_connection.value?.close()
-}
 
 class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
@@ -701,7 +631,12 @@ class Main {
     pageStore.market_widgets = await new N5AppV1AppApp().readMarket()
 
     // khởi tạo kết nối socket lên server
-    onSocketFromChatboxServer()
+    $socket.connect(
+      $env.host.n3_socket,
+      keys(pageStore.selected_page_id_list),
+      chatbotUserStore.chatbot_user?.fb_staff_id || '',
+      handleSocketEvent
+    )
   }
 
   /**đánh dấu xem tổ chức này có page zalo không */

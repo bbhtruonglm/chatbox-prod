@@ -11,7 +11,7 @@
     <template #body>
       <iframe
         class="w-full"
-        :src="`https://localhost:8000/zalo-personal-conversation?org_id=${orgStore.selected_org_id}&actual_client_id=${message?.fb_client_id}&actual_page_id=${message?.fb_page_id}&message_id=${message?._id}`"
+        :src="`${DOMAIN_CHATBOT}/zalo-personal-conversation?org_id=${orgStore.selected_org_id}&actual_client_id=${message?.fb_client_id}&actual_page_id=${message?.fb_page_id}&message_id=${message?._id}`"
         frameborder="0"
       ></iframe>
     </template>
@@ -26,6 +26,9 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import Modal from '@/components/Modal.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
+
+/** link gốc của chatbot */
+const DOMAIN_CHATBOT = window.location.origin
 
 const $props = withDefaults(
   defineProps<{

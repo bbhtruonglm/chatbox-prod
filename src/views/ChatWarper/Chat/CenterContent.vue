@@ -4,8 +4,8 @@
     class="h-full flex flex-col flex-grow min-w-0"
   >
     <UserInfo />
-    <MessageList />
-    <InputChat />
+    <MessageList :list_message_id="'message-list'" />
+    <InputChat :client_id="$route.query.user_id?.toString()" />
   </div>
   <template>
     <!-- <AttachmentViewModal /> -->
@@ -26,6 +26,10 @@ import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 import ZaloPersonalModal from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPersonalModal.vue'
 import StaffReadModal from '@/views/ChatWarper/Chat/CenterContent/StaffReadModal.vue'
 import UserInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { modal_zalo_personal_ref, message_data } = storeToRefs(useMessageStore())
+
+const $route = useRoute()
 </script>
