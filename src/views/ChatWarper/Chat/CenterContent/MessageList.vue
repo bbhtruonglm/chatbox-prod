@@ -23,7 +23,7 @@
     <div
       v-else
       @scroll="onScrollMessage"
-      :id="list_message_id"
+      :id="messageStore.list_message_id"
       class="pt-14 pb-5 pl-2 pr-3 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
@@ -205,15 +205,6 @@ interface CustomEvent extends Event {
   detail?: MessageInfo
 }
 
-/** props */
-const  $props = defineProps({
-  /** id thẻ scroll danh sách tin nhắn */
-  list_message_id: {
-    type: String,
-    default: '',
-  }
-})
-
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
@@ -377,7 +368,7 @@ function socketNewMessage({ detail }: CustomEvent) {
       message => message.message_id === detail?.message_mid
     )
 
-  scrollToBottomMessage($props.list_message_id)
+  scrollToBottomMessage(messageStore.list_message_id)
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
 function socketUpdateMssage({ detail }: CustomEvent) {
@@ -495,7 +486,7 @@ function getListMessage(is_scroll?: boolean) {
         // chạy infinitve loading scroll
         nextTick(() => {
           // lấy div chưa danh sách tin nhắn
-          const LIST_MESSAGE = document.getElementById('list-message')
+          const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
           if (!LIST_MESSAGE) return
 
@@ -519,9 +510,9 @@ function getListMessage(is_scroll?: boolean) {
 
       // load lần đầu thì tự động cuộn xuống
       if (is_scroll) {
-        scrollToBottomMessage($props.list_message_id)
+        scrollToBottomMessage(messageStore.list_message_id)
 
-        setTimeout(() => scrollToBottomMessage($props.list_message_id), 500)
+        setTimeout(() => scrollToBottomMessage(messageStore.list_message_id), 500)
       }
 
       if (e) {

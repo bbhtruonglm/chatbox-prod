@@ -4,7 +4,7 @@
     id="chat__input-chat"
     class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
   >
-    <ScrollToBottomBtn :list_message_id="list_message_id"/>
+    <ScrollToBottomBtn />
     <!-- Trả lời bình luận bài viết fb -->
     <ReplyComment v-if="messageStore.reply_comment?.root_comment_id" />
     <ListLabel v-else />
@@ -25,10 +25,6 @@ import ReplyComment from '@/views/ChatWarper/Chat/CenterContent/InputChat/ReplyC
 
 const $props = defineProps({
   client_id:{
-    type: String,
-    default: '',
-  },
-  list_message_id: {
     type: String,
     default: '',
   }
