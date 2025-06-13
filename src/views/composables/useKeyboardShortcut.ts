@@ -195,10 +195,10 @@ export function useKeyboardShortcut() {
 
   /** danh sách các phím tắt */
   const KEYMAP: Record<string, Record<string, (e: KeyboardEvent) => void>> = {
-    'Shift+ArrowLeft': {
+    'Control+Shift+ArrowLeft': {
       ALL: backToSelectPage,
     },
-    'Control+Shift+E': {
+    'Alt+Shift+E': {
       ALL: handleSignout,
     },
     'Alt+Digit1': {
@@ -249,10 +249,10 @@ export function useKeyboardShortcut() {
     'Control+X': {
       '/': toggleBlockUser,
     },
-    'Shift+P': {
+    'Control+Shift+P': {
       '/': copyPhone,
     },
-    'Shift+E': {
+    'Control+Shift+E': {
       '/': copyEmail,
     },
     'Alt+Q': {
