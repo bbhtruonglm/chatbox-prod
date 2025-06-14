@@ -131,6 +131,8 @@ const is_select_all_page = computed({
     loopPageOfGroup(page => {
       // chọn hoặc huỷ chọn page
       pageStore.setPageSelected(page?.fb_page_id, newValue)
+
+      
     })
   },
 })
@@ -155,10 +157,12 @@ watch(
 /**lặp qua từng trang của nhóm */
 function loopPageOfGroup(proceed: (page?: IPage) => void) {
   active_page_list.value?.forEach(page => {
+    console.log(page);
+    
     // bỏ qua các trang không thoả mãn
     if (
       // chỉ xử lý các trang trong nhóm
-      page?.page?.type !== $props.filter
+      !page?.page?.type?.includes($props.filter)
       // ||
       // // chỉ xử lý các page còn hạn sử dụng
       // !isActivePage(page?.page)
