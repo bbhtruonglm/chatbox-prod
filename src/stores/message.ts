@@ -14,6 +14,8 @@ import type {
 } from '@/service/interface/app/message'
 
 export const useMessageStore = defineStore('message_store', () => {
+  /** id của danh sách tin nhắn */
+  const list_message_id = ref('list-message')
   /**danh sách tin nhắn hiện tại */
   const list_message = ref<MessageInfo[]>([])
 
@@ -73,6 +75,7 @@ export const useMessageStore = defineStore('message_store', () => {
   }
 
   return {
+    list_message_id,
     list_message,
     send_message_list,
     attachment_list,

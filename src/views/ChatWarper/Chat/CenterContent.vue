@@ -4,7 +4,7 @@
     class="h-full flex flex-col flex-grow min-w-0"
   >
     <UserInfo />
-    <MessageList :list_message_id="'list-message'" />
+    <MessageList />
     <InputChat :client_id="$route.query.user_id?.toString()" />
   </div>
   <template>
