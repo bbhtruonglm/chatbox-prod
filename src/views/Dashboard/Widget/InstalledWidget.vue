@@ -102,11 +102,11 @@ const confirm_re_connect_ref = ref<InstanceType<typeof ConfirmReConnect>>()
 // lấy dữ liệu của trang được chọn
 onMounted(getInstalledWidget)
 
-// khi chọn nền tảng thì xoá trang đã chọn
-watch(
-  () => orgStore.selected_org_id,
-  () => (widgetStore.selected_page_id = undefined)
-)
+// // khi chọn nền tảng thì xoá trang đã chọn
+// watch(
+//   () => orgStore.selected_org_id,
+//   () => (widgetStore.selected_page_id = undefined)
+// )
 // khi lấy dữ liệu trang của tổ chức thì tự động chọn trang đầu tiên
 watch(() => pageStore.active_page_list, getSelectPageData)
 // khi chọn trang thì lấy dữ liệu widget đã cài
