@@ -224,6 +224,24 @@ export const useOrgStore = defineStore('org_store', () => {
     )
   }
 
+  /** có phải vượt giới hạn gói không */
+  function isOverLimit() {
+    /** tổ chức đang được chọn */
+    const ORG = selected_org_info.value
+
+    // số trang hệ thống
+    const CURRENT_PAGE = ORG?.org_package?.org_current_page || 0
+    // số trang quá giới hạn
+    const QUOTA_PAGE = ORG?.org_package?.org_quota_page || 0
+
+    // số nhân viên hệ thống
+    const CURRENT_STAFF = ORG?.org_package?.org_current_staff || 0
+    // số nhân viên quá giới hạn
+    const QUOTA_STAFF = ORG?.org_package?.org_quota_staff || 0
+
+    return CURRENT_PAGE > QUOTA_PAGE || CURRENT_STAFF > QUOTA_STAFF
+  }
+
   return {
     is_loading,
     list_org,
@@ -253,6 +271,7 @@ export const useOrgStore = defineStore('org_store', () => {
     isUnlimitedTime,
     isUnlimitedPage,
     isUnlimitedStaff,
+    isOverLimit
   }
 })
 
@@ -287,7 +306,7 @@ export const usePageManagerStore = defineStore('page_manager_store', () => {
   /**lùi lại bao nhiêu */
   const back = ref<number>()
   /** map pape_id -> group_id */
-  const pape_to_group_map = ref<Record<string, string>>({})
+  const pape_to_group_map = ref<Record<string, string[]>>({})
 
   return {
     connect_page_ref,

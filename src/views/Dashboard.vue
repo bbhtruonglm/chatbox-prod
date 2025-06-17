@@ -4,7 +4,7 @@
       <template #right>
         <template v-if="$main.isShowSelectPageButton()">
           <button
-            @click="$main.toggleDropdown"
+            @click="toggleDropdown"
             class="btn-custom text-sm font-semibold py-2 px-3 bg-slate-200"
           >
             <PlusCircleIcon class="size-4" />
@@ -27,13 +27,13 @@
       <RouterView />
     </div>
     <DropdownPickConnectPlatform
-      @done="$main.reloadPageData()"
+      @done="reloadPageData()"
       ref="ref_dropdown_pick_connect_platform"
       :position="pageManagerStore.position"
       :back="pageManagerStore.back"
     />
     <ConnectPage
-      @done="$main.reloadPageData()"
+      @done="reloadPageData()"
       ref="connect_page_ref"
     />
   </div>
@@ -46,19 +46,12 @@ import {
   usePageStore,
   useSelectPageStore,
 } from '@/stores'
-import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
-import { Toast } from '@/utils/helper/Alert/Toast'
 import { initRequireData } from '@/views/composable'
-import {
-  KEY_GET_ALL_ORG_AND_PAGE_FN,
-  KEY_GET_CHATBOT_USER_FUNCT,
-  KEY_GET_ORG_PAGES_FN,
-  KEY_RELOAD_PAGE_DATA,
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
-  KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT,
-} from '@/views/Dashboard/symbol'
-import { keys, size } from 'lodash'
-import { provide, toRef } from 'vue'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
+import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
+import { size } from 'lodash'
+import { storeToRefs } from 'pinia'
+import { provide } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ConnectPage from '@/views/Dashboard/ConnectPage.vue'
@@ -68,47 +61,23 @@ import DropdownPickConnectPlatform from '@/views/Dashboard/SelectPage/DropdownPi
 
 import PlusCircleIcon from '@/components/Icons/PlusCircle.vue'
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
-import { read_link_org } from '@/service/api/chatbox/billing'
-import type { ModalPosition } from '@/service/interface/vue'
-import { error } from '@/utils/decorator/Error'
-import { loading } from '@/utils/decorator/Loading'
 import { ChevronDownIcon } from '@heroicons/vue/24/solid'
-import { storeToRefs } from 'pinia'
-import { container } from 'tsyringe'
-import { usePageManager } from './Dashboard/composables/usePageManager'
+
 
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
 const orgStore = useOrgStore()
 const pageManagerStore = usePageManagerStore()
 const $route = useRoute()
-const $toast = container.resolve(Toast)
 
 const { ref_dropdown_pick_connect_platform, connect_page_ref } =
   storeToRefs(pageManagerStore)
 
 // composable
 const { getMeChatbotUser } = initRequireData()
-const { filterPageByGroup } = usePageManager()
-
-// /**ref của modal kết nối nền tảng */
-// const connect_page_ref = ref<InstanceType<typeof ConnectPage>>()
-// /**ref của dropdown tiền chọn nền tảng để kết nối */
-// const ref_dropdown_pick_connect_platform =
-//   ref<InstanceType<typeof DropdownPickConnectPlatform>>()
-// /**vị trí của dropdown */
-// const position = ref<ModalPosition>()
-// /**lùi lại bao nhiêu */
-// const back = ref<number>()
+const { toggleDropdown, reloadPageData } = usePageManager()
 
 class Main {
-  /**nạp lại dữ liệu trang */
-  reloadPageData() {
-    // nếu chọn tất cả tổ chức
-    if (orgStore.is_selected_all_org) this.getALlOrgAndPage()
-    // nếu chọn 1 tổ chức
-    else this.getOrgPages(orgStore.selected_org_id)
-  }
   /**vào chế độ chat nhiều trang */
   toggleModelGroupPage() {
     // reset lại danh sách trang đã chọn nếu đang ở chế độ nhiều tổ chức
@@ -121,26 +90,7 @@ class Main {
   toggleModalConnectPage(key?: string) {
     pageManagerStore.connect_page_ref?.toggleModal?.(key)
   }
-  /**lấy toàn bộ các page đang được kích hoạt của 1 tổ chức */
-  @loading(toRef(selectPageStore, 'is_loading'))
-  @error($toast)
-  async getOrgPages(org_id?: string): Promise<void> {
-    // nếu không có tổ chức thì thôi
-    if (!org_id) return
 
-    // nếu chọn tất cả tổ chức thì thôi
-    if (orgStore.is_selected_all_org) return
-
-    /**danh sách trang của tổ chức đang kích hoạt, có lọc theo nhóm nếu cần */
-    const RES = await new N4SerivceAppPage().getOrgActiveListPage(
-      org_id,
-      orgStore.selected_org_group[orgStore.selected_org_id || '']
-    )
-
-    // lưu lại danh sách trang
-    pageStore.all_page_list = RES?.page_list || {}
-
-  }
   /**có hiển thị các nút của trang chọn page không */
   isShowSelectPageButton() {
     return (
@@ -152,52 +102,11 @@ class Main {
         !size(pageStore.active_page_list))
     )
   }
-  /**lấy toàn bộ dữ liệu tổ chức và trang */
-  @loading(toRef(selectPageStore, 'is_loading'))
-  @error($toast)
-  async getALlOrgAndPage(): Promise<void> {
-    // xóa toàn bộ trang hiện tại
-    pageStore.active_page_list = {}
-
-    /**toàn bộ các trang của người dùng */
-    const PAGE_DATA = await new N4SerivceAppPage().getListPage({
-      // org_group: orgStore.selected_org_group,
-    })
-
-    // nếu không có dữ liệu trang thì thôi
-    if (!PAGE_DATA?.page_list) return
-
-    pageStore.all_page_list = PAGE_DATA?.page_list
-
-    // lấy dữ liệu mapping tổ chức và trang
-    pageStore.map_orgs = await read_link_org(keys(pageStore.all_page_list))
-  }
-  /**ẩn hiện dropdown */
-  toggleDropdown(
-    $event?: MouseEvent,
-    _position?: ModalPosition,
-    _back?: number
-  ) {
-    // truyền vị trí và lùi lại
-    pageManagerStore.position = _position || 'BOTTOM'
-    pageManagerStore.back = _back || 236
-
-    // sử dùng hàm của dropdown
-    pageManagerStore.ref_dropdown_pick_connect_platform?.toggleDropdown($event)
-  }
 }
 const $main = new Main()
 
 // cung cấp hàm này cho component con dùng
 provide(KEY_GET_CHATBOT_USER_FUNCT, getMeChatbotUser)
-provide(KEY_TOGGLE_MODAL_CONNECT_PAGE_FUNCT, $main.toggleModalConnectPage)
-provide(KEY_GET_ORG_PAGES_FN, $main.getOrgPages)
-provide(KEY_GET_ALL_ORG_AND_PAGE_FN, $main.getALlOrgAndPage)
-provide(
-  KEY_TOGGLE_DROPDOWN_PICK_CONNECT_PLATFORM,
-  $main.toggleDropdown.bind($main)
-)
-provide(KEY_RELOAD_PAGE_DATA, $main.reloadPageData.bind($main))
 </script>
 <style scoped lang="scss">
 .dashboard-header {

@@ -133,7 +133,7 @@ const { filterPageByGroup } = usePageManager()
 // nạp dữ liệu trang của tổ chức hiện tại khi component được mount
 onMounted(() => {
   // nếu có dữ liệu trang rồi thì thôi
-  if (!size(pageStore.active_page_list)) getCurrentPageOrgInfo()
+if (!size(pageStore.active_page_list)) getCurrentPageOrgInfo()
 })
 
 /**lắng nghe sự kiện khi click ra ngoài */

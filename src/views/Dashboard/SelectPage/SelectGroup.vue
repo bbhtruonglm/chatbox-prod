@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-1 rounded-md flex items-center gap-3">
-    <div class="flex-grow">
+    <!-- <div class="flex-grow">
       <button
         @click="$main.cancelGroup()"
         :class="$main.isHightlightGroup()"
@@ -12,11 +12,12 @@
         v-for="group of groups"
         @click="$main.selectGroup(group?.group_id)"
         :class="$main.isHightlightGroup(group?.group_id)"
-        class="group__btn--base"
+        class="group__btn--base w-24 truncate"
       >
         {{ group?.group_name }}
       </button>
-    </div>
+    </div> -->
+    <Group :org_id="orgStore?.selected_org_id || ''"/>
     <button class="px-5 flex-shrink-0">
       <Cog6ToothIcon
         v-tooltip="$t('Cài đặt nhóm')"
@@ -28,22 +29,12 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore } from '@/stores'
-import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { BillingAppGroup } from '@/utils/api/Billing'
 import { Cog6ToothIcon } from '@heroicons/vue/24/solid'
-import { inject, onMounted, ref, watch } from 'vue'
-import { KEY_GET_ORG_PAGES_FN } from '@/views/Dashboard/symbol'
+import { onMounted, ref, watch } from 'vue'
+import Group from './AllOrg/Org/Group.vue'
 
 const orgStore = useOrgStore()
-
-/** composable */
-const { getOrgPages } = usePageManager()
-
-/**
- * lấy danh sách trang đã kích hoạt 
- * @deprecated sử dụng getOrgPages trong composable usePageManager
-*/
-// const getOrgPages = inject(KEY_GET_ORG_PAGES_FN)
 
 /**danh sách nhóm của tổ chức này */
 const groups = ref<IGroup[]>()

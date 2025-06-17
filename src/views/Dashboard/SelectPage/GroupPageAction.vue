@@ -30,9 +30,8 @@
   </Transition>
 </template>
 <script setup lang="ts">
-import { inject } from 'vue'
 import { usePageStore, useSelectPageStore } from '@/stores'
-import { KEY_GO_TO_CHAT_FUNCT } from '@/views/Dashboard/SelectPage/symbol'
+import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 
 import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
@@ -40,8 +39,8 @@ import CloseBoldIcon from '@/components/Icons/CloseBold.vue'
 const selectPageStore = useSelectPageStore()
 const pageStore = usePageStore()
 
-/**hàm đi đến trang chat */
-const goToChat = inject(KEY_GO_TO_CHAT_FUNCT)
+/** composable */
+const { goToChat } = usePageManager()
 
 /**chuyển vào trang chat */
 function chatManyPage() {
@@ -49,7 +48,7 @@ function chatManyPage() {
   if (!pageStore.countSelectedPage()) return
 
   // chuyển vào trang chat
-  goToChat?.()
+  goToChat()
 }
 /**chuyển về chế độ chọn 1 trang */
 function backSinglePageMode() {

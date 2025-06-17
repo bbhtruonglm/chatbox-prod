@@ -65,6 +65,8 @@ const source: Language = {
   'Thêm thành viên':'Thêm thành viên',
   'Số thành viên đạt giới hạn':'Số thành viên đạt giới hạn',
   'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
+  'Ưu tiên':'Ưu tiên',
+  'Quản lý ứng dụng': 'Quản lý ứng dụng',
   name: 'Tiếng Việt',
   v1: {
     common: {
@@ -475,8 +477,8 @@ const source: Language = {
             },
             action: {
               open_url: 'Đi đến liên kết',
-              open_facebook: 'Trang cá nhân Fb',
-              open_inbox: 'Mở hộp thư Fb',
+              open_facebook: 'Trang cá nhân Facebook',
+              open_inbox: 'Mở hộp thư Facebook',
               mark_unread: 'Đánh dấu tin nhắn là chưa đọc',
               block_user: 'Chặn người dùng',
               alow_user: 'Bỏ chặn người dùng',

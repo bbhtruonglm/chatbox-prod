@@ -1,8 +1,15 @@
 import { useChatbotUserStore } from '@/stores'
+import { SingletonCdn } from '@/utils/helper/Cdn'
+import { Locale } from '@/utils/helper/Locale'
+import { container } from 'tsyringe'
 import { onMounted, onUnmounted } from 'vue'
 
 export function useEmbedChat() {
   const chatbotUserStore = useChatbotUserStore()
+
+  const $locale = container.resolve(Locale)
+
+  const $cdn = SingletonCdn.getInst()
 
   class Main {
     /**id của sdk */
@@ -54,7 +61,9 @@ export function useEmbedChat() {
         // kích hoạt id trang chat
         page_id: '794843540615423',
         // thiết lập hiển thị - chưa có logic
-        config: {},
+        config: {
+          locale: $locale.get(),
+        },
         // cho phép gỡ lỗi
         is_debug: false,
       })
@@ -80,6 +89,7 @@ export function useEmbedChat() {
           user_email: chatbotUserStore.chatbot_user?.email,
           client_id: chatbotUserStore.chatbot_user?.user_id,
           user_phone: '',
+          client_avatar: $cdn.userAvt(chatbotUserStore.chatbot_user?.user_id),
         },
         '*'
       )

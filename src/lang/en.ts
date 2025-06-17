@@ -264,6 +264,8 @@ const source: Language = {
   'Thêm thành viên': 'Add members',
   'Số thành viên đạt giới hạn': 'Maximum number of members',
   'Tên nhóm không hợp lệ': 'Invalid group name',
+  'Ưu tiên':'Priority',
+  'Quản lý ứng dụng': 'App Management',
   name: 'English',
   v1: {
     common: {

@@ -18,6 +18,7 @@
       @confirm="goDashboard()"
       ref="ref_alert_reach_quota"
     />
+    <AlertAccountLimitReached ref="ref_alert_reach_limit" />
   </div>
 </template>
 <script setup lang="ts">
@@ -28,7 +29,7 @@ import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
 import {
   getCurrentOrgInfo,
   getPageInfo,
-  getPageWidget,
+  getPageWidget
 } from '@/service/function'
 import {
   listen as ext_listen,
@@ -53,11 +54,13 @@ import { Socket } from '@/utils/helper/Socket'
 import { User } from '@/utils/helper/User'
 import { initRequireData, useDropFile } from '@/views/composable'
 import { debounce, difference, intersection, keys, map, size } from 'lodash'
+import { storeToRefs } from 'pinia'
 import { container } from 'tsyringe'
 import { onMounted, onUnmounted, ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
+import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
@@ -82,6 +85,8 @@ const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
 
 // utils
+const { ref_alert_reach_limit } = storeToRefs(commonStore)
+
 const { t: $t } = useI18n()
 const $router = useRouter()
 const $delay = container.resolve(Delay)
@@ -102,6 +107,8 @@ watch(
 )
 
 onMounted(() => {
+  checkOverLimit()
+
   $main.getPageInfoToChat()
 
   $main.markOrgHaveZalo()
@@ -123,6 +130,13 @@ onUnmounted(() => {
   window.removeEventListener('focus', checkFocusChatTab)
   window.removeEventListener('blur', checkFocusChatTab)
 })
+
+/** hàm kiểm tra xem đã vượt giới hạn gói chưa */
+function checkOverLimit() {
+  if (orgStore.isOverLimit()) {
+    ref_alert_reach_limit.value?.toggleModal()
+  }
+}
 
 /**chuyển đến trang dashboard */
 function goDashboard() {
