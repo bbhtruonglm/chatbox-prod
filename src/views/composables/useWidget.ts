@@ -1,12 +1,30 @@
-import { usePageStore } from "@/stores"
-import { getIframeUrl } from "@/service/function"
+import { useConversationStore, usePageStore } from '@/stores'
+import { getIframeUrl } from '@/service/function'
 
-import type { AppInstalledInfo } from "@/service/interface/app/widget"
+import type { AppInstalledInfo } from '@/service/interface/app/widget'
+import { container } from 'tsyringe'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
 
 /** xử lý logic với danh sách widget */
 export function useWidget() {
+  const $local_storage = container.resolve(LocalStorage)
+
   /** store */
   const pageStore = usePageStore()
+  const conversationStore = useConversationStore()
+
+  /** danh sách id các widget luôn hiển thị của page hiện tại */
+  function getDefaultVisibleWidgets() {
+    const DEFAULT_VISIBLE_WIDGETS = $local_storage.getItem(
+      'default_visible_widgets',
+      {}
+    )
+
+    /** id trang hiện tại */
+    const PAGE_ID = conversationStore.select_conversation?.fb_page_id || ''
+
+    return DEFAULT_VISIBLE_WIDGETS[PAGE_ID] || []
+  }
 
   /**ẩn hiện widget */
   function toggleWidget(widget: AppInstalledInfo) {
@@ -30,7 +48,9 @@ export function useWidget() {
         item.is_show = IS_SHOW
       }
       // ẩn tất cả các widget còn lại
-      else item.is_show = false
+      else if(!item.is_show || !getDefaultVisibleWidgets().includes(item._id)) {
+        item.is_show = false
+      }
     })
   }
 
@@ -44,6 +64,6 @@ export function useWidget() {
   }
   return {
     toggleWidget,
-    toggleAllWidget
+    toggleAllWidget,
   }
 }

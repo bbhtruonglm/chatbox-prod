@@ -216,6 +216,11 @@ const filter_show_with_shortcut = ref('')
 watch(
   () => commonStore.keyboard_shortcut,
   new_value => {
+    // nếu là xóa bộ lọc và đang lọc thì xóa hết các bộ lọc
+    if (new_value === 'clear_all_filter' && isFilterActive()) {
+      $main.clearAllFilter()
+    }
+
     /** map từ key shortcut sang ref của dropdown */ 
     const FILTER_MAP: Record<string, {
       filter_dropdown_ref?: { is_open: boolean }
@@ -231,11 +236,10 @@ watch(
     }
 
     // nếu không liên quan đến lọc thì thôi
-    if (!FILTER_MAP[new_value]) return
-
-    // nếu là xóa bộ lọc và đang lọc thì xóa hết các bộ lọc
-    if (new_value === 'clear_all_filter' && isFilterActive()) {
-      $main.clearAllFilter()
+    if (!FILTER_MAP[new_value]) {
+      // clear data
+      commonStore.keyboard_shortcut = ''
+      return
     }
 
     /** id của bộ lọc đang bật */

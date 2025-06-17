@@ -32,7 +32,7 @@
           <p>{{ $t('Chat') }}</p>
           <p
             v-if="conversationStore.count_conversation?.chat"
-            class="rounded-full bg-red-500 text-white text-xxs px-1 leading-[14px] max-w-20 truncate"
+            class="rounded-full bg-slate-200 text-slate-700 font-medium text-xxs px-1 leading-[14px] max-w-20 truncate"
           >
             {{ currency(conversationStore.count_conversation.chat) }}
           </p>
@@ -49,7 +49,7 @@
           <p>{{ $t('Bài viết') }}</p>
           <p
             v-if="conversationStore.count_conversation?.post"
-            class="rounded-full bg-red-500 text-white text-xxs px-1 leading-[14px] max-w-20 truncate"
+            class="rounded-full bg-slate-200 text-slate-700 font-medium text-xxs px-1 leading-[14px] max-w-20 truncate"
           >
             {{ currency(conversationStore.count_conversation.post) }}
           </p>
