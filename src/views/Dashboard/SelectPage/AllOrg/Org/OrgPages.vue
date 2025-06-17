@@ -4,9 +4,9 @@
     class="bg-white rounded-b-lg flex flex-col gap-3"
   >
     <template v-for="(group, key) of grouped_page_list">
-      <div class="text-xs flex flex-col gap-0.5 group/platform">
+      <div class="flex flex-col gap-0.5 group/platform">
         <div
-          class="flex justify-between items-center rounded bg-slate-100 px-1 py-0.5"
+          class="flex justify-between items-center rounded bg-slate-100 px-1 py-0.5 text-xs"
         >
           <div class="flex items-center gap-1">
             <PageTypeIcon

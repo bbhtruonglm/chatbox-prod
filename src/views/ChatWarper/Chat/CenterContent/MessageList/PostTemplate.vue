@@ -5,7 +5,7 @@
   >
     <div
       v-if="message?.ad_id"
-      class="text-xs text-center"
+      class="text-xs text-right"
     >
       <span class="text-slate-500 whitespace-nowrap mr-1">
         {{ $t('v1.view.main.dashboard.chat.post.ad_from') }}

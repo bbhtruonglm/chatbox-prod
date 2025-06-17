@@ -70,11 +70,11 @@
         />
       </MenuItem>
     </template>
-    <MenuItem
+    <!-- <MenuItem
       @click="openKeyboardShortcutModal()"
       :icon="QuestionMarkCircleIcon"
       :title="$t('v1.view.main.dashboard.header.menu.keyboard_shortcut')"
-    />
+    /> -->
     <MenuItem
       v-if="chatbotUserStore.isBbhMember()"
       @click="$external_site.openSystemDashboard()"

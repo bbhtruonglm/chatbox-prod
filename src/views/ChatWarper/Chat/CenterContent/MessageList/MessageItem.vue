@@ -38,7 +38,10 @@
         :attachment_size
         :message
       />
-      <PhoneAction :message />
+      <PhoneAction 
+        :message 
+        v-if="messageStore.list_message_id === 'list-message'"
+      />
     </SliderWarper>
     <!-- <div
       v-if="message?.reaction?.emoji"
