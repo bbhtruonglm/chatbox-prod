@@ -16,16 +16,17 @@
     />
     <template v-if="uid">
       <MenuItem
-        @click="openFbProfile"
-        :icon="UserCircleIcon"
-        :title="$t('v1.view.main.dashboard.chat.action.open_facebook')"
+        @click="openPageInbox"
+        :icon="InboxIcon"
+        :title="$t('v1.view.main.dashboard.chat.action.open_inbox')"
       >
         <NewTabIcon class="w-4 h-4 text-gray-500" />
       </MenuItem>
       <MenuItem
-        @click="openPageInbox"
-        :icon="InboxIcon"
-        :title="$t('v1.view.main.dashboard.chat.action.open_inbox')"
+        @click="openFbProfile"
+        :icon="FacebookIcon"
+        class_icon="size-4"
+        :title="$t('v1.view.main.dashboard.chat.action.open_facebook')"
       >
         <NewTabIcon class="w-4 h-4 text-gray-500" />
       </MenuItem>
@@ -39,11 +40,8 @@
           ? $t('v1.view.main.dashboard.chat.action.alow_user')
           : $t('v1.view.main.dashboard.chat.action.block_user')
       "
-      :class_icon="
-        conversationStore.select_conversation?.is_spam_fb
-          ? 'text-red-500 w-5 h-5'
-          : 'w-5 h-5'
-      "
+      :class_icon="'text-red-500 size-5'"
+      class="text-red-500"
     >
       <Loading
         v-if="is_loading_spam_conversation"
@@ -54,23 +52,23 @@
   <ClientInfo ref="client_info_modal_ref" />
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { toggle_spam_conversation } from '@/service/api/chatbox/n4-service'
+import { openNewTab } from '@/service/function'
+import { flow } from '@/service/helper/async'
 import { useConversationStore } from '@/stores'
 import { keyBy, map } from 'lodash'
-import { toggle_spam_conversation } from '@/service/api/chatbox/n4-service'
-import { flow } from '@/service/helper/async'
-import { openNewTab } from '@/service/function'
+import { computed, ref } from 'vue'
 
-import Loading from '@/components/Loading.vue'
 import Dropdown from '@/components/Dropdown.vue'
+import Loading from '@/components/Loading.vue'
 import MenuItem from '@/components/Main/Dashboard/MenuItem.vue'
 import ClientInfo from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo.vue'
 
-import UserIcon from '@/components/Icons/User.vue'
-import UserCircleIcon from '@/components/Icons/UserCircle.vue'
+import FacebookIcon from '@/components/Icons/Facebook.vue'
 import InboxIcon from '@/components/Icons/Inbox.vue'
 import MinusIcon from '@/components/Icons/Minus.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
+import UserIcon from '@/components/Icons/User.vue'
 
 import type { CbError } from '@/service/interface/function'
 

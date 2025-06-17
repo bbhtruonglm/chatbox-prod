@@ -30,6 +30,7 @@
     </template>
     <template #action>
       <OrgTitleAction
+        v-if="size(active_page_list)"
         v-model:selected_platform="selected_platform"
         :org_id
         :active_page_list
