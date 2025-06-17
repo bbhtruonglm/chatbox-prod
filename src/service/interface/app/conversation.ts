@@ -87,6 +87,8 @@ export interface ConversationInfo {
     platform_type?: PageType
     /**id của nhân viên được assign cho khách này */
     fb_staff_id?: string
+    /** tên gốc của khách hàng */
+    client_origin_name?: string
     /**tên khách hàng */
     client_name?: string
     /**ảnh đại diện của khách hàng nếu có */
