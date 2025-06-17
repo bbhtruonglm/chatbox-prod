@@ -32,7 +32,6 @@
       <MessageList
         v-if="conversationStore.select_conversation"
         class="h-full"
-        :list_message_id="'iframe-message-list'"
       />
       <div
         v-else
@@ -70,7 +69,7 @@
       />
     </div>
 
-    <InputChat :client_id="client_id" :list_message_id="'iframe-message-list'"/>
+    <InputChat :client_id="client_id"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -80,6 +79,7 @@ import {
   useChatbotUserStore,
   useCommonStore,
   useConversationStore,
+  useMessageStore,
   usePageStore
 } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
@@ -111,6 +111,7 @@ import type { IAlert } from '@/utils/helper/Alert/type'
 
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
+const messageStore = useMessageStore()
 const conversationStore = useConversationStore()
 const chatbotUserStore = useChatbotUserStore()
 const $toast = container.resolve(Toast)
@@ -423,6 +424,8 @@ onMounted(async () => {
 
   // lắng nghe sự kiện từ iframe cha
   window.parent.addEventListener('message', handleEvent)
+
+  messageStore.list_message_id = 'iframe-list-message'
 })
 
 onUnmounted(() => {
