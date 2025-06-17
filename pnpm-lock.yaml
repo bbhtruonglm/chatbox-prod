@@ -14,6 +14,9 @@ importers:
       '@heroicons/vue':
         specifier: ^2.2.0
         version: 2.2.0(vue@3.4.27(typescript@4.7.4))
+      '@lottiefiles/dotlottie-vue':
+        specifier: ^0.7.0
+        version: 0.7.0(vue@3.4.27(typescript@4.7.4))
       '@vueuse/core':
         specifier: ^12.4.0
         version: 12.4.0(typescript@4.7.4)
@@ -473,6 +476,14 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@lottiefiles/dotlottie-vue@0.7.0':
+    resolution: {integrity: sha512-RKJGqnqDu3b8me0C2YivxDF9LRjH/em4mw7Ds1OW9H8uCqCs95nJVSqXPGGTiT2lURjQpvSD2Xk2c01eMnPBQg==}
+    peerDependencies:
+      vue: ^3.3.4
+
+  '@lottiefiles/dotlottie-web@0.45.0':
+    resolution: {integrity: sha512-MAgb6ea2JK80X8hNQruUOMAkA1G5dFcC9ZEgylvazuUwr/KbQuvoRS7WFI6Z/0dFPyxoj9wEaZ8i2Q9aZlrLzg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2113,6 +2124,13 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  '@lottiefiles/dotlottie-vue@0.7.0(vue@3.4.27(typescript@4.7.4))':
+    dependencies:
+      '@lottiefiles/dotlottie-web': 0.45.0
+      vue: 3.4.27(typescript@4.7.4)
+
+  '@lottiefiles/dotlottie-web@0.45.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:

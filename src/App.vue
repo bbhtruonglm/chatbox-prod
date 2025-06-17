@@ -35,7 +35,7 @@ import { confirm } from './service/helper/alert'
 const commonStore = useCommonStore()
 const $toast = container.resolve(Toast)
 
-useKeyboardShortcut()
+// useKeyboardShortcut()
 
 class Main {
   /**
