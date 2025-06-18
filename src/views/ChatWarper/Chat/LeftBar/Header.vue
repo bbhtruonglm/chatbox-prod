@@ -177,6 +177,19 @@ const filter = computed(() => {
       $t('v1.view.main.dashboard.chat.filter.interact.comment')
     )
   }
+  /** nếu là lọc tương tác từ bạn bè */
+  if (conversationStore.option_filter_page_data.display_style === 'FRIEND') {
+    FILTER_GENERAL.push(
+      $t('v1.view.main.dashboard.chat.filter.interact.friend')
+    )
+  }
+  /** nếu là lọc tương tác từ nhóm */
+  if (conversationStore.option_filter_page_data.display_style === 'GROUP') {
+    FILTER_GENERAL.push(
+      $t('v1.view.main.dashboard.chat.filter.interact.group')
+    )
+  }
+
   /** nếu là lọc chưa đọc */
   if (conversationStore.option_filter_page_data.unread_message === 'true') {
     FILTER_GENERAL.push($t('v1.view.main.dashboard.chat.filter.message.unread'))
