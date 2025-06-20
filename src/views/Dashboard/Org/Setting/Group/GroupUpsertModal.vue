@@ -38,54 +38,116 @@
           :title="$t('Trang')"
           :total_item_selected="$main.countSelectedItems(map_group_pages)"
         >
-          <GroupItem
-            v-for="os of orgStore.list_os"
-            :name="os?.page_info?.name"
-            v-model="map_group_pages[os?.page_info?.fb_page_id || '']"
-          >
-            <template #avatar>
-              <PageAvatar
-                :page_info="os?.page_info"
-                class="item-avatar"
-              />
-            </template>
-            <template #type>
-              <PageTypeIcon
-                :page_type="os?.page_info?.type"
-                class="size-3.5"
-              />
-            </template>
-            <template #info>
-              {{ os?.page_info?.fb_page_id }}
-            </template>
-          </GroupItem>
+          <template #action>
+            <div class="flex gap-2 items-center">
+              <p
+                v-if="$main.countSelectedItems(map_group_pages)"
+                class="text-sm font-medium"
+              >
+                {{ $t('Đã chọn') }}:
+                {{ $main.countSelectedItems(map_group_pages) }}
+                {{ $t('Trang') }}
+              </p>
+              <div
+                class="py-1.5 px-2 rounded-lg flex gap-2 bg-white items-center"
+              >
+                <MagnifyingGlassIcon class="size-3.5 text-slate-500" />
+                <input
+                  v-model="search_page"
+                  type="text"
+                  class="text-xs outline-none"
+                  :placeholder="$t('Tìm kiếm')"
+                />
+              </div>
+            </div>
+          </template>
+          <template #group>
+            <div
+              v-for="(pages, key) of grouped_pages"
+              class="flex flex-col gap-2 text-sm"
+            >
+              <div class="flex gap-2 items-center font-medium">
+                <PageTypeIcon
+                  :page_type="key"
+                  class="size-5"
+                />
+                <p>{{ $t('v1.common.' + key?.toLocaleLowerCase()) }}</p>
+              </div>
+              <GroupItem
+                v-for="os of pages"
+                :name="os?.page_info?.name"
+                v-model="map_group_pages[os?.page_info?.fb_page_id || '']"
+              >
+                <template #avatar>
+                  <PageAvatar
+                    :page_info="os?.page_info"
+                    class="item-avatar"
+                  />
+                </template>
+                <template #type>
+                  <PageTypeIcon
+                    :page_type="os?.page_info?.type"
+                    class="size-3.5"
+                  />
+                </template>
+                <template #info>
+                  {{ os?.page_info?.fb_page_id }}
+                </template>
+              </GroupItem>
+            </div>
+          </template>
         </GroupSection>
         <GroupSection
           :title="$t('Thành viên')"
           :total_item_selected="$main.countSelectedItems(map_group_staffs)"
         >
-          <GroupItem
-            v-for="ms of orgStore.list_ms"
-            :name="ms?.user_info?.full_name"
-            v-model="map_group_staffs[ms?.staff_id || '']"
-          >
-            <template #avatar>
-              <StaffAvatar
-                :id="ms?.staff_id"
-                class="item-avatar"
-              />
-            </template>
-            <template #info>
-              {{ ms?.staff_id }}
-              -
-              <template v-if="$member_ship_helper.isAdmin(ms)">
-                {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+          <template #action>
+            <div class="flex gap-2 items-center">
+              <p
+                v-if="$main.countSelectedItems(map_group_staffs)"
+                class="text-sm font-medium"
+              >
+                {{ $t('Đã chọn') }}:
+                {{ $main.countSelectedItems(map_group_staffs) }}
+                {{ $t('Thành viên') }}
+              </p>
+              <div
+                class="py-1.5 px-2 rounded-lg flex gap-2 bg-white items-center"
+              >
+                <MagnifyingGlassIcon class="size-3.5 text-slate-500" />
+                <input
+                  v-model="search_staff"
+                  type="text"
+                  class="text-xs outline-none"
+                  :placeholder="$t('Tìm kiếm')"
+                />
+              </div>
+            </div>
+          </template>
+          <template #group>
+            <GroupItem
+              v-for="ms of filtered_staffs"
+              :name="ms?.user_info?.full_name"
+              v-model="map_group_staffs[ms?.staff_id || '']"
+            >
+              <template #avatar>
+                <StaffAvatar
+                  :id="ms?.staff_id"
+                  class="item-avatar"
+                />
               </template>
-              <template v-else>
-                {{ $t('v1.view.main.dashboard.org_staff.member') }}
+              <template #info>
+                {{ ms?.staff_id }}
+                -
+                <template v-if="$member_ship_helper.isAdmin(ms)">
+                  {{ $t('v1.view.main.dashboard.org_staff.admin') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org_staff.member') }}
+                </template>
               </template>
-            </template>
-          </GroupItem>
+            </GroupItem>
+          </template>
         </GroupSection>
       </div>
     </template>
@@ -112,7 +174,7 @@
   </BaseModal>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useOrgStore } from '@/stores'
 import { SingletonMemberShipHelper } from '@/utils/helper/Billing/MemberShip'
 import { loadingV2 } from '@/utils/decorator/Loading'
@@ -131,6 +193,10 @@ import GroupSection from '@/views/Dashboard/Org/Setting/Group/GroupUpsertModal/G
 import Loading from '@/components/Loading.vue'
 import PageTypeIcon from '@/components/Avatar/PageTypeIcon.vue'
 import { Toast } from '@/utils/helper/Alert/Toast'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import type { MemberShipInfo, OwnerShipInfo } from '@/service/interface/app/billing'
+import { nonAccentVn } from '@/service/helper/format'
+import type { IPage, PageType } from '@/service/interface/app/page'
 
 const { GroupService } = groupService()
 const $emit = defineEmits(['done'])
@@ -153,6 +219,43 @@ const map_group_pages = ref<Record<string, boolean>>({})
 const map_group_staffs = ref<Record<string, boolean>>({})
 /**id nhóm được chọn khi cập nhật */
 const selected_group_id = ref<string>()
+
+/** từ khóa tìm kiếm trang */
+const search_page = ref<string>('')
+
+/** từ kháo tìm kiếm nhân viên */
+const search_staff = ref<string>('')
+
+/** danh sách các trang được group theo nền tảng */
+const grouped_pages = computed<Record<PageType, OwnerShipInfo[]>>(() => {
+  /** kết quả */
+  let result: Record<string, OwnerShipInfo[]> = {}
+
+  orgStore.list_os?.forEach(os => {
+    /** nền tảng của trang */
+    const PLATFORM = os?.page_info?.type
+
+    // nếu không có nền tảng thì thôi
+    if (!PLATFORM) return
+
+    // nếu không thỏa mãn search thì thôi
+    if (!$main.checkSearchPage(search_page.value, os.page_info || {})) return
+
+    /** danh sách trang theo nền tảng */
+    result[PLATFORM] = [...(result[PLATFORM] || []), os]
+  })
+
+  return result
+})
+
+/** danh sách nhân viên đã được lọc theo tìm kiếm */
+const filtered_staffs = computed<MemberShipInfo[]>(() => {
+  return (
+    orgStore.list_ms?.filter(ms =>
+      $main.checkSearchStaff(search_staff.value, ms)
+    ) || []
+  )
+})
 
 const $toast = container.resolve(Toast)
 
@@ -184,6 +287,9 @@ class Main {
       group.group_staffs
     )
     selected_group_id.value = group.group_id
+
+    console.log(group.group_staffs);
+    
   }
   /**ẩn hiện modal */
   toggleModal(group?: IGroup) {
@@ -229,6 +335,31 @@ class Main {
 
     // đóng modal
     this.toggleModal()
+  }
+
+  /** kiểm tra xem từ khóa có nằm trong tên hoặc id trang không */
+  checkSearchPage(key_word: string, page: IPage) {
+    /** từ khóa khi được bỏ dấu và viết hoa và xóa dấu cách*/
+    const KEY_WORD = nonAccentVn(key_word)?.replace(/ /g, '')
+
+    /** tên trang khi được bỏ dấu và viết hoa và xóa dấu cách */
+    const PAGE_NAME = nonAccentVn(page?.name || '')?.replace(/ /g, '')
+
+    return PAGE_NAME.includes(KEY_WORD) || page?.fb_page_id?.includes(KEY_WORD)
+  }
+
+  /** kiểm tra xem từ khóa có năm trong tên hoặc id của nhân sự không */
+  checkSearchStaff(key_word: string, staff?: MemberShipInfo) {
+    /** thông tin của nhân sự */
+    const STAFF = staff?.user_info
+
+    /**—from khóa khi được bỏ dấu và viết hoa và xóa dấu cách*/
+    const KEY_WORD = nonAccentVn(key_word)?.replace(/ /g, '')
+
+    /** tên nhân sự khi được bỏ dấu và viết hoa và xóa dấu cách */
+    const STAFF_NAME = nonAccentVn(STAFF?.full_name || '')?.replace(/ /g, '')
+
+    return STAFF_NAME.includes(KEY_WORD) || staff?.staff_id?.includes(KEY_WORD)
   }
 }
 const $main = new Main()
