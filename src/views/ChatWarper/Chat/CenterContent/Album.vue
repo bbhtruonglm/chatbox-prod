@@ -2,7 +2,7 @@
   <Modal
     ref="album_ref"
     class_modal="h-[630px]"
-    class_body="py-2 flex gap-2"
+    class_body="flex gap-2"
   >
     <template #header>
       {{ $t('v1.view.main.dashboard.chat.album.title') }}
