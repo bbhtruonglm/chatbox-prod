@@ -64,9 +64,9 @@
           <template #group>
             <div
               v-for="(pages, key) of grouped_pages"
-              class="flex flex-col gap-2 text-sm"
+              class="flex flex-col text-sm"
             >
-              <div class="flex gap-2 items-center font-medium">
+              <div class="flex gap-2 items-center font-medium sticky top-0 bg-slate-100 z-10 pb-2">
                 <PageTypeIcon
                   :page_type="key"
                   class="size-5"
@@ -74,6 +74,7 @@
                 <p>{{ $t('v1.common.' + key?.toLocaleLowerCase()) }}</p>
               </div>
               <GroupItem
+                class="mb-2 last-of-type:m-0"
                 v-for="os of pages"
                 :name="os?.page_info?.name"
                 v-model="map_group_pages[os?.page_info?.fb_page_id || '']"
