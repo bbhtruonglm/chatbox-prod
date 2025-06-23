@@ -271,6 +271,9 @@ export function useKeyboardShortcut() {
     'Alt+Shift+M': {
       '/': openWidgetConfig,
     },
+    'Alt': {
+      '/': (e) => e.preventDefault(),
+    },
   }
 
   /** hàm lấy hàm xử lý khi nhấn tổ hợp với màn hiện tại */
