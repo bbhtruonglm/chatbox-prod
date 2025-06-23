@@ -4,7 +4,7 @@ import { saveIndexedDB, getIndexedDB } from '@/service/helper/store'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
-import { filter, map, set, size } from 'lodash'
+import { filter, map, pickBy, set, size } from 'lodash'
 import type {
   AppInfo,
   AppInstalledInfo,
@@ -25,7 +25,7 @@ export const usePageStore = defineStore('page_store', () => {
   const orgStore = useOrgStore()
   const pageManagerStore = usePageManagerStore()
 
-  const {filterPageByGroup} = usePageManager()
+  const { filterPageByGroup } = usePageManager()
 
   /** dữ liệu của tất cả các page người dùng cho thể truy cập */
   const all_page_list = ref<PageList>({})
@@ -141,9 +141,24 @@ export const usePageStore = defineStore('page_store', () => {
   const zlp_oss = ref<OwnerShipInfo[]>()
 
   /**--------------- GETTER ------------ */
-  /**đếm số trang đang kích hoạt */
+  /**đếm số trang đang kích hoạt của tổ chức đang chọn*/
   function countActivePage() {
-    return size(active_page_list.value)
+    return size(
+      // lấy ra các page cả tổ chức đang chọn
+      pickBy(
+        active_page_list.value,
+        value => {
+          /** ID của page */
+          const PAGE_ID = value?.page?.fb_page_id!
+
+          /** ID tổ chức của page */
+          const ORG_ID = map_orgs.value?.map_page_org?.[PAGE_ID]
+
+          // nếu trùng với id tổ chức đang chọn thì trả về true
+          return ORG_ID === orgStore.selected_org_id
+        }
+      )
+    )
   }
   /**đếm số lượng page được chọn */
   function countSelectedPage() {
