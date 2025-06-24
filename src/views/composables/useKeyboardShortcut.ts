@@ -124,8 +124,9 @@ export function useKeyboardShortcut() {
   }
 
   /** toggle hiện thị danh sách nhãn */
-  const toggleLabel = () => {
+  const toggleLabel = (e: KeyboardEvent) => {
     commonStore.keyboard_shortcut = 'toggle_labels'
+    e.preventDefault()
   }
 
   /** mở xem hồ sở của khách hiện tại */
@@ -237,7 +238,7 @@ export function useKeyboardShortcut() {
     'Alt+K': {
       '/': toggleSearch,
     },
-    'Shift+L': {
+    'Control+L': {
       '/': toggleLabel,
     },
     'Control+P': {
@@ -269,6 +270,9 @@ export function useKeyboardShortcut() {
     },
     'Alt+Shift+M': {
       '/': openWidgetConfig,
+    },
+    'Alt': {
+      '/': (e) => e.preventDefault(),
     },
   }
 

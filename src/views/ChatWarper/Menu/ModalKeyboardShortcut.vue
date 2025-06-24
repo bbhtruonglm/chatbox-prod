@@ -196,7 +196,7 @@ const SHORTCUT_LIST = [
       {
         icon: SwatchIcon,
         name: 'Ẩn/hiện nhãn',
-        key: ['Shift', 'L'],
+        key: ['Ctrl', 'L'],
       },
     ],
   },
