@@ -121,8 +121,12 @@ export const selectConversation = (
 }
 
 /**cuộn xuống cuối trang */
-export const scrollToBottomMessage = () => {
-  const LIST_MESSAGE = document.getElementById('list-message')
+export const scrollToBottomMessage = (id?:string) => {
+
+  /** id của danh sách tin nhắn */
+  const ID = id || 'list-message'
+
+  const LIST_MESSAGE = document.getElementById(ID)
 
   if (!LIST_MESSAGE) return
 

@@ -5,9 +5,10 @@
         v-if="button.type"
         @click="onClickBtn(button)"
         :class="
-          isAction(button)
-            ? 'bg-slate-800 text-yellow-200'
-            : 'bg-slate-600 text-slate-100 cursor-not-allowed'
+          {
+            'bg-slate-800 text-yellow-200': isAction(button),
+            'bg-slate-600 text-slate-100 cursor-not-allowed': !isAction(button),
+          }
         "
         class="py-2 px-4 flex justify-center items-center gap-1 rounded-lg text-sm font-medium"
       >
@@ -28,7 +29,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { getIframeUrl, getPageInfo, openNewTab } from '@/service/function'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, useMessageStore, usePageStore } from '@/stores'
 
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 import Widget from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Widget.vue'
@@ -62,6 +63,7 @@ const $props = withDefaults(
 
 const { t: $t } = useI18n()
 const conversationStore = useConversationStore()
+const messageStore = useMessageStore()
 const pageStore = usePageStore()
 
 /**ref của modal widget */
@@ -102,6 +104,9 @@ function genBtnTitle(button: MessageTemplateButton) {
 }
 /**kiểm tra xem button có bấm được không */
 function isAction(button: MessageTemplateButton) {
+  // nếu là trong iframe thì không cho bấm
+  if(messageStore.list_message_id !== 'list-message') return false
+  
   // nếu có url thì mở được tab mới
   if (button.type === 'web_url') return true
 

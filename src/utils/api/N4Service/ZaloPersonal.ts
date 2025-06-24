@@ -21,9 +21,9 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
   /**gửi lời mời kết bạn */
   public async sendFriendRequest(
     page_id: string,
-    message_id: string,
     actual_page_id:string,
-    actual_client_id:string
+    actual_client_id:string,
+    message_id?: string
   ): Promise<{
     /**đã kết bạn chưa */
     is_accept_friend_request?: boolean
@@ -32,7 +32,8 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
       page_id,
       message_id,
       actual_page_id,
-      actual_client_id
+      actual_client_id,
+      // client_id,
     })
   }
 
@@ -48,6 +49,18 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
     return this.post('get_group_member', {
       page_id,
       group_id,
+    })
+  }
+
+  /** 
+   * Lấy id của khách đã nhắn với nhóm zalo đã chọn
+   * @param page_id id của trang
+   * @param message_id id của tin nhắn
+   */
+  public async getClientId(page_id:string, message_id:string): Promise<string> {
+    return this.post('get_client_id_by_message', {
+      page_id,
+      message_id
     })
   }
 }

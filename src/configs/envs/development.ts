@@ -13,7 +13,7 @@ const ENV: IEnv = {
     ai: 'https://dev-api.botbanhang.vn/v1/ai',
     chatbot: 'https://dev-api.botbanhang.vn/v1/chatbot/n3_service',
     n4_service_v1: 'https://dev-api.botbanhang.vn/service',
-    n5_app_v1: 'https://dev-api.botbanhang.vn/app',
+    n5_app_v1: 'http://rgwkwkosk008occgww84k044.34.143.225.69.sslip.io',
     n8_merge: 'https://merge.sellingpage.net',
     widget: 'https://chatbox-widget.botbanhang.vn',
     n8_merge_v2: 'https://dev-api.botbanhang.vn/v1/n8_merge',
@@ -28,7 +28,7 @@ const ENV: IEnv = {
   external_link: {
     setting: 'https://bbh-setting-dev.vercel.app',
     analytic: 'https://bbh-chart-nu.vercel.app',
-    chatbot: 'https://chatbot.sellingpage.net/#',
+    chatbot: 'https://chatbot-dashboard-nine.vercel.app/#',
     chatbox: 'https://chat-dev.botbanhang.vn',
     download: 'https://sellingpage.net/download',
     merchant: 'https://merchant.vn',

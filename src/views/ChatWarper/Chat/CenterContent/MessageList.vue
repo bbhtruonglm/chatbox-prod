@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!conversationStore.select_conversation"
+    v-if="!select_conversation"
     class="w-full h-full flex justify-center items-center text-slate-500 gap-1"
   >
     <ChatIcon class="w-5" />
@@ -19,15 +19,11 @@
     >
       {{ $t('v1.view.main.dashboard.org.lock_free_page_over_quota') }}
     </div>
-    <FullPost
-      v-else-if="
-        conversationStore.select_conversation.conversation_type === 'POST'
-      "
-    />
+    <FullPost v-else-if="select_conversation.conversation_type === 'POST'" />
     <div
       v-else
       @scroll="onScrollMessage"
-      id="list-message"
+      :id="messageStore.list_message_id"
       class="pt-14 pb-5 pl-2 pr-3 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
@@ -40,14 +36,14 @@
       </div>
       <!-- <HeaderChat /> -->
       <div
-        v-for="(message, index) of messageStore.list_message"
+        v-for="(message, index) of show_list_message"
         :key="message._id"
         class="relative"
       >
         <div class="flex flex-col gap-2">
           <UnReadAlert :index />
           <TimeSplit
-            :before_message="messageStore.list_message?.[index - 1]"
+            :before_message="show_list_message?.[index - 1]"
             :now_message="message"
           />
         </div>
@@ -68,7 +64,7 @@
             class="flex-shrink-0"
           >
             <ClientAvatar
-              :conversation="conversationStore.select_conversation"
+              :conversation="select_conversation"
               :avatar="message?.group_client_avatar"
               class="w-8 h-8"
             />
@@ -196,9 +192,13 @@ import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnRea
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 import ChatIcon from '@/components/Icons/Chat.vue'
 
-import type { MessageInfo } from '@/service/interface/app/message'
+import type {
+  MessageInfo,
+  TempSendMessage,
+} from '@/service/interface/app/message'
 import type { CbError } from '@/service/interface/function'
 import type { DebouncedFunc } from 'lodash'
+import type { ConversationInfo } from '@/service/interface/app/conversation'
 
 /**dữ liệu từ socket */
 interface CustomEvent extends Event {
@@ -228,9 +228,28 @@ const list_debounce_staff = ref<{
   [index: string]: DebouncedFunc<any>
 }>({})
 
-watch(
-  () => conversationStore.select_conversation,
-  (new_val, old_val) => {
+/** hội thoại đang chọn */
+const select_conversation = computed(() => {
+  return conversationStore.select_conversation
+})
+
+/** danh sách tin nhắn */
+const show_list_message = computed(() => messageStore.list_message)
+
+/**vị trí của tin nhắn cuối cùng nhân viên gửi */
+const last_client_message_index = computed(() =>
+  findLastIndex(
+    show_list_message.value,
+    m => m.message_type === 'page' && !!m.message_metadata
+  )
+)
+
+// lắng nghe sự kiện từ socket khi component được tạo ra
+onMounted(() => {
+  // * reset danh sách tin nhắn lúc mới vào nếu không mở bằng modal
+  messageStore.list_message = []
+
+  if(true) {
     // * reset danh sách tin nhắn khi đổi khách hàng
     messageStore.list_message = []
 
@@ -245,19 +264,6 @@ watch(
 
     getListMessage(true)
   }
-)
-/**vị trí của tin nhắn cuối cùng nhân viên gửi */
-const last_client_message_index = computed(() =>
-  findLastIndex(
-    messageStore.list_message,
-    m => m.message_type === 'page' && !!m.message_metadata
-  )
-)
-
-// lắng nghe sự kiện từ socket khi component được tạo ra
-onMounted(() => {
-  // * reset danh sách tin nhắn lúc mới vào
-  messageStore.list_message = []
 
   // tin nhắn mới
   window.addEventListener('chatbox_socket_message', socketNewMessage)
@@ -278,6 +284,25 @@ onUnmounted(() => {
   )
 })
 
+watch(
+  () => select_conversation.value,
+  (new_val, old_val) => {
+    // * reset danh sách tin nhắn khi đổi khách hàng
+    messageStore.list_message = []
+
+    // * reset danh sách tin nhắn chờ
+    messageStore.send_message_list = []
+
+    // reset cờ đã load hết dữ liệu
+    is_done.value = false
+
+    // reset phân trang
+    skip.value = 0
+
+    getListMessage(true)
+  }
+)
+
 /**có khoá truy cập của trang này không */
 function isLockPage(): boolean {
   // chỉ lock với gói free
@@ -287,10 +312,7 @@ function isLockPage(): boolean {
   if (orgStore.selected_org_info?.org_package?.org_is_lock_client) return true
 
   // nếu page bị lock từ trước, thì cũng lock
-  if (
-    getPageInfo(conversationStore.select_conversation?.fb_page_id)
-      ?.is_lock_client
-  )
+  if (getPageInfo(select_conversation.value?.fb_page_id)?.is_lock_client)
     return true
 
   // tổ chức free + page chưa bị lock -> ok
@@ -313,8 +335,8 @@ function socketNewMessage({ detail }: CustomEvent) {
 
   // nếu không phải của khách hàng đang chọn thì chặn
   if (
-    detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
-    detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
+    detail.fb_page_id !== select_conversation.value?.fb_page_id ||
+    detail.fb_client_id !== select_conversation.value.fb_client_id
   )
     return
 
@@ -346,7 +368,7 @@ function socketNewMessage({ detail }: CustomEvent) {
       message => message.message_id === detail?.message_mid
     )
 
-  scrollToBottomMessage()
+  scrollToBottomMessage(messageStore.list_message_id)
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
 function socketUpdateMssage({ detail }: CustomEvent) {
@@ -355,8 +377,8 @@ function socketUpdateMssage({ detail }: CustomEvent) {
 
   // nếu không phải của khách hàng đang chọn thì chặn
   if (
-    detail.fb_page_id !== conversationStore.select_conversation?.fb_page_id ||
-    detail.fb_client_id !== conversationStore.select_conversation.fb_client_id
+    detail.fb_page_id !== select_conversation.value?.fb_page_id ||
+    detail.fb_client_id !== select_conversation.value.fb_client_id
   )
     return
 
@@ -416,8 +438,8 @@ function getListMessage(is_scroll?: boolean) {
   if (!commonStore.is_connected_internet) return
 
   // nếu chưa chọn khách hàng thì thôi
-  if (!conversationStore.select_conversation?.fb_page_id) return
-  if (!conversationStore.select_conversation?.fb_client_id) return
+  if (!select_conversation.value?.fb_page_id) return
+  if (!select_conversation.value?.fb_client_id) return
 
   /**id tin nhắn trên đầu của lần loading trước */
   let old_first_message_id = messageStore.list_message?.[0]?._id
@@ -431,41 +453,13 @@ function getListMessage(is_scroll?: boolean) {
         cb()
       },
       // * đọc dữ liệu từ api
-      (cb: CbError) =>
-        read_message(
-          {
-            page_id: conversationStore.select_conversation?.fb_page_id,
-            client_id: conversationStore.select_conversation?.fb_client_id,
-            skip: skip.value,
-            limit: LIMIT,
-          },
-          (e, r) => {
-            if (e) return cb(e)
-            if (!r || !r.length) {
-              // gắn cờ đã load hết dữ liệu
-              is_done.value = true
-
-              return cb()
-            }
-
-            // đảo chiều mảng
-            r.reverse()
-
-            // thêm dữ liệu đã đảo chiều lên đầu
-            messageStore.list_message.unshift(...r)
-
-            // trang tiếp theo
-            skip.value += LIMIT
-
-            cb()
-          }
-        ),
+      (cb: CbError) => tryLoadUntilScrollable(cb),
       // * làm cho scroll to top mượt hơn
       (cb: CbError) => {
         // chạy infinitve loading scroll
         nextTick(() => {
           // lấy div chưa danh sách tin nhắn
-          const LIST_MESSAGE = document.getElementById('list-message')
+          const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
           if (!LIST_MESSAGE) return
 
@@ -489,9 +483,9 @@ function getListMessage(is_scroll?: boolean) {
 
       // load lần đầu thì tự động cuộn xuống
       if (is_scroll) {
-        scrollToBottomMessage()
+        scrollToBottomMessage(messageStore.list_message_id)
 
-        setTimeout(() => scrollToBottomMessage(), 500)
+        setTimeout(() => scrollToBottomMessage(messageStore.list_message_id), 500)
       }
 
       if (e) {
@@ -546,6 +540,59 @@ function visibleLastStaffReadAvatar(staff_id: string) {
       else element.style.display = 'block'
     })
   }
+}
+
+/** hàm load dữ liệu cho đến khi danh sách có thể scroll */
+const tryLoadUntilScrollable = (cb: CbError) => {
+  read_message(
+    {
+      page_id: conversationStore.select_conversation?.fb_page_id,
+      client_id: conversationStore.select_conversation?.fb_client_id,
+      skip: skip.value,
+      limit: LIMIT,
+    },
+    (e, r) => {
+      // nếu lỗi thì thôi
+      if (e) return cb(e)
+
+      // không có kết quả thì thôi hoặc đã lấy hết dữ liệu thì thôi
+      if (!r || !r.length) {
+        is_done.value = true
+        return cb()
+      }
+
+      // đảo ngược mảng
+      r.reverse()
+
+      // thêm vào danh sách lên đầu
+      messageStore.list_message.unshift(...r)
+
+      // trang tiếp theo
+      skip.value += LIMIT
+
+      // ⚠️ Gọi lại nếu chưa scroll được
+      // Dùng nextTick nếu Vue chưa render kịp
+      nextTick(() => {
+        // lấy div chưa danh sách tin nhắn
+        const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
+
+        // nếu không có thì thôi
+        if (!LIST_MESSAGE) return
+
+        // nếu chưa thể scroll thì load tiếp
+        if (
+          LIST_MESSAGE.scrollHeight <= LIST_MESSAGE.clientHeight &&
+          !is_done.value
+        ) {
+          // chưa scroll được, tiếp tục load thêm
+          tryLoadUntilScrollable(cb)
+        } else {
+          // đã scroll được, hoặc đã hết dữ liệu
+          cb()
+        }
+      })
+    }
+  )
 }
 </script>
 <style scoped lang="scss">

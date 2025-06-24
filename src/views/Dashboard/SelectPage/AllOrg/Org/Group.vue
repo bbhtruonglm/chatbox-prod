@@ -7,7 +7,7 @@
   >
     <ul class="flex font-medium">
       <li
-        class="max-w-24 truncate py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+        class="flex-shrink-0 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
         :class="{
           'bg-slate-100 !text-black': selected_group_id === 'ALL',
         }"
@@ -29,7 +29,7 @@
     </ul>
     <div
       v-if="hidden_groups?.length"
-      class="max-w-24 flex items-center gap-1 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
+      class="max-w-48 flex items-center gap-1 py-1 px-3 rounded text-slate-700 cursor-pointer hover:bg-slate-100"
       :class="{
         'bg-slate-100 !text-black': selected_hidden_group?.group_id,
       }"
@@ -137,30 +137,33 @@ class Main {
     // lưu lại vào reactive để hiển thị
     groups.value = RES
 
-    // nếu là group duy nhất và là tk nhân viên thì chọn group đó luôn
-    if (is_single_group.value) {
-      selected_group_id.value = groups.value[0]?.group_id || ''
-    }
-
-    // tính toán lại độ rộng các nhóm
-    group_widths.value = measureAllGroupWidths()
-
-    // cập nhật lại các nhóm hiển thị
-    updateGroups()
-
-    // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
-    RES?.forEach(group => {
-      group?.group_pages?.forEach(page_id => {
-        // nếu không có id page hoặc id nhóm thì thôi
-        if (!page_id || !group?.group_id || !group?.org_id) return
-
-        // lưu ánh xạ từ id page tới id nhóm
-        pageManagerStore.pape_to_group_map[page_id] = [
-          ...(pageManagerStore.pape_to_group_map[page_id] || []),
-          group?.group_id,
-        ]
+    nextTick(()=>{
+      // nếu là group duy nhất và là tk nhân viên thì chọn group đó luôn
+      if (is_single_group.value) {
+        selected_group_id.value = access_groups.value?.[0]?.group_id || ''
+      }
+  
+      // tính toán lại độ rộng các nhóm
+      group_widths.value = measureAllGroupWidths()
+  
+      // cập nhật lại các nhóm hiển thị
+      updateGroups()
+  
+      // lặp qua các nhóm lưu lại ánh xạ id của từng page với id nhóm của page đó
+      RES?.forEach(group => {
+        group?.group_pages?.forEach(page_id => {
+          // nếu không có id page hoặc id nhóm thì thôi
+          if (!page_id || !group?.group_id || !group?.org_id) return
+  
+          // lưu ánh xạ từ id page tới id nhóm
+          pageManagerStore.pape_to_group_map[page_id] = [
+            ...(pageManagerStore.pape_to_group_map[page_id] || []),
+            group?.group_id,
+          ]
+        })
       })
     })
+
   }
   /**chọn nhóm */
   selectGroup(group_id?: string): void {
@@ -258,16 +261,26 @@ function measureAllGroupWidths() {
   const VISTUAL_CONTAINER = document.createElement('div')
 
   // set các thuộc tính cho thẻ container ảo
-  VISTUAL_CONTAINER.style.position = 'fixed'
-  VISTUAL_CONTAINER.style.left = '-9999px'
-  VISTUAL_CONTAINER.style.top = '0'
-  VISTUAL_CONTAINER.style.visibility = 'hidden'
-  VISTUAL_CONTAINER.className = 'flex font-medium'
+  Object.assign(VISTUAL_CONTAINER.style, {
+    position: 'fixed',
+    left: '-9999px',
+    top: '0',
+    visibility: 'hidden',
+    display: 'flex',
+    fontFamily: `'Inter', 'Arial', 'Helvetica Neue', sans-serif`,
+    fontSize: '12px',       // tương đương text-xs của Tailwind
+    fontWeight: '500',      // tương đương font-medium
+    lineHeight: '1.5',      // tương đương khoảng dòng mặc định
+    letterSpacing: 'normal',
+    padding: '0',
+    margin: '0',
+    boxSizing: 'content-box'
+  })
 
   // lặp qua danh sách các nhóm để tạo các thẻ nhóm ảo
   groups.value?.forEach(group => {
     const ITEM = document.createElement('div')
-    ITEM.className = 'max-w-24 truncate py-1 px-3 rounded text-xs'
+    ITEM.className = 'max-w-48 truncate py-1 px-3 rounded text-xs'
     ITEM.innerText = group?.group_name || ''
     VISTUAL_CONTAINER.appendChild(ITEM)
   })
