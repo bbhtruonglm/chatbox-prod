@@ -107,7 +107,7 @@ import {
 } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { pickBy, size } from 'lodash'
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Loading from '@/components/Loading.vue'
@@ -163,6 +163,12 @@ onMounted(() => document.body.addEventListener('click', clickOutSide, true))
 
 /**lắng nghe sự kiện khi huỷ component */
 onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
+
+// khi chọn nền tảng thì xoá trang đã chọn
+watch(
+  () => orgStore.selected_org_id,
+  () => (widgetStore.selected_page_id = undefined)
+)
 
 /**lấy tên trang được chọn */
 function getSelectedPageName() {
