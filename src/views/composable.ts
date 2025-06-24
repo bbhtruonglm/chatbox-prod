@@ -69,7 +69,6 @@ export function initRequireData() {
   return { getMeChatbotUser }
 }
 
-
 /** xử lý kéo thả file */
 export function useDropFile() {
   const messageStore = useMessageStore()

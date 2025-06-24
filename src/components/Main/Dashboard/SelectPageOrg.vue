@@ -57,7 +57,10 @@
         v-show="is_show_option"
         class="p-2 rounded-lg shadow-lg bg-white mt-1 h-auto max-h-52 overflow-y-auto absolute z-40 w-[-webkit-fill-available] flex flex-col gap-1"
       >
-        <template v-for="page of pageStore.active_page_list">
+        <span class="text-gray-400 text-sm">
+          {{ $t('v1.view.main.dashboard.select_page.select_page') }}
+        </span>
+        <template v-for="page of page_list">
           <div
             v-if="filterPage(page)"
             @click="selectOption(page)"
@@ -81,9 +84,6 @@
             </div>
           </div>
         </template>
-        <span class="text-gray-400 text-sm">
-          {{ $t('v1.view.main.dashboard.select_page.select_page') }}
-        </span>
       </div>
     </div>
     <div
@@ -98,26 +98,32 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useOrgStore, usePageManagerStore, usePageStore, useWidgetStore } from '@/stores'
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { getPageName } from '@/service/function'
 import { nonAccentVn } from '@/service/helper/format'
-import { size } from 'lodash'
+import {
+  useOrgStore,
+  usePageStore,
+  useWidgetStore
+} from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
+import { pickBy, size } from 'lodash'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Loading from '@/components/Loading.vue'
 
 import ArrowDownIcon from '@/components/Icons/ArrowDown.vue'
 
-import type { ComponentRef } from '@/service/interface/vue'
 import type { PageData } from '@/service/interface/app/page'
+import type { ComponentRef } from '@/service/interface/vue'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
-const pageManagerStore = usePageManagerStore()
 const widgetStore = useWidgetStore()
+
+// composable
+const { getALlOrgAndPage } = usePageManager()
 
 /**ref tổng của select */
 const select_ref = ref<ComponentRef>()
@@ -128,12 +134,28 @@ const is_show_option = ref<boolean>()
 /**giá trị của tìm kiếm */
 const search = ref<string>()
 
-const { filterPageByGroup } = usePageManager()
+/** danh sách các trang trong tổ chức đã chọn */
+const page_list = computed(() => {
+  return pickBy(pageStore.active_page_list, page => {
+    /** ID của trang hiện tại */
+    const PAGE_ID = page?.page?.fb_page_id
+
+    /** id của tổ chức đã chọn */
+    const SELECTED_ORG_ID = orgStore.selected_org_id
+
+    /** id tổ chức của trang hiện tại */
+    const ORG_ID = pageStore.map_orgs?.map_page_org?.[PAGE_ID || '']
+
+    return ORG_ID === SELECTED_ORG_ID
+  })
+})
 
 // nạp dữ liệu trang của tổ chức hiện tại khi component được mount
 onMounted(() => {
   // nếu có dữ liệu trang rồi thì thôi
-if (!size(pageStore.active_page_list)) getCurrentPageOrgInfo()
+  if (!size(pageStore.active_page_list)) {
+    getALlOrgAndPage()
+  }
 })
 
 /**lắng nghe sự kiện khi click ra ngoài */
@@ -142,18 +164,21 @@ onMounted(() => document.body.addEventListener('click', clickOutSide, true))
 /**lắng nghe sự kiện khi huỷ component */
 onUnmounted(() => document.body.removeEventListener('click', clickOutSide))
 
-// nạp lại dữ liệu trang khi có sự thay đổi tổ chức được chọn
-watch(() => orgStore.selected_org_id, getCurrentPageOrgInfo)
-
 /**lấy tên trang được chọn */
 function getSelectedPageName() {
   // nếu không có trang nào được chọn thì thôi
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
+  return getPageName(
+    pageStore.active_page_list?.[widgetStore.selected_page_id]?.page
+  )
 }
-/**lấy thông tin trang của tổ chức hiện tại */
+/**
+ * lấy thông tin trang của tổ chức hiện tại
+ * @deprecated dùng hàm getALlOrgAndPage để thay thế
+ * lấy tất cả các page và lọc FE chứ không call api
+ */
 async function getCurrentPageOrgInfo() {
   // nếu không có tổ chức nào được chọn thì không cần nạp dữ liệu
   if (!orgStore.selected_org_id) return

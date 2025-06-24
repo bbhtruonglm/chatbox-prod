@@ -577,7 +577,7 @@ const tryLoadUntilScrollable = (cb: CbError) => {
         const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
         // nếu không có thì thôi
-        if (!LIST_MESSAGE) return
+        if (!LIST_MESSAGE) return cb()
 
         // nếu chưa thể scroll thì load tiếp
         if (

@@ -22,7 +22,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import HotAlert from '@/components/HotAlert.vue'
 import { read_os } from '@/service/api/chatbox/billing'
 import { update_info_conversation } from '@/service/api/chatbox/n4-service'
 import { create_token_app_installed } from '@/service/api/chatbox/n5-app'
@@ -62,6 +61,7 @@ import { useRouter } from 'vue-router'
 
 import AlertAccountLimitReached from '@/components/AlertModal/AlertAccountLimitReached.vue'
 import AlertRechQuota from '@/components/AlertModal/AlertRechQuota.vue'
+import HotAlert from '@/components/HotAlert.vue'
 import CenterContent from '@/views/ChatWarper/Chat/CenterContent.vue'
 import LeftBar from '@/views/ChatWarper/Chat/LeftBar.vue'
 import RightBar from '@/views/ChatWarper/Chat/RightBar.vue'
@@ -84,9 +84,9 @@ const commonStore = useCommonStore()
 const extensionStore = useExtensionStore()
 const orgStore = useOrgStore()
 
-// utils
 const { ref_alert_reach_limit } = storeToRefs(commonStore)
 
+// utils
 const { t: $t } = useI18n()
 const $router = useRouter()
 const $delay = container.resolve(Delay)
