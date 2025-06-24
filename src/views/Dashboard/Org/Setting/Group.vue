@@ -40,6 +40,7 @@
           @click="$main.selectGroup(group.group_id)"
           :class="{ active: selected_group?.group_id === group.group_id }"
           class="group-item truncate max-w-40"
+          v-tooltip="group?.group_name"
         >
           {{ $t('Nhóm') }} {{ group?.group_name }}
         </button>
@@ -95,11 +96,11 @@
   </CardItem>
   <GroupUpsertModal
     ref="ref_group_upsert_modal"
-    @done="$main.readGroup()"
+    @done="$main.readGroupAndSelectCurrentGroup()"
   />
   <ConfirmDeleteGroupModal
     :selected_group
-    @done="$main.readGroup()"
+    @done="$main.readGroupAndSelectFirstGroup()"
     ref="ref_confirm_delete_group_modal"
   />
 </template>
@@ -153,20 +154,29 @@ class Main {
     // Đọc danh sách nhóm
     groups.value = await new BillingAppGroup().readGroup()
     // groups.value = await this.API_GROUP.readGroup()
+  }
 
-    // tự động chọn nhóm đầu tiên
-    this.selectGroup(groups.value?.[0]?.group_id)
+  /** lấy danh sách là chọn lại group đang chọn */
+  async readGroupAndSelectCurrentGroup() {
+    await $main.readGroup()
+    $main.selectGroup(selected_group.value?.group_id)
+  }
+
+  /** lấy danh sách nhóm và chọn nhóm đầu tiên */
+  async readGroupAndSelectFirstGroup() {
+    await $main.readGroup()
+    $main.selectGroup(groups.value?.[0]?.group_id)
   }
 }
 const $main = new Main()
 
 // Đọc danh sách nhóm khi component được tạo
-onMounted(() => $main.readGroup())
+onMounted(() => $main.readGroupAndSelectFirstGroup())
 
 // đọc danh sách nhóm khi tổ chức được thay đổi
 watch(
   () => orgStore.selected_org_id,
-  () => $main.readGroup()
+  () => $main.readGroupAndSelectFirstGroup()
 )
 </script>
 <style lang="scss" scoped>

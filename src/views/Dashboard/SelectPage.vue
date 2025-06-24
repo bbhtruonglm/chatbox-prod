@@ -126,7 +126,6 @@ import {
   usePageStore,
   useSelectPageStore,
 } from '@/stores'
-import { useCheckLimit } from '@/views/composable'
 import { useEmbedChat } from '@/views/composables/useEmbedChat'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'

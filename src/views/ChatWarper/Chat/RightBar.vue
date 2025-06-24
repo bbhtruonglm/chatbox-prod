@@ -35,7 +35,9 @@
                 "
                 class="hidden group-hover:block"
                 :class="{
-                  '!block': widget._id === selected_widget_id && widget_dropdown_ref?.is_open,
+                  '!block':
+                    widget._id === selected_widget_id &&
+                    widget_dropdown_ref?.is_open,
                 }"
               >
                 <EllipsisHorizontalIcon
@@ -49,12 +51,14 @@
                   v-tooltip.bottom="$t('Thiết lập')"
                 />
               </button>
-              <ChevronDownIcon
-                :class="{
-                  '-rotate-90': !widget.is_show,
-                }"
-                class="size-5 text-slate-500 duration-300 mr-1"
-              />
+              <button class="hover:bg-slate-100 mr-1 h-fit p-0.5 rounded">
+                <ChevronDownIcon
+                  :class="{
+                    '-rotate-90': !widget.is_show,
+                  }"
+                  class="size-4 text-slate-500 duration-300"
+                />
+              </button>
             </div>
           </button>
           <div
@@ -66,13 +70,13 @@
             "
             class="w-full border-t flex-grow"
           >
-              <iframe
-                :id="`widget-${widget._id}`"
-                class="w-full h-full"
-                :src="widget.url"
-                frameborder="0"
-                allow="microphone; camera; autoplay; speaker"
-              />
+            <iframe
+              :id="`widget-${widget._id}`"
+              class="w-full h-full"
+              :src="widget.url"
+              frameborder="0"
+              allow="microphone; camera; autoplay; speaker"
+            />
           </div>
         </div>
       </template>
@@ -121,7 +125,10 @@
           <ChevronDownIcon class="size-4" />
         </div>
       </div>
-      <div v-if="is_admin" class="border-t h-1"></div>
+      <div
+        v-if="is_admin"
+        class="border-t h-1"
+      ></div>
       <div
         v-if="is_admin"
         @click="openWidgetStore"
@@ -130,13 +137,14 @@
         <div class="p-1.5 rounded-full bg-gray-100">
           <Squares2X2Icon class="size-5" />
         </div>
-        <p>{{ $t('Chợ ứng dụng') }}</p>
+        <p>{{ $t('Quản lý ứng dụng') }}</p>
       </div>
     </Dropdown>
 
     <Dropdown
       ref="change_mode_dropdown_ref"
-      width="200px"
+      width="220px"
+      :back="10"
       height="auto"
       :is_fit="false"
       class_content="flex flex-col gap-1 rounded-md p-1 gap-1 font-medium text-sm"
@@ -148,7 +156,13 @@
         <div class="p-1.5 rounded-full bg-gray-100">
           <RectangleStackIcon class="size-5" />
         </div>
-        <p>{{ $t('Luôn hiển thị') }}</p>
+        <div class="flex justify-between w-full gap-2 min-w-0">
+          <p>{{ $t('Luôn hiển thị') }}</p>
+          <CheckIcon
+            v-if="current_visible_widgets.includes(selected_widget_id)"
+            class="size-4"
+          />
+        </div>
       </div>
       <div
         @click="changeModeWidgetView('AUTO')"
@@ -157,7 +171,13 @@
         <div class="p-1.5 rounded-full bg-gray-100">
           <RectangleGroupIcon class="size-5" />
         </div>
-        <p>{{ $t('Hiển thị tự động') }}</p>
+        <div class="flex justify-between w-full gap-2 min-w-0">
+          <p>{{ $t('Hiển thị tự động') }}</p>
+          <CheckIcon
+            v-if="!current_visible_widgets.includes(selected_widget_id)"
+            class="size-4"
+          />
+        </div>
       </div>
     </Dropdown>
   </div>
@@ -165,7 +185,7 @@
 <script setup lang="ts">
 import { getIframeUrl, getPageWidget } from '@/service/function'
 import { copy } from '@/service/helper/format'
-import { useConversationStore, usePageStore } from '@/stores'
+import { useConversationStore, useOrgStore, usePageStore, useWidgetStore } from '@/stores'
 import { LocalStorage } from '@/utils/helper/LocalStorage'
 import { sortBy } from 'lodash'
 import { container } from 'tsyringe'
@@ -178,9 +198,8 @@ import PostRightBar from '@/views/ChatWarper/Chat/RightBar/PostRightBar.vue'
 import WidgetSorting from '@/views/ChatWarper/Chat/RightBar/WidgetSorting.vue'
 import { useWidget } from '@/views/composables/useWidget'
 
-
+import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 import {
-  ChevronDownIcon,
   EllipsisHorizontalIcon,
   RectangleGroupIcon,
   RectangleStackIcon,
@@ -194,6 +213,8 @@ const $router = useRouter()
 
 const conversationStore = useConversationStore()
 const pageStore = usePageStore()
+const orgStore = useOrgStore()
+const widgetStore = useWidgetStore()
 
 /** quản lý local */
 const $local_storage = container.resolve(LocalStorage)
@@ -306,7 +327,7 @@ async function getListWidget() {
   temp_list_widget = sortBy(temp_list_widget, 'index_position')
 
   // chỉ hiển thị widget đầu tiên nếu không có widget luôn hiển thị nào
-  if (temp_list_widget?.[0] && !current_visible_widgets.value?.length) 
+  if (temp_list_widget?.[0] && !current_visible_widgets.value?.length)
     temp_list_widget[0].is_show = true
 
   // render lại danh sách
@@ -325,7 +346,20 @@ function sendEventToIframe(widget: AppInstalledInfo, payload: any) {
 
 /** mở màn chợ ứng dụng */
 function openWidgetStore() {
-  $router.push(`/dashboard/widget`)
+  /** id trang hiện tại */
+  const PAGE_ID = conversationStore.select_conversation?.fb_page_id || ''
+
+  /** id của tổ chức hiện tại */
+  const ORG_ID = pageStore.map_orgs?.map_page_org?.[PAGE_ID] || ''
+
+  // chọn trang hiện tại
+  widgetStore.selected_page_id = PAGE_ID
+
+  // chọn tổ chức hiện tại
+  orgStore.selected_org_id = ORG_ID
+
+  // chuyển sang màn widget đã cài đặt
+  $router.push(`/dashboard/widget/installed`)
 }
 
 /** mở màn sắp xếp thứ tự widget */
@@ -357,6 +391,7 @@ function changeModeWidgetView(type: 'ALWAYS' | 'AUTO') {
   // nếu là luôn hiện thì thêm vào mảng
   if (type === 'ALWAYS') {
     default_visible_widgets.value[PAGE_ID || ''] = [...WIDGET_IDS, WIDGET_ID]
+    openWidget(WIDGET_ID)
   }
 
   // nếu là tự động thì xóa khỏi mảng
@@ -380,5 +415,12 @@ function changeModeWidgetView(type: 'ALWAYS' | 'AUTO') {
 
   // clear id widget hien tai
   selected_widget_id.value = ''
+}
+
+/** mở widget với id */
+function openWidget(widget_id: string) {
+  pageStore.widget_list?.forEach(widget => {
+    if (widget._id === widget_id) widget.is_show = true
+  })
 }
 </script>
