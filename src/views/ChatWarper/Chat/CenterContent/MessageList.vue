@@ -360,6 +360,15 @@ function socketNewMessage({ detail }: CustomEvent) {
   if (size(detail.comment))
     remove(messageStore.list_message, message => message._id === detail._id)
 
+  // lấy div chứa danh sách tin nhắn
+  const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
+
+  /** vị trí scroll */
+  const SCROLL_POSITION = (LIST_MESSAGE?.scrollTop || 0) + (LIST_MESSAGE?.clientHeight || 0)
+
+  /** có đang scroll xuống dưới cùng không? */
+  const IS_BOTTOM = SCROLL_POSITION ===  LIST_MESSAGE?.scrollHeight
+
   // thêm tin nhắn vào danh sách
   messageStore.list_message.push(detail)
 
@@ -370,7 +379,8 @@ function socketNewMessage({ detail }: CustomEvent) {
       message => message.message_id === detail?.message_mid
     )
 
-  scrollToBottomMessage(messageStore.list_message_id)
+  // nếu đang ở vị trí bottom thì dùng scrollToBottomMessage
+  if (IS_BOTTOM) scrollToBottomMessage(messageStore.list_message_id)
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
 function socketUpdateMssage({ detail }: CustomEvent) {
