@@ -364,7 +364,7 @@ class Main {
     /**dữ liệu comment cập nhật */
     update_comment?: FacebookCommentPost
   }) {
-    let { message, update_message, event, conversation } = socket_data
+    let { message, update_message, conversation } = socket_data
 
     // gửi thông điệp đến component xử lý danh sách hội thoại - ở đây cần xử lý khi update các nhãn
     if (size(conversation)) {
@@ -423,7 +423,7 @@ onMounted(async () => {
   $main.getClientId()
 
   // lắng nghe sự kiện từ iframe cha
-  window.parent.addEventListener('message', handleEvent)
+  window.addEventListener('message', handleEvent)
 
   messageStore.list_message_id = 'iframe-list-message'
 })

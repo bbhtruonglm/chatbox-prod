@@ -10,8 +10,13 @@
     </template>
     <template #body>
       <iframe
+        id="iframe-zalo"
         class="w-full"
-        :src="`${DOMAIN_CHATBOT}/zalo-personal-conversation?org_id=${orgStore.selected_org_id}&actual_client_id=${message?.fb_client_id}&actual_page_id=${message?.fb_page_id}&message_id=${message?._id}`"
+        :src="`${DOMAIN_CHATBOT}/zalo-personal-conversation?org_id=${
+          orgStore.selected_org_id
+        }&actual_client_id=${message?.fb_client_id}&actual_page_id=${
+          message?.fb_page_id
+        }&message_id=${message?._id}&token=${getItem('access_token')}`"
         frameborder="0"
       ></iframe>
     </template>
@@ -22,13 +27,14 @@ import { useOrgStore } from '@/stores'
 import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
 import { container } from 'tsyringe'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { getItem } from '@/service/helper/localStorage'
 
 import Modal from '@/components/Modal.vue'
 
 import type { MessageInfo } from '@/service/interface/app/message'
 
 /** link gốc của chatbot */
-const DOMAIN_CHATBOT = window.location.origin
+const DOMAIN_CHATBOT = getDomain()
 
 const $props = withDefaults(
   defineProps<{
@@ -49,16 +55,12 @@ class Main {
   ) {}
 
   /** lấy id của khách */
-  async getClientId(page_id?:string) {
-
+  async getClientId(page_id?: string) {
     // nếu không có trang nào thì thôi
     if (!page_id || !$props.message) return
 
     // lấy id của khách với có số điện thoại trong tin nhắn và đã nhắn cho page
-    const RES = await this.API.getClientId(
-      page_id,
-      $props.message?._id
-    )
+    const RES = await this.API.getClientId(page_id, $props.message?._id)
 
     return RES
   }
@@ -76,8 +78,12 @@ class Main {
     // id của trang cần lấy id khách hàng
     const CLIENT_ID = await $main.getClientId(event.data.data.page_id)
 
+    const IFRAME_ZALO = document.getElementById(
+      'iframe-zalo'
+    ) as HTMLIFrameElement
+
     // gửi id khách hàng vào iframe zalo personal core
-    window.postMessage(
+    IFRAME_ZALO?.contentWindow?.postMessage(
       {
         type: 'get.client_id',
         from: 'ZALO_PERSONAL_CONTAINER',
@@ -94,6 +100,14 @@ const $main = new Main()
 
 /** hàm xử lý sự kiện khi nhân được từ iframe zalo personal core */
 const handleMessage = $main.handleEvent.bind($main)
+
+/** link gốc của chatbot  */
+function getDomain() {
+  // nếu là prod thì link gốc là https://retion.ai/chat
+  if (window.location.origin === 'https://retion.ai')
+    return 'https://retion.ai/chat'
+  return window.location.origin
+}
 
 onMounted(() => {
   window.addEventListener('message', handleMessage)
