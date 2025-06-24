@@ -54,23 +54,24 @@ export class Socket {
       // khởi tạo lại kết nối sau 100ms
       setTimeout(
         () => this.connect(url, selected_page_id_list, fb_staff_id, cb),
-        100
+        5000
       )
     }
 
     // nếu có lỗi xảy ra
     this.socket.onerror = () => {
-      // loại bỏ vòng lặp tự động ping socket cũ
-      if (this.ping_interval_id) clearInterval(this.ping_interval_id)
+      this.socket?.close()
+      // // loại bỏ vòng lặp tự động ping socket cũ
+      // if (this.ping_interval_id) clearInterval(this.ping_interval_id)
 
-      // nếu đóng kết hoàn toàn thì không cho kết nối tự mở lại nữa
-      if (this.is_force_close_socket) return
+      // // nếu đóng kết hoàn toàn thì không cho kết nối tự mở lại nữa
+      // if (this.is_force_close_socket) return
 
-      // khởi tạo lại kết nối sau 100ms
-      setTimeout(
-        () => this.connect(url, selected_page_id_list, fb_staff_id, cb),
-        100
-      )
+      // // khởi tạo lại kết nối sau 100ms
+      // setTimeout(
+      //   () => this.connect(url, selected_page_id_list, fb_staff_id, cb),
+      //   100
+      // )
     }
 
     // khi có thông điệp từ socket gửi xuống

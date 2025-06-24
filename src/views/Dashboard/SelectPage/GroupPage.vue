@@ -156,9 +156,7 @@ watch(
 
 /**lặp qua từng trang của nhóm */
 function loopPageOfGroup(proceed: (page?: IPage) => void) {
-  active_page_list.value?.forEach(page => {
-    console.log(page);
-    
+  active_page_list.value?.forEach(page => {    
     // bỏ qua các trang không thoả mãn
     if (
       // chỉ xử lý các trang trong nhóm
