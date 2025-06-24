@@ -103,6 +103,12 @@
             >
               <BinIcon class="w-4 h-4 text-red-500" />
             </div>
+            <div 
+              class="absolute top-1 right-1 p-1 rounded bg-blue-100 border border-blue-500 hidden group-hover:block"
+              @click.stop="copyLink(file)"
+            >
+              <LinkIcon class="w-4 h-4 text-blue-700" />
+            </div>
             <div
               v-if="file.is_select"
               class="absolute top-1 right-1 p-0.5 bg-blue-100 border border-blue-700 rounded-full"
@@ -225,6 +231,7 @@ import EditIcon from '@/components/Icons/Edit.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { FileInfo, FolderInfo } from '@/service/interface/app/album'
 import type { CbError } from '@/service/interface/function'
+import { LinkIcon } from '@heroicons/vue/24/outline'
 
 /**các giá tị của danh mục */
 type CategoryType = 'NEW' | 'FOLDER'
@@ -631,6 +638,12 @@ function uploadFileFromDevice() {
 
   // click vào input
   INPUT.click()
+}
+
+/** hàm copy link của file vào clipboard */
+function copyLink(file: FileInfo) {
+  navigator.clipboard.writeText(file.url)
+  toast('success', $t('v1.common.success'))
 }
 
 defineExpose({ toggleAlbum })
