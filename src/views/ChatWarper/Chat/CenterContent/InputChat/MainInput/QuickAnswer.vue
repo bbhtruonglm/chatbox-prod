@@ -487,7 +487,7 @@ function replaceTemplateMessage(content: string) {
     .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
 
   /**tên khách hàng */
-  const CLIENT_NAME = CONVERSATION?.client_name || ''
+  const CLIENT_NAME = CONVERSATION?.client_origin_name || CONVERSATION?.client_name || ''
   /**tên nhân viên */
   const STAFF_NAME =
     getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''

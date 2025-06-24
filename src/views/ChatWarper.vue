@@ -391,16 +391,13 @@ async function pushWebNoti(conversation?: ConversationInfo) {
     return
 
   /**tiêu đề */
-  const TITLE = commonStore.partner?.name || ''
+  const TITLE = conversation?.client_name || commonStore.partner?.name || ''
+  
   /**link avatar của khách hàng */
   const AVATAR = `https://chatbox-static-v3.botbanhang.vn/app/facebook/avatar/${conversation?.fb_client_id}?page_id=${conversation?.fb_page_id}&staff_id=${chatbotUserStore.chatbot_user?.fb_staff_id}&width=64&height=64&type=${conversation?.platform_type}`
+  
   /**nội dung muốn thông báo */
-  const MESSAGE_ALERT = conversation?.client_name
-    ? $t('v1.view.main.dashboard.chat.new_message_alert', {
-        name: conversation?.client_name,
-        message: conversation?.last_message,
-      })
-    : $t('v1.view.main.dashboard.chat.new_message_alert')
+  const MESSAGE_ALERT = conversation?.last_message || $t('v1.view.main.dashboard.chat.new_message_alert')
 
   /**tạo đối tượng thông báo noti + thực hiện noti */
   const NOTI = new Notification(TITLE, { body: MESSAGE_ALERT, icon: AVATAR })

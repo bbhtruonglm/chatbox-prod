@@ -574,7 +574,7 @@ const tryLoadUntilScrollable = (cb: CbError) => {
       // Dùng nextTick nếu Vue chưa render kịp
       nextTick(() => {
         // lấy div chưa danh sách tin nhắn
-        const LIST_MESSAGE = document.getElementById('list-message')
+        const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
         // nếu không có thì thôi
         if (!LIST_MESSAGE) return cb()
