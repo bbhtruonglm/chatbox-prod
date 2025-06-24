@@ -8,10 +8,10 @@ const ENV: IEnv = {
     n4_service_v2: 'http://kosg80owos4kokokc4owo4s4.34.143.225.69.sslip.io/v1/n4_service',
     n5_app_v2: 'http://ag48o8o8ckgck08ckks48cs4.34.143.225.69.sslip.io/v1/n5_app',
     n6_static: 'http://b4ggkgcs444koss0k4so8w0w.34.143.225.69.sslip.io/v1/n6_static',
-    n9_analytic_v2: 'https://dev-api.botbanhang.vn/v1/n9_analytic_v2',
+    n9_analytic_v2: 'http://d44cs0ow08gc88c0wo0k0owk.34.143.225.69.sslip.io/v1/n9_analytic_v2',
     billing: 'http://s0oogc0wk84kwcgogoo0ckcg.34.143.225.69.sslip.io/v1/billing',
     ai: 'http://sw8ksc8k04wosssw40000s8k.34.143.225.69.sslip.io/v1/ai',
-    chatbot: 'https://dev-api.botbanhang.vn/v1/chatbot/n3_service',
+    chatbot: 'https://iwc4g8cgs88wc44gwc8gwosk.34.143.225.69.sslip.io/chatbot/v2/n3_service',
 
     n4_service_v1: 'https://dev-api.botbanhang.vn/service',
     n5_app_v1: 'http://rgwkwkosk008occgww84k044.34.143.225.69.sslip.io',
