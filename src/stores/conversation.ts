@@ -164,7 +164,11 @@ export const useConversationStore = defineStore('conversation_store', () => {
     contact_create: {},
   })
 
+  /** bộ lọc nhanh đã chọn */
+  const selected_quick_filter = ref('ALL')
+
   return {
+    selected_quick_filter,
     option_filter_page_data,
     select_conversation,
     select_conversation_post,

@@ -236,7 +236,9 @@ watch(
     }
 
     // nếu không liên quan đến lọc thì thôi
-    if (!FILTER_MAP[new_value]) {
+    if (!FILTER_MAP[new_value] || !new_value) {
+      // xóa sự kiện phím tắt
+      commonStore.keyboard_shortcut = ''
       return
     }
 
@@ -253,9 +255,6 @@ watch(
     if (FITLER?.filter_dropdown_ref?.is_open) {
       old_value = KEY
     }
-
-    // nếu không có giá trị thì thôi
-    if (!new_value) return
 
     /** sự kiện nhấn doubles click */
     const DBL_CLICK_EVENT = new MouseEvent('dblclick', {
