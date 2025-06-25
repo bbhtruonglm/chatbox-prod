@@ -10,12 +10,12 @@ export interface IMarkdownService {
    * @param markdown Nội dung Markdown
    * @returns HTML
    */
-  render(markdown: string): string;
+  render(markdown: string): string
 }
 
 // Adapter sử dụng thư viện marked
-import { marked, type Tokens } from 'marked';
-import { singleton } from 'tsyringe';
+import { marked, type Tokens } from 'marked'
+import { singleton } from 'tsyringe'
 
 /**
  * Cài đặt dịch vụ Markdown sử dụng marked.
@@ -23,18 +23,24 @@ import { singleton } from 'tsyringe';
 @singleton()
 export class MarkedService implements IMarkdownService {
   constructor() {
-    this.setupMarked();
+    this.setupMarked()
   }
 
   /**
    * Khởi tạo cấu hình cho marked (renderer, walkTokens,...)
    */
   private setupMarked() {
-    /** Override image renderer để thêm lazy-load */ 
+    /** Override image renderer để thêm lazy-load */
     const RENDERER = {
-      image(token: Tokens.Image){
+      image(token: Tokens.Image) {
         return `<img src="${token.href}" alt="${token.text}" loading="lazy">`
-      }
+      },
+      link(token: Tokens.Link) {
+        // tránh link null
+        const safeHref = token.href ?? '#'
+        const titleAttr = token.title ? ` title="${token.title}"` : ''
+        return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${token.text}</a>`
+      },
     }
 
     // Sử dụng walkTokens để bỏ parse mail thành link
@@ -42,24 +48,23 @@ export class MarkedService implements IMarkdownService {
       renderer: RENDERER,
       walkTokens(token) {
         if (token.type === 'link' && token.href.startsWith('mailto:')) {
-          token.type = 'text';
-          token.raw = token.text;
+          token.type = 'text'
+          token.raw = token.text
         }
       },
-      async: false
-    });
+      async: false,
+    })
 
     // Thiết lập xuống dòng khi có \n
     marked.setOptions({
       breaks: true,
-    });
-
+    })
   }
 
   /**
    * Render Markdown
    */
   render(markdown: string): string {
-    return marked(markdown) as string;
+    return marked(markdown) as string
   }
 }
