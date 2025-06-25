@@ -36,10 +36,14 @@ export class MarkedService implements IMarkdownService {
         return `<img src="${token.href}" alt="${token.text}" loading="lazy">`
       },
       link(token: Tokens.Link) {
-        // tránh link null
-        const safeHref = token.href ?? '#'
-        const titleAttr = token.title ? ` title="${token.title}"` : ''
-        return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${token.text}</a>`
+        /** Link gốc */
+        const SAFE_HREF = token.href ?? '#'
+
+        /** Thêm title cho link */
+        const TITLE_ATTR = token.title ? ` title="${token.title}"` : ''
+
+        // tạo thẻ a với target là _blank để mở sang tab mới khi nhấn
+        return `<a href="${SAFE_HREF}" target="_blank" rel="noopener noreferrer"${TITLE_ATTR}>${token.text}</a>`
       },
     }
 
