@@ -119,6 +119,12 @@ export const usePageStore = defineStore('page_store', () => {
     // nếu là admin thì trả về true
     return true
   }
+
+  /** kiểm tra staff hiện tại có phỉa admin của page hoặc là admin của tổ chức */
+  function isPageAdminOrOrgAdmin(page_id?: string): boolean {
+    return isCurrentStaffAdmin(page_id) || orgStore.isAdminOrg()
+  }
+
   /**lấy danh sách nhãn của trang */
   function getLabels(page_id?: string): Record<string, ILabel> | undefined {
     // nếu không có page_id thì thôi
@@ -188,6 +194,7 @@ export const usePageStore = defineStore('page_store', () => {
     getStaff,
     getPage,
     isCurrentStaffAdmin,
+    isPageAdminOrOrgAdmin,
     getCurrentStaff,
     getLabels,
   }
