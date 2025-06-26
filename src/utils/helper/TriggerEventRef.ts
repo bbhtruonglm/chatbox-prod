@@ -9,6 +9,9 @@ export class TriggerEventRef {
     /** id cần gửi tới */
     const CLIENT_ID = getItem('client_id')
 
+    // nếu không có id thì thôi
+    if (!CLIENT_ID) return
+
     /** link api */
     const URL = 'https://chatbox-public-v2.botbanhang.vn/app/send_message'
 
@@ -65,5 +68,19 @@ export class TriggerEventRef {
   /** gửi tin nhắn đánh dấu đăng ký với email */
   async sendMessageRegisterEmail(email: string) {
     this.sendMessage('Đã click đăng ký với email \n Email: '+ email)
+  }
+
+  /** gửi tin nhắn đánh dấu tài khoản đăng nhập nhưng không có page */
+  async sendMessageLoginWithoutPage({ name, id}: { name?: string; id?: string }) {
+    // nội dung tin nhắn sẽ gửi
+    let message = 'Khách hàng đăng nhập nhưng chưa có Page \n Thông tin khách hàng:'
+
+    // thêm tên khách vào nội dung tin nhắn
+    if (name) message += `\n - Tên: ${name}`
+
+    // thêm id khách hàng vào nội dung tin nhắn
+    if (id) message += `\n - ID: ${id}`
+
+    this.sendMessage(message)
   }
 }

@@ -3,6 +3,9 @@ const ENV: IEnv = {
   local_storage: {
     prefix: 'chatbox_',
   },
+  session_storage: {
+    prefix: 'chatbox_',
+  },
   host: {
     n3_socket: 'wss://dev-api.botbanhang.vn/socket',
     n4_service_v2: 'https://dev-api.botbanhang.vn/v1/n4_service',
