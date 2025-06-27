@@ -207,14 +207,14 @@ class Main {
   }
   /**xử lý sự kiện nhấn enter ở ô chat */
   async submitInput($event: KeyboardEvent) {
-    // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
-    await $delay.exec(10)
-
     // nếu bấm shift + enter thì chỉ xuống dòng, không submit
     if ($event.shiftKey) return
 
     // nếu chỉ bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
+
+    // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
+    await $delay.exec(10)
 
     // nếu đang mở trả lời nhanh thì không submit, mà chạy vào logic chọn câu trả lời
     if (commonStore.is_show_quick_answer) return
