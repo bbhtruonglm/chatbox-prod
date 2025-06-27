@@ -12,8 +12,9 @@
       <div
         class="bg-white rounded-md p-2 gap-3 grid grid-cols-2 relative w-full h-full"
       >
-        <div class="flex flex-col gap-5 overflow-hidden">
+        <div class="flex flex-col gap-5 overflow-hidden cursor-zoom-in">
           <Item
+            @click="$main.previewImage()"
             :data_source="input.data_source"
             :url="input.url"
           />
@@ -88,10 +89,17 @@
             :message
           />
         </div>
+        <Teleport to="body">
+          <PreviewImage
+            v-if="is_preview_image"
+            :image_url="input?.data_source?.image?.url"
+            :close="$main.closePreviewImage"
+          />
+        </Teleport>
       </div>
     </template>
     <template v-slot:footer>
-      <div class="flex justify-between mt-2">
+      <div class="flex justify-between">
         <button
           @click="$main.toggleModal()"
           class="custom-btn bg-white text-slate-700"
@@ -122,6 +130,7 @@ import { CreateDataSource, type ICreateDataSource } from '../CreateDataSource'
 
 import Item from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail/Item.vue'
 import Action from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MessageTemplate/Action.vue'
+import PreviewImage from '@/components/PreviewImage.vue'
 import Modal from '@/components/Modal.vue'
 
 import type {
@@ -156,6 +165,8 @@ const count_hidden_item = ref<number>()
 const input = ref<Input>($props)
 /**có hiển thị hết không */
 const is_expand = ref<boolean>()
+/** xem trước ảnh */
+const is_preview_image = ref<boolean>(false)
 
 class Main {
   /**
@@ -223,6 +234,17 @@ class Main {
 
     // mở link để tải về
     this.SERVICE_WINDOW_ACTION.openNewTab(URL || input.value.url)
+  }
+
+  /** hàm xem trước ảnh */
+  previewImage() {
+    // nếu có link ảnh thì mới xem trước
+    if (input.value.data_source?.image?.url) is_preview_image.value = true
+  }
+
+  /** hàm đóng xem ảnh */
+  closePreviewImage() {
+    is_preview_image.value = false
   }
 }
 const $main = new Main()
