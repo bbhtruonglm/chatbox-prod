@@ -67,7 +67,7 @@ export class TriggerEventRef {
 
   /** gửi tin nhắn đánh dấu đăng ký với email */
   async sendMessageRegisterEmail(email: string) {
-    this.sendMessage('Đã click đăng ký với email \n Email: '+ email)
+    this.sendMessage('Đã đăng ký thành công với email \n Email: '+ email)
   }
 
   /** gửi tin nhắn đánh dấu tài khoản đăng nhập nhưng không có page */
