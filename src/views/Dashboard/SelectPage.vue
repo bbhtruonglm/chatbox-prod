@@ -212,11 +212,11 @@ function triggerConnectPlatform() {
 
 /** hàm xử lý bắn sự kiện khi đăng nhập và không có page nào */
 function handleLoginWithoutPage() {
-  // lấy cờ đăng nhập lưu trong session storage
-  const is_login = $session_storage.getItem('is_login')
+  /** Cờ đăng nhập lưu trong session storage */
+  const IS_LOGIN = $session_storage.getItem('is_login')
 
   // nếu đã đăng nhập thì thôi
-  if (is_login) return
+  if (IS_LOGIN) return
 
   // nếu không có page nào thì gửi tin nhắn trigger
   if (size(pageStore.all_page_list)) return

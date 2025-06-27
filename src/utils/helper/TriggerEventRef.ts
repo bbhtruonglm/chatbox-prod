@@ -72,7 +72,7 @@ export class TriggerEventRef {
 
   /** gửi tin nhắn đánh dấu tài khoản đăng nhập nhưng không có page */
   async sendMessageLoginWithoutPage({ name, id}: { name?: string; id?: string }) {
-    // nội dung tin nhắn sẽ gửi
+    /** nội dung tin nhắn sẽ gửi */
     let message = 'Khách hàng đăng nhập nhưng chưa có Page \n Thông tin khách hàng:'
 
     // thêm tên khách vào nội dung tin nhắn
