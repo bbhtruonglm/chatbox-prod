@@ -17,7 +17,7 @@
         <div
           @click.stop
           :class="class_modal"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-glass p-2 max-w-[95%] max-h-[95%] flex flex-col shadow-lg"
+          class="gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-glass p-2 max-w-[95%] max-h-[95%] flex flex-col shadow-lg"
         >
           <div class="flex items-center justify-between">
             <div
@@ -40,7 +40,6 @@
             <slot name="body"></slot>
           </div>
           <div
-            v-if="$slots.footer"
             :class="class_footer"
             class="flex-shrink-0"
           >

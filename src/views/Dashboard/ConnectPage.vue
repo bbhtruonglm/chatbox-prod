@@ -2,7 +2,7 @@
   <Modal
     ref="modal_connect_page_ref"
     class_modal="h-3/4"
-    class_body="py-2 flex gap-2"
+    class_body="flex gap-2"
     @close_modal="$main.resetStore()"
   >
     <template #header>

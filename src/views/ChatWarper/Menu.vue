@@ -237,8 +237,6 @@ watch(
 
     // nếu không liên quan đến lọc thì thôi
     if (!FILTER_MAP[new_value]) {
-      // clear data
-      commonStore.keyboard_shortcut = ''
       return
     }
 

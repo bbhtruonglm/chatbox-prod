@@ -223,6 +223,8 @@ const skip = ref(0)
 const LIMIT = 20
 /**giá trị scroll_height trước đó của danh sách tin nhắn */
 let old_scroll_height = ref(0)
+/** giá trị từ vị trí scroll tới cuối danh sách tin nhắn trước đó */
+const old_position_to_bottom = ref(0)
 /**danh sách các hàm debounce cho từng staff */
 const list_debounce_staff = ref<{
   [index: string]: DebouncedFunc<any>
@@ -249,7 +251,7 @@ onMounted(() => {
   // * reset danh sách tin nhắn lúc mới vào nếu không mở bằng modal
   messageStore.list_message = []
 
-  if(true) {
+  if (true) {
     // * reset danh sách tin nhắn khi đổi khách hàng
     messageStore.list_message = []
 
@@ -358,6 +360,15 @@ function socketNewMessage({ detail }: CustomEvent) {
   if (size(detail.comment))
     remove(messageStore.list_message, message => message._id === detail._id)
 
+  // lấy div chứa danh sách tin nhắn
+  const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
+
+  /** vị trí scroll */
+  const SCROLL_POSITION = (LIST_MESSAGE?.scrollTop || 0) + (LIST_MESSAGE?.clientHeight || 0)
+
+  /** có đang scroll xuống dưới cùng không? */
+  const IS_BOTTOM = SCROLL_POSITION ===  LIST_MESSAGE?.scrollHeight
+
   // thêm tin nhắn vào danh sách
   messageStore.list_message.push(detail)
 
@@ -368,7 +379,8 @@ function socketNewMessage({ detail }: CustomEvent) {
       message => message.message_id === detail?.message_mid
     )
 
-  scrollToBottomMessage(messageStore.list_message_id)
+  // nếu đang ở vị trí bottom thì dùng scrollToBottomMessage
+  if (IS_BOTTOM) scrollToBottomMessage(messageStore.list_message_id)
 }
 /**xử lý socket cập nhật tin nhắn hiện tại */
 function socketUpdateMssage({ detail }: CustomEvent) {
@@ -390,10 +402,19 @@ function socketUpdateMssage({ detail }: CustomEvent) {
 }
 /**lắng nghe sự kiện khi scroll danh sách tin nhắn */
 function onScrollMessage($event: Event) {
+  // xử lý ẩn hiện nút về bottom
   handleButtonToBottom($event as UIEvent)
 
-  loadMoreMessage($event as UIEvent)
+  // xử lý load dữ liệu tin nhắn
+  debounceLoadMoreMessage($event as UIEvent)
 }
+
+/** hàm debounce load dữ liệu tin nhắn */
+const debounceLoadMoreMessage = debounce(
+  $event => loadMoreMessage($event as UIEvent),
+  300
+)
+
 /**ẩn hiện nút về bottom */
 function handleButtonToBottom($event: UIEvent) {
   /**div chưa danh sách tin nhắn */
@@ -430,7 +451,7 @@ function loadMoreMessage($event: UIEvent) {
   if (is_loading.value || is_done.value) return
 
   // infinitve loading scroll
-  if (SCROLL_TOP < 300) getListMessage()
+  if (SCROLL_TOP < 500) getListMessage()
 }
 /**đọc danh sách tin nhắn */
 function getListMessage(is_scroll?: boolean) {
@@ -450,6 +471,18 @@ function getListMessage(is_scroll?: boolean) {
       (cb: CbError) => {
         is_loading.value = true
 
+        /** thẻ div chứa danh sách tin nhắn */
+        const LIST_MESSAGE = document.getElementById(
+          messageStore.list_message_id
+        )
+
+        /** nếu có thì thôi */
+        if (!LIST_MESSAGE) return cb()
+
+        /** lưu lại bị vị trí scroll hiện tại */
+        old_position_to_bottom.value =
+          LIST_MESSAGE?.scrollHeight - LIST_MESSAGE?.scrollTop
+
         cb()
       },
       // * đọc dữ liệu từ api
@@ -459,19 +492,16 @@ function getListMessage(is_scroll?: boolean) {
         // chạy infinitve loading scroll
         nextTick(() => {
           // lấy div chưa danh sách tin nhắn
-          const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
+          const LIST_MESSAGE = document.getElementById(
+            messageStore.list_message_id
+          )
 
-          if (!LIST_MESSAGE) return
+          /** nếu không có thì thôi */
+          if (!LIST_MESSAGE) return cb()
 
-          // nếu có scroll height, thì scroll lại div cho về đúng giá trị trước -> gần như mượt
-          if (old_scroll_height.value)
-            LIST_MESSAGE.scrollTop =
-              LIST_MESSAGE.scrollHeight -
-              old_scroll_height.value +
-              LIST_MESSAGE.scrollTop
-
-          // lấy giá trị mới
-          old_scroll_height.value = LIST_MESSAGE.scrollHeight
+          // Scroll lại div cho về đúng giá trị trước -> gần như mượt
+          LIST_MESSAGE.scrollTop =
+            LIST_MESSAGE.scrollHeight - old_position_to_bottom.value
         })
 
         cb()
@@ -485,7 +515,10 @@ function getListMessage(is_scroll?: boolean) {
       if (is_scroll) {
         scrollToBottomMessage(messageStore.list_message_id)
 
-        setTimeout(() => scrollToBottomMessage(messageStore.list_message_id), 500)
+        setTimeout(
+          () => scrollToBottomMessage(messageStore.list_message_id),
+          500
+        )
       }
 
       if (e) {
@@ -577,7 +610,7 @@ const tryLoadUntilScrollable = (cb: CbError) => {
         const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
         // nếu không có thì thôi
-        if (!LIST_MESSAGE) return
+        if (!LIST_MESSAGE) return cb()
 
         // nếu chưa thể scroll thì load tiếp
         if (

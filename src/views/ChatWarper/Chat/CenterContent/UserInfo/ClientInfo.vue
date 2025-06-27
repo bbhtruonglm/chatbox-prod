@@ -4,7 +4,7 @@
     @close_modal="onCloseModal"
     ref="client_info_modal_ref"
     class_modal="w-[1100px] h-[710px]"
-    class_body="py-2 flex gap-2"
+    class_body="flex gap-2"
   >
     <template v-slot:header>
       {{ $t('v1.view.main.dashboard.chat.client.title') }}

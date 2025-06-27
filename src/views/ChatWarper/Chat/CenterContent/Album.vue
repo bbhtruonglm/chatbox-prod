@@ -2,7 +2,7 @@
   <Modal
     ref="album_ref"
     class_modal="h-[630px]"
-    class_body="py-2 flex gap-2"
+    class_body="flex gap-2"
   >
     <template #header>
       {{ $t('v1.view.main.dashboard.chat.album.title') }}
@@ -102,6 +102,12 @@
               class="absolute top-1 left-1 p-1 rounded bg-red-100 border border-red-500 hidden group-hover:block"
             >
               <BinIcon class="w-4 h-4 text-red-500" />
+            </div>
+            <div 
+              class="absolute top-1 right-1 p-1 rounded bg-blue-100 border border-blue-500 hidden group-hover:block"
+              @click.stop="copyLink(file)"
+            >
+              <LinkIcon class="w-4 h-4 text-blue-700" />
             </div>
             <div
               v-if="file.is_select"
@@ -225,6 +231,7 @@ import EditIcon from '@/components/Icons/Edit.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { FileInfo, FolderInfo } from '@/service/interface/app/album'
 import type { CbError } from '@/service/interface/function'
+import { LinkIcon } from '@heroicons/vue/24/outline'
 
 /**các giá tị của danh mục */
 type CategoryType = 'NEW' | 'FOLDER'
@@ -631,6 +638,12 @@ function uploadFileFromDevice() {
 
   // click vào input
   INPUT.click()
+}
+
+/** hàm copy link của file vào clipboard */
+function copyLink(file: FileInfo) {
+  navigator.clipboard.writeText(file.url)
+  toast('success', $t('v1.common.success'))
 }
 
 defineExpose({ toggleAlbum })

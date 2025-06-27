@@ -4,7 +4,7 @@
       <Checkbox
         v-if="checkbox_is_visible"
         v-model="checkbox_model"
-        class="flex-shrink-0"
+        class="flex-shrink-0 pointer-events-none"
         :disabled="checkbox_is_disabled"
       />
     </template>
@@ -76,12 +76,6 @@ const $props = withDefaults(
 
 const connectPageStore = useConnectPageStore()
 const orgStore = useOrgStore()
-
-/**
- * nạp lại dữ liệu trang 
- * @deprecated sử dụng reloadPageData trong composable
-*/
-// const reloadPageData = inject(KEY_RELOAD_PAGE_DATA)
 
 /**giá trị của checkbox */
 const checkbox_model = defineModel('checkbox')

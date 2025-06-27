@@ -4,15 +4,10 @@
       <label class="text-base font-semibold">
         {{ title }}
       </label>
-      <span
-        v-if="total_item_selected"
-        class="text-sm font-medium"
-      >
-        {{ $t('Đã chọn') }}: {{ total_item_selected }} {{ title }}
-      </span>
+      <slot name="action" />
     </div>
-    <div class="min-h-0 overflow-y-auto flex flex-col gap-2">
-      <slot />
+    <div class="min-h-0 overflow-y-auto flex flex-col gap-3">
+      <slot name="group" />
     </div>
     <Description />
   </div>
