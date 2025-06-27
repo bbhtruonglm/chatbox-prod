@@ -3,6 +3,9 @@ const ENV: IEnv = {
   local_storage: {
     prefix: 'chatbox_',
   },
+  session_storage: {
+    prefix: 'chatbox_',
+  },
   host: {
     n3_socket: 'ws://l08cwks8ccg48kkcwgko44s8.34.143.225.69.sslip.io',
     n4_service_v2: 'http://kosg80owos4kokokc4owo4s4.34.143.225.69.sslip.io/v1/n4_service',

@@ -93,6 +93,7 @@ import { container } from 'tsyringe'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { composableValidate } from './validate'
+import { TriggerEventRef } from '@/utils/helper/TriggerEventRef'
 
 import AlertError from '@/views/OAuth/AlertError.vue'
 import GoLogin from '@/views/OAuth/GoLogin.vue'
@@ -144,7 +145,8 @@ class Main {
       LocalStorage
     ),
     private readonly SERVICE_TOAST: IAlert = container.resolve(Toast),
-    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth)
+    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth),
+    private readonly TRIGGER_EVENT_REF = container.resolve(TriggerEventRef)
   ) {}
 
   /**đăng ký */
@@ -183,6 +185,9 @@ class Main {
       path: '/oauth/login-email',
       query: { email: form.value.email, register: 'true' },
     })
+
+    // trigger message tới nhân viên
+    this.TRIGGER_EVENT_REF.sendMessageRegisterEmail(form.value.email)
   }
 }
 const $main = new Main()

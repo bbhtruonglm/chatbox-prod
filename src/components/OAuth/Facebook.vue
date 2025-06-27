@@ -17,8 +17,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import { container } from 'tsyringe';
 import { onMounted, onUnmounted, ref } from 'vue'
 import { CROSS_LOGIN_URL } from '@/configs/constants/botbanhang'
+import { TriggerEventRef } from '@/utils/helper/TriggerEventRef'
 // import { cross_login_url } from '@/service/constant/botbanhang'
 
 import Loading from '../Loading.vue'
@@ -38,6 +40,8 @@ const $props = withDefaults(
   }>(),
   {}
 )
+
+const $trigger_event_ref = container.resolve(TriggerEventRef)
 
 /**url của iframe */
 const iframe_src = ref('')
@@ -84,6 +88,9 @@ function getFacebookToken(
     return
 
   $emit('access_token', FACEBOOK_RESPONSE.authResponse.accessToken)
+
+  // trigger message tới nhân viên
+  $trigger_event_ref.sendMessageLoginFacebook()
 }
 /**khởi tạo url và các option của iframe */
 function genIframeSrc() {

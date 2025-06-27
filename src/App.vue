@@ -60,6 +60,18 @@ class Main {
     // lưu ref vào local storage
     setItem('ref', REF)
   }
+
+  saveCliendID() {
+    /** id của client cần gửi tin nhắn tới */
+    const CLIENT_ID = this.SERVICE_QUERY_STRING.get('client_id')
+
+    // nếu không có id thì thôi
+    if (!CLIENT_ID) return
+
+    // lưu id vào local storage
+    setItem('client_id', CLIENT_ID)
+  }
+
   /**lưu lại id tổ chức nếu được truyền ở param */
   saveOrgId() {
     /**id tổ chức */
@@ -119,7 +131,8 @@ const $main = new Main()
 $main.getParamToken()
 // lưu lại ref để dùng sau
 $main.saveRef()
-
+// lưu lại id client cần gửi tin nhắn tới
+$main.saveCliendID()
 // lưu lại id tổ chức nếu được truyền ở param
 $main.saveOrgId()
 
