@@ -47,6 +47,8 @@ const $props = withDefaults(
     duration?: string
     /**có hiển thị thời gian tin nhắn không */
     is_show_duration?: boolean
+    /** có phải tin nhắn của AI gửi hay không */
+    is_ai?: boolean
   }>(),
   {}
 )
@@ -55,11 +57,14 @@ const $date_handle = container.resolve(DateHandle)
 
 /**phân tích tên nv từ meta */
 function parserStaffName() {
+  // nếu là AI gửi
+  if ($props.is_ai) return t('Trợ lý AI')
+
   /** tên nhân sự nhắn tin */
   const STAFF_NAME = $props.meta?.split('__')?.[1]
 
   // nếu không có thì là AI nhắn
-  if(STAFF_NAME === 'undefined') return t('Trợ lý AI')
+  if(STAFF_NAME === 'undefined') return ''
 
   return $props.meta?.split('__')?.[1]
 }
