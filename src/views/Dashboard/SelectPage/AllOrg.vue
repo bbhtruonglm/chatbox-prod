@@ -7,7 +7,7 @@
     <template v-else>
       <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
         <Org
-          v-if="org?.org_id"
+          v-if="org?.org_id && $main.isVisibleOrg(org?.org_id)"
           :key="org?.org_id"
           :org_id="org?.org_id"
           v-model:active_page_list="active_pages_of_orgs[org?.org_id]"
@@ -86,6 +86,15 @@ class Main {
         return ORG_ID !== orgStore.selected_org_id
       }
     )
+  }
+
+  /** có hiện ui của tổ chức hay không */
+  isVisibleOrg(org_id?: string) {
+    /** nếu là chọn tất cả thì hiện */
+    if (orgStore.is_selected_all_org) return true
+
+    // chọn 1 tố tổ chức thì chỉ hiện tổ chức đã chọn
+    return org_id === orgStore.selected_org_id
   }
 }
 const $main = new Main()

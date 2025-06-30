@@ -8,19 +8,23 @@
         size(pageStore.selected_page_id_list) &&
         selectPageStore.is_group_page_mode,
     }"
-    class="group/org-item"
+    class="group/org-item pt-0"
     class_title="flex items-center gap-2 flex-grow min-w-0 w-full overflow-hidden"
+    class_content="!gap-0"
+    class_header_content="!py-3 sticky top-0 bg-white z-10"
   >
     <template #icon>
-      <img
-        v-if="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
-        :src="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
-        class="w-5 h-5 rounded-oval"
-      />
-      <BriefCaseIcon
-        v-else
-        class="w-5 h-5 text-slate-700"
-      />
+      <div class="sticky top-0 pt-3">
+        <img
+          v-if="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+          :src="pageStore.map_orgs?.map_org_info?.[org_id]?.org_info?.org_avatar"
+          class="w-5 h-5 rounded-oval"
+        />
+        <BriefCaseIcon
+          v-else
+          class="w-5 h-5 text-slate-700"
+        />
+      </div>
     </template>
     <template #title>
       <div class="flex-shrink-0">
