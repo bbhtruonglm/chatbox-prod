@@ -263,7 +263,6 @@ class Main {
   }
 
   /** lấy dữ liệu hội thoại */
-  @loadingV2(commonStore, 'is_loading_full_screen', false)
   @error(new NoneToast())
   async getConversation() {
     // trang bị mất kết nối không
@@ -304,7 +303,6 @@ class Main {
   }
 
   /** lấy danh sách các page zalo của tổ chức hiện tại */
-  @loadingV2(commonStore, 'is_loading_full_screen')
   @error(new CustomToast())
   async getZaloPage() {
     // nếu không có id tổ chức thì thôi
@@ -341,7 +339,7 @@ class Main {
   }
 
   /** lấy thông tin của các page zalo */
-  @loadingV2(commonStore, 'is_loading_full_screen')
+  // @loadingV2(commonStore, 'is_loading_full_screen')
   @error(new CustomToast())
   async getZaloPageInfo() {
     /** danh sách các page zalo */
