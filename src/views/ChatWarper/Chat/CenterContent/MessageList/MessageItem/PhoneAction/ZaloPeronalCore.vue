@@ -8,23 +8,20 @@
       class="bg-white py-2 px-3 rounded-lg gap-2 flex items-center text-slate-700"
     >
       {{ $t('Chọn Zalo cá nhân:') }}
-      <PageAvatar
-        v-if="selected_page_id"
-        :page_info="selected_page_info"
-        class="rounded-full size-5"
-      />
-      <select
-        v-model="selected_page_id"
-        class="focus:outline-none flex-grow"
-        @update:model-value="$main.getClientId()"
+      <button
+        class="flex items-center gap-2 flex-grow"
+        @click="zalo_personal_dropdown_ref?.toggleDropdown"
       >
-        <option
-          v-for="zlp_os of zlp_oss"
-          :value="zlp_os?.page_id"
-        >
-          {{ zlp_os?.page_info?.name }}
-        </option>
-      </select>
+        <div class="flex flex-grow items-center gap-1">
+          <PageAvatar
+            v-if="selected_page_id"
+            :page_info="selected_page_info"
+            class="rounded-full size-5"
+          />
+          <p class="text-slate-700">{{ selected_page_info?.name }}</p>
+        </div>
+        <ChevronDownIcon class="size-5" />
+      </button>
     </div>
 
     <!-- Hội thoại -->
@@ -69,24 +66,60 @@
       />
     </div>
 
-    <InputChat :client_id="client_id"/>
+    <!-- ô nhập chat -->
+    <InputChat :client_id="client_id" />
+
+    <!-- danh sách zalo personal -->
+    <Dropdown
+      ref="zalo_personal_dropdown_ref"
+      width="250px"
+      height="auto"
+      :is_fit="false"
+      :distance="0"
+      class_content="flex flex-col gap-2 text-sm p-3"
+      @close_dropdown="search_zalo_personal = ''"
+    >
+      <input
+        type="text"
+        class="outline-none border border-slate-500 rounded-md py-1.5 px-2"
+        :placeholder="$t('Tìm kiếm Zalo cá nhân')"
+        v-model="search_zalo_personal"
+      />
+      <ul class="flex flex-col gap-2 max-h-[50dvh] overflow-auto">
+        <li
+          v-for="zlp_os of zlp_oss"
+          class="cursor-pointer flex items-center gap-2 p-2 hover:bg-slate-100 rounded"
+          v-show="$main.isShowZaloPersonal(zlp_os?.page_info)"
+          @click="$main.selectPage(zlp_os)"
+        >
+          <PageAvatar
+            :page_info="zlp_os?.page_info"
+            class="rounded-full size-5"
+          />
+          {{ zlp_os?.page_info?.name }}
+        </li>
+      </ul>
+    </Dropdown>
   </div>
 </template>
 <script setup lang="ts">
 import { read_os } from '@/service/api/chatbox/billing'
 import { read_conversation } from '@/service/api/chatbox/n4-service'
+import { nonAccentVn } from '@/service/helper/format'
 import {
   useChatbotUserStore,
   useCommonStore,
   useConversationStore,
   useMessageStore,
-  usePageStore
+  useOrgStore,
+  usePageStore,
 } from '@/stores'
 import { N4SerivceAppPage } from '@/utils/api/N4Service/Page'
 import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
 import { error } from '@/utils/decorator/Error'
 import { loadingV2 } from '@/utils/decorator/Loading'
 import { Toast } from '@/utils/helper/Alert/Toast'
+import { LocalStorage } from '@/utils/helper/LocalStorage'
 import { QueryString } from '@/utils/helper/QueryString'
 import { Socket } from '@/utils/helper/Socket'
 import { useDropFile } from '@/views/composable'
@@ -96,15 +129,17 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
+import Dropdown from '@/components/Dropdown.vue'
 import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import type { SocketEvent } from '@/service/interface/app/common'
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import type { MessageInfo } from '@/service/interface/app/message'
+import type { IPage } from '@/service/interface/app/page'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { IAlert } from '@/utils/helper/Alert/type'
@@ -120,8 +155,13 @@ const { t: $t } = useI18n()
 // composable
 const { onDropFile } = useDropFile()
 
+const orgStore = useOrgStore()
+
 /** đối tượng thao tác với query string */
 const $query_string = container.resolve(QueryString)
+
+/** dữ liệu trong local storage */
+const $local_storage = container.resolve(LocalStorage)
 
 /** socket chatbot */
 const $socket = container.resolve(Socket)
@@ -152,6 +192,12 @@ const selected_page_info = computed(
 
 /** danh sách các trang zalo của tổ chức hiện tại */
 const zlp_oss = ref<OwnerShipInfo[]>()
+
+/** tham chiếu tới dropdown danh sách zalo cá nhân của tổ chức */
+const zalo_personal_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
+
+/** từ khóa tìm kiếm zalo cá nhân */
+const search_zalo_personal = ref('')
 
 class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
@@ -217,7 +263,7 @@ class Main {
   }
 
   /** lấy dữ liệu hội thoại */
-  @loadingV2(commonStore, 'is_loading_full_screen',false)
+  @loadingV2(commonStore, 'is_loading_full_screen', false)
   @error(new NoneToast())
   async getConversation() {
     // trang bị mất kết nối không
@@ -270,8 +316,22 @@ class Main {
     /**lọc ra các trang zalo cá nhân */
     zlp_oss.value = OSS.filter(os => os?.page_info?.type === 'ZALO_PERSONAL')
 
-    // mặc định chọn tài khoản zl đầu tiên
-    selected_page_id.value = zlp_oss.value?.[0]?.page_id
+    /** id trang zalo lưu trong local storage */
+    const ZALO_PAGE_ID = this.getZaloPageIdFromLocalStorage()
+
+    // lặp qua danh sách nếu id lưu trong local storage tồn tại trong danh sách thì chọn
+    zlp_oss.value?.forEach(os => {
+      if (os.page_id === ZALO_PAGE_ID) {
+        selected_page_id.value = os.page_id
+      }
+    })
+
+    // nếu không có id nào trùng thì thôi, chọn tài khoản zl đầu tiên
+    if (!selected_page_id.value) {
+      selected_page_id.value = zlp_oss.value?.[0]?.page_id
+    }
+
+    // kết nối socket để nhận tin nhắn realtime
     $socket.connect(
       $env.host.n3_socket,
       zlp_oss.value?.map(os => os.page_id || ''),
@@ -317,6 +377,27 @@ class Main {
     query_string_data.value[key] = $query_string.get(key) || ''
   }
 
+  /** chọn trang zalo */
+  selectPage(page_info?: OwnerShipInfo) {
+    // nếu không có thông tin page thì thôi
+    if (!page_info) return
+
+    // lưu lại id page
+    selected_page_id.value = page_info.page_id
+
+    // gửi id trang tới trang cha để lấy id khách hàng
+    this.getClientId()
+
+    // tắt dropdown chọn page zalo
+    zalo_personal_dropdown_ref.value?.toggleDropdown()
+
+    // nếu không có id trang zalo thì thôi
+    if(!selected_page_id.value) return
+
+    // lưu lại id trang xuống localstorage
+    this.setZaloPageIdToLocalStorage(selected_page_id.value)
+  }
+
   /** hàm gửi sự kiện để lấy id khách hàng từ iframe cha */
   getClientId() {
     // reset hội thoại
@@ -336,7 +417,7 @@ class Main {
   }
 
   /** hàm xử lý sự kiện khi nhận được từ iframe cha */
-  handleEvent(event: MessageEvent) {    
+  handleEvent(event: MessageEvent) {
     // nếu không phải là thẻ bọc của iframe zalo personal core thi thôi
     if (event.data?.from !== 'ZALO_PERSONAL_CONTAINER') return
 
@@ -402,6 +483,80 @@ class Main {
           detail: update_message,
         })
       )
+  }
+
+  /** hàm kiểm tra xem có hiển thị option zalo cá nhân không */
+  isShowZaloPersonal(page_info?: IPage) {
+    // nếu không có thông tin page thì ẩn
+    if (!page_info) return
+
+    /** Tên của page zalo đó khi được bỏ dấu và viết hoa và loại bỏ hết khoảng trắng*/
+    const PAGE_NAME = nonAccentVn(page_info?.name || '')?.replace(/ /g, '')
+    /** Từ khóa tìm kiếm khi được bỏ dấu và viết hoa và loại bỏ hết khoảng trắng */
+    const KEY_WORD = nonAccentVn(search_zalo_personal.value)?.replace(/ /g, '')
+
+    return PAGE_NAME.includes(KEY_WORD)
+  }
+
+  /** lưu id của page zalo xuống localstorage */
+  setZaloPageIdToLocalStorage(page_id: string) {
+    /** Ánh xạ id trang zalo được chọn của các tổ chức */
+    let selected_zalo_page_org_id_map: Record<string, string> =
+      this.getZaloPageIdOrgIdMapFromLocalStorage()
+
+    /** id của tổ chức hiện tại */
+    const ORG_ID = orgStore.selected_org_id
+
+    // nếu không có id tổ chức hiện tại thì thôi
+    if (!ORG_ID) return
+
+    // thêm id của trang đã chọn với id của tổ chức hiện tại
+    selected_zalo_page_org_id_map[ORG_ID] = page_id
+
+    // lưu dữ liệu mới xuống localstorage
+    $local_storage.setItem(
+      'selected_zalo_page_org_id_map',
+      JSON.stringify(selected_zalo_page_org_id_map)
+    )
+  }
+
+  /** lấy id trang zalo được chọn của tổ chức hiện tại lưu trong localstorage */
+  getZaloPageIdFromLocalStorage(): string {
+    /** Ánh xạ id trang zalo được chọn của các tổ chức */
+    const SELECTED_ZALO_PAGE_ORG_ID_MAP: Record<string, string> =
+      this.getZaloPageIdOrgIdMapFromLocalStorage()
+
+    /** id của tổ chức hiện tại */
+    const ORG_ID = orgStore.selected_org_id
+
+    // nếu không có id tổ chức hiện tại thì thôi
+    if (!ORG_ID) return ''
+
+    return SELECTED_ZALO_PAGE_ORG_ID_MAP[ORG_ID] || ''
+  }
+
+  /** lấy ánh xạ của page zalo được chọn với các tổ chức ở localstorage */
+  getZaloPageIdOrgIdMapFromLocalStorage(): Record<string, string> {
+    try {
+      /** dữ liệu ánh xạ trang zalo được chọn và các tổ chức theo id được lưu trong localstorage ở dạng string */
+      const SELECTED_ZALO_PAGE_ORG_ID_MAP_STR = $local_storage.getItem(
+        'selected_zalo_page_org_id_map'
+      )
+
+      // nếu không có dữ liệu thì trả về object rỗng
+      if (!SELECTED_ZALO_PAGE_ORG_ID_MAP_STR) return {}
+
+      /** dữ liệu sau khi parse thành công */
+      const SELECTED_ZALO_PAGE_ORG_ID_MAP = JSON.parse(SELECTED_ZALO_PAGE_ORG_ID_MAP_STR)
+
+      // nếu không có thì trả về object rỗng
+      if (!SELECTED_ZALO_PAGE_ORG_ID_MAP) return {}
+      
+      return SELECTED_ZALO_PAGE_ORG_ID_MAP
+    } catch (error) {
+      // nếu parse lỗi thì trả về object rỗng
+      return {}
+    }
   }
 }
 const $main = new Main()
