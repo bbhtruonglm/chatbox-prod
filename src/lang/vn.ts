@@ -67,6 +67,7 @@ const source: Language = {
   'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
   'Ưu tiên':'Ưu tiên',
   'Quản lý ứng dụng': 'Quản lý ứng dụng',
+  'Tìm kiếm Zalo cá nhân': 'Tìm kiếm Zalo cá nhân',
   name: 'Tiếng Việt',
   v1: {
     common: {

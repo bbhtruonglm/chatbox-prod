@@ -266,6 +266,7 @@ const source: Language = {
   'Tên nhóm không hợp lệ': 'Invalid group name',
   'Ưu tiên':'Priority',
   'Quản lý ứng dụng': 'App Management',
+  'Tìm kiếm Zalo cá nhân': 'Search Zalo Personal',
   name: 'English',
   v1: {
     common: {
