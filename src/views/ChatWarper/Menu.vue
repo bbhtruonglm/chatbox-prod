@@ -30,7 +30,7 @@
         v-tooltip.right="$t('v1.view.main.dashboard.nav.menu')"
         class="rounded-lg p-2.5 group"
       >
-        <SquaresPlusIcon class="w-6 h-6 m-auto group-hover:text-red-600" />
+        <Squares2X2Icon class="w-6 h-6 m-auto group-hover:text-red-600" />
       </button>
       <hr class="border-slate-700 w-8 mx-auto" />
       <NavItem
@@ -179,11 +179,10 @@ import DateIcon from '@/components/Icons/Date.vue'
 import InboxIcon from '@/components/Icons/Inbox.vue'
 import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
 import PhoneIcon from '@/components/Icons/Phone.vue'
-import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 import TagIcon from '@/components/Icons/Tag.vue'
 import TagNotIcon from '@/components/Icons/TagNot.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
-import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+import { ArrowLeftIcon, Squares2X2Icon } from '@heroicons/vue/24/solid'
 
 
 const conversationStore = useConversationStore()
