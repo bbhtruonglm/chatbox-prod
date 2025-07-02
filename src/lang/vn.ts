@@ -67,6 +67,9 @@ const source: Language = {
   'Tên nhóm không hợp lệ':'Tên nhóm thông khó hợp lệ',
   'Ưu tiên':'Ưu tiên',
   'Quản lý ứng dụng': 'Quản lý ứng dụng',
+  'Anh': 'Anh',
+  'Chị': 'Chị',
+  'Anh/Chị': 'Anh/Chị',
   name: 'Tiếng Việt',
   v1: {
     common: {

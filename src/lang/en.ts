@@ -266,6 +266,9 @@ const source: Language = {
   'Tên nhóm không hợp lệ': 'Invalid group name',
   'Ưu tiên':'Priority',
   'Quản lý ứng dụng': 'App Management',
+  'Anh': 'Mr.',
+  'Chị': 'Mrs.',
+  'Anh/Chị': 'Mr./Mrs.',
   name: 'English',
   v1: {
     common: {

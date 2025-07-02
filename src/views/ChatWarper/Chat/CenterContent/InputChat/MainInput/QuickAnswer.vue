@@ -371,7 +371,6 @@ async function transalate() {
     // check lại nếu không có nội dung thì thôi
     if (!text) throw 'DONE'
 
-
     // gọi api dịch
     const RES = await text_translate({
       from: 'vn',
@@ -482,12 +481,13 @@ function replaceTemplateMessage(content: string) {
     .replace(/#{{LAST_NAME}}/g, '')
     .replace(/#{{STAFF_FIRST_NAME}}/g, '')
     .replace(/#{{STAFF_LAST_NAME}}/g, '')
-    .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+    // .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
     .replace(/#\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
     .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
 
   /**tên khách hàng */
-  const CLIENT_NAME = CONVERSATION?.client_origin_name || CONVERSATION?.client_name || ''
+  const CLIENT_NAME =
+    CONVERSATION?.client_origin_name || CONVERSATION?.client_name || ''
   /**tên nhân viên */
   const STAFF_NAME =
     getStaffInfo(page_id.value, CONVERSATION?.fb_staff_id)?.name || ''
@@ -497,6 +497,13 @@ function replaceTemplateMessage(content: string) {
   const EMAIL = CONVERSATION?.client_email || ''
   /**tên trang */
   const PAGE_NAME = getPageInfo(page_id.value)?.name || ''
+  /** giới tính của khách */
+  const GENDER =
+    CONVERSATION?.client_gender === 'male'
+      ? $t('Anh')
+      : CONVERSATION?.client_gender === 'female'
+      ? $t('Chị')
+      : $t('Anh/Chị')
 
   return (
     content
@@ -519,6 +526,10 @@ function replaceTemplateMessage(content: string) {
       // tên trang
       .replace(/#{PAGE_NAME}/g, PAGE_NAME)
       .replace(/#{{PAGE_NAME}}/g, PAGE_NAME)
+
+      // giới tính
+      .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, GENDER)
+      .replace(/#SEX\{[^|}]+\|[^|}]+\|[^|}]+\}/g, GENDER)
   )
 }
 /**cuộn tới vị trí trả lời nhanh đang chọn */
