@@ -87,6 +87,9 @@
   <div
     v-if="isFilterActive()"
     class="bg-slate-100 rounded-lg py-1.5 px-2 text-xs flex gap-2 items-center"
+    :class="{
+      'hidden': conversationStore.selected_quick_filter !== 'ALL',
+    }"
   >
     <div class="flex gap-2 w-full min-w-0">
       <FunnelIcon class="w-3.5 h-3.5 flex-shrink-0" />
@@ -96,6 +99,7 @@
       <XMarkIcon class="w-3.5 h-3.5 flex-shrink-0" />
     </button>
   </div>
+  <QuickFilter />
 </template>
 <script setup lang="ts">
 import { isFilterActive } from '@/service/function'
@@ -113,6 +117,8 @@ import { container } from 'tsyringe'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+
+import QuickFilter from '@/views/ChatWarper/Chat/LeftBar/Header/QuickFilter.vue'
 
 import SearchIcon from '@/components/Icons/Search.vue'
 import { FunnelIcon, XMarkIcon } from '@heroicons/vue/24/outline'
