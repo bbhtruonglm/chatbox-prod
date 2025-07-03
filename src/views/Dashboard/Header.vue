@@ -17,14 +17,41 @@
         position="BOTTOM"
         :back="237"
       />
+      <button
+        @click="attach_ref?.toggleDropdown"
+        v-tooltip.bottom="$t('v1.view.main.dashboard.nav.menu')"
+        class="rounded-lg group"
+      >
+        <Squares2X2Icon class="w-7 h-7 m-auto group-hover:text-red-600" />
+      </button>
     </div>
+    <Dropdown
+      ref="attach_ref"
+      :is_fit="false"
+      :back="300"
+      width="349px"
+      height="auto"
+      position="BOTTOM"
+      class_content="flex flex-col gap-1 max-h-[calc(100vh-100px)]"
+    >
+      <OrgSetting />
+    </Dropdown>
   </div>
 </template>
 <script setup lang="ts">
-import User from '@/components/User.vue'
+import { ref } from 'vue';
 import { useCommonStore } from '@/stores'
 
-import { Domain } from '@/utils/helper/Domain'
+import User from '@/components/User.vue'
+import Attach from '@/views/ChatWarper/Menu/Attach.vue';
+
+import { Squares2X2Icon } from '@heroicons/vue/24/solid';
+import Dropdown from '@/components/Dropdown.vue';
+import OrgSetting from '@/components/Main/OrgSetting.vue';
 
 const commonStore = useCommonStore()
+
+/**ref của menu đính kèm */
+const attach_ref = ref<InstanceType<typeof Attach>>()
+
 </script>
