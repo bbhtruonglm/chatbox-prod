@@ -178,8 +178,11 @@ export const useConversationStore = defineStore('conversation_store', () => {
     // trả về trạng thái có đang tìm kiếm thông tin khách hàng hay không
     return extensionStore.is_find_client_info?.[DATA_KEY]
   }
+  /** bộ lọc nhanh đã chọn */
+  const selected_quick_filter = ref('ALL')
 
   return {
+    selected_quick_filter,
     option_filter_page_data,
     select_conversation,
     select_conversation_post,
