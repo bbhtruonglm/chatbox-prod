@@ -2,7 +2,7 @@
   <splitpanes
     ref="container_ref"
     @resized="onResized"
-    class="!w-full !h-full flex custom default-theme"
+    class="!w-full !h-full flex custom default-theme flex-grow min-w-0"
   >
     <template v-if="ready">
       <pane
@@ -24,8 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { LocalStorage } from '@/utils/helper/LocalStorage';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { container } from 'tsyringe';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 /** độ rộng tối thiểu của cột bên trái */
@@ -43,9 +45,11 @@ const width = ref(0)
 const size = ref(0)
 
 /** chiều rộng tối thểu cột bên trái theo % */
-const min = computed(() => Math.round((MIN / width.value) * 100))
+const min = computed(() => round(MIN / width.value * 100))
 /** chiều rộng tối đa cót bên trái theo % */
-const max = computed(() => Math.round((MAX / width.value) * 100))
+const max = computed(() => round(MAX / width.value * 100))
+
+const $local_storage = container.resolve(LocalStorage)
 
 onMounted(() => {
   nextTick(() => {
@@ -54,8 +58,12 @@ onMounted(() => {
 
     // lưu lại chiều rộng của thẻ bọc
     width.value = container_ref.value?.$el?.clientWidth
+
+    // chiều rộng cột bên trái lưu ở local
+    const LOCAL_WIDTH = $local_storage.getItem('conversation_width')
+
     // set chiều rộng tối thiểu cột bên trái
-    size.value = min.value
+    size.value = LOCAL_WIDTH || min.value
 
     // bật cờ để render ra các thành phần bên trong
     ready.value = true
@@ -63,11 +71,20 @@ onMounted(() => {
 })
 
 /** cập nhật chiều rộng cột bên trái */
-function onResized({ prev_pane }: { prev_pane?: { size: number } }) {
+function onResized({ prevPane }: { prevPane?: { size: number } }) {
   // nếu không có dữ liệu mới của thẻ được chỉnh sửa
-  if (!prev_pane) return
+  if (!prevPane?.size) return
+
   // lưu lại chiều rộng cột bên trái
-  size.value = prev_pane.size
+  size.value = prevPane.size
+
+  // lưu local giá trị của chiều rộng cột bên trái
+  $local_storage.setItem('conversation_width', round(size.value))
+}
+
+/** làm tròn số thập thứ 2 */
+function round(num: number) {
+  return Math.round(num * 100) / 100
 }
 </script>
 
