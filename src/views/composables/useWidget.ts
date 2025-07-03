@@ -28,27 +28,36 @@ export function useWidget() {
 
   /**ẩn hiện widget */
   function toggleWidget(widget: AppInstalledInfo) {
-    // loop danh sách widget để xử lý
-    pageStore.widget_list?.forEach(item => {
+    /** danh sách widget */
+    const WIDGET_LIST = pageStore.widget_list
+    /** danh sách các widget luôn hiển thị */
+    const DEFAULT_VISIBLE_WIDGETS = getDefaultVisibleWidgets()
+    /** trạng thái nẩn hiện của widget được truyền vào */
+    const IS_CURRENTLY_VISIBLE = widget.is_show
+
+    // nếu widget đang mở thì đóng widget đó thôi
+    if (IS_CURRENTLY_VISIBLE) {
+      widget.is_show = false
+      return
+    }
+
+    // nếu là mở thì mở widget đó và đóng tắt cả các widget không phải chế độ luôn hiển thị
+    WIDGET_LIST?.forEach(item => {
       // toggle widget được chọn
       if (widget._id === item._id) {
         /**widget được toggle là hiển thị hay tắt */
-        const IS_SHOW = !item.is_show
+        const WILL_SHOW = !item.is_show
 
-        // tạo lại token cho widget nếu
-        if (
-          // widget bị tắt
-          !IS_SHOW &&
-          // và widget này post message
-          item.snap_app?.is_post_message
-        )
+        // tạo lại token cho widget nếu widget bị tắt và widget này post message
+        if (!WILL_SHOW && item.snap_app?.is_post_message) {
           item.url = getIframeUrl(item)
+        }
 
         // gán giá trị hiển thị mới
-        item.is_show = IS_SHOW
+        item.is_show = WILL_SHOW
       }
-      // ẩn tất cả các widget còn lại
-      else if(!item.is_show || !getDefaultVisibleWidgets().includes(item._id)) {
+      // ẩn tất cả các widget còn lại trừ nhưng widget trong danh sách luôn hiển thị
+      else if (!DEFAULT_VISIBLE_WIDGETS.includes(item._id)) {
         item.is_show = false
       }
     })
