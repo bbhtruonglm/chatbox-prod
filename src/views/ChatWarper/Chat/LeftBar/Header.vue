@@ -99,7 +99,7 @@
       <XMarkIcon class="w-3.5 h-3.5 flex-shrink-0" />
     </button>
   </div>
-  <QuickFilter />
+  <!-- <QuickFilter /> -->
 </template>
 <script setup lang="ts">
 import { isFilterActive } from '@/service/function'
