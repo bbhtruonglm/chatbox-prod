@@ -124,8 +124,9 @@ export function useKeyboardShortcut() {
   }
 
   /** toggle hiện thị danh sách nhãn */
-  const toggleLabel = () => {
+  const toggleLabel = (e: KeyboardEvent) => {
     commonStore.keyboard_shortcut = 'toggle_labels'
+    e.preventDefault()
   }
 
   /** mở xem hồ sở của khách hiện tại */
@@ -195,10 +196,10 @@ export function useKeyboardShortcut() {
 
   /** danh sách các phím tắt */
   const KEYMAP: Record<string, Record<string, (e: KeyboardEvent) => void>> = {
-    'Shift+ArrowLeft': {
+    'Control+Shift+ArrowLeft': {
       ALL: backToSelectPage,
     },
-    'Control+Shift+E': {
+    'Alt+Shift+E': {
       ALL: handleSignout,
     },
     'Alt+Digit1': {
@@ -237,7 +238,7 @@ export function useKeyboardShortcut() {
     'Alt+K': {
       '/': toggleSearch,
     },
-    'Shift+L': {
+    'Control+L': {
       '/': toggleLabel,
     },
     'Control+P': {
@@ -246,13 +247,13 @@ export function useKeyboardShortcut() {
     'Control+R': {
       '/': toggleUnread,
     },
-    'Control+X': {
+    'Control+Shift+X': {
       '/': toggleBlockUser,
     },
-    'Shift+P': {
+    'Control+Shift+P': {
       '/': copyPhone,
     },
-    'Shift+E': {
+    'Control+Shift+E': {
       '/': copyEmail,
     },
     'Alt+Q': {
@@ -269,6 +270,9 @@ export function useKeyboardShortcut() {
     },
     'Alt+Shift+M': {
       '/': openWidgetConfig,
+    },
+    'Alt': {
+      '/': (e) => e.preventDefault(),
     },
   }
 

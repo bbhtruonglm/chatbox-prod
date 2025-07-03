@@ -119,6 +119,12 @@ export const usePageStore = defineStore('page_store', () => {
     // nếu là admin thì trả về true
     return true
   }
+
+  /** kiểm tra staff hiện tại có phỉa admin của page hoặc là admin của tổ chức */
+  function isPageAdminOrOrgAdmin(page_id?: string): boolean {
+    return isCurrentStaffAdmin(page_id) || orgStore.isAdminOrg()
+  }
+
   /**lấy danh sách nhãn của trang */
   function getLabels(page_id?: string): Record<string, ILabel> | undefined {
     // nếu không có page_id thì thôi
@@ -141,24 +147,22 @@ export const usePageStore = defineStore('page_store', () => {
   const zlp_oss = ref<OwnerShipInfo[]>()
 
   /**--------------- GETTER ------------ */
-  /**đếm số trang đang kích hoạt của tổ chức đang chọn*/
+  /**đếm số trang đang kích hoạt của tổ chức đã chọn */
   function countActivePage() {
-    return size(
-      // lấy ra các page cả tổ chức đang chọn
-      pickBy(
-        active_page_list.value,
-        value => {
-          /** ID của page */
-          const PAGE_ID = value?.page?.fb_page_id!
+    // nếu là tất cả tổ chức
+    if (!orgStore.selected_org_id) return size(active_page_list.value)
 
-          /** ID tổ chức của page */
-          const ORG_ID = map_orgs.value?.map_page_org?.[PAGE_ID]
+    // nếu chọn 1 tổ chức nào đó
+    const PAGE_LIST = filter(active_page_list.value, page => {
+      /** id của page */
+      const PAGE_ID = page?.page?.fb_page_id || ''
 
-          // nếu trùng với id tổ chức đang chọn thì trả về true
-          return ORG_ID === orgStore.selected_org_id
-        }
+      return (
+        map_orgs.value?.map_page_org?.[PAGE_ID] === orgStore.selected_org_id
       )
-    )
+    })
+
+    return size(PAGE_LIST)
   }
   /**đếm số lượng page được chọn */
   function countSelectedPage() {
@@ -203,6 +207,7 @@ export const usePageStore = defineStore('page_store', () => {
     getStaff,
     getPage,
     isCurrentStaffAdmin,
+    isPageAdminOrOrgAdmin,
     getCurrentStaff,
     getLabels,
   }

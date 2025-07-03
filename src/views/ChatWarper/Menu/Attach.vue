@@ -42,7 +42,7 @@
       <NewTabIcon class="flex-shrink-0 w-4 h-4 text-gray-500" />
     </MenuItem>
     <MenuItem
-      v-if="orgStore.isAdminOrg()"
+      v-if="pageStore.isPageAdminOrOrgAdmin(conversationStore.select_conversation?.fb_page_id)"
       @click="$external_site.openPageSetting()"
       :icon="CogIcon"
       :title="$t('v1.view.main.dashboard.nav.setting')"
@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { useOrgStore } from '@/stores'
+import { useConversationStore, useOrgStore, usePageStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { ExternalSite } from '@/utils/helper/ExternalSite'
@@ -104,6 +104,8 @@ import OrderIcon from '@/components/Icons/Order.vue'
 const { t: $t } = useI18n()
 const $router = useRouter()
 const orgStore = useOrgStore()
+const pageStore = usePageStore()
+const conversationStore = useConversationStore()
 const $external_site = container.resolve(ExternalSite)
 
 /**ref của menu đính kèm */

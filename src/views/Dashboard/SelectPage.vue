@@ -107,9 +107,10 @@
         <EmptyPage
           v-if="
             !(
-              pageStore.countActivePage() ||
-              orgStore.selected_org_group?.[orgStore.selected_org_id || '']
-            ) && !selectPageStore.is_loading
+              pageStore.countActivePage()
+            ) &&
+            !selectPageStore.is_loading &&
+            selectPageStore.current_menu === 'ALL_PLATFORM'
           "
           tab="PAGE"
         />
@@ -120,14 +121,20 @@
 
 <script setup lang="ts">
 import {
+  useChatbotUserStore,
   useCommonStore,
   useOrgStore,
   usePageStore,
   useSelectPageStore,
 } from '@/stores'
+import { SessionStorageManager } from '@/utils/helper/SessionStorage'
+import { TriggerEventRef } from '@/utils/helper/TriggerEventRef'
 import { useEmbedChat } from '@/views/composables/useEmbedChat'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
 import { KEY_GET_CHATBOT_USER_FUNCT } from '@/views/Dashboard/symbol'
+import { size } from 'lodash'
+import { storeToRefs } from 'pinia'
+import { container } from 'tsyringe'
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -151,14 +158,17 @@ import InstagramIcon from '@/components/Icons/Instagram.vue'
 import WebIcon from '@/components/Icons/Web.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { FlagIcon } from '@heroicons/vue/24/solid'
-import { storeToRefs } from 'pinia'
 
 const { t: $t } = useI18n()
 const pageStore = usePageStore()
 const selectPageStore = useSelectPageStore()
+const chatbotUserStore = useChatbotUserStore()
 const $route = useRoute()
 const orgStore = useOrgStore()
 const { ref_alert_reach_limit } = storeToRefs(useCommonStore())
+
+const $trigger_event_ref = container.resolve(TriggerEventRef)
+const $session_storage = container.resolve(SessionStorageManager)
 
 /** composable */
 const { toggleModalConnectPage, getALlOrgAndPage } = usePageManager()
@@ -171,7 +181,7 @@ useEmbedChat()
 
 computed(() => selectPageStore.current_menu)
 
-onMounted(() => {
+onMounted(async () => {
   /**
    * load lại info của chatbot user
    * phòng trường hợp user mới được kích hoạt gói
@@ -183,7 +193,9 @@ onMounted(() => {
   triggerConnectPlatform()
 
   // lấy toàn bộ dữ liệu tổ chức và trang khi component được mount
-  getALlOrgAndPage()
+  await getALlOrgAndPage()
+
+  handleLoginWithoutPage()
 })
 
 /**kích hoạt tự động mở kết nối nền tảng nếu cần */
@@ -196,5 +208,26 @@ function triggerConnectPlatform() {
 
   // mở modal connect zalo
   toggleModalConnectPage?.(CONNECT_PAGE)
+}
+
+/** hàm xử lý bắn sự kiện khi đăng nhập và không có page nào */
+function handleLoginWithoutPage() {
+  /** Cờ đăng nhập lưu trong session storage */
+  const IS_LOGIN = $session_storage.getItem('is_login')
+
+  // nếu đã đăng nhập thì thôi
+  if (IS_LOGIN) return
+
+  // nếu không có page nào thì gửi tin nhắn trigger
+  if (size(pageStore.all_page_list)) return
+
+  // gửi tin nhắn trigger
+  $trigger_event_ref.sendMessageLoginWithoutPage({
+    id: chatbotUserStore.chatbot_user?._id,
+    name: chatbotUserStore.chatbot_user?.full_name,
+  })
+
+  // cờ đăng nhập lưu trong session storage
+  $session_storage.setItem('is_login', true)
 }
 </script>

@@ -15,6 +15,9 @@ export const signout = () => {
   // xoá dữ liệu local
   localStorage.clear()
 
+  // xoá dữ liệu session
+  sessionStorage.clear()
+
   // nếu là trang nội bộ, thì chuyển hướng qua trang logout khác
   if (
     ['retion.ai', 'botbanhang.vn'].includes(

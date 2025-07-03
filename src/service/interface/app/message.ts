@@ -353,6 +353,8 @@ export interface SendMesageInput {
   }
   /**gửi tin nhắn vào nhóm */
   is_group?: boolean
+  /** tin nhắn dạng ghi chú */
+  is_note?: boolean
 }
 
 /**nội dung của tin nhắn tạm vừa được gửi */

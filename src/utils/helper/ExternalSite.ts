@@ -136,7 +136,7 @@ export class ExternalSite implements IExternalSite {
 
   openPageSetting(path: string = '') {
     // nếu không phải là admin thì không được phép
-    if (!this.STORE_ORG.isAdminOrg()) return
+    if (!this.STORE_PAGE.isPageAdminOrOrgAdmin(this.STORE_CONVERSATION.select_conversation?.fb_page_id)) return
 
     /**id trang */
     const PAGE_ID = this.getCurrentConversationPageId()

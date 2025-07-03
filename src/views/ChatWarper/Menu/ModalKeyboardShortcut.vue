@@ -1,7 +1,7 @@
 <template>
   <BaseModal
     ref="base_modal"
-    class_modal="w-[960px] max-h-[90dvh] gap-2 text-sm font-medium p-2 bg-glass"
+    class_modal="w-[1100px] max-h-[90dvh] gap-2 text-sm font-medium p-2 bg-glass"
     class_close="rounded-lg bg-slate-100"
     class_body="bg-white rounded-md flex flex-col px-2"
     class_footer="flex justify-end"
@@ -17,7 +17,7 @@
       </header>
       <section
         v-for="shortcut in SHORTCUT_LIST"
-        class="font-medium pt-2 pb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-3"
+        class="font-medium pt-2 pb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-12 gap-y-3"
       >
         <h3 class="px-2 text-xs text-slate-500 sm:col-span-2 lg:col-span-3">
           {{ shortcut.type }}
@@ -93,7 +93,7 @@ const SHORTCUT_LIST = [
       {
         icon: ArrowLeftCircleIcon,
         name: 'Quay lại chọn trang',
-        key: ['Shift', '←'],
+        key: ['Ctrl', 'Shift', '←'],
         color: 'bg-blue-100 border-blue-200 text-blue-700',
       },
       // {
@@ -119,7 +119,7 @@ const SHORTCUT_LIST = [
       {
         icon: BellSlashIcon,
         name: 'Đăng xuất',
-        key: ['Ctrl', 'Shift' ,'E'],
+        key: ['Alt', 'Shift' ,'E'],
       },
     ],
   },
@@ -196,7 +196,7 @@ const SHORTCUT_LIST = [
       {
         icon: SwatchIcon,
         name: 'Ẩn/hiện nhãn',
-        key: ['Shift', 'L'],
+        key: ['Ctrl', 'L'],
       },
     ],
   },
@@ -216,18 +216,18 @@ const SHORTCUT_LIST = [
       {
         icon: MinusCircleIcon,
         name: 'Chặn người dùng',
-        key: ['Ctrl', 'X'],
+        key: ['Ctrl', 'Shift' , 'X'],
       },
       {
         icon: Square2StackIcon,
         name: 'Chép số điện thoại',
-        key: ['Shift', 'P'],
+        key: ['Ctrl', 'Shift', 'P'],
         color: 'bg-blue-100 border-blue-200 text-blue-700',
       },
       {
         icon: Square2StackIcon,
         name: 'Chép email',
-        key: ['Shift', 'E'],
+        key: ['Ctrl', 'Shift', 'E'],
         color: 'bg-blue-100 border-blue-200 text-blue-700',
       },
       {

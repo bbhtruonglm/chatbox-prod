@@ -3,7 +3,7 @@
     @open_modal="getNoti"
     ref="modal_alert_ref"
     class_modal="w-[881px] h-[630px]"
-    class_body="py-2 flex gap-2"
+    class_body="flex gap-2"
     class_footer="flex justify-between items-center"
   >
     <template #header>

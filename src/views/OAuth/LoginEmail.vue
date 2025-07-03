@@ -98,6 +98,7 @@ import { useI18n } from 'vue-i18n'
 import { onMounted, ref } from 'vue'
 import { N4SerivcePublicOauthBasic } from '@/utils/api/N4Service/Oauth'
 import { composableValidate } from './validate'
+import { TriggerEventRef } from '@/utils/helper/TriggerEventRef'
 
 import NewTo from '@/views/OAuth/NewTo.vue'
 import Alert from '@/views/OAuth/Alert.vue'
@@ -152,7 +153,8 @@ class Main {
    */
   constructor(
     private readonly API_OAUTH_BASIC = new N4SerivcePublicOauthBasic(),
-    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth)
+    private readonly SERVICE_OAUTH = container.resolve(ServiceOAuth),
+    private readonly TRIGGER_EVENT_REF = container.resolve(TriggerEventRef)
   ) {}
 
   /**đăng nhập bằng email*/
@@ -177,6 +179,9 @@ class Main {
 
     // chuyển hướng vào dashboard
     this.SERVICE_OAUTH.redirect('/dashboard')
+
+    // trigger message tới nhân viên
+    this.TRIGGER_EVENT_REF.sendMessageLoginEmail(form.value.email)
   }
   /**gửi lại email xác thực */
   @handleLoadingOauth
