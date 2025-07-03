@@ -497,13 +497,6 @@ function replaceTemplateMessage(content: string) {
   const EMAIL = CONVERSATION?.client_email || ''
   /**tên trang */
   const PAGE_NAME = getPageInfo(page_id.value)?.name || ''
-  /** giới tính của khách */
-  const GENDER =
-    CONVERSATION?.client_gender === 'male'
-      ? $t('Anh')
-      : CONVERSATION?.client_gender === 'female'
-      ? $t('Chị')
-      : $t('Anh/Chị')
 
   return (
     content
@@ -528,10 +521,38 @@ function replaceTemplateMessage(content: string) {
       .replace(/#{{PAGE_NAME}}/g, PAGE_NAME)
 
       // giới tính
-      .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, GENDER)
-      .replace(/#SEX\{[^|}]+\|[^|}]+\|[^|}]+\}/g, GENDER)
+      .replace(
+        /#SEX\{\{([^|}]+)\|([^|}]+)\|([^|}]+)\}\}/g,
+        (_, male, female, unknown) =>
+          getGender(CONVERSATION?.client_gender, male, female, unknown)
+      )
+      .replace(/#SEX\{[^|}]+\|[^|}]+\|[^|}]+\}/g, (_, male, female, unknown) =>
+        getGender(CONVERSATION?.client_gender, male, female, unknown)
+      )
   )
 }
+
+/**
+ * hàm lấy xưng hô theo giới tính
+ * @param gender giới tính của khách
+ * @param male xưng hô nam
+ * @param female xưng hô nữ
+ * @param unknown xưng hô khi không rõ giới tinh
+ */
+function getGender(
+  gender: 'male' | 'female' | undefined,
+  male: string,
+  female: string,
+  unknown: string
+) {
+  // nếu là giới tính nam
+  if (gender === 'male') return male
+  // nếu là giới tính nữ
+  if (gender === 'female') return female
+  // nếu là không rõ giới tính
+  return unknown
+}
+
 /**cuộn tới vị trí trả lời nhanh đang chọn */
 function scrollIntoView(id: string) {
   /**
