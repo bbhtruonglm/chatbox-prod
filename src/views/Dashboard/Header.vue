@@ -34,7 +34,7 @@
       position="BOTTOM"
       class_content="flex flex-col gap-1 max-h-[calc(100vh-100px)]"
     >
-      <OrgSetting />
+      <OrgSetting @close="attach_ref?.toggleDropdown"/>
     </Dropdown>
   </div>
 </template>
