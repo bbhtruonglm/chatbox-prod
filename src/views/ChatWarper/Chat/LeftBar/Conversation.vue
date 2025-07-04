@@ -3,31 +3,34 @@
     v-if="is_loading"
     class="relative"
   >
-    <div class="absolute left-1/2 -translate-x-1/2">
+    <!-- <div class="absolute left-1/2 -translate-x-1/2">
       <Loading class="mx-auto" />
-    </div>
+    </div> -->
+    <SkeletonLoading />
   </div>
-  <RecycleScroller
-    @scroll="($event: UIEvent) => $main.loadMoreConversation($event)"
-    v-if="size(conversationStore.conversation_list)"
-    class="overflow-y-auto"
-    :items="map(conversationStore.conversation_list)"
-    :item-size="78"
-    key-field="data_key"
-    v-slot="{ item }"
-  >
-    <ConversationItem :source="item" />
-  </RecycleScroller>
-  <div v-else>
-    <img
-      src="@/assets/icons/empty-page.svg"
-      width="250"
-      class="mx-auto mt-5"
-    />
-    <div class="text-center text-slate-400">
-      {{ $t('v1.view.main.dashboard.chat.empty_conversation') }}
+  <template v-else>
+    <RecycleScroller
+      @scroll="($event: UIEvent) => $main.loadMoreConversation($event)"
+      v-if="size(conversationStore.conversation_list)"
+      class="overflow-y-auto"
+      :items="map(conversationStore.conversation_list)"
+      :item-size="78"
+      key-field="data_key"
+      v-slot="{ item }"
+    >
+      <ConversationItem :source="item" />
+    </RecycleScroller>
+    <div v-else>
+      <img
+        src="@/assets/icons/empty-page.svg"
+        width="250"
+        class="mx-auto mt-5"
+      />
+      <div class="text-center text-slate-400">
+        {{ $t('v1.view.main.dashboard.chat.empty_conversation') }}
+      </div>
     </div>
-  </div>
+  </template>
 </template>
 <script setup lang="ts">
 import { RecycleScroller } from 'vue-virtual-scroller'
@@ -53,6 +56,7 @@ import { selectConversation, setParamChat } from '@/service/function'
 import { waterfall } from 'async'
 
 import Loading from '@/components/Loading.vue'
+import SkeletonLoading from '@/views/ChatWarper/Chat/LeftBar/Conversation/SkeletonLoading.vue'
 import ConversationItem from '@/views/ChatWarper/Chat/LeftBar/Conversation/ConversationItem.vue'
 
 import type { CbError } from '@/service/interface/function'
