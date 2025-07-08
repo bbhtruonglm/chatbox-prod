@@ -288,9 +288,6 @@ class Main {
       group.group_staffs
     )
     selected_group_id.value = group.group_id
-
-    console.log(group.group_staffs);
-    
   }
   /**ẩn hiện modal */
   toggleModal(group?: IGroup) {

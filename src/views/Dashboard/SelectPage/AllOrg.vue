@@ -47,7 +47,16 @@ const active_pages_of_orgs = ref<Record<string, PageData[]>>({})
 class Main {
   /**có hiện ui không có page không */
   isVisibleEmptyPage() {
-    return !flatten(values(active_pages_of_orgs.value))?.length
+    // nếu đang chọn tất cả các tổ chức thì kiểm tra xem tất cả các trang của các tổ chức có trống hay không
+    if (orgStore.is_selected_all_org) {
+      return !flatten(values(active_pages_of_orgs.value))?.length
+    }
+
+    // nếu đang chọn 1 nhóm nào đó của tổ chức đang chọn thì không hiện ui không có page
+    if(orgStore.selected_org_group[orgStore.selected_org_id || '']) return false
+  
+    // nếu là chọn riêng từng tổ chức đang chọn tất cả nhóm
+    return !active_pages_of_orgs.value[orgStore.selected_org_id || '']?.length
   }
   /**lọc ra các trang thuộc 1 tổ chức nào đó */
   filterOrgPageOnly(page: PageData): boolean {
