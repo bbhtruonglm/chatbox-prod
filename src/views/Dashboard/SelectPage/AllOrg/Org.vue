@@ -1,6 +1,6 @@
 <template>
   <CardItem
-    v-if="active_page_list?.length || orgStore.selected_org_group?.[org_id]"
+    v-if="$main.countPage()"
     id="all-org__org-item"
     :class="{
       'opacity-50':
@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
 import { usePageManager } from '@/views/Dashboard/composables/usePageManager'
-import { size } from 'lodash'
+import { filter, size } from 'lodash'
 import { onMounted, ref, watch } from 'vue'
 
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
@@ -91,6 +91,17 @@ class Main {
     // lọc ra các page thuộc về nhóm này
     active_page_list.value = sortListPage()?.filter(this.isVisible.bind(this))
   }
+
+  /** đếm số page của tổ chức hiện tại với nền tảng đang được lọc */
+  countPage(): number {
+    /** các page của tổ chức hiện tại */
+    const PAGE_OF_THIS_ORG = filter(pageStore.all_page_list, page => 
+      this.isVisible(page)
+    )
+
+    return PAGE_OF_THIS_ORG?.length
+  }
+
   /**có hiển thị trang không */
   isVisible(page?: PageData): boolean {    
     // không có page thì không hiển thị
@@ -125,7 +136,7 @@ class Main {
       page?.page?.type !== current_selected_platform
     )
       return false
-      
+
     // cho phép hiển thị
     return true
   }
@@ -160,4 +171,7 @@ watch(
   () => pageStore.map_orgs,
   () => $main.getListPage()
 )
+
+defineExpose({ countPage: $main.countPage.bind($main) })
+
 </script>
