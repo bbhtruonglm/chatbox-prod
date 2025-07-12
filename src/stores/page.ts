@@ -4,7 +4,7 @@ import { saveIndexedDB, getIndexedDB } from '@/service/helper/store'
 import { saveLocal, getLocal } from '@/service/helper/store'
 
 import type { PageData, PageList } from '@/service/interface/app/page'
-import { filter, map, set, size } from 'lodash'
+import { filter, map, pickBy, set, size } from 'lodash'
 import type {
   AppInfo,
   AppInstalledInfo,

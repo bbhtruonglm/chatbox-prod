@@ -108,7 +108,7 @@ function isAction(button: MessageTemplateButton) {
   if(messageStore.list_message_id !== 'list-message') return false
   
   // nếu có url thì mở được tab mới
-  if (button.type === 'web_url') return true
+  // if (button.type === 'web_url') return true
 
   // nếu có prefix bbh thì là AI
   if (button.type?.includes('bbh_')) return true

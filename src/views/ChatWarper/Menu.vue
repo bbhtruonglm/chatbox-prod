@@ -30,7 +30,7 @@
         v-tooltip.right="$t('v1.view.main.dashboard.nav.menu')"
         class="rounded-lg p-2.5 group"
       >
-        <SquaresPlusIcon class="w-6 h-6 m-auto group-hover:text-red-600" />
+        <Squares2X2Icon class="w-6 h-6 m-auto group-hover:text-red-600" />
       </button>
       <hr class="border-slate-700 w-8 mx-auto" />
       <NavItem
@@ -179,11 +179,10 @@ import DateIcon from '@/components/Icons/Date.vue'
 import InboxIcon from '@/components/Icons/Inbox.vue'
 import NewSpaperIcon from '@/components/Icons/NewSpaper.vue'
 import PhoneIcon from '@/components/Icons/Phone.vue'
-import SquaresPlusIcon from '@/components/Icons/SquaresPlus.vue'
 import TagIcon from '@/components/Icons/Tag.vue'
 import TagNotIcon from '@/components/Icons/TagNot.vue'
 import UsersIcon from '@/components/Icons/Users.vue'
-import { ArrowLeftIcon } from '@heroicons/vue/24/solid'
+import { ArrowLeftIcon, Squares2X2Icon } from '@heroicons/vue/24/solid'
 
 
 const conversationStore = useConversationStore()
@@ -236,7 +235,9 @@ watch(
     }
 
     // nếu không liên quan đến lọc thì thôi
-    if (!FILTER_MAP[new_value]) {
+    if (!FILTER_MAP[new_value] || !new_value) {
+      // xóa sự kiện phím tắt
+      commonStore.keyboard_shortcut = ''
       return
     }
 
@@ -253,9 +254,6 @@ watch(
     if (FITLER?.filter_dropdown_ref?.is_open) {
       old_value = KEY
     }
-
-    // nếu không có giá trị thì thôi
-    if (!new_value) return
 
     /** sự kiện nhấn doubles click */
     const DBL_CLICK_EVENT = new MouseEvent('dblclick', {

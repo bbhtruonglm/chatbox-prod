@@ -1,4 +1,5 @@
 import { getLocal, saveLocal } from '@/service/helper/store'
+import { useExtensionStore } from '@/stores'
 import { useOrgStore } from '@/stores/dashboard'
 import { usePageStore } from '@/stores/page'
 import { defineStore } from 'pinia'
@@ -18,6 +19,8 @@ import type { ClientInfo } from '@/utils/api/Chatbot'
 export const useConversationStore = defineStore('conversation_store', () => {
   /** router */
   const $route = useRoute()
+
+  const extensionStore = useExtensionStore()
 
   /**lưu dữ liệu lọc hội thoại */
   const option_filter_page_data = ref<FilterConversation>(
@@ -124,7 +127,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     post: number
   }>({
     chat: 0,
-    post: 0
+    post: 0,
   })
 
   /**widget được chọn để mở */
@@ -164,7 +167,22 @@ export const useConversationStore = defineStore('conversation_store', () => {
     contact_create: {},
   })
 
+  /**kiểm tra xem có đang tìm kiếm thông tin khách hàng hay không */
+  function isFindClientInfo() {
+    /** key duy nhất hội thoại */
+    const DATA_KEY = select_conversation.value?.data_key
+
+    // nếu chưa chọn cuộc trò chuyện nào thì không hiển thị
+    if (!DATA_KEY) return false
+
+    // trả về trạng thái có đang tìm kiếm thông tin khách hàng hay không
+    return extensionStore.is_find_client_info?.[DATA_KEY]
+  }
+  /** bộ lọc nhanh đã chọn */
+  const selected_quick_filter = ref('ALL')
+
   return {
+    selected_quick_filter,
     option_filter_page_data,
     select_conversation,
     select_conversation_post,
@@ -182,6 +200,7 @@ export const useConversationStore = defineStore('conversation_store', () => {
     getLabels,
     getActiveLabelIds,
     getPage,
-    getPageById
+    getPageById,
+    isFindClientInfo,
   }
 })

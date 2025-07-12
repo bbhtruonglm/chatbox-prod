@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-1 rounded-md flex items-center gap-3">
+  <div class="bg-white p-1 rounded-md flex items-center gap-3 justify-between">
     <!-- <div class="flex-grow">
       <button
         @click="$main.cancelGroup()"

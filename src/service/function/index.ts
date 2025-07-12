@@ -88,7 +88,11 @@ export const preGoToChat = (proceed: Cb) => {
 export const resetConversationFilter = () => {
   const conversationStore = useConversationStore()
 
+  // reset bộ lọc
   conversationStore.option_filter_page_data.is_spam_fb = 'NO'
+
+  // reset lọc nhanh
+  conversationStore.selected_quick_filter = 'ALL'
   // conversationStore.option_filter_page_data = { is_spam_fb: 'NO' }
 }
 
