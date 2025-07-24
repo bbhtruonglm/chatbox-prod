@@ -40,9 +40,9 @@ export const preGoToChat = (proceed: Cb) => {
   const commonStore = useCommonStore()
 
   // nếu vượt quá giới hạn gói hiện tại thì hiện modal cảnh báo
-  if(orgStore.isOverLimit()) {
+  if (orgStore.isOverLimit()) {
     commonStore.ref_alert_reach_limit?.toggleModal()
-    return 
+    return
   }
 
   flow(
@@ -107,7 +107,7 @@ export const selectConversation = (
 
   // chọn khách hàng này, lưu dữ liệu vào store
   conversationStore.select_conversation = conversation
-  
+
   // đánh dấu tin nhắn là đã đọc
   reset_read_conversation(
     {
@@ -125,8 +125,7 @@ export const selectConversation = (
 }
 
 /**cuộn xuống cuối trang */
-export const scrollToBottomMessage = (id?:string) => {
-
+export const scrollToBottomMessage = (id?: string) => {
   /** id của danh sách tin nhắn */
   const ID = id || 'list-message'
 
@@ -208,7 +207,7 @@ export const getPageInfo = (page_id?: string) => {
 }
 
 /** lấy tên hiển thị của trang */
-export const getPageName = (page_info?: IPage) => { 
+export const getPageName = (page_info?: IPage) => {
   // ưu tiên tên gợi sau đó mới đến tên của page
   return page_info?.alias || page_info?.name || 'N/A'
 }
@@ -334,9 +333,30 @@ export function isFilterActive() {
   filter = pickBy(filter, identity)
 
   // kiểm tra lọc
-  if (isEqual(filter, { is_spam_fb: 'NO' })) return false
+  // if (isEqual(filter, { is_spam_fb: 'NO' })) return false
 
-  return true
+  /** các key sẽ kiểm tra để biết có filter nào đang sử dụng không */
+  const KEYS_CHECK_ACTIVE: (keyof typeof filter)[] = [
+    'display_style',
+    'unread_message',
+    'not_response_client',
+    'not_exist_label',
+    'have_phone',
+    'time_range',
+    'label_id',
+    'not_label_id',
+    'staff_id',
+    'is_reply',
+    'have_email',
+    'is_private_reply',
+    'post_id',
+  ]
+
+  /** có đang không lọc hay không */
+  const IS_NOT_FILTER =
+    KEYS_CHECK_ACTIVE.every(key => !filter[key]) && filter.is_spam_fb === 'NO'
+
+  return !IS_NOT_FILTER
 }
 
 /**lấy dữ liệu ngôn ngữ hiện tại */
