@@ -7,6 +7,7 @@
   >
     <HotAlert
       :codes="['ALMOST_REACH_QUOTA_AI', 'LOCK_FEATURE', 'PAGE_EXPIRED_SESSION']"
+      is_chat
       class="absolute top-3 left-1/2 -translate-x-1/2 w-2/3 z-10"
     />
 
