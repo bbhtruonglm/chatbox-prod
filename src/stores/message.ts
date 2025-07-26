@@ -74,6 +74,15 @@ export const useMessageStore = defineStore('message_store', () => {
     remove(send_message_list.value, message => message.temp_id === id)
   }
 
+  /** kiểm tra tin nhắn có phải AI gửi hay không */
+  function isAiMessage(message: MessageInfo) {
+    /**tiền tố đánh dấu tin nhắn này là của AI gửi */
+    const PREFIX = '\u200B\u200C\u200D\u200B'
+    console.log(message?.message_text?.startsWith(PREFIX));
+    
+    return message?.message_text?.startsWith(PREFIX)
+  }
+
   return {
     list_message_id,
     list_message,
@@ -92,5 +101,6 @@ export const useMessageStore = defineStore('message_store', () => {
     updateTempMessage,
     removeTempMessage,
     clearReplyComment,
+    isAiMessage
   }
 })

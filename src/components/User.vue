@@ -23,7 +23,7 @@
     class_content="flex flex-col gap-1"
   >
     <template v-if="!$device.isMobile()">
-      <template v-if="orgStore.isAdminOrg() || orgStore.is_selected_all_org">
+      <!-- <template v-if="orgStore.isAdminOrg() || orgStore.is_selected_all_org">
         <MenuTitle :title="$t('v1.view.main.dashboard.header.business')" />
         <MenuItem
           @click="redirectMenu('org')"
@@ -39,19 +39,19 @@
           @click="redirectMenu('org/pay')"
           :icon="CheckBadgeIcon"
           :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
-        >
+        > -->
           <!-- <Badge
         :value="1"
         class="flex-shrink-0"
       /> -->
-        </MenuItem>
+        <!-- </MenuItem>
         <MenuItem
           @click="redirectMenu('widget')"
           :icon="SquareIcon"
           :title="$t('v1.view.main.dashboard.nav.widget')"
         />
         <hr class="my-1" />
-      </template>
+      </template> -->
       <MenuTitle :title="$t('v1.view.main.dashboard.header.personal')" />
       <MenuItem
         @click="openUserInfoModal()"
