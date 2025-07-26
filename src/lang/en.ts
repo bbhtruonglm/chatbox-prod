@@ -269,6 +269,7 @@ const source: Language = {
   'Anh': 'Mr.',
   'Chị': 'Mrs.',
   'Anh/Chị': 'Mr./Mrs.',
+  'Tìm kiếm Zalo cá nhân': 'Search Zalo Personal',
   name: 'English',
   v1: {
     common: {

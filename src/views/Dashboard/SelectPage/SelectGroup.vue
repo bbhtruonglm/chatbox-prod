@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-1 rounded-md flex items-center gap-3">
+  <div class="bg-white p-1 rounded-md flex items-center gap-3 justify-between">
     <!-- <div class="flex-grow">
       <button
         @click="$main.cancelGroup()"
@@ -17,7 +17,9 @@
         {{ group?.group_name }}
       </button>
     </div> -->
-    <Group :org_id="orgStore?.selected_org_id || ''"/>
+    <div class="flex-grow">
+      <Group :org_id="orgStore?.selected_org_id || ''"/>
+    </div>
     <button class="px-5 flex-shrink-0">
       <Cog6ToothIcon
         v-tooltip="$t('Cài đặt nhóm')"

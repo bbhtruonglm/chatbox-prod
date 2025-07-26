@@ -13,6 +13,7 @@
         message_data = message
         modal_zalo_personal_ref?.toggleModal()
       }"
+      v-tooltip="$t('Zalo cá nhân')"
       class="w-6 h-6 flex justify-center items-center rounded-full border border-blue-700 bg-blue-100"
     >
       <Zalo class="w-3 h-3"></Zalo>

@@ -70,6 +70,7 @@ const source: Language = {
   'Anh': 'Anh',
   'Chị': 'Chị',
   'Anh/Chị': 'Anh/Chị',
+  'Tìm kiếm Zalo cá nhân': 'Tìm kiếm Zalo cá nhân',
   name: 'Tiếng Việt',
   v1: {
     common: {
