@@ -64,35 +64,6 @@ const ENV: IEnv = {
       auth_type: 'rerequest',
       enable_profile_selector: true,
     },
-    v2: {
-      app_id: '1282108599314861',
-      instagram: {
-        redirect_uri:
-          'https://localhost:8000/dashboard/select-platform?current_selected_tab=FB_INSTAGRAM',
-        scoped: [
-          'public_profile',
-          'email',
-          'pages_manage_metadata',
-          'pages_read_engagement',
-          'pages_show_list',
-          'pages_read_user_content',
-          'pages_manage_posts',
-          'pages_manage_engagement',
-          'pages_messaging',
-          'ads_read',
-          'ads_management',
-          'page_events',
-          // 'instagram_basic',
-          'instagram_manage_messages',
-          'instagram_manage_comments',
-          'pages_manage_ads',
-          'catalog_management',
-          'leads_retrieval',
-          'business_management',
-          'read_page_mailboxes',
-        ],
-      },
-    },
   },
   zalo_oa: {
     portal: 'https://chatbox-service-v3.botbanhang.vn/public/callback',
@@ -117,13 +88,7 @@ const ENV: IEnv = {
     // 'ZALO_PERSONAL',
   ],
   img_host: 'https://dev-api.botbanhang.vn/v1/n6_static/app/facebook/avatar',
-  ai: {
-    widget: {
-      place_order: '66a4b5137dbeac01006e06ad',
-      create_transaction: '66a4b5137dbeac01006e06ad',
-      schedule_appointment: '66a4b51c7dbeac01006e06b2',
-    },
-  },
+  is_show_payment: true
 }
 
 export default ENV
