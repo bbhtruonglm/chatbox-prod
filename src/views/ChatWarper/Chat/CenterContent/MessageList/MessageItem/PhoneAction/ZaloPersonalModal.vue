@@ -2,7 +2,7 @@
   <Modal
     ref="modal_widget_ref"
     class_modal="w-[432px]"
-    class_body="py-2 flex gap-2 h-[80dvh]"
+    class_body="flex gap-2 h-[80dvh]"
   >
     <template #header>
       {{ $t('Zalo cá nhân') }}
@@ -11,7 +11,7 @@
     <template #body>
       <iframe
         id="iframe-zalo"
-        class="w-full"
+        class="w-full rounded-xl"
         :src="`${DOMAIN_CHATBOT}/zalo-personal-conversation?org_id=${
           orgStore.selected_org_id
         }&actual_client_id=${message?.fb_client_id}&actual_page_id=${

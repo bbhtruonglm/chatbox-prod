@@ -247,7 +247,7 @@ export function useKeyboardShortcut() {
     'Control+R': {
       '/': toggleUnread,
     },
-    'Control+X': {
+    'Control+Shift+X': {
       '/': toggleBlockUser,
     },
     'Control+Shift+P': {

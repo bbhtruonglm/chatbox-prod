@@ -44,14 +44,14 @@
     <button
       @click="reloadClientInfo"
       :class="{
-        'cursor-not-allowed': isFindClientInfo(),
+        'cursor-not-allowed': conversationStore.isFindClientInfo(),
       }"
       class="flex items-center text-slate-700 bg-slate-100 rounded-md text-sm py-2 px-4 gap-2 justify-center w-fit hover:brightness-90"
     >
       <ReloadContentIcon class="text-slate-700 w-4 h-4" />
       {{ $t('v1.view.main.dashboard.chat.client.reload_info') }}
       <Loading
-        v-if="isFindClientInfo()"
+        v-if="conversationStore.isFindClientInfo()"
         :size="20"
       />
     </button>
@@ -158,16 +158,7 @@ async function getContact() {
     toastError(e)
   }
 }
-/**kiểm tra xem có đang tìm kiếm thông tin khách hàng hay không */
-function isFindClientInfo() {
-  // nếu chưa chọn cuộc trò chuyện nào thì không hiển thị
-  if (!conversationStore.select_conversation?.data_key) return false
 
-  // trả về trạng thái có đang tìm kiếm thông tin khách hàng hay không
-  return extensionStore.is_find_client_info?.[
-    conversationStore.select_conversation?.data_key
-  ]
-}
 /**làm mới thông tin khách hàng */
 function reloadClientInfo() {
   // nếu chưa cài đặt ext thì mở hướng dẫn cài đặt

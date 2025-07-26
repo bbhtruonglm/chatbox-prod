@@ -49,16 +49,6 @@
         <GroupPageAction />
       </template>
       <template v-else>
-        <EmptyPage
-          v-if="
-            !(
-              pageStore.countActivePage() ||
-              orgStore.selected_org_group?.[orgStore.selected_org_id || '']
-            ) && !selectPageStore.is_loading
-          "
-          tab="PAGE"
-        />
-        <!-- v-else -->
         <div
           :class="{
             'pb-16': selectPageStore.is_group_page_mode,
@@ -114,6 +104,16 @@
 
           <GroupPageAction />
         </div>
+        <EmptyPage
+          v-if="
+            !(
+              pageStore.countActivePage()
+            ) &&
+            !selectPageStore.is_loading &&
+            selectPageStore.current_menu === 'ALL_PLATFORM'
+          "
+          tab="PAGE"
+        />
       </template>
     </template>
   </DashboardLayout>

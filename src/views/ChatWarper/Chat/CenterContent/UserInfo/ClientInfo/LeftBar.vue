@@ -3,11 +3,17 @@
     class="w-[263px] bg-white rounded-md flex flex-col p-2 gap-2 overflow-y-auto flex-shrink-0"
   >
     <div class="py-2 px-5">
-      <ClientAvatar
-        :conversation="conversationStore.select_conversation"
-        class="rounded-lg w-52 h-52"
-        :actual_size="200"
-      />
+      <BlingEffect 
+        :show_effect="conversationStore.isFindClientInfo()" 
+        class="rounded-oval w-52 h-52 overflow-hidden"
+        :style="'width: 208px; height: 208px'"
+      >
+        <ClientAvatar
+          :conversation="conversationStore.select_conversation"
+          class="w-52 h-52"
+          :actual_size="200"
+        />
+      </BlingEffect>
     </div>
     <div class="flex flex-col gap-2">
       <div class="pl-5 flex items-center">
@@ -122,12 +128,17 @@
 </template>
 <script setup lang="ts">
 import { getILabel } from '@/service/function'
+import { toastError } from '@/service/helper/alert'
 import { dateFormat } from '@/service/helper/format'
 import { useCommonStore, useConversationStore } from '@/stores'
+import { ChatbotAppClient } from '@/utils/api/Chatbot'
+import { composableService } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
+import { set } from 'lodash'
 import { computed } from 'vue'
 
 import ClientAvatar from '@/components/Avatar/ClientAvatar.vue'
 
+import BlingEffect from '@/components/BlingEffect.vue'
 import ClockWhiteIcon from '@/components/Icons/ClockWhite.vue'
 import DateWhiteIcon from '@/components/Icons/DateWhite.vue'
 import GenderIcon from '@/components/Icons/Gender.vue'
@@ -137,10 +148,6 @@ import PauseWhiteIcon from '@/components/Icons/PauseWhite.vue'
 import PlayOutlineIcon from '@/components/Icons/PlayOutline.vue'
 import TagWhiteIcon from '@/components/Icons/TagWhite.vue'
 import UserSquareIcon from '@/components/Icons/UserSquare.vue'
-import { toastError } from '@/service/helper/alert'
-import { ChatbotAppClient } from '@/utils/api/Chatbot'
-import { composableService } from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ChatbotStatus/service'
-import { set } from 'lodash'
 
 const { is_enable } = composableService()
 const conversationStore = useConversationStore()

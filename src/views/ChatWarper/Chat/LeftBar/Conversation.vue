@@ -33,7 +33,7 @@
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { find, keys, map, mapValues, pick, set, size } from 'lodash'
+import { debounce, find, keys, map, mapValues, pick, set, size } from 'lodash'
 import {
   read_conversation,
   reset_read_conversation,
@@ -641,7 +641,11 @@ onUnmounted(() => {
 // khi thay đổi giá trị lọc tin nhắn(trừ field conversation_type) thì load lại dữ liệu
 watch(
   () => option_filter_page_data.value,
-  () => $main.loadConversationFirstTime(true, true, true),
+  (new_val, old_val) => {
+    console.log(new_val, old_val);
+    
+    $main.loadConversationFirstTime(true, true, true)
+  },
   { deep: true }
 )
 
