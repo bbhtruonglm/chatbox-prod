@@ -9,6 +9,8 @@
     "dev": "vite --mode dev",
     "staging": "vite --mode staging",
     "prod": "vite --mode prod",
+    "ngocdung.staging": "vite --mode ngocdung.staging",
+    "ngocdung.prod": "vite --mode ngocdung.prod",
     "build-dev": "run-p type-check build-only-dev",
     "build-staging": "run-p type-check build-only-staging",
     "build-prod": "run-p type-check build-only-prod",

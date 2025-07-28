@@ -18,11 +18,11 @@ const ENV: IEnv = {
     ai: import.meta.env.VITE_HOST_AI,
     chatbot: import.meta.env.VITE_HOST_CHATBOT,
     n8_merge: import.meta.env.VITE_HOST_N8_MERGE,
-    widget: import.meta.env.VITE_HOST_N8_MERGE, // same as merge
+    widget: import.meta.env.VITE_HOST_WIDGET,
     n8_merge_v2: import.meta.env.VITE_HOST_N8_MERGE_V2,
     media_cdn: import.meta.env.VITE_HOST_MEDIA_CDN,
-    n13_zalo_personal: import.meta.env.VITE_HOST_ZALO_PERSONAL,
-    n13_zalo_personal_socket: import.meta.env.VITE_HOST_ZALO_PERSONAL_SOCKET,
+    n13_zalo_personal: import.meta.env.VITE_HOST_N13_ZALO_PERSONAL,
+    n13_zalo_personal_socket: import.meta.env.VITE_HOST_N13_ZALO_PERSONAL_SOCKET,
     agent_config: import.meta.env.VITE_HOST_AGENT_CONFIG,
     merchant: {
       contact: import.meta.env.VITE_HOST_MERCHANT_CONTACT,
