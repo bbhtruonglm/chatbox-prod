@@ -12,6 +12,7 @@
       :title="$t('v1.view.main.dashboard.header.menu.staff_manager')"
     />
     <MenuItem
+      v-if="IS_SHOW_PAYMENT"
       @click="redirectMenu('org/pay')"
       :icon="CheckBadgeIcon"
       :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
@@ -39,6 +40,9 @@ import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue';
 const { t: $t } = useI18n()
 const $router = useRouter()
 const orgStore = useOrgStore()
+
+/** hiển thị thanh toán */
+const IS_SHOW_PAYMENT = $env.is_show_payment
 
 const $emit = defineEmits(['close'])
 
