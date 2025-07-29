@@ -108,7 +108,7 @@ onMounted(getInstalledWidget)
 //   () => (widgetStore.selected_page_id = undefined)
 // )
 // khi lấy dữ liệu trang của tổ chức thì tự động chọn trang đầu tiên
-watch(() => pageStore.active_page_list, getSelectPageData)
+watch(() => pageStore.all_page_list, getSelectPageData)
 // khi chọn trang thì lấy dữ liệu widget đã cài
 watch(() => widgetStore.selected_page_id, getInstalledWidget)
 
@@ -119,7 +119,7 @@ function getSelectPageData() {
 
   // nếu chưa chọn trang thì chọn trang đầu tiên
   widgetStore.selected_page_id = map(
-    pageStore.active_page_list
+    pageStore.all_page_list
   )?.[0]?.page?.fb_page_id
 }
 /**lấy tên trang được chọn */
@@ -128,7 +128,7 @@ function getSelectedPageName() {
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
+  return getPageName(pageStore.all_page_list?.[widgetStore.selected_page_id]?.page)
 }
 /**gỡ cài đặt ứng dụng */
 function deleteApp(id: string) {

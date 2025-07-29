@@ -97,7 +97,7 @@ async function inactivePage() {
     await kick_os(orgStore.selected_org_id, PAGE_ID)
 
     // xoá dữ liệu trang khỏi danh sách dữ liệu trang đang chọn (nếu có)
-    delete pageStore.active_page_list[PAGE_ID]
+    delete pageStore.all_page_list[PAGE_ID]
 
     // xoá id trang khỏi danh sách id trang được chọn (nếu có)
     delete pageStore.selected_page_id_list[PAGE_ID]

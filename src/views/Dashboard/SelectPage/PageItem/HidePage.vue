@@ -90,13 +90,13 @@ const confirm_inactive_modal_ref = ref<InstanceType<typeof ConfirmInactive>>()
 /**hoàn thành việc huỷ kích hoạt trang */
 async function doneInactivePage() {
   // xoá dữ liệu trang khỏi danh sách dữ liệu trang đang chọn
-  delete pageStore.active_page_list[$props.page_id!]
+  delete pageStore.all_page_list[$props.page_id!]
 
   // xoá id trang khỏi danh sách id trang được chọn
   delete pageStore.selected_page_id_list[$props.page_id!]
 
   // sort lại danh sách trang
-  sortListPage()
+  sortListPage(pageStore.all_page_list)
 }
 // /**huỷ kích hoạt page này | ẩn page */
 // function inactivePage() {

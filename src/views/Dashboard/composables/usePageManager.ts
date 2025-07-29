@@ -52,7 +52,10 @@ export function usePageManager() {
     toggleModalConnectPage(key?: string) {
       pageManagerStore.connect_page_ref?.toggleModal?.(key)
     }
-    /**lấy toàn bộ các page đang được kích hoạt của 1 tổ chức */
+    /**
+     * lấy toàn bộ các page đang được kích hoạt của 1 tổ chức 
+     * @deprecated logic cũ đã dùng filter bên front-end nên không cần nữa
+    */
     @loading(toRef(selectPageStore, 'is_loading'))
     @error($toast)
     async getOrgPages(org_id?: string): Promise<void> {
@@ -86,12 +89,10 @@ export function usePageManager() {
     @error($toast)
     async getALlOrgAndPage(): Promise<void> {
       // xóa toàn bộ trang hiện tại
-      pageStore.active_page_list = {}
+      pageStore.all_page_list = {}
 
       /**toàn bộ các trang của người dùng */
-      const PAGE_DATA = await new N4SerivceAppPage().getListPage({
-        // org_group: orgStore.selected_org_group,
-      })
+      const PAGE_DATA = await new N4SerivceAppPage().getListPage({})
 
       // nếu không có dữ liệu trang thì thôi
       if (!PAGE_DATA?.page_list) return
@@ -155,33 +156,13 @@ export function usePageManager() {
     }
 
     /**sắp xếp page gắn sao lên đầu */
-    sortListPage(): PageData[] {
+    sortListPage(active_page_list: PageList): PageData[] {
       // object -> array
-      let array_page_list = map(pageStore.active_page_list, page_data => {
+      let array_page_list = map(active_page_list, page_data => {
         // tạo data key cho vitual scroll
         page_data.data_key = page_data.page?.fb_page_id
 
         return page_data
-      })
-
-      /**
-       * lọc các page phù hợp điều kiện tìm kiếm
-       * - tìm kiếm theo tên hoặc id
-       */
-      array_page_list = array_page_list.filter(page_data => {
-        // chuyển dữ liệu tìm kiếm về tiếng việt không dấu
-        let formated_page_name = nonAccentVn(page_data.page?.name || '')
-        let page_id = page_data.page?.fb_page_id || ''
-        let formated_search_value = nonAccentVn(selectPageStore.search)
-
-        // tìm kiếm theo tên hoặc id
-        if (
-          formated_page_name.includes(formated_search_value) ||
-          page_id.includes(formated_search_value)
-        )
-          return true
-
-        return false
       })
 
       /**
@@ -234,7 +215,51 @@ export function usePageManager() {
       // đảo chiều mảng, vì hàm sort chạy theo ASC
       return sort_priority_page_list.reverse()
     }
+
+    /** logic các trang theo nền tảng */
+    filterPageByPlatform(page_list: PageList, platform: string): PageList {
+      return pickBy(page_list, (page) => {
+        // zalo là ngoại lệ vì gộp 2 tab vào 1
+        if (
+          platform === 'ZALO' &&
+          page?.page?.type?.includes('ZALO')
+        )
+          return true
+
+        // nếu chọn nền tảng cụ thể mà trang không thuộc nền tảng đó thì không hiển thị
+        if (
+          platform !== 'ALL_PLATFORM' &&
+          // phải chọn đúng nền tảng
+          page?.page?.type !== platform
+        )
+          return false
+
+        // cho phép hiển thị
+        return true
+      })
+    }
+
+    /** lọc các trang theo tìm kiếm */
+    filterPageBySearch(page_list: PageList, search:string): PageList {
+      return pickBy(page_list, (page_data) => {
+        // chuyển dữ liệu tìm kiếm về tiếng việt không dấu
+        let formated_page_name = nonAccentVn(page_data.page?.name || '')
+        let page_id = page_data.page?.fb_page_id || ''
+        let formated_search_value = nonAccentVn(search)
+
+        // tìm kiếm theo tên hoặc id
+        if (
+          formated_page_name.includes(formated_search_value) ||
+          page_id.includes(formated_search_value)
+        )
+          return true
+
+        return false
+      })
+    }
   }
+
+
   const $main = new Main()
 
   return {
@@ -246,5 +271,7 @@ export function usePageManager() {
     filterPageByGroup: $main.filterPageByGroup,
     goToChat: $main.goToChat,
     sortListPage: $main.sortListPage,
+    filterPageByPlatform: $main.filterPageByPlatform,
+    filterPageBySearch: $main.filterPageBySearch
   }
 }

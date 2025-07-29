@@ -36,3 +36,6 @@ export const getIndexedDB = (
     default_value: any,
     proceed: Cb
 ) => $indexed_db.get(key, (e, r) => proceed(e, r || default_value))
+
+/** xóa 1 giá trị trong indexedDB */
+export const removeIndexedDB = (key: string) => $indexed_db.del(key, (e, r) => { })

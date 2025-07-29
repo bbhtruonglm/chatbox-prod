@@ -100,7 +100,7 @@ function getSelectedPageName() {
   if (!widgetStore.selected_page_id) return
 
   // trả về tên trang được chọn
-  return getPageName(pageStore.active_page_list?.[widgetStore.selected_page_id]?.page)
+  return getPageName(pageStore.all_page_list?.[widgetStore.selected_page_id]?.page)
 }
 /**cài đặt css cho button done */
 function setCssBtnDone() {
