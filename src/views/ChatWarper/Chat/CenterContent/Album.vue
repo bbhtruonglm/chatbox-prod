@@ -30,32 +30,51 @@
             {{ $t('v1.view.main.dashboard.chat.album.category.folder') }}
           </button>
         </div>
-        <div class="flex flex-shrink-0 justify-between">
-          <div>
+        <div class="flex flex-shrink-0">
+          <div
+            class="w-full flex justify-between"
+            v-if="selected_category === 'NEW' || selected_folder_id"
+          >
+            <div class="flex items-center">
+              <button
+                v-if="selected_folder_id"
+                class="flex gap-2 items-center text-sm font-medium"
+                @click="selectCategory('FOLDER')"
+              >
+                <ArrowLeftIcon class="size-4" />
+                {{ selected_folder?.title }}
+              </button>
+            </div>
+            <div class="flex gap-2">
+              <label
+                v-if="file_list?.length"
+                class="font-medium flex items-center cursor-pointer gap-1"
+              >
+                <Checkbox v-model="is_select_all" />
+                {{ $t('v1.view.main.dashboard.chat.album.select_all') }}
+              </label>
+              <button
+                @click="uploadFileFromDevice"
+                class="custom-btn bg-blue-700"
+              >
+                <ArrowUpIcon class="w-4 h-4" />
+                {{ $t('v1.common.upload') }}
+              </button>
+            </div>
+          </div>
+          <div
+            class="w-full flex justify-end"
+            v-else
+          >
             <button
-              v-if="selected_category === 'NEW' || selected_folder_id"
-              @click="uploadFileFromDevice"
-              class="custom-btn bg-blue-700"
-            >
-              <ArrowUpIcon class="w-4 h-4" />
-              {{ $t('v1.common.upload') }}
-            </button>
-            <button
-              v-else
               @click="createFolder"
               class="custom-btn bg-blue-700"
             >
               <PlusCircleIcon class="w-4 h-4" />
               {{ $t('v1.view.main.dashboard.chat.album.create_folder') }}
             </button>
+
           </div>
-          <label
-            v-if="selected_category === 'NEW' || selected_folder_id"
-            class="font-medium flex items-center cursor-pointer gap-1"
-          >
-            {{ $t('v1.view.main.dashboard.chat.album.select_all') }}
-            <Checkbox v-model="is_select_all" />
-          </label>
         </div>
         <div
           @scroll="loadMore"
@@ -65,7 +84,7 @@
             v-for="folder of folder_list"
             @click="selectFolder(folder)"
             :class="{ 'border-blue-700': folder._id === selected_folder?._id }"
-            class="relative w-32 cursor-pointer border-[3px] rounded-xl flex flex-col group items-center"
+            class="relative w-[calc((100%-60px)/6)] cursor-pointer border-[3px] rounded-xl flex flex-col group items-center"
           >
             <div
               @click.stop="$event => openFolderMenu($event, folder)"
@@ -82,6 +101,7 @@
                 v-if="folder.is_edit"
                 @click.stop
                 @keyup.enter="updateFolderInfo(folder)"
+                @blur="updateFolderInfo(folder)"
                 v-model="folder.title"
                 type="text"
                 class="border w-full rounded text-center px-2 bg-slate-50 py-0.5"
@@ -95,7 +115,7 @@
             v-for="file of file_list"
             @click="selectFile(file)"
             :class="{ 'border-blue-700': file.is_select }"
-            class="relative w-40 h-44 cursor-pointer border-[3px] rounded-xl overflow-hidden flex flex-col group"
+            class="relative w-[calc((100%-48px)/5)] h-44 cursor-pointer border-[3px] rounded-xl overflow-hidden flex flex-col group"
           >
             <div
               @click="deleteFile(file)"
@@ -103,7 +123,7 @@
             >
               <BinIcon class="w-4 h-4 text-red-500" />
             </div>
-            <div 
+            <div
               class="absolute top-1 right-1 p-1 rounded bg-blue-100 border border-blue-500 hidden group-hover:block"
               @click.stop="copyLink(file)"
             >
@@ -153,7 +173,7 @@
           @click="selectAllFile(false)"
           class="custom-btn bg-slate-700"
           :class="{
-            'invisible': !countSelectFile(),
+            invisible: !countSelectFile(),
           }"
         >
           {{ $t('v1.common.deselect') }}
@@ -199,7 +219,7 @@
 </template>
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { eachOfLimit, waterfall } from 'async'
+import { eachOfLimit, select, waterfall } from 'async'
 import {
   read_file_album,
   upload_file_album,
@@ -231,7 +251,7 @@ import EditIcon from '@/components/Icons/Edit.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { FileInfo, FolderInfo } from '@/service/interface/app/album'
 import type { CbError } from '@/service/interface/function'
-import { LinkIcon } from '@heroicons/vue/24/outline'
+import { ArrowLeftIcon, LinkIcon } from '@heroicons/vue/24/outline'
 
 /**các giá tị của danh mục */
 type CategoryType = 'NEW' | 'FOLDER'
@@ -314,6 +334,8 @@ function selectFile(file: FileInfo) {
 /**chọn thư mục */
 function selectFolder(folder: FolderInfo) {
   selected_folder_id.value = folder._id
+
+  selected_folder.value = folder
 
   resetFileData()
 
@@ -582,7 +604,7 @@ function getFile() {
   )
 }
 /**
- * chọn file từ thiết bị để thêm vào album 
+ * chọn file từ thiết bị để thêm vào album
  * @deprecated dùng qua UploadFile ở utils
  */
 function uploadFileFromDevice() {
