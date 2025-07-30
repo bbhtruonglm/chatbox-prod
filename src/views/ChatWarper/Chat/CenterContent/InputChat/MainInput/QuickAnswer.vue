@@ -109,6 +109,7 @@ import CogIcon from '@/components/Icons/Cog.vue'
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
 import type { SourceChat } from '@/service/interface/app/ai'
 import type { WidgetEventData } from '@/service/interface/app/widget'
+import { format } from 'date-fns'
 
 const { InputService } = inputComposableService()
 
@@ -481,9 +482,8 @@ function replaceTemplateMessage(content: string) {
     .replace(/#{{LAST_NAME}}/g, '')
     .replace(/#{{STAFF_FIRST_NAME}}/g, '')
     .replace(/#{{STAFF_LAST_NAME}}/g, '')
-    // .replace(/#SEX\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
-    .replace(/#\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
-    .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
+  // .replace(/#\{\{[^|}]+\|[^|}]+\|[^|}]+\}\}/g, '')
+  // .replace(/#\{\{TODAY\{[^}]+\}\}\}/g, '')
 
   /**tên khách hàng */
   const CLIENT_NAME =
@@ -529,6 +529,21 @@ function replaceTemplateMessage(content: string) {
       .replace(/#SEX\{[^|}]+\|[^|}]+\|[^|}]+\}/g, (_, male, female, unknown) =>
         getGender(CONVERSATION?.client_gender, male, female, unknown)
       )
+
+      // giá trị ngẫu nhiên
+      .replace(/#\{\{([^}|]+\|[^}]+)\}\}/g, (_, value) => getRandomValue(value))
+      .replace(/#\{([^}|]+\|[^}]+)\}/g, (_, value) => getRandomValue(value))
+
+      // thời gian
+      .replace(
+        /#\{\{(TODAY|YESTERDAY|TOMORROW)\{((?:DD|MM|YYYY|HH|mm)([/:])(?:DD|MM|YYYY|HH|mm)(?:\3(?:DD|MM|YYYY))?)\}\}\}/g,
+        (_, DATE, FORMAT) => formatTime(DATE, FORMAT)
+      )
+      .replace(
+        /#\{(TODAY|YESTERDAY|TOMORROW)\{((?:DD|MM|YYYY|HH|mm)([/:])(?:DD|MM|YYYY|HH|mm)(?:\3(?:DD|MM|YYYY))?)\}\}/g,
+        (_, DATE, FORMAT) => formatTime(DATE, FORMAT)
+      )
+
   )
 }
 
@@ -551,6 +566,47 @@ function getGender(
   if (gender === 'female') return female
   // nếu là không rõ giới tính
   return unknown
+}
+
+/** hàm lấy giá trị ngẫu nhiên */
+function getRandomValue(content: string) {
+  console.log(content)
+
+  /** các giá trị  */
+  const OPTIONS = content.split('|')
+  /** tạo 1 chỉ số ngẫu nhiên */
+  const randomIndex = Math.floor(Math.random() * OPTIONS.length)
+  // trả về phần tử ngẫu nhiên
+  return OPTIONS[randomIndex]
+}
+
+/** hàm lấy ngày thời gian theo điều kiện */
+function formatTime(date: string, format_str: string) {
+  /** thời gian được hiển thị */
+  let time: Date
+  /** định dạng mong muốn */
+  let format_rule = ''
+
+  // tạo thời gian theo điều kiện
+  switch (date) {
+    case 'TODAY':
+      time = new Date()
+      break
+    case 'YESTERDAY':
+      time = new Date(new Date().setDate(new Date().getDate() - 1))
+      break
+    case 'TOMORROW':
+      time = new Date(new Date().setDate(new Date().getDate() + 1))
+      break
+    default:
+      time = new Date(date)
+  }
+
+  // lowercase DD và YYYY vẫn giữ MM
+  format_rule = format_str?.replace('DD', 'dd')
+  format_rule = format_rule?.replace('YYYY', 'yyyy')
+
+  return format(time, format_rule)
 }
 
 /**cuộn tới vị trí trả lời nhanh đang chọn */
