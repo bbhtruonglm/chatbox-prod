@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { copy } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
-import { isString, map, mapValues, sortBy } from 'lodash'
+import { isString, keyBy, map, mapValues, sortBy } from 'lodash'
 import { onMounted, ref, watch } from 'vue'
 
 import Popover from '@/components/Popover.vue'
@@ -86,10 +86,15 @@ function clearThisFilter() {
 
 /** loại bỏ gắn cờ */
 function unselectLabel() {
+  // loại bỏ gắn cờ
   label_list.value = label_list.value.map(label => {
     label.is_selected = false
-
     return label
+  })
+
+  // loại bỏ cờ chọn của các phần tử trong snap label
+  snap_labels.value = mapValues(snap_labels.value, (child) => {
+    return { ...child, is_selected: false }
   })
 }
 

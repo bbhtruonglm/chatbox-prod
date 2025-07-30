@@ -63,7 +63,7 @@
 import { nonAccentVn } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
 import { debounce, map, size, sortBy } from 'lodash'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import SelectPage from '@/views/ChatWarper/Menu/FilterModal/Tag/SelectPage.vue'
@@ -90,6 +90,10 @@ const snap_labels = defineModel<{ [index: string]: ILabel }>('snap_labels', {
 const label_search_name = ref<string>('')
 /**ref của dropdown search */
 const search_ref = ref<ComponentRef>()
+
+onMounted(() => {
+  label_list.value = sortLabel(map(snap_labels.value))
+})
 
 /**chặn các nhãn đã được bên đối diện lựa chọn */
 function isDisableLabel(index: number) {

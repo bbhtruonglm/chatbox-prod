@@ -87,8 +87,12 @@ function clearThisFilter() {
 function unselectLabel() {
   label_list.value = label_list.value.map(label => {
     label.is_selected = false
-
     return label
+  })
+
+  // loại bỏ cờ chọn của các phần tử trong snap label
+  snap_labels.value = mapValues(snap_labels.value, (child) => {
+    return { ...child, is_selected: false }
   })
 }
 
