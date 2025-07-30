@@ -8,6 +8,7 @@
     :true-value="true_value"
     :false-value="false_value"
     class="custom-checkbox"
+    :class="checkbox_class"
   />
   <!-- @click.stop -->
   <input
@@ -16,6 +17,7 @@
     ref="checkbox_ref"
     type="checkbox"
     class="custom-checkbox"
+    :class="checkbox_class"
   />
 </template>
 <script setup lang="ts">
@@ -27,6 +29,8 @@ const $props = withDefaults(
     true_value?: any
     /**giá trị sai của checkbox này */
     false_value?: any
+    /** class checkbox */
+    checkbox_class?: string
   }>(),
   {}
 )

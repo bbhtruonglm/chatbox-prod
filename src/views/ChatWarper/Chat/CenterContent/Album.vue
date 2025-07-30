@@ -1,7 +1,7 @@
 <template>
   <Modal
     ref="album_ref"
-    class_modal="h-[630px]"
+    class_modal="h-[80dvh]"
     class_body="flex gap-2"
   >
     <template #header>
@@ -45,13 +45,39 @@
                 {{ selected_folder?.title }}
               </button>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+              <button
+                class="bg-red-100 p-2 rounded-md"
+                v-tooltip="$t('v1.common.delete')"
+                @click="confirmDeleteFile()"
+                :class="{
+                  invisible: !countSelectFile(),
+                }"
+              >
+                <TrashIcon class="w-5 h-5 text-red-500 cursor-pointer" />
+              </button>
+
+              <button
+                @click="selectAllFile(false)"
+                class="custom-btn bg-slate-300 !text-black font-medium"
+                :class="{
+                  invisible: !countSelectFile(),
+                }"
+              >
+                {{ $t('v1.common.deselect') }}
+              </button>
+
               <label
                 v-if="file_list?.length"
-                class="font-medium flex items-center cursor-pointer gap-1"
+                class="font-medium flex items-center cursor-pointer gap-1 bg-blue-100 py-1.5 px-3 rounded-md text-blue-700"
               >
-                <Checkbox v-model="is_select_all" />
-                {{ $t('v1.view.main.dashboard.chat.album.select_all') }}
+                <Checkbox
+                  v-model="is_select_all"
+                  :checkbox_class="'checked:!bg-blue-700 !border-blue-700'"
+                />
+                <span>{{
+                  $t('v1.view.main.dashboard.chat.album.select_all')
+                }}</span>
               </label>
               <button
                 @click="uploadFileFromDevice"
@@ -73,7 +99,6 @@
               <PlusCircleIcon class="w-4 h-4" />
               {{ $t('v1.view.main.dashboard.chat.album.create_folder') }}
             </button>
-
           </div>
         </div>
         <div
@@ -118,7 +143,7 @@
             class="relative w-[calc((100%-48px)/5)] h-44 cursor-pointer border-[3px] rounded-xl overflow-hidden flex flex-col group"
           >
             <div
-              @click="deleteFile(file)"
+              @click.stop="deleteFile(file)"
               class="absolute top-1 left-1 p-1 rounded bg-red-100 border border-red-500 hidden group-hover:block"
             >
               <BinIcon class="w-4 h-4 text-red-500" />
@@ -165,18 +190,22 @@
             </div>
           </div>
         </div>
+        <p
+          v-if="countSelectFile()"
+          class="m-auto text-sm text-blue-700 font-medium"
+        >
+          {{ $t('Đã chọn') }} {{ countSelectFile() }} / {{ size(file_list) }}
+          {{ $t('v1.view.main.dashboard.chat.album.file') }}
+        </p>
       </div>
     </template>
     <template v-slot:footer>
       <div class="flex justify-between">
         <button
-          @click="selectAllFile(false)"
+          @click="album_ref?.toggleModal()"
           class="custom-btn bg-slate-700"
-          :class="{
-            invisible: !countSelectFile(),
-          }"
         >
-          {{ $t('v1.common.deselect') }}
+          {{ $t('Đóng') }}
         </button>
         <button
           @click="pickFile"
@@ -219,7 +248,7 @@
 </template>
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { eachOfLimit, select, waterfall } from 'async'
+import { eachOfLimit, waterfall } from 'async'
 import {
   read_file_album,
   upload_file_album,
@@ -230,7 +259,7 @@ import {
   create_folder_album,
 } from '@/service/api/chatbox/n6-static'
 import { useConversationStore } from '@/stores'
-import { toast, toastError } from '@/service/helper/alert'
+import { confirm, toast, toastError } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
 import { remove, size } from 'lodash'
 
@@ -251,7 +280,7 @@ import EditIcon from '@/components/Icons/Edit.vue'
 import type { ComponentRef } from '@/service/interface/vue'
 import type { FileInfo, FolderInfo } from '@/service/interface/app/album'
 import type { CbError } from '@/service/interface/function'
-import { ArrowLeftIcon, LinkIcon } from '@heroicons/vue/24/outline'
+import { ArrowLeftIcon, LinkIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 /**các giá tị của danh mục */
 type CategoryType = 'NEW' | 'FOLDER'
@@ -289,7 +318,9 @@ const selected_folder = ref<FolderInfo>()
 const is_select_all = computed({
   get() {
     // kiểm tra xem có phải đang chọn toàn bộ file không
-    return size(file_list.value) === countSelectFile()
+    return (
+      !!size(file_list.value) && size(file_list.value) === countSelectFile()
+    )
   },
   set(val) {
     // gắn cờ cho các file
@@ -435,6 +466,67 @@ function deleteFile(select_file: FileInfo) {
     }
   )
 }
+/** xóa các tập tin đã chọn */
+async function deleteSelectFile() {
+  try {
+    // nếu đang chạy thì thôi
+    if (is_loading.value) return
+
+    // gắn cờ đang chạy
+    is_loading.value = true
+
+    // danh sách tập tin
+    const FILE_LIST = file_list.value
+
+    // lặp xóa từng tập tin đã chọn
+    for (let i = FILE_LIST?.length; i >= 0; i--) {
+      /** dữ liệu của tập tin */
+      const FILE = FILE_LIST[i]
+
+      // nếu đang được chọn thì xóa
+      if (FILE?.is_select) {
+        await new Promise((resolve, reject) => {
+          // call api xóa tập tin
+          delete_file_album(
+            {
+              page_id: conversationStore.select_conversation?.fb_page_id!,
+              file_id: FILE._id,
+            },
+            (e, r) => {
+              // nếu thành công
+              if (r.code === 200) {
+                resolve(r)
+                // xóa khoa khoi danh sach
+                file_list.value?.splice(i, 1)
+              }
+            }
+          )
+        })
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  } finally {
+    // tắt cờ đang chạy
+    is_loading.value = false
+  }
+}
+
+/** xác nhận xóa các tập tin */
+function confirmDeleteFile() {
+  confirm(
+    'question',
+    $t('v1.view.main.dashboard.chat.album.confirm_delete_file'),
+    '',
+    is_cancel => {
+      // nếu hủy thì thôi
+      if (is_cancel) return
+      // xóa các tập tin đã chọn
+      deleteSelectFile()
+    }
+  )
+}
+
 /**tạo mới thư mục */
 function createFolder() {
   // bật cờ đang chạy
@@ -559,7 +651,7 @@ function addDataToFileList(data?: FileInfo[]) {
   file_list.value?.push(
     ...data?.map(file => {
       // thêm gắn cờ
-      file.is_select = false
+      file.is_select = is_select_all.value
 
       return file
     })

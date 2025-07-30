@@ -917,6 +917,8 @@ const source: Language = {
                 folder: 'Folder',
               },
               select_all: 'Select All (Ctrl + A)',
+              confirm_delete_file: 'Confirm delete file?',
+              file: 'file',
               select: 'Select File',
               name: 'File/Folder Name',
               create_folder: 'Create Folder',
