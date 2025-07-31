@@ -17,8 +17,25 @@
       <div class="flex gap-2 items-end flex-grow min-w-0">
         <!-- <AiManager /> -->
         <AttachmentMenu />
-        <FaceSmileIcon class="size-5 cursor-pointer text-slate-400 flex-shrink-0 hover:text-slate-700 my-1.5" />
-        <!-- <emoji-picker @emoji-click="onEmojiClick" class="absolute bottom-20"></emoji-picker> -->
+        <FaceSmileIcon
+          @click="emoji_ref?.toggleDropdown"
+          class="size-5 cursor-pointer text-slate-400 flex-shrink-0 hover:text-slate-700 my-1.5"
+        />
+
+        <Dropdown
+          ref="emoji_ref"
+          position="TOP"
+          width="auto"
+          height="auto"
+          :is_fit="false"
+          :back="100"
+        >
+          <emoji-picker
+            @emoji-click="onEmojiClick"
+            class="custom-emoji"
+          ></emoji-picker>
+        </Dropdown>
+
         <Input
           ref="input_chat_ref"
           @keyup="quick_answer_ref?.handleChatValue"
@@ -81,11 +98,14 @@ import StopIcon from '@/components/Icons/Stop.vue'
 import ClipIcon from '@/components/Icons/Clip.vue'
 import { FaceSmileIcon, SparklesIcon } from '@heroicons/vue/24/outline'
 import SlashQuareIcon from '@/components/Icons/SlashQuare.vue'
+import Dropdown from '@/components/Dropdown.vue'
 
 const messageStore = useMessageStore()
 const commonStore = useCommonStore()
 const conversationStore = useConversationStore()
 const { t: $t } = useI18n()
+
+const emoji_ref = ref<InstanceType<typeof Dropdown>>()
 
 /**ref của ô chat tin nhắn */
 const input_chat_ref = ref<InstanceType<typeof Input>>()
@@ -142,7 +162,7 @@ function isVisibleSendBtn() {
 /** hàm xử lý khi chọn emoji */
 function onEmojiClick(e: any) {
   // nếu không có input chat thì thôi
-  if(!input_chat_ref.value) return
+  if (!input_chat_ref.value) return
 
   // bật trạng thái đang gõ
   commonStore.is_typing = true
@@ -150,7 +170,7 @@ function onEmojiClick(e: any) {
   /**div input */
   const INPUT = input_chat_ref.value.input_chat_ref as HTMLDivElement
   // ghi đè nội dung của input
-  INPUT.innerText =  INPUT.innerText?.trim() + e.detail.unicode
+  INPUT.innerText = INPUT.innerText?.trim() + e.detail.unicode
   // focus vào cuối input
   placeCaretAtEnd(INPUT)
 }
@@ -186,5 +206,8 @@ provide(IS_VISIBLE_SEND_BTN_FUNCT, isVisibleSendBtn)
 <style scoped lang="scss">
 .animate-fast-pulse {
   animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+emoji-picker {
+  --border-size: 0px;
 }
 </style>
