@@ -1,7 +1,7 @@
 <template>
   <Modal
     ref="album_ref"
-    class_modal="h-[80dvh]"
+    class_modal="h-[85dvh]"
     class_body="flex gap-2"
   >
     <template #header>
@@ -9,7 +9,7 @@
     </template>
     <template #body>
       <div
-        class="w-[881px] bg-white rounded-lg p-2 flex flex-col relative gap-2"
+        class="w-[65dvw] bg-white rounded-lg p-2 flex flex-col relative gap-2"
       >
         <div class="absolute top-8 left-[50%] translate-x-[-50%]">
           <Loading v-if="is_loading" />
@@ -103,13 +103,17 @@
         </div>
         <div
           @scroll="loadMore"
-          class="flex-grow overflow-y-auto flex flex-wrap content-start gap-3"
+          class="flex-grow overflow-y-auto grid  content-start gap-3"
+          :class="{
+            'grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7': selected_category === 'FOLDER',
+            'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6': selected_category === 'NEW',
+          }"
         >
           <div
             v-for="folder of folder_list"
             @click="selectFolder(folder)"
             :class="{ 'border-blue-700': folder._id === selected_folder?._id }"
-            class="relative w-[calc((100%-60px)/6)] cursor-pointer border-[3px] rounded-xl flex flex-col group items-center"
+            class="w-full overflow-hidden relative cursor-pointer border-[3px] rounded-xl flex flex-col group items-center"
           >
             <div
               @click.stop="$event => openFolderMenu($event, folder)"
@@ -119,7 +123,7 @@
             </div>
             <FolderIcon class="w-12 h-12 text-slate-700" />
             <div
-              class="truncate text-center text-xs font-medium h-6 flex-shrink-0 px-2"
+              class="truncate w-full text-center text-xs font-medium h-6 flex-shrink-0 px-2"
             >
               <input
                 :id="`edit-folder-title-${folder._id}`"
@@ -140,7 +144,7 @@
             v-for="file of file_list"
             @click="selectFile(file)"
             :class="{ 'border-blue-700': file.is_select }"
-            class="relative w-[calc((100%-48px)/5)] h-44 cursor-pointer border-[3px] rounded-xl overflow-hidden flex flex-col group"
+            class="relative h-44 cursor-pointer border-[3px] rounded-xl overflow-hidden flex flex-col group"
           >
             <div
               @click.stop="deleteFile(file)"
