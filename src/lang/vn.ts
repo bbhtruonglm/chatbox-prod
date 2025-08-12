@@ -714,6 +714,8 @@ const source: Language = {
                 folder: 'Thư mục',
               },
               select_all: 'Chọn tất cả (Ctrl + A)',
+              confirm_delete_file: 'Xác nhận xóa tập tin?', 
+              file: 'tập tin',
               select: 'Chọn tập tin',
               name: 'Tên của tập tin/thư mục',
               create_folder: 'Tạo thư mục',
