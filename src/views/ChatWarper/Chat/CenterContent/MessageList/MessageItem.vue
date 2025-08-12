@@ -66,11 +66,12 @@
       }"
       :time="message_time"
       :meta="meta"
+      :is_ai="messageStore.isAiMessage(message)"
       :is_edit="message?.is_edit"
       :duration="CHECK_SLOW_REPLY.getDuration()"
       :is_show_duration="
         CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
-      "
+        "
     />
   </div>
 </template>

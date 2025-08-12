@@ -3,6 +3,7 @@
     id="chat__message-template"
     :class="is_fix_size ? 'w-[300px]' : 'max-w-[300px]'"
     class="rounded-lg p-2 gap-2.5 flex flex-col flex-shrink-0"
+    @dblclick="copyMessage(message.message_text || '')"
   >
     <div
       v-if="isHaveFileAttachment() || data_source?.is_ai"
@@ -82,6 +83,7 @@ import type {
   MessageInfo,
   MessageTemplateInput,
 } from '@/service/interface/app/message'
+import { copyToClipboard } from '@/service/helper/copyWithAlert'
 
 const $props = withDefaults(
   defineProps<{
@@ -132,5 +134,12 @@ function fixXss(text?: string) {
   return DOMPurify.sanitize(text || '', {
     ADD_ATTR: ['target']
   })
+}
+
+/** copy nội dung của tin nhắn */
+function copyMessage(message: string) {
+  // nếu không có nội dung thì thôi
+  if(!message) return
+  copyToClipboard(message)
 }
 </script>

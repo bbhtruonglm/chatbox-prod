@@ -216,7 +216,7 @@ const SHORTCUT_LIST = [
       {
         icon: MinusCircleIcon,
         name: 'Chặn người dùng',
-        key: ['Ctrl', 'X'],
+        key: ['Ctrl', 'Shift' , 'X'],
       },
       {
         icon: Square2StackIcon,

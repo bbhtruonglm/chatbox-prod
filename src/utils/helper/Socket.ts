@@ -4,6 +4,8 @@ import type { MessageInfo } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import { keys, size } from 'lodash'
+import { LocalStorage, type ILocalStorage } from '@/utils/helper/LocalStorage'
+import { container } from 'tsyringe'
 
 export class Socket {
   /**kết nối socket đến server */
@@ -15,7 +17,12 @@ export class Socket {
   /**gắn cờ đóng kết nối hoàn toàn */
   private is_force_close_socket: boolean = false
 
-  constructor() {}
+  /**
+   * @param SERVICE_LOCAL_STORAGE service quản lý local storage
+   */
+  constructor(
+    private SERVICE_LOCAL_STORAGE: ILocalStorage = container.resolve(LocalStorage)
+  ) {}
 
   /** Kết nối socket */
   connect(
@@ -24,7 +31,14 @@ export class Socket {
     fb_staff_id: string,
     cb: Function
   ) {
-    this.socket = new WebSocket(url)
+    /** access token của người dùng */
+    const TOKEN = this.SERVICE_LOCAL_STORAGE.getItem('access_token')
+
+    // nếu không có token thì dừng lại
+    if (!TOKEN) return
+
+    // khởi tạo kết nối socket
+    this.socket = new WebSocket(`${url}?access_token=${encodeURIComponent(TOKEN)}`)
 
     // khi kết nối thành công
     this.socket.onopen = () => {
