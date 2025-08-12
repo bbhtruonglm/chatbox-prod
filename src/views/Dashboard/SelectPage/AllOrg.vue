@@ -7,7 +7,8 @@
     <template v-else>
       <template v-for="org of sortBy(orgStore.list_org, 'org_info.org_name')">
         <Org
-          v-if="org?.org_id"
+          ref="org_refs"
+          v-if="org?.org_id && $main.isVisibleOrg(org?.org_id)"
           :key="org?.org_id"
           :org_id="org?.org_id"
           v-model:active_page_list="active_pages_of_orgs[org?.org_id]"
@@ -21,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import { useOrgStore, usePageStore, useSelectPageStore } from '@/stores'
-import { flatten, omitBy, sortBy, values } from 'lodash'
+import { omitBy, sortBy } from 'lodash'
 import { provide, ref } from 'vue'
 import { KEY_ADVANCE_SELECT_AGE_FUNCT } from './symbol'
 
@@ -36,7 +37,7 @@ const pageStore = usePageStore()
 const orgStore = useOrgStore()
 
 // /**
-//  * hàm lấy dữ liệu tổ chức và trang 
+//  * hàm lấy dữ liệu tổ chức và trang
 //  * @deprecated sử dụng getALlOrgAndPage trong composable usePageManager
 // */
 // const getALlOrgAndPage = inject(KEY_GET_ALL_ORG_AND_PAGE_FN)
@@ -44,10 +45,17 @@ const orgStore = useOrgStore()
 /**danh sách page của từng tổ chức */
 const active_pages_of_orgs = ref<Record<string, PageData[]>>({})
 
+/** mảng các reference tới các component của từng tổ chức */
+const org_refs = ref<InstanceType<typeof Org>[]>([])
+
 class Main {
   /**có hiện ui không có page không */
   isVisibleEmptyPage() {
-    return !flatten(values(active_pages_of_orgs.value))?.length
+    // đếm tổng của các page được lọc theo nền tảng
+    return !org_refs.value?.reduce(
+      (count_page, org) => count_page + org?.countPage(),
+      0
+    )
   }
   /**lọc ra các trang thuộc 1 tổ chức nào đó */
   filterOrgPageOnly(page: PageData): boolean {
@@ -86,6 +94,15 @@ class Main {
         return ORG_ID !== orgStore.selected_org_id
       }
     )
+  }
+
+  /** có hiện ui của tổ chức hay không */
+  isVisibleOrg(org_id?: string) {
+    /** nếu là chọn tất cả thì hiện */
+    if (orgStore.is_selected_all_org) return true
+
+    // chọn 1 tố tổ chức thì chỉ hiện tổ chức đã chọn
+    return org_id === orgStore.selected_org_id
   }
 }
 const $main = new Main()

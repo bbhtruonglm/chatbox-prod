@@ -178,7 +178,7 @@ function getListPage() {
   const IS_RECENT = $props.filter === 'RECENT'
 
   /**các trang của nhóm này */
-  let pages = sortListPage()?.filter(
+  let pages = sortListPage(pageStore.active_page_list)?.filter(
     page =>
       // nếu là các page gần đây thì tạm thời không lọc
       IS_RECENT ||

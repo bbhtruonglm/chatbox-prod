@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout class_content="flex flex-col gap-3 relative">
+  <DashboardLayout class_content="flex flex-col gap-2 relative">
     <template #menu><Menu /></template>
     <template #content>
       <HotAlert
@@ -44,11 +44,20 @@
       >
         <!-- <Loading class="mx-auto" /> -->
       </div>
-      <template v-if="orgStore.is_selected_all_org">
+      <!-- <template v-if="orgStore.is_selected_all_org"> -->
         <AllOrg />
         <GroupPageAction />
-      </template>
-      <template v-else>
+      <!-- </template> -->
+      <!-- <template v-else>
+        <EmptyPage
+          v-if="
+            !(
+              pageStore.countActivePage() ||
+              orgStore.selected_org_group?.[orgStore.selected_org_id || '']
+            ) && !selectPageStore.is_loading
+          "
+          tab="PAGE"
+        />
         <div
           :class="{
             'pb-16': selectPageStore.is_group_page_mode,
@@ -58,12 +67,12 @@
           <SelectGroup v-if="orgStore.isAdminOrg()" />
           <SkeletonGroupPage v-if="selectPageStore.is_loading" />
           <template v-else>
-            <!-- <GroupPage
+            <GroupPage
               filter="RECENT"
               :icon="ClockIcon"
               :title="$t('v1.common.recent')"
               tab="PAGE"
-            /> -->
+            />
             <GroupPage
               filter="FB_MESS"
               :icon="FacebookIcon"
@@ -104,17 +113,7 @@
 
           <GroupPageAction />
         </div>
-        <EmptyPage
-          v-if="
-            !(
-              pageStore.countActivePage()
-            ) &&
-            !selectPageStore.is_loading &&
-            selectPageStore.current_menu === 'ALL_PLATFORM'
-          "
-          tab="PAGE"
-        />
-      </template>
+      </template> -->
     </template>
   </DashboardLayout>
 </template>

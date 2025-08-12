@@ -6,7 +6,7 @@
     <template v-for="(group, key) of grouped_page_list">
       <div class="flex flex-col gap-0.5 group/platform">
         <div
-          class="flex justify-between items-center rounded bg-slate-100 px-1 py-0.5 text-xs"
+          class="flex justify-between items-center rounded bg-slate-100 px-2 py-0.5 text-xs"
         >
           <div class="flex items-center gap-1">
             <PageTypeIcon

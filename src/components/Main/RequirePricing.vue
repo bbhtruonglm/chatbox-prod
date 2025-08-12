@@ -100,7 +100,7 @@ watch(
 /**sắp xếp lại danh sách page đang chọn */
 function sortPageInactive() {
     sorted_inactive_page.value = keys(pageStore.selected_page_id_list)
-        .map(page_id => pageStore.active_page_list[page_id]?.page)
+        .map(page_id => pageStore.all_page_list[page_id]?.page)
         .sort((page_a, page_b) => {
             const IS_ACTIVE_PAGE_A = isActivePage(page_a)
             const IS_ACTIVE_PAGE_B = isActivePage(page_b)

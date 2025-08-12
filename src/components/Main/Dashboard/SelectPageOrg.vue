@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-3">
     <div
-      v-if="size(pageStore.active_page_list)"
+      v-if="size(pageStore.all_page_list)"
       class="w-full min-w-16 text-slate-700 relative h-full"
       ref="select_ref"
     >
@@ -24,7 +24,7 @@
         >
           <PageAvatar
             :page_info="
-              pageStore.active_page_list?.[widgetStore.selected_page_id]?.page
+              pageStore.all_page_list?.[widgetStore.selected_page_id]?.page
             "
             class="w-5 h-5"
           />
@@ -136,7 +136,7 @@ const search = ref<string>()
 
 /** danh sách các trang trong tổ chức đã chọn */
 const page_list = computed(() => {
-  return pickBy(pageStore.active_page_list, page => {
+  return pickBy(pageStore.all_page_list, page => {
     /** ID của trang hiện tại */
     const PAGE_ID = page?.page?.fb_page_id
 
@@ -153,7 +153,7 @@ const page_list = computed(() => {
 // nạp dữ liệu trang của tổ chức hiện tại khi component được mount
 onMounted(() => {
   // nếu có dữ liệu trang rồi thì thôi
-  if (!size(pageStore.active_page_list)) {
+  if (!size(pageStore.all_page_list)) {
     getALlOrgAndPage()
   }
 })
@@ -177,28 +177,8 @@ function getSelectedPageName() {
 
   // trả về tên trang được chọn
   return getPageName(
-    pageStore.active_page_list?.[widgetStore.selected_page_id]?.page
+    pageStore.all_page_list?.[widgetStore.selected_page_id]?.page
   )
-}
-/**
- * lấy thông tin trang của tổ chức hiện tại
- * @deprecated dùng hàm getALlOrgAndPage để thay thế
- * lấy tất cả các page và lọc FE chứ không call api
- */
-async function getCurrentPageOrgInfo() {
-  // nếu không có tổ chức nào được chọn thì không cần nạp dữ liệu
-  if (!orgStore.selected_org_id) return
-
-  // làm mới danh sách trang
-  pageStore.active_page_list = {}
-
-  /**lấy thông tin trang của tổ chức hiện tại */
-  const RES = await new N4SerivceAppPage().getOrgActiveListPage(
-    orgStore.selected_org_id
-  )
-
-  // lưu lại danh sách trang
-  pageStore.all_page_list = RES?.page_list || {}
 }
 /**ẩn hiện org theo tìm kiếm */
 function filterPage(page: PageData): boolean {

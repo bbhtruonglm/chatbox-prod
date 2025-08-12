@@ -314,8 +314,6 @@ function toggleModal() {
 
 /** kiểm tra thiết vị là mac hay window */
 function isMac() {
-  console.log(navigator.userAgent, /macintosh|macintel|macppc|mac68k|macppc64/i.test(navigator.userAgent));
-  
   return /macintosh|macintel|macppc|mac68k|macppc64/i.test(navigator.userAgent)
 }
 

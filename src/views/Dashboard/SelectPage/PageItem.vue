@@ -180,7 +180,7 @@ function togglePagePriority() {
         cb()
 
         set(
-          pageStore.active_page_list,
+          pageStore.all_page_list,
           [page_id.value, 'page', 'is_priority'],
           NEW_PRIORITY
         )

@@ -84,7 +84,7 @@ export const checkPricingValid = (
                 const LIST_PAGE_INFO =
                     is_use_chat_data ?
                         pageStore.selected_page_list_info :
-                        pageStore.active_page_list
+                        pageStore.all_page_list
 
                 const PAGE = LIST_PAGE_INFO[page_id]?.page
 

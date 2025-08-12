@@ -24,7 +24,7 @@
                     :placeholder="$t('v1.common.page_search_placeholder')">
             </div>
             <div class="overflow-y-auto h-[calc(100%_-_35px)] mt-2">
-                <template v-for="page of pageStore.active_page_list">
+                <template v-for="page of pageStore.all_page_list">
                     <div @click="selectPage(page)" v-if="filterPage(page)"
                         class="cursor-pointer flex items-center mb-2 hover:bg-orange-100">
                         <PageAvatar class="rounded-full ml-[6px] w-8 h-8"
