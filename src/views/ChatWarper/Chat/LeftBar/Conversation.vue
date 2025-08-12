@@ -659,9 +659,7 @@ onUnmounted(() => {
 // khi thay đổi giá trị lọc tin nhắn(trừ field conversation_type) thì load lại dữ liệu
 watch(
   () => option_filter_page_data.value,
-  (new_val, old_val) => {
-    console.log(new_val, old_val);
-    
+  (new_val, old_val) => {    
     $main.loadConversationFirstTime(true, true, true)
   },
   { deep: true }

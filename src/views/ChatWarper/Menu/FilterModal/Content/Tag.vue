@@ -63,7 +63,7 @@
 import { nonAccentVn } from '@/service/helper/format'
 import { useConversationStore, usePageStore } from '@/stores'
 import { debounce, map, size, sortBy } from 'lodash'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import MenuTitle from '@/components/Main/Dashboard/MenuTitle.vue'
 import SelectPage from '@/views/ChatWarper/Menu/FilterModal/Tag/SelectPage.vue'
@@ -90,6 +90,10 @@ const snap_labels = defineModel<{ [index: string]: ILabel }>('snap_labels', {
 const label_search_name = ref<string>('')
 /**ref của dropdown search */
 const search_ref = ref<ComponentRef>()
+
+onMounted(() => {
+  label_list.value = sortLabel(map(snap_labels.value))
+})
 
 /**chặn các nhãn đã được bên đối diện lựa chọn */
 function isDisableLabel(index: number) {
@@ -118,9 +122,14 @@ function selectLabel(index: number) {
   SELECTED_LABEL.is_selected = !SELECTED_LABEL.is_selected
 
   /**danh sách id nhãn đã chọn */
-  let list_id = label_list.value
-    ?.filter(label => label.is_selected)
-    ?.map(label => label._id)
+  // let list_id = label_list.value
+  //   ?.filter(label => label.is_selected)
+  //   ?.map(label => label._id)
+
+  // nếu tồn tại trong mảng thì xóa đi còn không thì thêm vào
+  let list_id = FILTER.label_id?.includes(SELECTED_LABEL._id)
+    ? FILTER.label_id?.filter(id => id !== SELECTED_LABEL._id)
+    : [...(FILTER.label_id || []), SELECTED_LABEL._id]
 
   // lưu lại id nhãn đã chọn vào store
   FILTER.label_id = size(list_id) ? list_id : undefined
