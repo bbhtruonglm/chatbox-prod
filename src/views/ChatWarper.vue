@@ -87,6 +87,7 @@ import type { MessageInfo } from '@/service/interface/app/message'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import type { OwnerShipInfo } from '@/service/interface/app/billing'
 
 // store
 const pageStore = usePageStore()
@@ -123,7 +124,7 @@ onMounted(() => {
 
   $main.getPageInfoToChat()
 
-  $main.markOrgHaveZalo()
+  $main.getPageOfCurrentOrg()
 
   initExtensionLogic()
 
@@ -650,16 +651,25 @@ class Main {
     )
   }
 
-  /**đánh dấu xem tổ chức này có page zalo không */
-  async markOrgHaveZalo() {
+  /** lấy danh sách trang của tổ chức hiện tại */
+  async getPageOfCurrentOrg() {
     // nếu không có id tổ chức thì thôi
     if (!orgStore.selected_org_id) return
 
     /**lấy danh sách trang của tổ chức hiện tại */
     const OSS = await read_os(orgStore.selected_org_id)
 
+    // lưu danh sách các trang của tổ chức hiện tại vào store
+    orgStore.list_os = OSS
+
+    // lọc ra các trang zalo cá nhân
+    this.markOrgHaveZalo(OSS)
+  }
+
+  /**đánh dấu xem tổ chức này có page zalo không */
+  markOrgHaveZalo(oss: OwnerShipInfo[]){
     /**lọc ra các trang zalo cá nhân */
-    pageStore.zlp_oss = OSS.filter(
+    pageStore.zlp_oss = oss.filter(
       os => os?.page_info?.type === 'ZALO_PERSONAL'
     )
   }

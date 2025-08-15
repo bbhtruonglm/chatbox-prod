@@ -78,7 +78,6 @@ export const useMessageStore = defineStore('message_store', () => {
   function isAiMessage(message: MessageInfo) {
     /**tiền tố đánh dấu tin nhắn này là của AI gửi */
     const PREFIX = '\u200B\u200C\u200D\u200B'
-    console.log(message?.message_text?.startsWith(PREFIX));
     
     return message?.message_text?.startsWith(PREFIX)
   }
