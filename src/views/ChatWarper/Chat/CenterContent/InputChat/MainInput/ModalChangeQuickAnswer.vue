@@ -1,71 +1,51 @@
 <template>
   <Modal
     ref="modal_change_quick_answer_ref"
-    class_modal="w-[369px] h-fit"
+    class_modal="w-[450px] h-fit max-h-[70dvh]"
+    class_body="!overflow-hidden bg-white p-3 flex flex-col rounded-md gap-2"
   >
     <template #header>
       {{ $t('Chọn trang lấy câu trả lời nhanh') }}
     </template>
     <template #body>
-      <div
-        class="border py-2 px-3 flex justify-between items-center w-full rounded-md bg-white cursor-pointer"
-        @click="dropdown_ref?.toggleDropdown"
-      >
-        {{
-          index_page !== undefined &&
-          orgStore.list_os?.[index_page]?.page_info?.name
-        }}
-        <ChevronDownIcon class="w-5 h-5" />
-      </div>
+      <input
+        v-model="search"
+        type="text"
+        :placeholder="$t('Tìm kiếm')"
+        class="w-full outline-none border py-2 px-3 rounded-md h-full"
+      />
+      <ul class="flex flex-col h-full gap-2 overflow-auto">
+        <li
+          v-for="item in orgStore.list_os"
+          class="py-2 px-2 rounded-md hover:bg-slate-100 cursor-pointer flex gap-2 items-center"
+          v-show="showPage(item?.page_info)"
+          @click="selectPage(item?.page_id || '')"
+        >
+          <PageAvatar
+            :page_info="item?.page_info"
+            class="w-8 h-8 flex-shrink-0"
+          />
+          <div class="w-full">
+            <p class="flex justify-between items-center w-full">
+              {{ item?.page_info?.name }}
+              <CheckCircleIcon
+                v-if="page_id === item?.page_id"
+                class="size-5 text-blue-500"
+              />
+            </p>
+            <p class="text-slate-400 text-xs">
+              {{ item?.page_id }}
+            </p>
+          </div>
+        </li>
+      </ul>
       <button
         v-if="page_id !== conversationStore.select_conversation?.fb_page_id"
-        class="py-2 px-3 rounded-md bg-blue-100 text-blue-700 font-medium w-full mt-2 border border-blue-700"
-        @click="page_id = conversationStore.select_conversation?.fb_page_id || ''"
+        class="py-2 px-3 rounded-md bg-blue-100 text-blue-700 font-medium w-full border border-blue-700"
+        @click="selectDefaultPage()"
       >
         {{ $t('Khôi phục trang mặc định') }}
       </button>
-
-      <Dropdown
-        ref="dropdown_ref"
-        position="BOTTOM"
-        :is_fit="false"
-        width="349px"
-        height="auto"
-        class_content="p-3 max-h-[40dvh] flex flex-col gap-2 overflow-hidden"
-      >
-        <input
-          v-model="search"
-          type="text"
-          :placeholder="$t('Tìm kiếm')"
-          class="w-full outline-none border py-2 px-3 rounded-md h-full"
-        />
-        <ul class="flex flex-col gap-2 overflow-auto">
-          <li
-            v-for="item in orgStore.list_os"
-            class="py-2 px-2 rounded-md hover:bg-slate-100 cursor-pointer flex gap-2 items-center"
-            v-show="showPage(item?.page_info)"
-            @click="
-              () => {
-                page_id = item?.page_id || ''
-                dropdown_ref?.toggleDropdown()
-              }
-            "
-          >
-            <PageAvatar
-              :page_info="item?.page_info"
-              class="w-8 h-8"
-            />
-            <div>
-              <p>
-                {{ item?.page_info?.name }}
-              </p>
-              <p class="text-slate-400 text-xs">
-                {{ item?.page_id }}
-              </p>
-            </div>
-          </li>
-        </ul>
-      </Dropdown>
     </template>
   </Modal>
 </template>
@@ -77,10 +57,9 @@ import { isEmpty } from 'lodash'
 import { computed, ref } from 'vue'
 
 import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import Dropdown from '@/components/Dropdown.vue'
 import Modal from '@/components/Modal.vue'
 
-import { ChevronDownIcon } from '@heroicons/vue/24/solid'
+import { CheckCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { IPage } from '@/service/interface/app/page'
 
@@ -97,14 +76,8 @@ const page_id = defineModel('page_id', {
 const modal_change_quick_answer_ref = ref<InstanceType<typeof Modal> | null>(
   null
 )
-/** modal chọn page */
-const dropdown_ref = ref<InstanceType<typeof Dropdown> | null>(null)
 /** từ khóa tìm kiếm trang */
 const search = ref('')
-/** index page được chọn */
-const index_page = computed(() =>
-  orgStore.list_os?.findIndex(item => item?.page_id === page_id.value)
-)
 
 /** có hiển thị trang không */
 function showPage(page_info: IPage = {}) {
@@ -121,9 +94,21 @@ function showPage(page_info: IPage = {}) {
   return PAGE_NAME.includes(KEY_WORD) || PAGE_ID.includes(KEY_WORD)
 }
 
+/** Chọn page để lấy các câu trả lời nhanh */
+function selectPage(id: string) {
+  page_id.value = id
+  modal_change_quick_answer_ref.value?.toggleModal()
+}
+
+/** Chọn trang mặc định */
+function selectDefaultPage() {
+  page_id.value = conversationStore.select_conversation?.fb_page_id || ''
+  modal_change_quick_answer_ref.value?.toggleModal()
+}
+
 defineExpose({
   toggleModal() {
     modal_change_quick_answer_ref.value?.toggleModal()
-  },
+  }
 })
 </script>
