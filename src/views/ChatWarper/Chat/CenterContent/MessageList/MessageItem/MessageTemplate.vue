@@ -51,7 +51,7 @@
         class="enter-line"
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
-        v-html="fixXss($markdown.render(renderText(data_source?.content)))"
+        v-html="fixXss($markdown.render(renderTextV2(data_source?.content)))"
       />
         <!-- class="enter-line" -->
 
@@ -66,7 +66,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { clickCopyPhoneEmail, renderText } from '@/service/function'
+import { clickCopyPhoneEmail, renderTextV2 } from '@/service/function'
 import { MarkedService } from '@/utils/helper/Markdown'
 import DOMPurify from 'dompurify'
 import { container } from 'tsyringe'
