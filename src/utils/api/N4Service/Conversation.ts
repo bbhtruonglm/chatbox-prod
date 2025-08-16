@@ -90,6 +90,7 @@ export class N4SerivceAppConversation extends N4Serivce {
    */
   async readConversations(
     page_ids: string[],
+    org_id: string,
     filter: FilterConversation,
     limit?: number,
     sort?: string,
@@ -98,6 +99,7 @@ export class N4SerivceAppConversation extends N4Serivce {
     // gọi api
     return this.post('read_conversation', {
       page_id: page_ids,
+      org_id,
       limit,
       after,
       sort,
