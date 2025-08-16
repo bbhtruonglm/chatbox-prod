@@ -274,6 +274,9 @@ const source: Language = {
   'Chị': 'Mrs.',
   'Anh/Chị': 'Mr./Mrs.',
   'Tìm kiếm Zalo cá nhân': 'Search Zalo Personal',
+  'Lấy danh sách trả lời nhanh từ trang khác': 'Get a quick reply list from another page',
+  'Chọn trang lấy câu trả lời nhanh': 'Select a page to get a quick reply',
+  'Khôi phục trang mặc định': 'Reset default page',
   name: 'English',
   v1: {
     common: {
