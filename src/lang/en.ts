@@ -277,6 +277,7 @@ const source: Language = {
   'Lấy danh sách trả lời nhanh từ trang khác': 'Get a quick reply list from another page',
   'Chọn trang lấy câu trả lời nhanh': 'Select a page to get a quick reply',
   'Khôi phục trang mặc định': 'Reset default page',
+  'Xem thêm': 'See more',
   name: 'English',
   v1: {
     common: {

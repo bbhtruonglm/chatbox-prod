@@ -68,7 +68,7 @@
         @click="is_view_full = true"
       >
         ...
-        <span class="text-blue-500 cursor-pointer"> Xem thêm </span>
+        <span class="text-blue-500 cursor-pointer">{{ $t('Xem thêm') }} </span>
       </p>
       <!-- class="enter-line" -->
     </div>
