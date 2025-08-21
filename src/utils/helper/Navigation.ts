@@ -37,7 +37,7 @@ export class WindowAction implements IWindowAction {
     if (!url) return
 
     // mở tab mới
-    window.open(url, '_blank')
+    window.open(url, '_blank', "noopener,noreferrer")
   }
   openPopup(url?: string, width?: number, height?: number): void {
     // nếu không có url thì thôi
