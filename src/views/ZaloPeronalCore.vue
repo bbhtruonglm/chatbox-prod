@@ -24,6 +24,87 @@
       </button>
     </div>
 
+    <template v-if="true">
+      <section>
+        <div class="w-full relative border-b pb-2">
+          <MagnifyingGlassIcon
+            class="size-5 text-slate-500 absolute top-0 bottom-0 m-auto left-2"
+          />
+          <input
+            v-model="query_string_data.phone"
+            type="text"
+            :placeholder="$t('Nhập số điện thoại muốn tìm kiếm')"
+            class="placeholder:text-slate-500 pl-9 py-2 pr-4 outline-none rounded-lg w-full"
+          />
+        </div>
+      </section>
+
+      <section>
+        <!-- <div class="flex flex-col items-center pt-8 gap-2.5">
+          <SearchContactIcon class="size-20" />
+          <p class="text-slate-700">
+            {{ $t('Nhập số điện thoại để thêm khách hàng') }}
+          </p>
+        </div> -->
+        <!-- <div class="p-3">
+          <div
+            class="border border-blue-200 rounded-lg flex gap-2 items-center p-2"
+          >
+            <div class="bg-blue-100 rounded-xl size-8"></div>
+            <div class="flex flex-col gap-1">
+              <div class="bg-blue-100 rounded-full h-4 w-44"></div>
+              <div class="bg-blue-100 rounded-full h-3 w-28"></div>
+            </div>
+          </div>
+        </div> -->
+        <ul>
+          <li class="bg-white rounded-lg flex gap-2 items-center py-3 px-4">
+            <PageAvatar
+              v-if="selected_page_id"
+              :page_info="selected_page_info"
+              class="rounded-oval size-8"
+            />
+            <div class="flex flex-col flex-1">
+              <div class="font-medium">Nguyễn Văn A</div>
+              <div class="text-slate-500 text-xs">***8212</div>
+            </div>
+            <div class="flex gap-2 font-medium">
+              <button class="py-2 px-4 rounded-md bg-slate-200">
+                Gửi tin nhắn
+              </button>
+              <button class="py-2 px-4 rounded-md bg-blue-200 text-blue-700">
+                Kết bạn
+              </button>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </template>
+    <template v-else>
+    <section class="py-3 px-4 flex gap-2 bg-white rounded-xl items-center">
+      <PageAvatar
+        v-if="selected_page_id"
+        :page_info="selected_page_info"
+        class="rounded-oval size-8 flex-shrink-0"
+      />
+      <div class="flex flex-col w-full">
+        <div class="flex gap-2 font-medium justify-between">
+          <p class="flex items-center gap-2">
+            Nguyễn Văn B
+            <PencilSquareIcon class="size-4 cursor-pointer text-slate-500" />
+          </p>
+          <button class="py-1 px-4 rounded-md bg-blue-200 text-blue-700">
+            Kết bạn
+          </button>
+        </div>
+        <div class="flex gap-5 text-slate-500 text-xs">
+          <p class="flex gap-1"><PhoneIcon class="size-4 flex-shrink-0" /> ***8212</p>
+          <p class="flex gap-1"><GenderIcon class="size-4 flex-shrink-0" /> Nam</p>
+          <p class="flex gap-1"><CakeIcon class="size-4 flex-shrink-0" /> 12/09/1990</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Hội thoại -->
     <div class="h-full w-full overflow-hidden">
       <MessageList
@@ -42,7 +123,7 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       class="py-2 px-3 gap-2 rounded-md bg-blue-100 border border-blue-200 text-xs flex items-center"
       v-if="is_show_send_friend_request"
     >
@@ -50,9 +131,6 @@
         <p class="font-semibold">
           {{ $t('Gửi lời mời kết bạn') }}
         </p>
-        <!-- <p class="pr-5">
-          {{ $t('Khách hàng này chưa là bạn bè với Zalo') }}
-        </p> -->
       </div>
       <button
         @click="$main.sendFriendRequest()"
@@ -64,10 +142,11 @@
         class="size-6 cursor-pointer flex-shrink-0"
         @click="is_show_send_friend_request = false"
       />
-    </div>
+    </div> -->
 
     <!-- ô nhập chat -->
     <InputChat :client_id="client_id" />
+    </template>
 
     <!-- danh sách zalo personal -->
     <Dropdown
@@ -133,7 +212,11 @@ import Dropdown from '@/components/Dropdown.vue'
 import InputChat from '@/views/ChatWarper/Chat/CenterContent/InputChat.vue'
 import MessageList from '@/views/ChatWarper/Chat/CenterContent/MessageList.vue'
 
-import { ChevronDownIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import {
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from '@heroicons/vue/24/outline'
 
 import type { OwnerShipInfo } from '@/service/interface/app/billing'
 import type { SocketEvent } from '@/service/interface/app/common'
@@ -143,6 +226,10 @@ import type { IPage } from '@/service/interface/app/page'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import SearchContactIcon from '@/components/Icons/SearchContactIcon.vue'
+import SkeletonLoading from '@/views/ChatWarper/Chat/LeftBar/Conversation/SkeletonLoading.vue'
+import { CakeIcon, PencilSquareIcon, PhoneIcon } from '@heroicons/vue/24/solid'
+import GenderIcon from '@/components/Icons/GenderIcon.vue'
 
 const pageStore = usePageStore()
 const commonStore = useCommonStore()
@@ -172,6 +259,7 @@ const query_string_data = ref({
   actual_client_id: '',
   actual_page_id: '',
   message_id: '',
+  phone: '',
 })
 
 /** id của khách hàng ở page zalo được chọn */
@@ -213,6 +301,9 @@ class NoneToast extends Toast implements IAlert {
   }
 }
 
+/** thông báo dạng toast */
+const $custom_toast = container.resolve(CustomToast)
+
 class Main {
   /**
    * @param API gọi API
@@ -223,7 +314,7 @@ class Main {
 
   /**gửi lời mời kết bạn */
   @loadingV2(commonStore, 'is_loading_full_screen')
-  @error(new CustomToast())
+  @error($custom_toast)
   async sendFriendRequest() {
     // trang bị mất kết nối không
     if (this.isDiconnect()) return
@@ -303,13 +394,16 @@ class Main {
   }
 
   /** lấy danh sách các page zalo của tổ chức hiện tại */
-  @error(new CustomToast())
+  @error($custom_toast)
   async getZaloPage() {
     // nếu không có id tổ chức thì thôi
     if (!query_string_data.value.org_id) return
 
     /**lấy danh sách trang của tổ chức hiện tại */
     const OSS = await read_os(query_string_data.value.org_id)
+
+    // lưu danh sách các trang của tổ chức hiện tại vào store
+    orgStore.list_os = OSS
 
     /**lọc ra các trang zalo cá nhân */
     zlp_oss.value = OSS.filter(os => os?.page_info?.type === 'ZALO_PERSONAL')
@@ -340,7 +434,7 @@ class Main {
 
   /** lấy thông tin của các page zalo */
   // @loadingV2(commonStore, 'is_loading_full_screen')
-  @error(new CustomToast())
+  @error($custom_toast)
   async getZaloPageInfo() {
     /** danh sách các page zalo */
     const SELECTED_PAGE_IDS = zlp_oss.value?.map(os => os.page_id || '')
@@ -368,6 +462,8 @@ class Main {
     this.getQueryStringByKey('actual_page_id')
     // lấy id tin nhắn trong query string
     this.getQueryStringByKey('message_id')
+    // lấy số điện thoại trong query string
+    this.getQueryStringByKey('phone')
   }
 
   /** lấy dữ liệu từng field từ query string */
@@ -390,7 +486,7 @@ class Main {
     zalo_personal_dropdown_ref.value?.toggleDropdown()
 
     // nếu không có id trang zalo thì thôi
-    if(!selected_page_id.value) return
+    if (!selected_page_id.value) return
 
     // lưu lại id trang xuống localstorage
     this.setZaloPageIdToLocalStorage(selected_page_id.value)
@@ -545,11 +641,13 @@ class Main {
       if (!SELECTED_ZALO_PAGE_ORG_ID_MAP_STR) return {}
 
       /** dữ liệu sau khi parse thành công */
-      const SELECTED_ZALO_PAGE_ORG_ID_MAP = JSON.parse(SELECTED_ZALO_PAGE_ORG_ID_MAP_STR)
+      const SELECTED_ZALO_PAGE_ORG_ID_MAP = JSON.parse(
+        SELECTED_ZALO_PAGE_ORG_ID_MAP_STR
+      )
 
       // nếu không có thì trả về object rỗng
       if (!SELECTED_ZALO_PAGE_ORG_ID_MAP) return {}
-      
+
       return SELECTED_ZALO_PAGE_ORG_ID_MAP
     } catch (error) {
       // nếu parse lỗi thì trả về object rỗng

@@ -2,11 +2,11 @@
   <Modal
     ref="modal_widget_ref"
     class_modal="w-[432px]"
-    class_body="flex gap-2 h-[80dvh]"
+    :class_body="`flex gap-2 ${true ? 'h-96' : 'h-[80dvh]'}`"
   >
     <template #header>
-      {{ $t('Zalo cá nhân') }}
-      <!-- {{ $t('Hội thoại Zalo cá nhân') }} -->
+      {{ true ? $t('Thêm khách hàng') : $t('Hội thoại Zalo cá nhân') }}
+    
     </template>
     <template #body>
       <iframe
@@ -16,7 +16,9 @@
           orgStore.selected_org_id
         }&actual_client_id=${message?.fb_client_id}&actual_page_id=${
           message?.fb_page_id
-        }&message_id=${message?._id}&token=${getItem('access_token')}`"
+        }&message_id=${message?._id}&token=${getItem('access_token')}&phone=${
+          message?.client_phone
+        }`"
         frameborder="0"
       ></iframe>
     </template>
