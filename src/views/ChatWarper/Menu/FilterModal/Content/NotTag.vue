@@ -99,11 +99,11 @@ function selectLabel(index: number) {
   // let list_id = label_list.value
   //   ?.filter(label => label.is_selected)
   //   ?.map(label => label._id)
-  
+
   // nếu tồn tại trong mảng thì xóa đi còn không thì thêm vào
   let list_id = FILTER.not_label_id?.includes(SELECTED_LABEL._id)
     ? FILTER.not_label_id?.filter(id => id !== SELECTED_LABEL._id)
-    : [...(FILTER.label_id || []), SELECTED_LABEL._id]
+    : [...(FILTER.not_label_id || []), SELECTED_LABEL._id]
 
   // lưu lại id nhãn đã chọn vào store
   FILTER.not_label_id = size(list_id) ? list_id : undefined
