@@ -21,8 +21,8 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
   /**gửi lời mời kết bạn */
   public async sendFriendRequest(
     page_id: string,
-    actual_page_id:string,
-    actual_client_id:string,
+    actual_page_id: string,
+    actual_client_id: string,
     message_id?: string
   ): Promise<{
     /**đã kết bạn chưa */
@@ -35,6 +35,27 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
       actual_client_id,
       // client_id,
     })
+  }
+
+  /** Lấy thông tin khách hàng zalo cá nhân */
+  public async getInfoZaloPersonal(data: {
+    message_id?: string
+    client_id?: string
+    phone?: string
+  }): Promise<any> {
+    return new Promise(resolve =>
+      setTimeout(
+        () =>
+          resolve({
+            avatar:
+              'https://cdn.botbanhang.vn/media/zlp/192681899250840741/page',
+            name: 'Nguyen Van A',
+            phone: '0123456789',
+            is_friend: true,
+          }),
+        500
+      )
+    )
   }
 
   /**
@@ -52,15 +73,18 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
     })
   }
 
-  /** 
+  /**
    * Lấy id của khách đã nhắn với nhóm zalo đã chọn
    * @param page_id id của trang
    * @param message_id id của tin nhắn
    */
-  public async getClientId(page_id:string, message_id:string): Promise<string> {
+  public async getClientId(
+    page_id: string,
+    message_id: string
+  ): Promise<string> {
     return this.post('get_client_id_by_message', {
       page_id,
-      message_id
+      message_id,
     })
   }
 }

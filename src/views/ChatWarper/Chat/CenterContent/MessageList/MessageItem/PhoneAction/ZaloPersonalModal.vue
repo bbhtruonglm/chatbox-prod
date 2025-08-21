@@ -2,10 +2,10 @@
   <Modal
     ref="modal_widget_ref"
     class_modal="w-[432px]"
-    :class_body="`flex gap-2 ${true ? 'h-96' : 'h-[80dvh]'}`"
+    :class_body="`flex gap-2 ${ view === 'SEARCH' || !view ? 'h-96' : 'h-[80dvh]'}`"
   >
     <template #header>
-      {{ true ? $t('Thêm khách hàng') : $t('Hội thoại Zalo cá nhân') }}
+      {{ view === 'SEARCH' ? $t('Thêm khách hàng') : $t('Hội thoại Zalo cá nhân') }}
     
     </template>
     <template #body>
@@ -50,6 +50,9 @@ const orgStore = useOrgStore()
 
 /**ref của modal kết nối nền tảng */
 const modal_widget_ref = ref<InstanceType<typeof Modal>>()
+
+/** màn hiển thị */
+const view = ref<'SEARCH' | 'CHAT' | 'FRIEND_REQUEST' | ''>('')
 
 class Main {
   constructor(
