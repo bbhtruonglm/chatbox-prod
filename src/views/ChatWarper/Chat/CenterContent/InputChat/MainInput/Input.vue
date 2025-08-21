@@ -1,5 +1,6 @@
 <template>
   <div class="w-full h-full relative mb-1">
+    <!-- {{ input_chat_ref?.innerText }} -->
     <div
       ref="input_chat_ref"
       id="chat-text-input-message"
