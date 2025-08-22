@@ -18,44 +18,47 @@ export class N4SerivceAppZaloPersonal extends N4Serivce {
     super('app/zalo_personal')
   }
 
-  /**gửi lời mời kết bạn */
-  public async sendFriendRequest(
-    page_id: string,
-    actual_page_id: string,
-    actual_client_id: string,
-    message_id?: string
+  /**gửi lời mời kết bạn bằng id tin nhắn */
+  public async sendFriendRequestByMessage(
+    data: {
+      page_id: string,
+      actual_page_id: string,
+      actual_client_id: string,
+      message_id?: string,
+      message?: string,
+    }
   ): Promise<{
     /**đã kết bạn chưa */
     is_accept_friend_request?: boolean
   }> {
-    return this.post('send_friend_request_by_message', {
-      page_id,
-      message_id,
-      actual_page_id,
-      actual_client_id,
-      // client_id,
-    })
+    return this.post('send_friend_request_by_message', data)
+  }
+
+  /** gửi lời mời kết bạn bằng sdt */
+  public async sendFriendRequest(data: {
+    page_id:string,
+    phone:string,
+    message?:string
+  }) {
+    return this.post('send_friend_request', data)
   }
 
   /** Lấy thông tin khách hàng zalo cá nhân */
   public async getInfoZaloPersonal(data: {
+    page_id: string
     message_id?: string
     client_id?: string
-    phone?: string
-  }): Promise<any> {
-    return new Promise(resolve =>
-      setTimeout(
-        () =>
-          resolve({
-            avatar:
-              'https://cdn.botbanhang.vn/media/zlp/192681899250840741/page',
-            name: 'Nguyen Van A',
-            phone: '0123456789',
-            is_friend: true,
-          }),
-        500
-      )
-    )
+    client_phone?: string
+  }): Promise<{
+    client_id?: string
+    client_name?: string
+    client_avatar?: string
+    client_gender?: string
+    client_birthday?: string
+    client_phone?: string
+    is_accept_friend_request?: boolean
+  }> {
+    return this.post('search_client', data)
   }
 
   /**

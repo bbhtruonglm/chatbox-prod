@@ -2,23 +2,21 @@
   <Modal
     ref="modal_widget_ref"
     class_modal="w-[432px]"
-    :class_body="`flex gap-2 ${ view === 'SEARCH' || !view ? 'h-96' : 'h-[80dvh]'}`"
+    :class_body="`flex gap-2 ${
+      view === 'SEARCH' || !view ? 'h-96' : 'h-[80dvh]'
+    }`"
   >
     <template #header>
-      {{ view === 'SEARCH' ? $t('Thêm khách hàng') : $t('Hội thoại Zalo cá nhân') }}
-    
+      {{
+        view === 'SEARCH' ? $t('Thêm khách hàng') : $t('Hội thoại Zalo cá nhân')
+      }}
     </template>
     <template #body>
       <iframe
         id="iframe-zalo"
+        ref="iframe_ref"
         class="w-full rounded-xl"
-        :src="`${DOMAIN_CHATBOT}/zalo-personal-conversation?org_id=${
-          orgStore.selected_org_id
-        }&actual_client_id=${message?.fb_client_id}&actual_page_id=${
-          message?.fb_page_id
-        }&message_id=${message?._id}&token=${getItem('access_token')}&phone=${
-          message?.client_phone
-        }`"
+        :src="url_iframe"
         frameborder="0"
       ></iframe>
     </template>
@@ -28,7 +26,7 @@
 import { useOrgStore } from '@/stores'
 import { N4SerivceAppZaloPersonal } from '@/utils/api/N4Service/ZaloPersonal'
 import { container } from 'tsyringe'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getItem } from '@/service/helper/localStorage'
 
 import Modal from '@/components/Modal.vue'
@@ -53,6 +51,40 @@ const modal_widget_ref = ref<InstanceType<typeof Modal>>()
 
 /** màn hiển thị */
 const view = ref<'SEARCH' | 'CHAT' | 'FRIEND_REQUEST' | ''>('')
+
+/** ref tới iframe */
+const iframe_ref = ref<HTMLIFrameElement>()
+
+/** link của url */
+const url_iframe = computed(() => {
+  /** kết quả */
+  let result: string[] = []
+  // nếu có id tổ chức
+  if (orgStore.selected_org_id) {
+    result.push(`org_id=${orgStore.selected_org_id}`)
+  }
+  // nếu có id khách hàng
+  if ($props.message?.fb_client_id) {
+    result.push(`actual_client_id=${$props.message?.fb_client_id}`)
+  }
+  // nếu có id trang
+  if ($props.message?.fb_page_id) {
+    result.push(`actual_page_id=${$props.message?.fb_page_id}`)
+  }
+  // nếu có id tin nhắn
+  if ($props.message?._id) {
+    result.push(`message_id=${$props.message?._id}`)
+  }
+  // nếu có token
+  if (getItem('access_token')) {
+    result.push(`token=${getItem('access_token')}`)
+  }
+  // nếu có số điện thoại
+  if ($props.message?.client_phone) {
+    result.push(`phone=${$props.message?.client_phone}`)
+  }
+  return `${DOMAIN_CHATBOT}/zalo-personal-conversation?${result?.join('&')}`
+})
 
 class Main {
   constructor(
@@ -80,15 +112,25 @@ class Main {
     // nếu không phải từ zalo personal core thi thôi
     if (event.data?.from !== 'ZALO_PERSONAL_CORE') return
 
-    // id của trang cần lấy id khách hàng
-    const CLIENT_ID = await $main.getClientId(event.data.data.page_id)
+    // nếu là lấy id client_id
+    if (event.data?.type === 'get.client_id') {
+      this.hanldeGetClientId(event.data.data.page_id)
+    }
 
-    const IFRAME_ZALO = document.getElementById(
-      'iframe-zalo'
-    ) as HTMLIFrameElement
+    // nếu là chuyển màn
+    if (event.data?.type === 'view.change') {
+      // lưu lại view
+      view.value = event.data.data.view
+    }
+  }
+
+  /** Xử lý khi nhận được mesage với type get.client_id  */
+  async hanldeGetClientId(page_id: string) {
+    // id của trang cần lấy id khách hàng
+    const CLIENT_ID = await $main.getClientId(page_id)
 
     // gửi id khách hàng vào iframe zalo personal core
-    IFRAME_ZALO?.contentWindow?.postMessage(
+    iframe_ref.value?.contentWindow?.postMessage(
       {
         type: 'get.client_id',
         from: 'ZALO_PERSONAL_CONTAINER',
