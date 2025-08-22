@@ -25,22 +25,22 @@
       </button>
     </div>
 
+    <!-- Màn tìm kiếm zalo cá nhân -->
     <template v-if="view === 'SEARCH'">
-      <section>
-        <div class="w-full relative border-b pb-2">
-          <MagnifyingGlassIcon
-            class="size-5 text-slate-500 absolute top-2 m-auto left-2"
-          />
-          <input
-            v-model="query_string_data.phone"
-            type="text"
-            :placeholder="$t('Nhập số điện thoại muốn tìm kiếm')"
-            class="placeholder:text-slate-500 pl-9 py-2 pr-4 outline-none rounded-lg w-full"
-            @input="debounce_search_zalo_personal"
-          />
-        </div>
+      <!-- input tìm kiếm -->
+      <section class="w-full relative border-b pb-2">
+        <MagnifyingGlassIcon
+          class="size-5 text-slate-500 absolute top-2 m-auto left-2"
+        />
+        <input
+          v-model="query_string_data.phone"
+          type="text"
+          :placeholder="$t('Nhập số điện thoại muốn tìm kiếm')"
+          class="placeholder:text-slate-500 pl-9 py-2 pr-4 outline-none rounded-lg w-full"
+          @input="debounce_search_zalo_personal"
+        />
       </section>
-
+      <!-- danh sách -->
       <section>
         <!-- Màn trống ban đầu -->
         <div
@@ -68,7 +68,7 @@
           </div>
         </div>
         <!-- THông tin khách hàng -->
-        <ul v-if="!isEmpty(zalo_personal)">
+        <ul v-if="!isEmpty(zalo_personal) && !is_loading_zalo_personal">
           <li class="bg-white rounded-lg flex gap-2 items-center py-3 px-4">
             <ClientAvatar
               :conversation="conversationStore.select_conversation"
@@ -89,31 +89,37 @@
                 class="py-2 px-4 rounded-md bg-slate-200"
                 @click="$main.changeView('CHAT')"
               >
-                Gửi tin nhắn
+                {{ $t('Gửi tin nhắn') }}
               </button>
               <button
                 v-if="!zalo_personal.is_accept_friend_request"
                 class="py-2 px-4 rounded-md bg-blue-200 text-blue-700"
                 @click="$main.changeView('FRIEND_REQUEST')"
               >
-                Kết bạn
+                {{ $t('Kết bạn') }}
               </button>
             </div>
           </li>
         </ul>
         <!-- Không tìm thấy khách hàng -->
         <div
-          v-if="isEmpty(zalo_personal) && query_string_data.phone"
+          v-if="
+            isEmpty(zalo_personal) &&
+            query_string_data.phone &&
+            !is_loading_zalo_personal
+          "
           class="flex flex-col items-center pt-5"
         >
           <img
             :src="EmptyContact"
             class="size-24"
           />
-          <p>Không có khách hàng</p>
+          <p>{{ $t('Không có khách hàng') }}</p>
         </div>
       </section>
     </template>
+
+    <!-- Màn chat và màn kết bạn -->
     <template v-else>
       <!-- Thông tin khách hàng -->
       <section class="py-3 px-4 flex gap-2 bg-white rounded-xl items-center">
@@ -123,57 +129,102 @@
             conversationStore.select_conversation?.client_avatar ||
             zalo_personal.client_avatar
           "
-          class="w-8 h-8"
+          class="w-8 h-8 flex-shrink-0"
         />
-        <div class="flex flex-col w-full">
-          <div class="flex gap-2 font-medium justify-between">
-            <p class="flex items-center gap-2">
-              {{
-                conversationStore.select_conversation?.client_name ||
-                zalo_personal?.client_name
-              }}
-              <PencilSquareIcon
-                v-if="conversationStore.select_conversation"
-                class="size-4 cursor-pointer text-slate-500"
+        <div
+          v-if="!is_loading_zalo_personal"
+          class="flex flex-col w-full"
+        >
+          <template v-if="!is_edit_name">
+            <div class="flex gap-2 font-medium justify-between">
+              <p class="flex items-center gap-2">
+                {{
+                  conversationStore.select_conversation?.client_name ||
+                  zalo_personal?.client_name
+                }}
+                <PencilSquareIcon
+                  v-if="conversationStore.select_conversation"
+                  @click="() => {
+                    is_edit_name = true
+                    alias_name = conversationStore.select_conversation?.client_name || ''
+                  }"
+                  class="size-4 cursor-pointer text-slate-500"
+                />
+              </p>
+              <button
+                v-if="
+                  !zalo_personal.is_accept_friend_request && view === 'CHAT'
+                "
+                class="py-1 px-4 rounded-md bg-blue-200 text-blue-700"
+                @click="$main.changeView('FRIEND_REQUEST')"
+              >
+                {{ $t('Kết bạn') }}
+              </button>
+            </div>
+            <div class="flex gap-5 text-slate-500 text-xs">
+              <p
+                class="flex gap-1"
+                v-if="
+                  conversationStore.select_conversation?.client_phone ||
+                  zalo_personal?.client_phone
+                "
+              >
+                <PhoneIcon class="size-4 flex-shrink-0" />
+                {{
+                  conversationStore.select_conversation?.client_phone ||
+                  zalo_personal?.client_phone
+                }}
+              </p>
+              <p
+                class="flex gap-1"
+                v-if="zalo_personal?.client_gender"
+              >
+                <GenderIcon class="size-4 flex-shrink-0" />
+                {{ zalo_personal?.client_gender === 'male' ? 'Nam' : 'Nữ' }}
+              </p>
+              <p
+                class="flex gap-1"
+                v-if="zalo_personal?.client_birthday"
+              >
+                <CakeIcon class="size-4 flex-shrink-0" />
+                {{ zalo_personal?.client_birthday }}
+              </p>
+            </div>
+          </template>
+
+          <div
+            v-else-if="conversationStore.select_conversation"
+            class="flex justify-between items-center flex-1 font-medium"
+          >
+            <div class="flex flex-col">
+              <p class="text-xs font-normal">{{ $t('Đổi tên gợi nhớ') }}:</p>
+              <input
+                type="text"
+                class="outline-none border rounded-md px-3 py-1.5"
+                v-model="alias_name"
               />
-            </p>
-            <button
-              v-if="!zalo_personal.is_accept_friend_request && view === 'CHAT'"
-              class="py-1 px-4 rounded-md bg-blue-200 text-blue-700"
-              @click="$main.changeView('FRIEND_REQUEST')"
-            >
-              Kết bạn
-            </button>
+            </div>
+            <div class="flex gap-1 h-fit">
+              <button
+                class="py-2 px-4 rounded-md bg-slate-200"
+                @click="is_edit_name = false"
+              >
+                {{ $t('Hủy') }}
+              </button>
+              <button class="py-2 px-4 rounded-md bg-blue-700 text-white"
+                @click="$main.changeAliasName()"
+              >
+                {{ $t('Lưu') }}
+              </button>
+            </div>
           </div>
-          <div class="flex gap-5 text-slate-500 text-xs">
-            <p
-              class="flex gap-1"
-              v-if="
-                conversationStore.select_conversation?.client_phone ||
-                zalo_personal?.client_phone
-              "
-            >
-              <PhoneIcon class="size-4 flex-shrink-0" />
-              {{
-                conversationStore.select_conversation?.client_phone ||
-                zalo_personal?.client_phone
-              }}
-            </p>
-            <p
-              class="flex gap-1"
-              v-if="zalo_personal?.client_gender"
-            >
-              <GenderIcon class="size-4 flex-shrink-0" />
-              {{ zalo_personal?.client_gender === 'male' ? 'Nam' : 'Nữ' }}
-            </p>
-            <p
-              class="flex gap-1"
-              v-if="zalo_personal?.client_birthday"
-            >
-              <CakeIcon class="size-4 flex-shrink-0" />
-              {{ zalo_personal?.client_birthday }}
-            </p>
-          </div>
+        </div>
+        <div
+          v-else
+          class="flex flex-col gap-1"
+        >
+          <div class="bg-blue-100 rounded-full h-4 w-44"></div>
+          <div class="bg-blue-100 rounded-full h-3 w-28"></div>
         </div>
       </section>
 
@@ -199,11 +250,11 @@
       <InputChat :client_id="client_id" />
 
       <button
-        v-if="view === 'FRIEND_REQUEST'"
+        v-if="view === 'FRIEND_REQUEST' && !is_loading_zalo_personal"
         class="py-2.5 rounded-md bg-blue-700 text-white font-medium"
         @click="$main.sendFriendRequest()"
       >
-        Kết bạn
+        {{ $t('Kết bạn') }}
       </button>
     </template>
 
@@ -287,6 +338,7 @@ import type { IPage } from '@/service/interface/app/page'
 import type { FacebookCommentPost } from '@/service/interface/app/post'
 import type { StaffSocket } from '@/service/interface/app/staff'
 import type { IAlert } from '@/utils/helper/Alert/type'
+import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
 
 const orgStore = useOrgStore()
 const pageStore = usePageStore()
@@ -359,6 +411,12 @@ const zalo_personal_dropdown_ref = ref<InstanceType<typeof Dropdown>>()
 /** từ khóa tìm kiếm zalo cá nhân */
 const search_zalo_personal = ref('')
 
+/** chỉnh sửa tên gợi nhớ */
+const is_edit_name = ref(false)
+
+/** tên gợi nhớ */
+const alias_name = ref('')
+
 class CustomToast extends Toast implements IAlert {
   public error(message: any): void {
     return super.error($t('Số điện thoại không chính xác'))
@@ -428,7 +486,7 @@ class Main {
   }
 
   /** lấy danh sách các page zalo của tổ chức hiện tại */
-  @error($custom_toast)
+  @error($toast)
   async getZaloPage() {
     // nếu không có id tổ chức thì thôi
     if (!query_string_data.value.org_id) return
@@ -490,9 +548,9 @@ class Main {
 
       /*các giá trị cần update */
       const UPDATED_VALUE = pick(conversation, [
-        'client_name',
-        'client_bio',
-        'client_phone',
+        // 'client_name',
+        // 'client_bio',
+        // 'client_phone',
         'user_id',
         'fb_staff_id',
         'label_id',
@@ -523,7 +581,7 @@ class Main {
 
   /** lấy thông tin của các page zalo */
   // @loadingV2(commonStore, 'is_loading_full_screen')
-  @error($custom_toast)
+  @error($toast)
   async getZaloPageInfo() {
     /** danh sách các page zalo */
     const SELECTED_PAGE_IDS = zlp_oss.value?.map(os => os.page_id || '')
@@ -594,6 +652,9 @@ class Main {
 
     // lưu lại id trang xuống localstorage
     this.setZaloPageIdToLocalStorage(selected_page_id.value)
+
+    // Lấy thông tin khách hàng zalo
+    $main.getInfoZaloPersonal()
   }
 
   /** hàm gửi sự kiện để lấy id khách hàng từ iframe cha */
@@ -717,6 +778,7 @@ class Main {
 
   /** lấy thông tin khách hàng */
   @error($custom_toast)
+  @loadingV2(is_loading_zalo_personal, 'value')
   async getInfoZaloPersonal() {
     // nếu không có id trang thì thôi
     if (!selected_page_id.value) return
@@ -730,6 +792,9 @@ class Main {
     if (PHONE_REGEX.test(query_string_data.value?.phone)) {
       phone = query_string_data.value?.phone
     }
+
+    // reset dữ liệu khách hàng
+    zalo_personal.value = {}
 
     /** dữ liệu khách hàng zalo cá nhân */
     const RES = await this.API.getInfoZaloPersonal({
@@ -749,13 +814,20 @@ class Main {
       this.getConversation()
     }
 
-    // nếu là mở ở tin nhắn và đã kết bạn thì vào chat luôn
-    if (RES?.is_accept_friend_request && query_string_data.value.message_id) {
-      view.value = 'CHAT'
-    }
-    // nếu không thì mở màn search số
-    else {
-      view.value = 'SEARCH'
+    if (!view.value) {
+      // nếu là mở ở tin nhắn và đã kết bạn thì vào chat luôn
+      if (RES?.is_accept_friend_request && query_string_data.value.message_id) {
+        view.value = 'CHAT'
+      }
+      // nếu không thì mở màn search số với lần đầu load từ lần sau thì thôi giữ nguyên
+      else {
+        view.value = 'SEARCH'
+      }
+    } else {
+      // đã kết bạn thì chuyển về màn chat
+      if (RES?.is_accept_friend_request && view.value !== 'SEARCH') {
+        view.value = 'CHAT'
+      }
     }
   }
 
@@ -775,6 +847,28 @@ class Main {
   /** chuyển màn view */
   changeView(data: 'SEARCH' | 'FRIEND_REQUEST' | 'CHAT') {
     view.value = data
+  }
+
+  /** cập nhật tên gợi nhớ */
+  @error($toast)
+  async changeAliasName() {
+    // nếu chưa có id của trang hoặc khách hàng thì bỏ qua
+    if (!selected_page_id.value || !client_id.value) return
+
+    // gọi api cập nhật tên khách hàng
+    await new N4SerivceAppOneConversation(
+      selected_page_id.value,
+      client_id.value
+    ).updateClientName(alias_name.value)
+
+    // nếu không có hội thoại thì thôi
+    if(!conversationStore.select_conversation) return
+
+    // cập nhật tên hội thoại
+    conversationStore.select_conversation.client_name = alias_name.value
+
+    // tắt chế độ sửa tên
+    is_edit_name.value = false
   }
 }
 const $main = new Main()
