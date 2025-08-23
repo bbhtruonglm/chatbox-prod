@@ -180,6 +180,8 @@ function initExtensionLogic() {
 
   // lắng nghe ext gửi thông điệp
   ext_listen((event, e, r) => {
+    console.log(r);
+    
     // đánh dấu đã phát hiện ext
     if (event === 'EXTENSION_INSTALLED') {
       // gắn cờ phát hiện ext
@@ -233,7 +235,14 @@ function initExtensionLogic() {
       if (r?.id) CLIENT_BIO.fb_uid = r?.id
 
       // nạp thông tin khách hàng
-      if (r?.info) CLIENT_BIO.fb_info = r?.info
+      if (r?.info) {
+        // nếu có thông tin khách hàng thì bật cờ có thông tin mới lên
+        if(conversationStore.select_conversation) {
+          conversationStore.select_conversation.has_new_info_from_ext = true
+        }
+
+        CLIENT_BIO.fb_info = r?.info
+      }
 
       // ghi dữ liệu vào mảng
       if (conversationStore.conversation_list?.[DATA_KEY])
