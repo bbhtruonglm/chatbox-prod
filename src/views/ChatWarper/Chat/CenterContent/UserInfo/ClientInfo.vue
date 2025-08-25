@@ -16,7 +16,7 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useConversationStore } from '@/stores'
 
 import Modal from '@/components/Modal.vue'
@@ -38,6 +38,27 @@ const page_id = computed(
 /**id của khách hàng */
 const client_id = computed(
   () => conversationStore.select_conversation?.fb_client_id
+)
+
+// lắng nghe cờ nhận được dữ liệu khách hàng từ ext
+watch(
+  () => conversationStore.select_conversation?.has_new_info_from_ext,
+  () => {
+    // nếu không có dữ liệu hội thoại thì thôi
+    if (!conversationStore.select_conversation) return
+
+    /** cờ check xem modal có mở hay không */
+    const IS_OPEN_MODAL = client_info_modal_ref.value?.is_open
+
+    /** cờ check xem đang có dữ liệu mới từ ext hay không */
+    const IS_NEW_INFO =
+      conversationStore.select_conversation?.has_new_info_from_ext
+
+    // nếu đang mở modal và cờ bằng true thì reset cờ về false
+    if (IS_OPEN_MODAL && IS_NEW_INFO) {
+      conversationStore.select_conversation.has_new_info_from_ext = false
+    }
+  }
 )
 
 /**lấy thông tin của khách hàng chatbot */

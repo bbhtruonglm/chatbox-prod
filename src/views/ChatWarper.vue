@@ -180,8 +180,6 @@ function initExtensionLogic() {
 
   // lắng nghe ext gửi thông điệp
   ext_listen((event, e, r) => {
-    console.log(r);
-    
     // đánh dấu đã phát hiện ext
     if (event === 'EXTENSION_INSTALLED') {
       // gắn cờ phát hiện ext
