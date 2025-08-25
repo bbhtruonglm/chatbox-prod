@@ -14,7 +14,7 @@
       v-if="size(conversationStore.conversation_list)"
       class="overflow-y-auto"
       :items="map(conversationStore.conversation_list)"
-      :item-size="78"
+      :item-size="86"
       key-field="data_key"
       v-slot="{ item }"
     >
