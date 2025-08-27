@@ -86,6 +86,7 @@ const source: Language = {
   'Đổi tên gợi nhớ': 'Đổi tên gợi nhớ',
   'Lưu': 'Lưu',
   'Không có lịch sử hội thoại': 'Không có lịch sử hội thoại',
+  'Xem thêm': 'Xem thêm',
   name: 'Tiếng Việt',
   v1: {
     common: {

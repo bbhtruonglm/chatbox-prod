@@ -285,6 +285,7 @@ const source: Language = {
   'Không có khách hàng': 'No customers yet',
   'Đổi tên gợi nhớ': 'Change name',
   'Không có lịch sử hội thoại': 'No chat history yet',
+  'Xem thêm': 'See more',
   name: 'English',
   v1: {
     common: {

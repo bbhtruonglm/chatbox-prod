@@ -4,7 +4,7 @@
     :class="{
       'bg-slate-200': $main.isSelectThisClient(),
     }"
-    class="flex items-center hover:bg-slate-200 w-full group rounded-xl p-2 gap-3 mb-1"
+    class="flex items-center hover:bg-slate-200 w-full group rounded-xl px-2 py-3 gap-3"
   >
     <ClientAvatar :source="source" />
     <div class="flex flex-col gap-0.5 flex-grow min-w-0 relative">
