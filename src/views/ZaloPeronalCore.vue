@@ -793,6 +793,9 @@ class Main {
       phone = query_string_data.value?.phone
     }
 
+    // nếu không có số điện thoại và message_id thì thôi
+    if (!phone && !query_string_data.value.message_id) return
+
     // reset dữ liệu khách hàng
     zalo_personal.value = {}
 
