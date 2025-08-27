@@ -55,7 +55,7 @@
           class="w-full h-full"
         />
         <SendIcon
-          v-else
+          v-else-if="messageStore.is_can_send_message"
           v-tooltip="$t('v1.view.main.dashboard.chat.action.send_message')"
           @click="input_chat_ref?.sendMessage"
           class="w-full h-full"

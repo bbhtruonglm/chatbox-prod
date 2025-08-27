@@ -103,7 +103,7 @@ const dropdown_ref = ref<InstanceType<typeof Dropdown> | null>(null)
 const search = ref('')
 /** index page được chọn */
 const index_page = computed(() =>
-  orgStore.list_os?.findIndex(item => item?.page_id === page_id.value)
+  orgStore.list_os?.findIndex(item => item?.page_id === page_id.value) || 0
 )
 
 /** có hiển thị trang không */

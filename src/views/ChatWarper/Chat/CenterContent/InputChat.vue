@@ -2,7 +2,7 @@
   <div
     v-if="client_id"
     id="chat__input-chat"
-    class="w-full relative flex-shrink-0 py-2 flex flex-col gap-2"
+    class="w-full relative flex-shrink-0 flex flex-col gap-2"
   >
     <ScrollToBottomBtn />
     <!-- Trả lời bình luận bài viết fb -->
