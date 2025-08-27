@@ -52,6 +52,9 @@ export const useMessageStore = defineStore('message_store', () => {
   /** Địa chỉ trỏ tới hội thoại zalo */
   const modal_zalo_personal_ref = ref<InstanceType<typeof ZaloPersonalModal>>()
 
+  /** cờ check input có thể gửi tin nhắn hay không */
+  const is_can_send_message = ref(true)
+
   /**xoá dữ liệu trả lời bình luận */
   function clearReplyComment() {
     reply_comment.value = undefined
@@ -96,6 +99,7 @@ export const useMessageStore = defineStore('message_store', () => {
     reply_comment,
     message_data,
     modal_zalo_personal_ref,
+    is_can_send_message,
 
     updateTempMessage,
     removeTempMessage,

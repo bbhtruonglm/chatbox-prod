@@ -38,6 +38,13 @@ export function composableService() {
       // Thêm RANGE mới vào SELECTION
       SELECTION?.addRange(RANGE)
     }
+
+    /** lấy nội dung của input chat */
+    getInputText() {
+      /**input chat */
+      const INPUT_CHAT = document.getElementById('chat-text-input-message')
+      return INPUT_CHAT?.innerText?.trim() || ''
+    }
   }
 
   return { InputService }

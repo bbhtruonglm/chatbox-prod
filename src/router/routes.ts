@@ -43,7 +43,7 @@ import DownloadApp from '@/views/DownloadApp.vue'
 import TakeControl from '@/views/TakeControl.vue'
 import PostAnalyticIframe from '@/views/PostAnalyticIframe.vue'
 import InstagramRedirectUri from '@/views/InstagramRedirectUri.vue'
-import ZaloPeronalCore from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/PhoneAction/ZaloPeronalCore.vue'
+import ZaloPeronalCore from '@/views/ZaloPeronalCore.vue'
 
 export const routes = [
   { path: '/', component: ChatShort },

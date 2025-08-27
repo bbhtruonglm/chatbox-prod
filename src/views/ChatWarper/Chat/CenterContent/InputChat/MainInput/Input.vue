@@ -179,6 +179,9 @@ class Main {
   }
   /**lấy ảnh khi được ctrl + v vào input */
   onPasteImage() {
+    // nếu không thể gửi tin nhắn thì không cho paste file
+    if (!messageStore.is_can_send_message) return
+
     setTimeout(() => {
       /**ô input */
       const PARENT = input_chat_ref.value
@@ -213,6 +216,9 @@ class Main {
 
     // nếu chỉ bấm enter thì chặn không cho xuống dòng, để xử lý logic gửi tin nhắn
     $event.preventDefault()
+
+    // nếu không thể gửi tin nhắn thì không cho paste file
+    if (!messageStore.is_can_send_message) return
 
     // delay 1 chút, tránh lỗi bộ gõ TV mac x2 event với keydown
     await $delay.exec(10)
@@ -338,7 +344,7 @@ class Main {
     // xoá dữ liệu trả lời
     messageStore.clearReplyComment()
 
-    scrollToBottomMessage()
+    scrollToBottomMessage(messageStore.list_message_id)
   }
   /**gửi tin nhắn dạng văn bản */
   async sendText(
@@ -351,7 +357,7 @@ class Main {
     this.clearInputText()
 
     // scroll xuống cuối trang
-    scrollToBottomMessage()
+    scrollToBottomMessage(messageStore.list_message_id)
 
     /**tạo id cho tin nhắn tạm */
     const TEMP_ID = uniqueId(text)
