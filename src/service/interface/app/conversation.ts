@@ -137,6 +137,11 @@ export interface ConversationInfo {
     ai_answer?: string
     /** giới tính */
     client_gender?: 'male' | 'female'
+
+
+    // * Các field custome thêm
+    /** có thông tin khách mới từ extension gửi về */
+    has_new_info_from_ext?: boolean
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
