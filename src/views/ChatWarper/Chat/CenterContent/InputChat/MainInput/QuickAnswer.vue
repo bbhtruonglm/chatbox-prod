@@ -40,11 +40,23 @@
               @click="$external_site.openPageSetting('quick-reply')"
               class="w-6 h-6 text-black cursor-pointer"
             />
-            <ChangeIcon
+            <button
               v-tooltip="$t('Lấy danh sách trả lời nhanh từ trang khác')"
-              class="size-4 text-black cursor-pointer"
               @click="modal_change_quick_answer_ref?.toggleModal"
-            />
+            >
+              <ChangeIcon
+                v-if="
+                  page_id === conversationStore.select_conversation?.fb_page_id
+                "
+                class="size-4 text-black m-0.5"
+                
+              />
+              <PageAvatar
+                v-else
+                :page_info="orgStore.list_os?.find((item) => item.page_id === page_id)?.page_info"
+                class="size-5"
+              />
+            </button>
           </div>
         </div>
         <div class="overflow-y-auto flex flex-col py-2 gap-2">
@@ -96,6 +108,7 @@ import { gen_answer, text_translate } from '@/service/api/chatbox/ai'
 import { getPageInfo, getStaffInfo } from '@/service/function'
 import { toastError } from '@/service/helper/alert'
 import { nonAccentVn } from '@/service/helper/format'
+import { getItem, setItem } from '@/service/helper/localStorage'
 import {
   useCommonStore,
   useConversationStore,
@@ -107,11 +120,12 @@ import { ExternalSite } from '@/utils/helper/ExternalSite'
 import { composableService as inputComposableService } from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/service'
 import { IS_VISIBLE_SEND_BTN_FUNCT } from '@/views/ChatWarper/Chat/CenterContent/InputChat/symbol'
 import { format } from 'date-fns'
-import { last, set, size, sortBy } from 'lodash'
+import { last, size, sortBy } from 'lodash'
 import { container } from 'tsyringe'
 import { computed, inject, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import PageAvatar from '@/components/Avatar/PageAvatar.vue'
 import Loading from '@/components/Loading.vue'
 import ModalChangeQuickAnswer from '@/views/ChatWarper/Chat/CenterContent/InputChat/MainInput/ModalChangeQuickAnswer.vue'
 
@@ -124,8 +138,6 @@ import TextIcon from '@/components/Icons/Text.vue'
 import type { SourceChat } from '@/service/interface/app/ai'
 import type { QuickAnswerInfo } from '@/service/interface/app/message'
 import type { WidgetEventData } from '@/service/interface/app/widget'
-import { LocaleSingleton } from '@/utils/helper/Locale'
-import { getItem, setItem } from '@/service/helper/localStorage'
 
 const { InputService } = inputComposableService()
 
