@@ -196,6 +196,8 @@ export interface QueryUpdateÌnoConversation extends QueryOneConversation {
     fb_uid?: string
     /**thông tin khách hàng */
     fb_info?: Record<string, any>
+    /** giới tính */
+    client_gender?: 'male' | 'female'
 }
 
 export interface QueryPostMessage {

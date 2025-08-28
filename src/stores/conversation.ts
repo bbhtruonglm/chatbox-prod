@@ -155,6 +155,8 @@ export const useConversationStore = defineStore('conversation_store', () => {
   const is_edit_client = ref<{
     /**sửa tên */
     client_name?: boolean
+    /** sửa giới tính */
+    client_gender?: boolean
     /**danh sách id liên hệ bị xoá */
     contact_remove: Record<string, 1>
     /**danh sách id liên hệ cập nhật */
