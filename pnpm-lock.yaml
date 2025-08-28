@@ -35,6 +35,9 @@ importers:
       dompurify:
         specifier: ^3.2.3
         version: 3.2.3
+      emoji-picker-element:
+        specifier: ^1.26.3
+        version: 1.26.3
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -867,6 +870,9 @@ packages:
 
   electron-to-chromium@1.4.798:
     resolution: {integrity: sha512-by9J2CiM9KPGj9qfp5U4FcPSbXJG7FNzqnYaY4WLzX+v2PHieVGmnsA4dxfpGE3QEC7JofpPZmn7Vn1B9NR2+Q==}
+
+  emoji-picker-element@1.26.3:
+    resolution: {integrity: sha512-fOMG44d/3OqTe1pPqlu5H4ZtWg7gK4Le6Bt24JTKtDyce5+EO3Mo8WA95cKHbPSsSsg7ehM12M1x3Y6U6fgvTQ==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2606,6 +2612,8 @@ snapshots:
   eastasianwidth@0.2.0: {}
 
   electron-to-chromium@1.4.798: {}
+
+  emoji-picker-element@1.26.3: {}
 
   emoji-regex@8.0.0: {}
 

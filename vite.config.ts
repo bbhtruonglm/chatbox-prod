@@ -8,7 +8,16 @@ export default defineConfig(() => {
   return {
     // base lấy từ lệnh build, hoặc mặc định là root
     base: process.env.VITE_BASE_URL || '/',
-    plugins: [vue(), basicSsl()],
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: tag => tag === 'emoji-picker',
+          },
+        },
+      }),
+      basicSsl(),
+    ],
     define: {
       npm_package_version: JSON.stringify(process.env.npm_package_version),
     },

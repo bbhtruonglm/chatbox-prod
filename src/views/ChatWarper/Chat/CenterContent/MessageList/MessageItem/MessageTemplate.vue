@@ -48,13 +48,29 @@
       /> -->
 
       <div
+        ref="ref_message_content"
         class="enter-line"
+        :class="{
+          'overflow-hidden': !is_view_full,
+        }"
+        :style="{
+          'max-height': is_view_full ? 'unset' : `${MAX_HEIGHT_CONTENT}px`,
+        }"
         v-if="data_source?.content"
         @click="clickCopyPhoneEmail"
-        v-html="fixXss($markdown.render(renderText(data_source?.content)))"
+        v-html="fixXss($markdown.render(renderTextV2(data_source?.content)))"
       />
-        <!-- class="enter-line" -->
-
+      <p
+        v-if="
+          (!is_view_full && (ref_message_content?.clientHeight) ||
+          0) >= MAX_HEIGHT_CONTENT
+        "
+        @click="is_view_full = true"
+      >
+        ...
+        <span class="text-blue-500 cursor-pointer">{{ $t('Xem thêm') }} </span>
+      </p>
+      <!-- class="enter-line" -->
     </div>
     <Action
       v-if="data_source?.list_button?.length"
@@ -66,7 +82,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { clickCopyPhoneEmail, renderText } from '@/service/function'
+import { clickCopyPhoneEmail, renderTextV2 } from '@/service/function'
 import { MarkedService } from '@/utils/helper/Markdown'
 import DOMPurify from 'dompurify'
 import { container } from 'tsyringe'
@@ -84,6 +100,9 @@ import type {
   MessageTemplateInput,
 } from '@/service/interface/app/message'
 import { copyToClipboard } from '@/service/helper/copyWithAlert'
+
+/** chiều cao tối đa cho nội dung khi ở mặc định */
+const MAX_HEIGHT_CONTENT = 160
 
 const $props = withDefaults(
   defineProps<{
@@ -111,6 +130,12 @@ const $markdown = container.resolve(MarkedService)
  */
 const is_expanded = ref(!$props.data_source?.is_ai)
 
+/** tham chiếu tới phần tử hiển thị content */
+const ref_message_content = ref<HTMLElement | null>(null)
+
+/** cờ check xem hết nội dung nếu nội dung quá dài */
+const is_view_full = ref(false)
+
 // theo dõi khi có socket update tin nhắn hiện tại
 watch(
   () => $props.data_source?.is_ai,
@@ -132,14 +157,14 @@ function isHaveFileAttachment() {
 /**làm sạch html trước khi hiển thị, tránh XSS */
 function fixXss(text?: string) {
   return DOMPurify.sanitize(text || '', {
-    ADD_ATTR: ['target']
+    ADD_ATTR: ['target'],
   })
 }
 
 /** copy nội dung của tin nhắn */
 function copyMessage(message: string) {
   // nếu không có nội dung thì thôi
-  if(!message) return
+  if (!message) return
   copyToClipboard(message)
 }
 </script>

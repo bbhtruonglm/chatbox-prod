@@ -534,17 +534,20 @@ export function calcIsPageRepSlow(
   return calcIsClientRepSlow(page_id, before_date, BEFORE_INDEX)
 }
 
-/**xử lý chuỗi tin nhắn trước khi hiển thị */
+/**
+ * xử lý chuỗi tin nhắn trước khi hiển thị 
+ * @deprecated dùng renderTextV2() thay thế
+*/
 export function renderText(text: string) {
-  /**regex kiểm tra số điện thoại */
+  /** regex kiểm tra số điện thoại */
   const REGEX_PHONE =
     /[\/]?(?:[+]84|0)(?:[\-\.\s])?[35789]+[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}/
 
-  /**regex kiểm tra email */
+  /** regex kiểm tra email */
   const REGEX_EMAIL =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
 
-  /**regex kiểm tra url */
+  /** regex kiểm tra url */
   const REGEX_URL = /((http|https)?:\/\/[^\s]+)/g
 
   /**số điện thoại */
@@ -578,6 +581,49 @@ export function renderText(text: string) {
   // trả về chuỗi đã xử lý
   return text
 }
+
+/** xử lý chuỗi tin nhắn trước khi hiển thị  */
+export function renderTextV2(input: string): string {
+  /** regex kiểm tra url */
+  const URL_REGEX =
+    /((http|https)?:\/\/[^\s]+)/g
+
+  /** regex kiểm tra email */
+  const EMAIL_REGEX =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
+
+  /**regex kiểm tra số điện thoại */
+  const PHONE_REGEX =
+    /[\/]?(?:[+]84|0)(?:[\-\.\s])?[35789]+[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}?[\-\.\s]?\d{1}/g
+
+  // Bước 1: bảo vệ link trước, thay tạm bằng placeholder
+  const URL_PLACEHOLDERS: string[] = []
+
+  /** nội dung tin nhắn sau khi đã thay tạm các url bằng placeholder */
+  let protected_text = input.replace(URL_REGEX, (match) => {
+    URL_PLACEHOLDERS.push(match)
+    return `__URL_PLACEHOLDER_${URL_PLACEHOLDERS.length - 1}__`
+  })
+
+  // thay hiển thị các số điện thoại
+  protected_text = protected_text.replace(PHONE_REGEX, (match) => {
+    return `<span class="phone-detect" style="cursor: copy;">${match}</span>`
+  })
+
+  // thay hiện thị các email
+  protected_text = protected_text.replace(EMAIL_REGEX, (match) => {
+    return `<span class="email-detect" style="cursor: copy;">${match}</span>`
+  })
+
+  // trả các link về chỗ cũ
+  protected_text = protected_text.replace(
+    /__URL_PLACEHOLDER_(\d+)__/g,
+    (_, index) => URL_PLACEHOLDERS[Number(index)]
+  )
+
+  return protected_text
+}
+
 
 /**xử lý sự kiện click vào tin nhắn để sao chép sdt, email */
 export function clickCopyPhoneEmail($event: MouseEvent) {

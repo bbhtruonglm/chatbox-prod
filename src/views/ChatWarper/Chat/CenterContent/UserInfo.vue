@@ -4,8 +4,12 @@
     id="chat__user-info"
     class="bg-white rounded-t-lg flex-shrink-0 py-2 px-3 flex justify-between gap-3"
   >
-    <div class="flex items-center gap-2.5 flex-grow min-w-0 ">
-      <BlingEffect @click="client_menu_ref?.openClientInfo()" :show_effect="isFindUid()" class="rounded-oval w-10 h-10">
+    <div class="flex items-center gap-2.5 flex-grow min-w-0">
+      <BlingEffect
+        @click="client_menu_ref?.openClientInfo()"
+        :show_effect="isFindUid()"
+        class="rounded-oval w-10 h-10"
+      >
         <ClientAvatar
           :conversation="conversationStore.select_conversation"
           class="w-10 h-10 flex-shrink-0 cursor-pointer"
@@ -122,7 +126,12 @@
   <ChangeStaff ref="change_staff_ref" />
 </template>
 <script setup lang="ts">
-import { useCommonStore, useConversationStore, useExtensionStore, useOrgStore } from '@/stores'
+import {
+  useCommonStore,
+  useConversationStore,
+  useExtensionStore,
+  useOrgStore,
+} from '@/stores'
 import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
 import { Toast } from '@/utils/helper/Alert/Toast'
 import { Clipboard } from '@/utils/helper/Clipboard'
@@ -157,7 +166,6 @@ const conversationStore = useConversationStore()
 const extensionStore = useExtensionStore()
 const $clipboard = container.resolve(Clipboard)
 const $toast = container.resolve(Toast)
-
 
 /**ref của dropdown menu của khách hàng */
 const client_menu_ref = ref<InstanceType<typeof Menu>>()
@@ -266,7 +274,9 @@ function isFindUid() {
   if (!conversationStore.select_conversation?.data_key) return false
 
   // trả về trạng thái tìm uid
-  return extensionStore.is_find_uid[conversationStore.select_conversation?.data_key]
+  return extensionStore.is_find_uid[
+    conversationStore.select_conversation?.data_key
+  ]
 }
 
 const $main = new Main()

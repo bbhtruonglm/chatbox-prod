@@ -1,7 +1,6 @@
 <template>
   <div
     v-if="
-      orgStore.selected_org_info?.org_package?.org_allow_message_action &&
       message?.client_phone &&
       message_type == 'client'
     "
@@ -19,6 +18,7 @@
       <Zalo class="w-3 h-3"></Zalo>
     </button>
     <button
+      v-if="orgStore.selected_org_info?.org_package?.org_allow_message_action"
       @click="$main.openCallCenter()"
       v-tooltip="$t('Gọi điện')"
       class="w-6 h-6 flex justify-center items-center rounded-full border border-green-600 bg-green-100"

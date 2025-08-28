@@ -277,6 +277,15 @@ const source: Language = {
   'Lấy danh sách trả lời nhanh từ trang khác': 'Get a quick reply list from another page',
   'Chọn trang lấy câu trả lời nhanh': 'Select a page to get a quick reply',
   'Khôi phục trang mặc định': 'Reset default page',
+  'Thêm khách hàng': 'Add customer',
+  'Chọn Zalo cá nhân:': 'Select Zalo Personal:',
+  'Nhập số điện thoại muốn tìm kiếm': 'Enter the phone number you want to search',
+  'Nhập số điện thoại để thêm khách hàng': 'Enter the phone number to add a customer',
+  'Gửi tin nhắn': 'Send message',
+  'Không có khách hàng': 'No customers yet',
+  'Đổi tên gợi nhớ': 'Change name',
+  'Không có lịch sử hội thoại': 'No chat history yet',
+  'Xem thêm': 'See more',
   name: 'English',
   v1: {
     common: {

@@ -75,6 +75,18 @@ const source: Language = {
   'Chị': 'Chị',
   'Anh/Chị': 'Anh/Chị',
   'Tìm kiếm Zalo cá nhân': 'Tìm kiếm Zalo cá nhân',
+  'Thêm khách hàng': 'Thêm khách hàng',
+  'Hội thoại Zalo cá nhân': 'Hội thoại Zalo cá nhân',
+  'Chọn Zalo cá nhân:': 'Chọn Zalo cá nhân:',
+  'Nhập số điện thoại muốn tìm kiếm': 'Nhập số điện thoại muốn tìm kiếm',
+  'Nhập số điện thoại để thêm khách hàng': 'Nhập số điện thoại để thêm khách hàng',
+  'Gửi tin nhắn': 'Gửi tin nhắn',
+  'Kết bạn': 'Kết bạn',
+  'Không có khách hàng': 'Không có khách hàng',
+  'Đổi tên gợi nhớ': 'Đổi tên gợi nhớ',
+  'Lưu': 'Lưu',
+  'Không có lịch sử hội thoại': 'Không có lịch sử hội thoại',
+  'Xem thêm': 'Xem thêm',
   name: 'Tiếng Việt',
   v1: {
     common: {

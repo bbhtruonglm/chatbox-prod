@@ -24,7 +24,7 @@
       v-else
       @scroll="onScrollMessage"
       :id="messageStore.list_message_id"
-      class="pt-14 pb-5 pl-2 pr-3 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
+      class="pt-14 pb-5 pl-2 pr-5 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
         v-if="is_loading"
@@ -112,7 +112,11 @@
               :message
               :message_index="index"
             />
-            <UnsupportMessage v-else />
+            <UnsupportMessage
+              v-else-if="
+                message.message_mid && message.message_mid !== 'undefined'
+              "
+            />
             <DoubleCheckIcon
               v-if="isLastPageMessage(message, index)"
               class="w-3 h-3 text-green-500 absolute -bottom-1.5 -right-11"
@@ -364,10 +368,11 @@ function socketNewMessage({ detail }: CustomEvent) {
   const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
 
   /** vị trí scroll */
-  const SCROLL_POSITION = (LIST_MESSAGE?.scrollTop || 0) + (LIST_MESSAGE?.clientHeight || 0)
+  const SCROLL_POSITION =
+    (LIST_MESSAGE?.scrollTop || 0) + (LIST_MESSAGE?.clientHeight || 0)
 
   /** có đang scroll xuống dưới cùng không? */
-  const IS_BOTTOM = SCROLL_POSITION ===  LIST_MESSAGE?.scrollHeight
+  const IS_BOTTOM = SCROLL_POSITION === LIST_MESSAGE?.scrollHeight
 
   // thêm tin nhắn vào danh sách
   messageStore.list_message.push(detail)
@@ -536,14 +541,25 @@ function getListMessage(is_scroll?: boolean) {
  * nên sử dụng debounce để chỉ chạy event cuối cùng, tránh bị lặp code
  */
 const visibleFirstClientReadAvatar = debounce(() => {
-  const FIRST_AVATAR = document.querySelector(
-    '.mesage-client-read'
-  ) as HTMLElement
-
-  if (!FIRST_AVATAR) return
-
-  // thêm css để hiển thị
-  FIRST_AVATAR.style.display = 'block'
+  /** danh sách các phần tử avatar đánh dấu khách đọc */
+  const ELEMENTS = document.querySelectorAll('.mesage-client-read')
+  // nếu không có thì thôi
+  if (!ELEMENTS?.length) return
+  // nếu có thì ẩn tất cả chỉ hiện phần tử cuối cùng
+  ELEMENTS.forEach((el, index) => {
+    /** phần tử avatar đánh dấu khách đọc */
+    const ELEMENT = el as HTMLElement
+    // nếu không có thì thôi
+    if (!ELEMENT) return
+    // nếu là phần tử cuối cùng thì hiện
+    if (index === ELEMENTS.length - 1) {
+      ELEMENT.style.display = 'block'
+    }
+    // nếu khác phần tử cuối cùng thì ẩn
+    else {
+      ELEMENT.style.display = 'none'
+    }
+  })
 }, 50)
 /**
  * chỉ hiển thị avatar nhân viên đã đọc tin nhắn cuối cùng
@@ -607,7 +623,9 @@ const tryLoadUntilScrollable = (cb: CbError) => {
       // Dùng nextTick nếu Vue chưa render kịp
       nextTick(() => {
         // lấy div chưa danh sách tin nhắn
-        const LIST_MESSAGE = document.getElementById(messageStore.list_message_id)
+        const LIST_MESSAGE = document.getElementById(
+          messageStore.list_message_id
+        )
 
         // nếu không có thì thôi
         if (!LIST_MESSAGE) return cb()

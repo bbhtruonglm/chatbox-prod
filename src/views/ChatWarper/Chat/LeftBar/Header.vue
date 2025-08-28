@@ -55,12 +55,22 @@
           </p>
         </button>
       </div>
-      <button
-        @click="$main.toggleSearch()"
-        class="w-8 h-8 bg-slate-100 rounded-full flex justify-center items-center"
-      >
-        <SearchIcon class="w-4 h-4 text-slate-500" />
-      </button>
+      <div class="flex gap-3 text-slate-500">
+        <button class="p-2 bg-slate-100 rounded-full"
+          @click="() => {
+            modal_zalo_personal_ref?.toggleModal()
+            message_data = undefined
+          }"
+        >
+          <UserPlusIcon class="size-4 flex-shrink-0" />
+        </button>
+        <button
+          @click="$main.toggleSearch()"
+          class="w-8 h-8 bg-slate-100 rounded-full flex justify-center items-center"
+        >
+          <SearchIcon class="w-4 h-4" />
+        </button>
+      </div>
     </template>
     <div
       v-else
@@ -107,6 +117,7 @@ import { currency } from '@/service/helper/format'
 import {
   useCommonStore,
   useConversationStore,
+  useMessageStore,
   useOrgStore,
   usePageStore,
 } from '@/stores'
@@ -121,11 +132,12 @@ import { useRouter } from 'vue-router'
 import QuickFilter from '@/views/ChatWarper/Chat/LeftBar/Header/QuickFilter.vue'
 
 import SearchIcon from '@/components/Icons/Search.vue'
-import { FunnelIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { FunnelIcon, UserPlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { XCircleIcon } from '@heroicons/vue/24/solid'
 
 import type { ILabel } from '@/service/interface/app/label'
 import type { StaffInfo } from '@/service/interface/app/staff'
+import { storeToRefs } from 'pinia'
 
 /**tab đang kích hoạt */
 type IActiveTab = 'CHAT' | 'POST'
@@ -135,6 +147,8 @@ const commonStore = useCommonStore()
 const pageStore = usePageStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+const { modal_zalo_personal_ref, message_data } = storeToRefs(useMessageStore())
 
 /** router */
 const $router = useRouter()
