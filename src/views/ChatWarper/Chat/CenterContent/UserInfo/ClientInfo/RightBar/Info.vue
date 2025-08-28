@@ -8,7 +8,7 @@
     />
 
     <div class="text-sm flex relative">
-      <p class="w-28 ml-5 font-medium">Giới tính</p>
+      <p class="w-28 ml-5 font-medium">{{ $t('Giới tính') }}</p>
       <p v-if="!conversationStore.is_edit_info">{{ gender_display }}</p>
       <button
         v-else

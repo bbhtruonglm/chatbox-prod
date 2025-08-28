@@ -87,6 +87,10 @@ const source: Language = {
   'Lưu': 'Lưu',
   'Không có lịch sử hội thoại': 'Không có lịch sử hội thoại',
   'Xem thêm': 'Xem thêm',
+  'Nam': 'Nam',
+  'Nữ': 'Nữ',
+  'Giới tính': 'Giới tính',
+  'Không xác định': 'Không xác định',
   name: 'Tiếng Việt',
   v1: {
     common: {
