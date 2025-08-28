@@ -286,6 +286,10 @@ const source: Language = {
   'Đổi tên gợi nhớ': 'Change name',
   'Không có lịch sử hội thoại': 'No chat history yet',
   'Xem thêm': 'See more',
+  'Nam': 'Male',
+  'Nữ': 'Female',
+  'Giới tính': 'Gender',
+  'Không xác định': 'Unknown',
   name: 'English',
   v1: {
     common: {

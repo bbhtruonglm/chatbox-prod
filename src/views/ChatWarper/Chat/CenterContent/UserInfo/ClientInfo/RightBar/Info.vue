@@ -6,6 +6,41 @@
       :placeholder="$t('v1.view.main.dashboard.chat.client.full_name_require')"
       v-model="client_name"
     />
+
+    <div class="text-sm flex relative">
+      <p class="w-28 ml-5 font-medium">{{ $t('Giới tính') }}</p>
+      <p v-if="!conversationStore.is_edit_info">{{ gender_display }}</p>
+      <button
+        v-else
+        class="w-80 flex justify-between py-2 px-3 border rounded-md items-center"
+        @click="ref_gender_dropdown?.toggleDropdown"
+      >
+        {{ gender_display }}
+        <ChevronDownIcon class="w-4 h-4" />
+      </button>
+      <Dropdown
+        width="320px"
+        height="auto"
+        :is_fit="false"
+        position="BOTTOM"
+        class_content="flex flex-col gap-1 border rounded-md p-1 gap-1 text-sm font-medium"
+        ref="ref_gender_dropdown"
+      >
+        <button
+          @click="handleSelectGender('male')"
+          class="py-1.5 px-2 flex items-center gap-3 rounded-md hover:bg-slate-100"
+        >
+          {{ $t('Nam') }}
+        </button>
+        <button
+          @click="handleSelectGender('female')"
+          class="py-1.5 px-2 flex items-center gap-3 rounded-md hover:bg-slate-100"
+        >
+          {{ $t('Nữ') }}
+        </button>
+      </Dropdown>
+    </div>
+
     <EditItemGroup
       :type="'PHONE'"
       :source="list_contact"
@@ -63,30 +98,33 @@
   <GuildInstallExt ref="ref_guild_install_ext_modal" />
 </template>
 <script setup lang="ts">
+import { update_info_conversation } from '@/service/api/chatbox/n4-service'
+import { toastError } from '@/service/helper/alert'
+import { getFbUserInfo } from '@/service/helper/ext'
 import {
+  useCommonStore,
   useConversationStore,
   useExtensionStore,
   usePageStore,
-  useCommonStore,
 } from '@/stores'
-import { useI18n } from 'vue-i18n'
+import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
+import { eachOfLimit } from 'async'
+import { get, keys, set, size } from 'lodash'
 import { computed, onMounted, ref, watch } from 'vue'
-import { get, keys, map, set, size } from 'lodash'
-import { toastError } from '@/service/helper/alert'
-import { getFbUserInfo } from '@/service/helper/ext'
+import { useI18n } from 'vue-i18n'
 
+import Dropdown from '@/components/Dropdown.vue'
 import GuildInstallExt from '@/components/GuildInstallExt.vue'
-import EditItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItem.vue'
-import InfoItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/InfoItem.vue'
-import EditItemGroup from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItemGroup.vue'
 import Loading from '@/components/Loading.vue'
+import EditItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItem.vue'
+import EditItemGroup from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/EditItemGroup.vue'
+import InfoItem from '@/views/ChatWarper/Chat/CenterContent/UserInfo/ClientInfo/RightBar/InfoItem.vue'
 
 import InfoIcon from '@/components/Icons/Info.vue'
 import ReloadContentIcon from '@/components/Icons/ReloadContent.vue'
+import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 
 import { AiAppContact, AiAppOneContact, type ContactInfo } from '@/utils/api/Ai'
-import { N4SerivceAppOneConversation } from '@/utils/api/N4Service/Conversation'
-import { eachOfLimit } from 'async'
 
 const conversationStore = useConversationStore()
 const extensionStore = useExtensionStore()
@@ -98,6 +136,9 @@ const { t: $t } = useI18n()
 const list_contact = ref<ContactInfo[]>([])
 /**ref của modal hướng dẫn cài đặt */
 const ref_guild_install_ext_modal = ref<InstanceType<typeof GuildInstallExt>>()
+
+/** ref của dropdown chọn giới tính */
+const ref_gender_dropdown = ref<InstanceType<typeof Dropdown>>()
 
 /**id của trang */
 const page_id = computed(
@@ -112,6 +153,19 @@ const client_name = autoComputed(
   conversationStore.select_conversation,
   'client_name'
 )
+
+/** giới tính */
+const gender = autoComputed(
+  conversationStore.select_conversation,
+  'client_gender'
+)
+
+/** giới tính hiển thị */
+const gender_display = computed(() => {
+  if (gender.value === 'male') return $t('Nam')
+  if (gender.value === 'female') return $t('Nữ')
+  return $t('Không xác định')
+})
 
 watch(() => conversationStore.is_edit_info, updateClientInfo)
 
@@ -200,6 +254,16 @@ function reloadClientInfo() {
     ]?.page?.fb_page_token
   )
 }
+
+/** hàm xử lý chọn giới tính */
+function handleSelectGender(value: 'male' | 'female') {
+  // lưu lại giới tính
+  gender.value = value
+  // đóng dropdown
+  ref_gender_dropdown.value?.toggleDropdown()
+  // bật sửa giới tính
+  conversationStore.is_edit_client.client_gender = true
+}
 /**cập nhật các dữ liệu đã sửa */
 async function updateClientInfo(is_edit_info: boolean) {
   // chỉ chạy khi kết thúc việc sửa thông tin
@@ -211,6 +275,10 @@ async function updateClientInfo(is_edit_info: boolean) {
   try {
     // nếu có sửa tên khách hàng thì cập nhật
     if (conversationStore.is_edit_client?.client_name) await updateClientName()
+
+    // nếu có sửa giới tính thì cập nhật
+    if (conversationStore.is_edit_client?.client_gender)
+      await updateClientGender()
 
     // tạo mới liên hệ
     if (size(conversationStore.is_edit_client?.contact_create))
@@ -253,6 +321,31 @@ async function updateClientName() {
     throw e
   }
 }
+/** cập nhật giới tính khách hàng lên hệ thống */
+async function updateClientGender() {
+  try {
+    // gọi api cập nhật tên khách hàng
+    await new Promise((resolve, reject) => {
+      // nếu chưa có id của trang hoặc khách hàng thì bỏ qua
+      if (!page_id.value || !client_id.value) return
+
+      update_info_conversation(
+        {
+          page_id: page_id.value,
+          client_id: client_id.value,
+          client_gender: gender.value,
+        },
+        (e, r) => {
+          if (e) reject(e)
+          else resolve(r)
+        }
+      )
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 /**tạo mới liên hệ */
 async function createContact() {
   try {

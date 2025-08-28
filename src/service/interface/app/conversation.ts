@@ -137,6 +137,11 @@ export interface ConversationInfo {
     ai_answer?: string
     /** giới tính */
     client_gender?: 'male' | 'female'
+
+
+    // * Các field custome thêm
+    /** có thông tin khách mới từ extension gửi về */
+    has_new_info_from_ext?: boolean
 }
 
 /**dữ liệu khách hàng dạng obj để dễ update */
@@ -196,6 +201,8 @@ export interface QueryUpdateÌnoConversation extends QueryOneConversation {
     fb_uid?: string
     /**thông tin khách hàng */
     fb_info?: Record<string, any>
+    /** giới tính */
+    client_gender?: 'male' | 'female'
 }
 
 export interface QueryPostMessage {

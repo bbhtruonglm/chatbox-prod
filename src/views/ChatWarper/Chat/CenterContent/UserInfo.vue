@@ -5,16 +5,22 @@
     class="bg-white rounded-t-lg flex-shrink-0 py-2 px-3 flex justify-between gap-3"
   >
     <div class="flex items-center gap-2.5 flex-grow min-w-0">
-      <BlingEffect
-        @click="client_menu_ref?.openClientInfo()"
-        :show_effect="isFindUid()"
-        class="rounded-oval w-10 h-10"
-      >
-        <ClientAvatar
-          :conversation="conversationStore.select_conversation"
-          class="w-10 h-10 flex-shrink-0 cursor-pointer"
-        />
-      </BlingEffect>
+      <div class="relative">
+        <BlingEffect
+          @click="clickAvatar()"
+          :show_effect="isFindUid()"
+          class="rounded-oval w-10 h-10"
+        >
+          <ClientAvatar
+            :conversation="conversationStore.select_conversation"
+            class="w-10 h-10 flex-shrink-0 cursor-pointer"
+          />
+        </BlingEffect>
+        <span
+          v-if="conversationStore.select_conversation?.has_new_info_from_ext"
+          class="w-2 h-2 absolute top-0 left-0 bg-red-500 rounded-full badge-pulse"
+        ></span>
+      </div>
 
       <div class="min-w-0">
         <div
@@ -279,5 +285,47 @@ function isFindUid() {
   ]
 }
 
+/** click vào avatar */
+function clickAvatar() {
+  // nếu đang có dữ liệu của khách hàng nhận được từ ext
+  if (conversationStore.select_conversation?.has_new_info_from_ext) {
+    conversationStore.select_conversation.has_new_info_from_ext = false
+  }
+  // mở modal xem thông tin người dùng
+  client_menu_ref.value?.openClientInfo()
+}
+
 const $main = new Main()
 </script>
+
+<style scoped>
+.badge-pulse:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #ef4444;
+  border-radius: 50%;
+  animation: pulse-scale 2s ease-in-out infinite;
+  will-change: transform, opacity;
+  content: '';
+}
+
+@keyframes pulse-scale {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+</style>
