@@ -11,6 +11,8 @@ type IMessageDate = string | number
 export interface ICheckSlowReply {
   /**tổng kết lại là tin nhắn này có đánh dấu rep chậm không */
   isSlowReply(): boolean | undefined
+  /** hệ thống đánh dấu rep chậm */
+  isSystemSlowReply(): boolean | undefined
   /**AI báo rep chậm, nhưng chưa đủ điều kiện cảnh báo */
   isWarning(): boolean | undefined
   /**thời gian rep chậm là bao lâu */
@@ -93,6 +95,17 @@ export class CheckSlowReply implements ICheckSlowReply {
     // đánh dấu rep chậm
     return true
   }
+  isSystemSlowReply() {
+    // nếu hệ thống không đánh dấu rep chậm thì thôi
+    if (!this.CURRENT_MESSAGE?.is_system_slow_reply) return
+
+    // nếu có tin tiếp theo, thì phải là tin của page mới tính
+    if (this.NEXT_MESSAGE && this.NEXT_MESSAGE?.message_type !== 'page') return
+
+    // đánh dấu rep chậm
+    return true
+  }
+
   isWarning() {
     // AI đánh dấu rep chậm, nhưng chưa đủ điều kiện cảnh báo
     return this.CURRENT_MESSAGE?.is_ai_slow_reply && !this.isSlowReply()

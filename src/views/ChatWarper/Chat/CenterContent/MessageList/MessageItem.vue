@@ -38,8 +38,8 @@
         :attachment_size
         :message
       />
-      <PhoneAction 
-        :message 
+      <PhoneAction
+        :message
         v-if="messageStore.list_message_id === 'list-message'"
       />
     </SliderWarper>
@@ -54,10 +54,16 @@
       :message
     />
     <SlowReply
-      v-if="CHECK_SLOW_REPLY.isSlowReply()"
+      v-if="
+        CHECK_SLOW_REPLY.isSlowReply() || CHECK_SLOW_REPLY.isSystemSlowReply()
+      "
       :duration="CHECK_SLOW_REPLY.getDuration()"
       :next_message="messageStore.list_message?.[message_index + 1]"
       :time="message_time"
+      :color="`
+        ${CHECK_SLOW_REPLY.isSlowReply() ? 'text-red-500' : ''} 
+        ${CHECK_SLOW_REPLY.isSystemSlowReply() ? 'text-yellow-500' : ''}
+      `"
     />
     <MessageDate
       v-else
@@ -70,8 +76,10 @@
       :is_edit="message?.is_edit"
       :duration="CHECK_SLOW_REPLY.getDuration()"
       :is_show_duration="
-        CHECK_SLOW_REPLY.isShowDuration() && !CHECK_SLOW_REPLY.isSlowReply()
-        "
+        CHECK_SLOW_REPLY.isShowDuration() &&
+        !CHECK_SLOW_REPLY.isSlowReply() &&
+        !CHECK_SLOW_REPLY.isSystemSlowReply()
+      "
     />
   </div>
 </template>
@@ -283,7 +291,7 @@ function addOnClassTemplate() {
     'bg-white': ['client', 'group'].includes(message_type.value),
     'bg-[#D8F6CB]': message_type.value === 'note',
     'border border-red-500': CHECK_SLOW_REPLY.value.isSlowReply(),
-    // 'border border-yellow-500': CHECK_SLOW_REPLY.value.isWarning(),
+    'border border-yellow-500': CHECK_SLOW_REPLY.value.isSystemSlowReply(),
   }
 }
 

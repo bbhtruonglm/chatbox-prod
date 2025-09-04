@@ -167,9 +167,9 @@ export interface MessageInfo {
   /**danh sách các kích thước của file */
   attachment_size?: AttachmentSize[]
   /**AI đánh dấu là tin bị rep chậm */
-  is_ai_slow_reply?: true
+  is_ai_slow_reply?: boolean
   /**hệ thống đánh dấu tin bị rep chậm */
-  is_system_slow_reply?: true
+  is_system_slow_reply?: boolean
   /**id bản ghi mongo */
   _id: string
   /**tin nhắn này thuộc loại gì */
