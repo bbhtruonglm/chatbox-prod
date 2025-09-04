@@ -200,6 +200,7 @@ export const get_noti = async (
   chatboxSync({
     uri: `${$env.host.billing}/app/noti/get_noti`,
     body: { org_id, limit, is_read, noti_code },
+    is_disable_org: true
   })
 
 /**xem thông báo */
@@ -207,6 +208,7 @@ export const count_noti = async (org_id: string): Promise<number> =>
   chatboxSync({
     uri: `${$env.host.billing}/app/noti/count_noti`,
     body: { org_id },
+    is_disable_org: true
   })
 
 /**tạo nội dung cho mã qr */

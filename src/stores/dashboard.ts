@@ -178,7 +178,7 @@ export const useOrgStore = defineStore('org_store', () => {
     return selected_org_info.value?.org_package?.org_package_type === 'BUSINESS'
   }
   /**user có phải là admin của tổ chức không */
-  function isAdminOrg() {
+  function isAdminOrg() {    
     // là admin và đang kích hoạt
     return $member_ship_helper.isActiveAdmin(
       selected_org_info.value?.current_ms
