@@ -455,7 +455,7 @@ export function getCurrentOrgInfo() {
     !orgStore.selected_org_id ||
     // bị kick ra khỏi tổ chức hiện tại đang chọn
     !orgStore.list_org?.find(org => org.org_id === orgStore.selected_org_id)
-  )
+  ) 
     orgStore.selected_org_id = orgStore.list_org?.[0]?.org_id
 
   // nạp dữ liệu của tổ chức hiện tại được chọn từ danh sách tổ chức

@@ -40,11 +40,11 @@
           :icon="CheckBadgeIcon"
           :title="$t('v1.view.main.dashboard.header.menu.pricing_manager')"
         > -->
-          <!-- <Badge
+      <!-- <Badge
         :value="1"
         class="flex-shrink-0"
       /> -->
-        <!-- </MenuItem>
+      <!-- </MenuItem>
         <MenuItem
           @click="redirectMenu('widget')"
           :icon="SquareIcon"
@@ -145,13 +145,56 @@ const modal_alert_ref = ref<InstanceType<typeof Alert>>()
 /** Ref của modal thông tin người dùng */
 const modal_user_info_ref = ref<InstanceType<typeof UserInfo>>()
 /** Ref của modal keyboard shortcut */
-const modal_keyboard_shortcut = ref<InstanceType<typeof ModalKeyboardShortcut>>()
+const modal_keyboard_shortcut =
+  ref<InstanceType<typeof ModalKeyboardShortcut>>()
 
 // đếm số thông báo khi khởi động
-onMounted(countNotiCurrentOrg)
+onMounted(countNoti)
 
 // khi chọn lại org thì đếm lại số thông báo
-watch(() => orgStore.selected_org_id, countNotiCurrentOrg)
+watch(
+  () => [
+    orgStore.selected_org_id,
+    orgStore.list_org,
+    orgStore.is_selected_all_org,
+  ],
+  countNoti
+)
+
+/** đếm số thông báo */
+async function countNoti() {
+  // nếu đang là chọn tất cả tổ chức
+  if (orgStore.is_selected_all_org) {
+    orgStore.count_noti = await countNotiAllOrg()
+    return
+  }
+
+  // đếm số thông báo cho tổ chức hien tại
+  orgStore.count_noti = await countNotiCurrentOrg()
+}
+
+/** đếm số thông báo cho tất cả tổ chức */
+async function countNotiAllOrg() {
+  /** tổng số thông báo */
+  let total_count = 0
+  try {
+    /** danh sách các tổ chức */
+    const LIST_ORG = orgStore.list_org || []
+
+    // lặp qua từng tổ chức để đếm số thông báo
+    for (const org of LIST_ORG) {
+      
+      // nếu không có id tổ chức thì thôi qua tổ chức tiếp theo
+      if (!org.org_id) continue
+      // cộng số thông báo lấy được vào total_count
+      total_count += await count_noti(org.org_id)
+    }
+  } catch (e) {
+    // tạm thời không xử lý
+  } finally {
+    return total_count
+  }
+}
 
 /**đếm số noti của tổ chức đang chọn */
 async function countNotiCurrentOrg() {
@@ -160,7 +203,7 @@ async function countNotiCurrentOrg() {
     if (!orgStore.selected_org_id) return
 
     // đếm số thông báo
-    orgStore.count_noti = await count_noti(orgStore.selected_org_id)
+    return await count_noti(orgStore.selected_org_id)
   } catch (e) {
     // tạm thời không xử lý
   }
@@ -192,7 +235,7 @@ function openUserInfoModal() {
 /** mở modal phím tắt */
 function openKeyboardShortcutModal() {
   // tắt menu dropdown
-  user_menu_ref.value?.toggleDropdown()  
+  user_menu_ref.value?.toggleDropdown()
 
   // mở modal phím tắt
   modal_keyboard_shortcut.value?.toggleModal?.()

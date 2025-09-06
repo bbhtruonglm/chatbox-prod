@@ -152,7 +152,14 @@ const is_loading = ref(false)
 // đọc danh sách thông báo khi load component
 onMounted(getNoti)
 
-watch(() => orgStore.selected_org_id, getNoti)
+watch(
+  () => [
+    orgStore.selected_org_id,
+    orgStore.is_selected_all_org,
+    orgStore.list_org,
+  ],
+  getNoti
+)
 
 /**lấy dữ liệu thiết lập */
 function getConfig(code?: string): ISetting {
@@ -165,18 +172,16 @@ function getConfig(code?: string): ISetting {
 /**lấy xx thông báo mới nhất */
 async function getNoti() {
   try {
-    // nếu không có id tổ chức thì thôi
-    if (!orgStore.selected_org_id) return
+    // nếu không phải chọn tất cả các tổ chức thì chỉ lấy của tổ chức đang chọn
+    // hoặc đang trong chat thì cũng chỉ lấy của tổ chức hiện tại
+    if (!orgStore.is_selected_all_org || $props.is_chat) {
+      list_noti.value = await getNotiCurrentOrg()
+    } else {
+      // lấy tất cả các thông báo
+      list_noti.value = await getAllNoti()
+    }
 
-    // ghi đè thống báo cũ nếu có khi lấy dữ liệu
-    list_noti.value = await get_noti(
-      orgStore.selected_org_id,
-      3,
-      { $exists: false },
-      $props.codes
-    )
-
-    // nếu trong chat thì sau 3s thì xóa thông báo
+    // nếu trong chat thì sau 2s thì xóa thông báo
     if (!$props.is_chat) return
     setTimeout(() => {
       list_noti.value = []
@@ -186,6 +191,58 @@ async function getNoti() {
     // ToastSingleton.getInst().error(e)
   }
 }
+
+/** lấy tất cả các thông báo của tổ chức */
+async function getAllNoti() {
+  /** danh sách các thông báo */
+  let list_noti: NotiInfo[] = []
+  try {
+    /** danh sách các tổ chức */
+    const LIST_ORG = orgStore.list_org || []
+
+    // lặp qua từng tổ chức để lấy danh sách các thông báo
+    for (const org of LIST_ORG) {
+      // nếu không có id tổ chức thì thôi qua tổ chức tiếp theo
+      if (!org.org_id) continue      
+
+      /** dữ liệu api trả về */
+      const RES = await get_noti(
+        org.org_id,
+        3,
+        { $exists: false },
+        $props.codes
+      )
+      // thêm vào cuối danh sách
+      list_noti = [...list_noti, ...RES]
+    }
+  } catch (e) {
+  } finally {
+    return list_noti
+  }
+}
+
+/** lấy thông báo của tổ chức hiện tại */
+async function getNotiCurrentOrg() {
+  /** danh sách các thông báo */
+  let list_noti: NotiInfo[] = []
+  try {
+    // nếu không có id tổ chức thì thôi
+    if (!orgStore.selected_org_id) return []
+
+    // ghi đè thống báo cũ nếu có khi lấy dữ liệu
+    list_noti = await get_noti(
+      orgStore.selected_org_id,
+      3,
+      { $exists: false },
+      $props.codes
+    )
+  } catch (e) {
+    // tạm thời không xử lý gì
+  } finally {
+    return list_noti
+  }
+}
+
 /**đọc thông báo */
 async function readNoti(noti?: NotiInfo, is_close?: boolean) {
   try {
