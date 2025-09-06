@@ -62,7 +62,12 @@
       :time="message_time"
       :color="`
         ${CHECK_SLOW_REPLY.isSlowReply() ? 'text-red-500' : ''} 
-        ${CHECK_SLOW_REPLY.isSystemSlowReply() ? 'text-yellow-500' : ''}
+        ${
+          CHECK_SLOW_REPLY.isSystemSlowReply() &&
+          !CHECK_SLOW_REPLY.isSlowReply()
+            ? 'text-yellow-500'
+            : ''
+        }
       `"
     />
     <MessageDate
@@ -291,7 +296,9 @@ function addOnClassTemplate() {
     'bg-white': ['client', 'group'].includes(message_type.value),
     'bg-[#D8F6CB]': message_type.value === 'note',
     'border border-red-500': CHECK_SLOW_REPLY.value.isSlowReply(),
-    'border border-yellow-500': CHECK_SLOW_REPLY.value.isSystemSlowReply(),
+    'border border-yellow-500':
+      CHECK_SLOW_REPLY.value.isSystemSlowReply() &&
+      !CHECK_SLOW_REPLY.value.isSlowReply(),
   }
 }
 
