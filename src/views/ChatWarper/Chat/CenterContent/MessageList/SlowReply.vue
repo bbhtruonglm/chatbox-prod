@@ -9,7 +9,7 @@
       <template v-else>
         {{ $t('v1.view.main.dashboard.chat.message.reply_time_not_rep') }}:
       </template>
-      <span class="text-red-500">{{ duration }}</span>
+      <span :class="color">{{ duration }}</span>
     </div>
   </template>
 </template>
@@ -26,6 +26,8 @@ const $props = withDefaults(
     next_message?: MessageInfo
     /**thời gian của tin nhắn */
     time?: string
+    /** màu của thông báo */
+    color?: string
   }>(),
   {}
 )
