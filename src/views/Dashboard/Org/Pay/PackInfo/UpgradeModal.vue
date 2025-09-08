@@ -20,7 +20,7 @@
           <div class="px-3 text-lg font-semibold flex-shrink-0 text-center">
             {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
           </div>
-          <div class="grid grid-cols-3 gap-3 px-10">
+          <div class="grid grid-cols-4 gap-3 px-10">
             <div class="item">
               <Content :content="CONTENTS.FREE" />
               <button
@@ -29,6 +29,50 @@
                 class="btn text-slate-700 bg-slate-200 cursor-not-allowed"
               >
                 {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+              </button>
+            </div>
+            <div class="item">
+              <Content
+                :content="CONTENTS.LITE"
+                :is_full_year
+              >
+                <template #toggle>
+                  <Toggle
+                    v-model="is_full_year"
+                    class_toggle="peer-checked:bg-black"
+                  >
+                    <span class="text-green-600">
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.year')
+                      }}
+                    </span>
+                  </Toggle>
+                </template>
+                <template #chat_feature>
+                  (<a
+                    class="underline text-blue-700"
+                    href="https://retion.ai"
+                    target="_blank"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
+                  >)
+                </template>
+              </Content>
+              <button
+                v-if="!orgStore.isBusinessPack() && !orgStore.isProPack()"
+                @click="activeTrialOrProPack('PRO')"
+                :class="{
+                  'cursor-not-allowed !text-slate-700 bg-slate-200':
+                    orgStore.isLitePack(),
+                }"
+                class="btn text-white bg-green-600"
+              >
+                <template v-if="orgStore.isLitePack()">
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                </template>
+                <template v-else>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.lite') }}
+                </template>
               </button>
             </div>
             <div class="item">
@@ -188,6 +232,33 @@ const CONTENTS: Record<string, IContent> = {
     domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
     support: $t('v1.view.main.dashboard.org.pay.standard'),
   },
+  /** gói lite */
+  LITE: {
+    title: $t('v1.view.main.dashboard.org.pay.lite'),
+    price: '199.000 / ' + $t('v1.view.main.dashboard.org.pay.month'),
+    price_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '2.388.000',
+    }),
+    price_discount:
+      '<span class="line-through font-normal">199.000</span> <span class="text-green-700">199.000</span> / ' +
+      $t('v1.view.main.dashboard.org.pay.month'),
+    price_discount_year: $t('v1.view.main.dashboard.org.pay.avarage_year', {
+      amount: '2.388.000',
+    }),
+    page: '3',
+    member: '3',
+    ai_text: '1.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
+    ai_image: '1.000 ' + $t('v1.view.main.dashboard.org.pay.image'),
+    ai_sound: '1000 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    fau: '10.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
+    client: $t('v1.view.main.dashboard.org.pay.unlimited'),
+    chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
+    ai_feature: $t('v1.view.main.dashboard.org.pay.basic'),
+    company_name: $t('v1.view.main.dashboard.org.pay.none'),
+    api_integrate: $t('v1.view.main.dashboard.org.pay.none'),
+    domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
+    support: $t('v1.view.main.dashboard.org.pay.standard'),
+  },
   /**gói Pro */
   PRO: {
     title: $t('v1.view.main.dashboard.org.pay.pro'),
@@ -262,10 +333,12 @@ function contactUs() {
   openNewTab(BBH_PAGE_MESS)
 }
 /**kích hoạt gói dùng thử hoặc gói pro */
-async function activeTrialOrProPack(pack: 'PRO' | 'BUSINESS') {
+async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
   // nếu chưa chọn org thì không làm gì
   if (!orgStore.selected_org_id || orgStore.is_loading) return
 
+  // nếu đã mua gói lite thì không làm gì
+  if (orgStore.isLitePack() && pack === 'LITE') return
   // nếu đã mua gói thì không làm gì
   if (orgStore.isProPack() && pack === 'PRO') return
   // nếu đã mua gói doanh nghiệp thì không làm gì

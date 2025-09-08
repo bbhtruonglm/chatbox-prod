@@ -1321,6 +1321,7 @@ const source: Language = {
                 title: 'Choose an upgrade package',
                 current: 'Current package',
                 back_free: 'Back to free package',
+                lite: 'Upgrade',
                 pro: 'Upgrade',
                 business: 'Upgrade',
                 trial_day_7: '7-day trial',
@@ -1388,6 +1389,7 @@ const source: Language = {
                   check: 'Check payment',
                 },
               },
+              lite: 'LITE',
             },
             app: {
               title: 'AI App',
