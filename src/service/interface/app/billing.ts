@@ -149,7 +149,7 @@ export interface MemberShipInfo {
 }
 
 /**gói của tổ chức */
-export type OrgPackage = 'FREE' | 'TRIAL' | 'PRO' | 'BUSINESS'
+export type OrgPackage = 'FREE' | 'TRIAL' | 'LITE' | 'PRO' | 'BUSINESS'
 
 /**bảng tạm liên kết giữa tổ chức và trang */
 export interface OwnerShipInfo {
