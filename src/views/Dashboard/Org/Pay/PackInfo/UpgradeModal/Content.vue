@@ -9,9 +9,7 @@
     <ul class="text-sm list-disc list-inside flex flex-col gap-1">
       <li class="pl-2">
         {{ $t('v1.view.main.dashboard.org.pay.upgrade.price') }}
-        <span
-          class="font-bold"
-        >
+        <span class="font-bold">
           {{ content?.price }}
         </span>
       </li>
@@ -99,6 +97,13 @@
         <span class="font-semibold">
           {{ content?.support }}
         </span>
+        <slot name="support" />
+      </li>
+      <li
+        v-if="content?.note"
+        class="pl-2 whitespace-pre-line break-words w-full font-semibold"
+      >
+        {{ $t('v1.view.main.dashboard.org.pay.note') }}
       </li>
     </ul>
   </div>

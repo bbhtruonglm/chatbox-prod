@@ -31,7 +31,7 @@
                 {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
               </button>
             </div>
-            <div class="item">
+            <div class="item max-w-80">
               <Content
                 :content="CONTENTS.LITE"
                 :is_full_year
@@ -42,9 +42,7 @@
                     class_toggle="peer-checked:bg-black"
                   >
                     <span class="text-green-600">
-                      {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.year')
-                      }}
+                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                     </span>
                   </Toggle>
                 </template>
@@ -57,10 +55,28 @@
                     {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
                   >)
                 </template>
+                <template #ai_feature>
+                  (<a
+                    class="underline text-blue-700"
+                    href="https://retion.ai"
+                    target="_blank"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
+                  >)
+                </template>
+                <template #support>
+                  (<a
+                    class="underline text-blue-700"
+                    href="https://bbh.gitbook.io/bot-ban-hang-docs"
+                    target="_blank"
+                  >
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
+                  >)
+                </template>
               </Content>
               <button
                 v-if="!orgStore.isBusinessPack() && !orgStore.isProPack()"
-                @click="activeTrialOrProPack('PRO')"
+                @click="activeTrialOrProPack('LITE')"
                 :class="{
                   'cursor-not-allowed !text-slate-700 bg-slate-200':
                     orgStore.isLitePack(),
@@ -75,7 +91,7 @@
                 </template>
               </button>
             </div>
-            <div class="item">
+            <div class="item max-w-80">
               <Content
                 :content="CONTENTS.PRO"
                 :is_full_year
@@ -86,9 +102,7 @@
                     class_toggle="peer-checked:bg-black"
                   >
                     <span class="text-green-600">
-                      {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.year')
-                      }}
+                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                     </span>
                   </Toggle>
                 </template>
@@ -138,7 +152,7 @@
                 </template>
               </button>
             </div>
-            <div class="item">
+            <div class="item max-w-80">
               <Content
                 :content="CONTENTS.COMPANY"
                 :is_full_year
@@ -149,9 +163,7 @@
                     class_toggle="peer-checked:bg-black"
                   >
                     <span class="text-green-600">
-                      {{
-                        $t('v1.view.main.dashboard.org.pay.upgrade.year')
-                      }}
+                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                     </span>
                   </Toggle>
                 </template>
@@ -218,7 +230,7 @@ const CONTENTS: Record<string, IContent> = {
   FREE: {
     title: $t('v1.view.main.dashboard.org.pay.free'),
     price: $t('v1.view.main.dashboard.org.pay.free'),
-    page: '2',
+    page: '1',
     member: '1',
     ai_text: '100.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
     ai_image: '100 ' + $t('v1.view.main.dashboard.org.pay.image'),
@@ -230,7 +242,7 @@ const CONTENTS: Record<string, IContent> = {
     company_name: $t('v1.view.main.dashboard.org.pay.none'),
     api_integrate: $t('v1.view.main.dashboard.org.pay.none'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
-    support: $t('v1.view.main.dashboard.org.pay.standard'),
+    support: $t('v1.view.main.dashboard.org.pay.not_support'),
   },
   /** gói lite */
   LITE: {
@@ -258,6 +270,7 @@ const CONTENTS: Record<string, IContent> = {
     api_integrate: $t('v1.view.main.dashboard.org.pay.none'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
     support: $t('v1.view.main.dashboard.org.pay.standard'),
+    note: $t('v1.view.main.dashboard.org.pay.note'),
   },
   /**gói Pro */
   PRO: {
@@ -284,7 +297,7 @@ const CONTENTS: Record<string, IContent> = {
     company_name: $t('v1.view.main.dashboard.org.pay.yes'),
     api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
-    support: $t('v1.view.main.dashboard.org.pay.prioritize'),
+    support: $t('v1.view.main.dashboard.org.pay.support_group'),
   },
   /**gói doanh nghiệp */
   COMPANY: {
@@ -311,7 +324,7 @@ const CONTENTS: Record<string, IContent> = {
     company_name: $t('v1.view.main.dashboard.org.pay.yes'),
     api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.yes'),
-    support: $t('v1.view.main.dashboard.org.pay.high'),
+    support: $t('v1.view.main.dashboard.org.pay.advanced_support'),
   },
 }
 
