@@ -217,6 +217,7 @@
     </template>
   </CardItem>
   <UpgradeModal ref="upgrade_modal_ref" />
+  <!-- <UpgradeModalV2 ref="upgrade_modal_ref" /> -->
   <IncQuota
     ref="inc_quota_ref"
     :inc_quota_type
@@ -235,6 +236,7 @@ import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Item from '@/views/Dashboard/Org/Pay/PackInfo/Item.vue'
 import UpgradeModal from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal.vue'
+import UpgradeModalV2 from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModalV2.vue'
 import IncQuota from '@/views/Dashboard/Org/Pay/PackInfo/IncQuota.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'
@@ -247,6 +249,7 @@ const { t: $t } = useI18n()
 const { updateOrg } = initRequireData()
 
 /**ref của modal mua gói mới */
+// const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
 const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModal>>()
 /**ref của modal mua thêm trang, nhân viên */
 const inc_quota_ref = ref<InstanceType<typeof IncQuota>>()

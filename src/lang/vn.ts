@@ -1196,6 +1196,10 @@ const source: Language = {
                 },
               },
               lite: 'LITE',
+              upgrade_v2: {
+                title: 'Choose the right plan for your team',
+                choose_team_plan: 'Choose your team plan',
+              },
             },
             app: {
               title: 'Ứng dụng AI',
