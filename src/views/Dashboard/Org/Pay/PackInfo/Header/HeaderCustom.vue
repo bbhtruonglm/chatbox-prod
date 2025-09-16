@@ -1,7 +1,7 @@
 <template>
   <!-- container -->
   <div
-    class="relative flex flex-row gap-5 items-end overflow-hidden bg-slate-50"
+    class="relative flex flex-row gap-5 h-16 items-end overflow-hidden bg-slate-50"
   >
     <!-- white seam, chỉ bằng width tabs -->
     <div class="flex">
@@ -11,17 +11,17 @@
       <!-- tabs -->
       <div class="flex relative">
         <div
-          v-for="(label, index) in TABS"
+          v-for="(label, index) in tabs"
           :key="index"
           class="tab whitespace-nowrap px-10 py-4 font-medium grid place-items-center text-black text-xl relative z-20 cursor-pointer select-none first:ml-0"
           :class="[
-            index === ACTIVE_INDEX
+            index === active_index
               ? 'bg-white z-30 rounded-t-xl'
               : 'bg-yellow-200',
-            index === ACTIVE_INDEX - 1 ? 'rounded-br-xl' : '',
-            index === ACTIVE_INDEX + 1 ? 'rounded-bl-xl' : '',
+            index === active_index - 1 ? 'rounded-br-xl' : '',
+            index === active_index + 1 ? 'rounded-bl-xl' : '',
             index === 0 ? 'rounded-tl-xl' : '',
-            index === TABS.length - 1 ? 'rounded-tr-xl' : '',
+            index === tabs.length - 1 ? 'rounded-tr-xl' : '',
           ]"
           @click="selectTab(index)"
         >
@@ -40,13 +40,7 @@
       class="flex items-center justify-end w-full h-full gap-4 bg-gray-50 px-12 rounded-lg"
     >
       <span class="font-medium">Choose month</span>
-      <!-- 
-      <ShadcnSelect
-        v-model="selected"
-        :options="months"
-        placeholder="Select month"
-        width="180px"
-      /> -->
+
       <ShadcnSelectPopper
         v-model="SELECTED"
         :options="MONTHS"
@@ -69,17 +63,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ShadcnSelectPopper from '@/components/Select/ShadcnSelectPopper.vue'
 import { GiftIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
-/** Khai báo các tab đăng ký */
-const TABS = ref(['All plans', 'Business & Enterprise'])
-/** Tab active hiện tại */
-const ACTIVE_INDEX = ref(0)
-/** Hàm xử lý  */
-const selectTab = i => {
-  ACTIVE_INDEX.value = i
+
+const props = defineProps<{
+  active_index: number
+  tabs: string[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'change-tab', index: number): void
+}>()
+
+function selectTab(index: number) {
+  emit('change-tab', index)
 }
 /** Các option chọn tháng */
 const MONTHS = [

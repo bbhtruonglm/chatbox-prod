@@ -49,17 +49,34 @@
             <div
               class="flex flex-col bg-white overflow-hidden flex-grow min-h-0 h-full rounded-b-lg"
             >
-              <HeaderCustom />
+              <HeaderCustom
+                :tabs="TABS"
+                :active_index="ACTIVE_INDEX"
+                @change-tab="handleTabChange"
+              />
 
               <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-12 px-5 overflow-auto h-full"
+                :class="[
+                  'gap-6 py-12 px-5 overflow-auto h-full',
+                  ACTIVE_INDEX === 0
+                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                    : 'grid grid-cols-4', // grid 4 cột nhưng ta sẽ chỉnh col-span từng item
+                ]"
               >
                 <PricingCard
-                  v-for="(pkg, index) in PACKAGES"
+                  v-for="(pkg, index) in FILTERED_PACKAGES"
                   :key="pkg.title"
                   v-bind="pkg"
                   :selected="SELECTED_INDEX === index"
                   :onSelect="() => handleSelect(index)"
+                  :active_tab="ACTIVE_INDEX"
+                  :class="[
+                    ACTIVE_INDEX === 0
+                      ? '' // tab All plans: theo grid mặc định
+                      : index === 0
+                      ? 'col-span-1' // gói đầu chiếm 1 cột
+                      : 'col-span-3', // gói thứ 2 chiếm 3 cột
+                  ]"
                 />
               </div>
             </div>
@@ -71,7 +88,7 @@
 </template>
 <script setup lang="ts">
 import { useCommonStore, useOrgStore } from '@/stores'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { purchase_package, read_wallet } from '@/service/api/chatbox/billing'
 import { toast, toastError } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
@@ -81,6 +98,7 @@ import { XMarkIcon } from '@heroicons/vue/24/solid'
 import PricingCard from '@/components/PricingCard/PricingCard.vue'
 
 import HeaderCustom from '@/views/Dashboard/Org/Pay/PackInfo/Header/HeaderCustom.vue'
+
 /** Lấy giá trị trong store */
 const COMMON_STORE = useCommonStore()
 /** Lấy giá trị org */
@@ -98,6 +116,10 @@ const SELECTED_INDEX = ref(0)
 function handleSelect(index: number) {
   SELECTED_INDEX.value = index
 }
+/** Khai báo các tab đăng ký */
+const TABS = ref(['All plans', 'Business & Enterprise'])
+/** Tab active hiện tại */
+const ACTIVE_INDEX = ref(0)
 /** Mock các gói */
 const PACKAGES = [
   {
@@ -247,6 +269,18 @@ const PACKAGES = [
     ],
   },
 ]
+const FILTERED_PACKAGES = computed(() => {
+  if (ACTIVE_INDEX.value === 0) {
+    /** Tab 0 = All plans */
+    return PACKAGES
+  } else {
+    /** Tab 1 = Business & Enterprise */
+    return PACKAGES.filter(pkg => ['Pro', 'Enterprise'].includes(pkg.title))
+  }
+})
+function handleTabChange(index: number) {
+  ACTIVE_INDEX.value = index
+}
 
 /**ẩn hiện modal */
 const IS_OPEN = ref(false)
