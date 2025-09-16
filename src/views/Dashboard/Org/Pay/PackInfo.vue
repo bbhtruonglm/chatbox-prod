@@ -216,8 +216,8 @@
       </div>
     </template>
   </CardItem>
-  <UpgradeModal ref="upgrade_modal_ref" />
-  <!-- <UpgradeModalV2 ref="upgrade_modal_ref" /> -->
+  <!-- <UpgradeModal ref="upgrade_modal_ref" /> -->
+  <UpgradeModalV2 ref="upgrade_modal_ref" />
   <IncQuota
     ref="inc_quota_ref"
     :inc_quota_type
