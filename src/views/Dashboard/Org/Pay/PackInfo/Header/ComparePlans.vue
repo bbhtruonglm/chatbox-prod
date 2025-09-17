@@ -127,31 +127,36 @@ import {
   ChevronUpIcon,
 } from '@heroicons/vue/24/solid'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+/** Kiểu dữ liệu plans */
 interface Plan {
   key: string
   name: string
 }
+/** Kiểu dữ liệu chức năng */
 interface Feature {
   name: string
   values: Record<string, string | number | boolean | null | undefined>
 }
+/** Kiểu dữ liệu section */
 interface Section {
   title: string
   features: Feature[]
 }
+/** Kiểu dữ liệu Data phần compare plans & feature */
 interface CompareData {
   title: string
   plans: Plan[]
   sections: Section[]
 }
-
+/** Định nghĩa props */
 const props = defineProps<{
   data: CompareData
   selectedPlanIndex?: string // gói được highlight
   selectedRowIndex?: number // hàng được highlight
 }>()
-
+/** Khai báo hàm emit để component con phát sự kiện 'rowSelect' kèm rowIndex cho cha */
 const emit = defineEmits<{ (e: 'rowSelect', rowIndex: number): void }>()
 
+/** tạo call  */
 const gridCols = `416px repeat(${props.data.plans.length}, minmax(120px,1fr))`
 </script>
