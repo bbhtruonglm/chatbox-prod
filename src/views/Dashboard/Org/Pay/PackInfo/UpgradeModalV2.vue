@@ -46,38 +46,47 @@
                 }}
               </div>
             </div>
-            <div
-              class="flex flex-col bg-white overflow-hidden flex-grow min-h-0 h-full rounded-b-lg"
-            >
+            <div class="flex flex-col bg-white rounded-b-lg overflow-hidden">
               <HeaderCustom
                 :tabs="TABS"
                 :active_index="ACTIVE_INDEX"
                 @change-tab="handleTabChange"
               />
-
               <div
-                :class="[
-                  'gap-6 py-12 px-5 overflow-auto h-full',
-                  ACTIVE_INDEX === 0
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                    : 'grid grid-cols-4', // grid 4 cột nhưng ta sẽ chỉnh col-span từng item
-                ]"
+                class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5"
               >
-                <PricingCard
-                  v-for="(pkg, index) in FILTERED_PACKAGES"
-                  :key="pkg.title"
-                  v-bind="pkg"
-                  :selected="SELECTED_INDEX === index"
-                  :onSelect="() => handleSelect(index)"
-                  :active_tab="ACTIVE_INDEX"
+                <div
                   :class="[
+                    'gap-6',
                     ACTIVE_INDEX === 0
-                      ? '' // tab All plans: theo grid mặc định
-                      : index === 0
-                      ? 'col-span-1' // gói đầu chiếm 1 cột
-                      : 'col-span-3', // gói thứ 2 chiếm 3 cột
+                      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                      : 'grid grid-cols-4', // grid 4 cột nhưng ta sẽ chỉnh col-span từng item
                   ]"
-                />
+                >
+                  <PricingCard
+                    v-for="(pkg, index) in FILTERED_PACKAGES"
+                    :key="pkg.title"
+                    v-bind="pkg"
+                    :selected="SELECTED_INDEX === pkg.title"
+                    :onSelect="() => handleSelect(pkg.title)"
+                    :active_tab="ACTIVE_INDEX"
+                    :class="[
+                      ACTIVE_INDEX === 0
+                        ? '' // tab All plans: theo grid mặc định
+                        : index === 0
+                        ? 'col-span-1' // gói đầu chiếm 1 cột
+                        : 'col-span-3', // gói thứ 2 chiếm 3 cột
+                    ]"
+                  />
+                </div>
+                <div class="">
+                  <ComparePlans
+                    :data="COMPARE_DATA"
+                    :selectedPlanIndex="SELECTED_INDEX"
+                    :selectedRowIndex="SELECTED_ROW_INDEX"
+                    @rowSelect="handleRowSelect"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -99,6 +108,8 @@ import PricingCard from '@/components/PricingCard/PricingCard.vue'
 
 import HeaderCustom from '@/views/Dashboard/Org/Pay/PackInfo/Header/HeaderCustom.vue'
 
+import ComparePlans from '@/views/Dashboard/Org/Pay/PackInfo/Header/ComparePlans.vue'
+
 /** Lấy giá trị trong store */
 const COMMON_STORE = useCommonStore()
 /** Lấy giá trị org */
@@ -111,9 +122,9 @@ function handleClick(pkg_title: string) {
   console.log('title', pkg_title)
 }
 /** tab đang được chọn */
-const SELECTED_INDEX = ref(0)
+const SELECTED_INDEX = ref('Free')
 /** Hàm thay đổi index */
-function handleSelect(index: number) {
+function handleSelect(index: string) {
   SELECTED_INDEX.value = index
 }
 /** Khai báo các tab đăng ký */
@@ -269,6 +280,10 @@ const PACKAGES = [
     ],
   },
 ]
+/** Filter list package
+ * All plans hiện all
+ * Business chỉ hiện pro và business
+ */
 const FILTERED_PACKAGES = computed(() => {
   if (ACTIVE_INDEX.value === 0) {
     /** Tab 0 = All plans */
@@ -278,8 +293,120 @@ const FILTERED_PACKAGES = computed(() => {
     return PACKAGES.filter(pkg => ['Pro', 'Enterprise'].includes(pkg.title))
   }
 })
+/** Hàm chuyển đổi tab */
 function handleTabChange(index: number) {
   ACTIVE_INDEX.value = index
+}
+/** Row index đã selected */
+const SELECTED_ROW_INDEX = ref<number>(0)
+/** Hàm xử lý index row */
+function handleRowSelect(idx: number) {
+  SELECTED_ROW_INDEX.value = idx
+}
+/** Dữ liệu mock data compare plans và features */
+const COMPARE_DATA = {
+  title: 'Compare plans and features',
+  plans: [
+    { key: 'free', name: 'Free' },
+    { key: 'lite', name: 'Lite' },
+    { key: 'pro', name: 'Pro' },
+    { key: 'enterprise', name: 'Enterprise' },
+  ],
+  sections: [
+    {
+      title: 'Essentials',
+      features: [
+        {
+          name: 'Active contacts & deals (limit)',
+          values: {
+            free: '1,000',
+            lite: '10,000',
+            pro: 'Unlimited',
+            enterprise: '1,000',
+          },
+        },
+        {
+          name: 'Feature A',
+          values: { free: true, lite: true, pro: true, enterprise: true },
+        },
+        {
+          name: 'Feature B',
+          values: { free: false, lite: false, pro: true, enterprise: true },
+        },
+      ],
+    },
+    {
+      title: 'Essentials',
+      features: [
+        {
+          name: 'Active contacts & deals (limit)',
+          values: {
+            free: '1,000',
+            lite: '10,000',
+            pro: 'Unlimited',
+            enterprise: '1,000',
+          },
+        },
+        {
+          name: 'Feature A',
+          values: { free: true, lite: true, pro: true, enterprise: true },
+        },
+        {
+          name: 'Feature B',
+          values: { free: false, lite: false, pro: true, enterprise: true },
+        },
+      ],
+    },
+    {
+      title: 'Essentials',
+      features: [
+        {
+          name: 'Active contacts & deals (limit)',
+          values: {
+            free: '1,000',
+            lite: '10,000',
+            pro: 'Unlimited',
+            enterprise: '1,000',
+          },
+        },
+        {
+          name: 'Feature A',
+          values: { free: true, lite: true, pro: true, enterprise: true },
+        },
+        {
+          name: 'Feature B',
+          values: { free: false, lite: false, pro: true, enterprise: true },
+        },
+      ],
+    },
+    {
+      title: 'Retion AI',
+      features: [
+        {
+          name: 'AI credits (monthly)',
+          values: {
+            free: '1,000',
+            lite: '10,000',
+            pro: 'Unlimited',
+            enterprise: '1,000',
+          },
+        },
+        {
+          name: 'AI assistant',
+          values: { free: true, lite: true, pro: true, enterprise: true },
+        },
+      ],
+    },
+    {
+      title: 'Automation',
+      features: [
+        {
+          name: 'Workflow automations',
+          values: { free: false, lite: true, pro: true, enterprise: true },
+        },
+      ],
+    },
+  ],
 }
 
 /**ẩn hiện modal */

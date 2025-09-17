@@ -170,7 +170,7 @@
 
     <div
       v-if="active_tab == 1 && title === 'Enterprise'"
-      class="h-full w-full bg-white/60 rounded-xl shadow p-6 space-y-6"
+      class="h-full w-full bg-white/60 rounded-xl p-5 space-y-6 border"
     >
       <!-- Title -->
       <div>
