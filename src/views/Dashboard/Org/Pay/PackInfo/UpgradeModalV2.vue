@@ -83,7 +83,7 @@
                   <ComparePlans
                     :data="COMPARE_DATA"
                     :selectedPlanIndex="SELECTED_INDEX"
-                    :selectedRowIndex="SELECTED_ROW_INDEX"
+                    :selectedRow="SELECTED_ROW"
                     @rowSelect="handleRowSelect"
                   />
                 </div>
@@ -297,12 +297,15 @@ const FILTERED_PACKAGES = computed(() => {
 function handleTabChange(index: number) {
   ACTIVE_INDEX.value = index
 }
-/** Row index đã selected */
-const SELECTED_ROW_INDEX = ref<number>(0)
-/** Hàm xử lý index row */
-function handleRowSelect(idx: number) {
-  SELECTED_ROW_INDEX.value = idx
+/** selected rơ */
+const SELECTED_ROW = ref<{ sectionIndex: number; rowIndex: number } | null>(
+  null
+)
+/** hàm selected row */
+function handleRowSelect(payload: { sectionIndex: number; rowIndex: number }) {
+  SELECTED_ROW.value = payload
 }
+
 /** Dữ liệu mock data compare plans và features */
 const COMPARE_DATA = {
   title: 'Compare plans and features',

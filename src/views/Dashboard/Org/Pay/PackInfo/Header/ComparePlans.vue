@@ -56,7 +56,7 @@
 
       <!-- Sections -->
       <div
-        v-for="section in data.sections"
+        v-for="(section, sectionIdx) in data.sections"
         :key="section.title"
       >
         <!-- Section row (grid) -->
@@ -75,7 +75,7 @@
             class="p-3 text-center"
             :class="plan.name === selectedPlanIndex ? 'bg-cyan-50' : ''"
           >
-            <!-- Bạn có thể hiển thị gì đó, ví dụ plan.name hoặc để trống -->
+            <!-- để màu nền tương ứng với gói -->
           </div>
         </div>
 
@@ -83,9 +83,11 @@
           v-for="(feature, idx) in section.features"
           :key="section.title + idx"
           class="grid items-center border-b border-slate-200 cursor-pointer"
-          :class="idx === selectedRowIndex ? 'bg-cyan-50' : 'hover:bg-gray-50'"
+          :class="
+            isRowSelected(sectionIdx, idx) ? 'bg-cyan-50' : 'hover:bg-gray-50'
+          "
           :style="{ gridTemplateColumns: gridCols }"
-          @click="$emit('rowSelect', idx)"
+          @click="onRowClick(sectionIdx, idx)"
         >
           <!-- Feature name cell -->
           <div class="p-3 flex justify-between items-center text-sm">
@@ -104,8 +106,8 @@
           >
             <template v-if="feature.values[plan.key] === true">
               <span class="text-slate-800 text-center">
-                <CheckIcon class="size-5"
-              /></span>
+                <CheckIcon class="size-5" />
+              </span>
             </template>
             <template v-else-if="feature.values[plan.key]">
               {{ feature.values[plan.key] }}
@@ -127,6 +129,7 @@ import {
   ChevronUpIcon,
 } from '@heroicons/vue/24/solid'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+
 /** Kiểu dữ liệu plans */
 interface Plan {
   key: string
@@ -148,15 +151,36 @@ interface CompareData {
   plans: Plan[]
   sections: Section[]
 }
+
+/** Selected row kiểu object để phân biệt theo section */
+type SelectedRow = { sectionIndex: number; rowIndex: number } | null
+
 /** Định nghĩa props */
 const props = defineProps<{
   data: CompareData
-  selectedPlanIndex?: string // gói được highlight
-  selectedRowIndex?: number // hàng được highlight
+  selectedPlanIndex?: string // gói được highlight (ở bạn dùng plan.name so sánh)
+  selectedRow?: SelectedRow // giờ là object {sectionIndex, rowIndex}
 }>()
-/** Khai báo hàm emit để component con phát sự kiện 'rowSelect' kèm rowIndex cho cha */
-const emit = defineEmits<{ (e: 'rowSelect', rowIndex: number): void }>()
+
+/** Khai báo hàm emit để component con phát sự kiện 'rowSelect' kèm {sectionIndex,rowIndex} cho cha */
+// Phát sự kiện: emit('rowSelect', { sectionIndex: number, rowIndex: number })
+const emit = defineEmits<{
+  (e: 'rowSelect', payload: { sectionIndex: number; rowIndex: number }): void
+}>()
 
 /** tạo call  */
 const gridCols = `416px repeat(${props.data.plans.length}, minmax(120px,1fr))`
+
+/** helper: kiểm tra row đang được chọn (theo section) */
+function isRowSelected(sectionIdx: number, rowIdx: number) {
+  return (
+    props.selectedRow?.sectionIndex === sectionIdx &&
+    props.selectedRow?.rowIndex === rowIdx
+  )
+}
+
+/** on click row -> emit payload có sectionIndex & rowIndex */
+function onRowClick(sectionIdx: number, rowIdx: number) {
+  emit('rowSelect', { sectionIndex: sectionIdx, rowIndex: rowIdx })
+}
 </script>
