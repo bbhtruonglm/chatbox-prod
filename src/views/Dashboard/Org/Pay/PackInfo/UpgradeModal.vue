@@ -252,7 +252,7 @@
                 <p>
                   {{ $t('v1.view.main.dashboard.org.pay.upgrade.time') }} :
                   <span class="font-semibold">
-                    {{ $t('one_month') }}
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.one_month') }}
                   </span>
                 </p>
                 <p>
@@ -369,6 +369,115 @@
               v-if="pay_step === 'STEP_2'"
               class="text-left"
             >
+              <div class="flex flex-col p-4 pt-0 gap-3">
+                <div
+                  v-if="is_issue_invoice"
+                  class="flex flex-col gap-1 text-sm"
+                >
+                  <div class="font-semibold">
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.invoice_info.title'
+                      )
+                    }}
+                  </div>
+                  <div class="font-semibold">
+                    {{
+                      orgStore.selected_org_info?.org_info?.org_company_name ||
+                      orgStore.selected_org_info?.org_info?.org_name
+                    }}
+                    <template
+                      v-if="orgStore.selected_org_info?.org_info?.org_tax_code"
+                    >
+                      -
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
+                        )
+                      }}
+                      :
+                      {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
+                    </template>
+                  </div>
+                  <div class="flex">
+                    <div class="w-32">
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.setting.customer_info.address'
+                        )
+                      }}:
+                    </div>
+                    <div>
+                      {{ orgStore.selected_org_info?.org_info?.org_address }}
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="w-32">
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.setting.customer_info.representative'
+                        )
+                      }}:
+                    </div>
+                    <div>
+                      {{
+                        orgStore.selected_org_info?.org_info?.org_representative
+                      }}
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="w-32">
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.setting.customer_info.phone'
+                        )
+                      }}:
+                    </div>
+                    <div>
+                      {{ orgStore.selected_org_info?.org_info?.org_phone }}
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="w-32">
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.setting.customer_info.email'
+                        )
+                      }}:
+                    </div>
+                    <div>
+                      {{ orgStore.selected_org_info?.org_info?.org_email }}
+                    </div>
+                  </div>
+                </div>
+                <ul
+                  v-if="is_issue_invoice"
+                  class="list-disc list-inside text-sm text-slate-700"
+                >
+                  <li class="pl-4 -indent-4">
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.setting.customer_info.guild_1',
+                        {
+                          partner: commonStore.partner?.name,
+                        }
+                      )
+                    }}
+                  </li>
+                  <li class="pl-4 -indent-4">
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.setting.customer_info.guild_3',
+                        {
+                          partner: commonStore.partner?.name,
+                        }
+                      )
+                    }}
+                    <!-- hotro@botbanhang.vn -->
+                  </li>
+                </ul>
+              </div>
+
               <div class="px-4 py-1 font-medium">
                 {{ $t('v1.view.main.dashboard.org.pay.recharge.pay') }}
               </div>
@@ -433,7 +542,7 @@
               @click="closeConfirmModal"
               class="py-2 px-4 rounded-md bg-slate-200 hover:brightness-95"
             >
-              {{ $t('v1.view.main.dashboard.org.pay.upgrade.cancel') }}
+              {{ $t('v1.view.main.dashboard.org.pay.upgrade.close') }}
             </button>
             <!-- @click="confirmPayment" -->
             <!-- :disabled="pay_step === 'STEP_2'" -->
@@ -723,7 +832,12 @@ const amount_after_add_voucher = ref<string>('199000')
 /** gói đã chọn */
 const selectedPack = ref<'LITE' | 'PRO' | 'BUSINESS' | null>(null)
 /** mở modal xác nhận thanh toán */
-function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
+async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
+  /** Trạng thái payment */
+  const ON_PAYMENT = await activeTrialOrProPack(pack)
+  /** Nếu ví không đủ tiền, thì mới tiếp tục, không thì bỏ qua */
+  if (ON_PAYMENT !== 'WALLET.NOT_ENOUGH_MONEY') return
+
   selectedPack.value = pack
 
   if (pack === 'LITE') {
@@ -868,13 +982,16 @@ async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
     /** reload lại trang */
     window.location.reload()
   } catch (e) {
-    if (e === 'WALLET.NOT_ENOUGH_MONEY')
-      toastError($t('v1.view.main.dashboard.org.pay.upgrade.not_enough_money'))
-    /** nếu có lỗi thì hiện thông báo lỗi */ else toastError(e)
+    if (e === 'WALLET.NOT_ENOUGH_MONEY') {
+      /** Nếu Ví không đủ tiền, thì return text đó, không show toast nữa */
+      return 'WALLET.NOT_ENOUGH_MONEY'
+      // toastError($t('v1.view.main.dashboard.org.pay.upgrade.not_enough_money'))
+    } else toastError(e)
+    /** nếu có lỗi thì hiện thông báo lỗi */
+  } finally {
+    /** tắt loading */
+    orgStore.is_loading = false
   }
-
-  /** tắt loading */
-  orgStore.is_loading = false
 }
 /**hạ xuống gói free */
 function downgradeFreePack() {}

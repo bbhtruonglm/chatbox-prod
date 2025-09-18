@@ -976,6 +976,8 @@ const source: Language = {
                   'Doanh nghiệp nhập đúng thông tin và cung cấp các thông tin khác chính xác bằng Tiếng Việt có dấu (đối với thông tin tiếng Việt). {partner} sẽ không chịu trách nhiệm hoặc sẽ hủy bỏ hóa đơn đã xuất nếu có sai sót thông tin',
                 guild_2:
                   'Dữ liệu doanh nghiệp sẽ được {partner} sử dụng để liên lạc và hỗ trợ doanh nghiệp. Để yêu cầu thu hồi thông tin này, vui lòng gửi email tới',
+                guild_3:
+                  'Dữ liệu doanh nghiệp sẽ được {partner} sử dụng để liên lạc và hỗ trợ doanh nghiệp.',
               },
               staff: {
                 title: 'Thêm nhân viên vào tổ chức',
@@ -1151,6 +1153,8 @@ const source: Language = {
                 upgrade_package: 'Gói nâng cấp',
                 time: 'Thời gian',
                 cost: 'Giá',
+                one_month: '1 tháng',
+                close: 'Đóng',
               },
               recharge: {
                 wrong_wallet_id: 'Thông tin tài khoản không chính xác',
@@ -1161,7 +1165,7 @@ const source: Language = {
                   'Số tiền nạp tối thiểu 50.000đ, tối đa 250.000.000đ',
                 voucher: {
                   title: 'Mã giảm giá, khuyến mãi',
-                  description: 'Nhập mã giảm giá, khuyến mãi',
+                  description: 'Nhập mã giảm giá, khuyến mại',
                   wrong: 'Mã không hợp lệ, vui lòng kiểm tra lại',
                   origin_amount: 'Số tiền nạp thực tế:',
                   amount: 'Số tiền thực nhận:',

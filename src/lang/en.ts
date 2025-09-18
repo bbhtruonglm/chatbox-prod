@@ -1181,6 +1181,8 @@ const source: Language = {
                   'The business has entered correct information and provided other details accurately in Vietnamese with accents (for Vietnamese information). {partner} will not be responsible or will cancel any issued invoices if there is incorrect information.',
                 guild_2:
                   'The business data will be used by {partner} to contact and support the business. To request the retrieval of this information, please send an email to',
+                guild_3:
+                  'The business data will be used by {partner} to contact and support the business.',
               },
               staff: {
                 title: 'Add staff to organization',
@@ -1347,6 +1349,17 @@ const source: Language = {
                 year: 'Year {discount}',
                 company: 'Business',
                 success: 'Payment successful',
+                confirm_title: 'Confirm Payment',
+                confirm_text: 'Are you sure you want to pay for the package',
+                cancel: 'Cancel',
+                confirm: 'Confirm',
+                total_amount: 'Total Amount',
+                payment_amount: 'Payment Amount',
+                upgrade_package: 'Upgrade Package',
+                time: 'Duration',
+                cost: 'Price',
+                one_month: '1 Month',
+                close: 'Close',
               },
               recharge: {
                 wrong_wallet_id: 'Incorrect account information',
