@@ -1194,15 +1194,17 @@ const source: Language = {
                     'Quý khách có thể liên hệ với {partner} khi thanh toán thành công nhưng hệ thống chưa kích hoạt.',
                   hint: 'Lưu ý',
                   hint_1:
-                    'Vui lòng đọc ký hướng dẫn sử dụng Chuyển khoản nhanh tại',
+                    'Quý khách vui lòng đọc kỹ hướng dẫn sử dụng Chuyển khoản nhanh tại',
                   hint_2:
                     '{partner} không chịu trách nhiệm cho bất kỳ tổn thất nào xảy ra nếu khách hàng không nhập chính xác thông tin chuyển khoản.',
-                  hint_3: 'Vui lòng giữ biên lai để đối chứng khi cần thiết.',
+                  hint_3:
+                    'Quý khách vui lòng giữ biên lai để đối chứng khi cần thiết.',
                   hint_4:
                     'Quý khách vui lòng không chỉnh sửa số tài khoản và tên tài khoản thụ hưởng được cung cấp.',
                   here: 'Đây',
                   check: 'Kiểm tra thanh toán',
                 },
+                waiting_payment: 'Đang chờ thành toán',
               },
               lite: 'LITE',
               upgrade_v2: {

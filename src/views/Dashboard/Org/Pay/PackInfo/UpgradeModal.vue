@@ -209,10 +209,10 @@
     >
       <div
         v-if="is_confirm_open"
-        class="fixed top-0 left-0 w-screen h-screen bg-black/30 z-30 flex items-center justify-center"
+        class="fixed top-0 left-0 w-screen h-screen py-10 bg-black/30 z-30 flex items-center justify-center"
       >
         <div
-          class="bg-white rounded-lg shadow-lg p-6 w-[800px] text-center flex flex-col gap-6"
+          class="bg-white rounded-lg shadow-lg p-6 w-[800px] max-h-full text-center flex flex-col gap-4"
           @click.stop
         >
           <div class="flex justify-between items-center">
@@ -226,183 +226,205 @@
               <XMarkIcon class="size-4" />
             </div>
           </div>
-          <div class="flex gap-2.5">
-            <div class="py-3 w-1/2 flex flex-col gap-2.5 items-start text-sm">
-              <label class="font-semibold">{{ $t('Thông tin gói') }}</label>
-              <p>
-                {{
-                  $t('v1.view.main.dashboard.org.pay.upgrade.upgrade_package')
-                }}
-                :
-                <span class="font-semibold">
-                  {{ selectedPack }}
-                </span>
-              </p>
-              <p>
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.time') }} :
-                <span class="font-semibold">
-                  {{ selectedPack }}
-                </span>
-              </p>
-              <p>
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.cost') }} :
-                <span class="font-semibold">
-                  {{ selectedPack }}
-                </span>
-              </p>
-            </div>
-            <div class="py-3 w-1/2 text-sm flex flex-col gap-2.5 items-start">
-              <label class="font-semibold">{{
-                $t('Thông tin thanh toán')
-              }}</label>
-              <div class="flex gap-5">
-                <Radio
-                  v-model="is_issue_invoice"
-                  :value="false"
-                  :title="
-                    $t('v1.view.main.dashboard.org.pay.recharge.no_invoice')
-                  "
-                />
-                <!-- :disabled="pay_step === 'STEP_2'" -->
-                <Radio
-                  v-model="is_issue_invoice"
-                  :value="true"
-                  :title="
-                    $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
-                  "
-                />
-                <!-- :disabled="pay_step === 'STEP_2'" -->
-              </div>
-              <p>
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.total_amount') }}
-                :
-                <span class="font-semibold">
-                  {{ selectedPack }}
-                </span>
-              </p>
-              <div class="w-full flex flex-col gap-2">
-                <div class="text-start">
+
+          <div
+            class="overflow-hidden min-h-0 flex-grow overflow-y-auto flex flex-col gap-2.5"
+          >
+            <div
+              class="flex gap-2.5"
+              :class="[
+                pay_step === 'STEP_2'
+                  ? 'border-b border-dashed border-slate-500'
+                  : '',
+              ]"
+            >
+              <div class="py-3 w-1/2 flex flex-col gap-2.5 items-start text-sm">
+                <label class="font-semibold">{{ $t('Thông tin gói') }}</label>
+                <p>
                   {{
-                    $t('v1.view.main.dashboard.org.pay.recharge.voucher.title')
+                    $t('v1.view.main.dashboard.org.pay.upgrade.upgrade_package')
                   }}
-                </div>
-                <div class="pt-0 flex flex-col gap-2">
-                  <input
-                    v-if="pay_step === 'STEP_1'"
-                    v-model="voucher_code"
-                    @keyup="debounceVerifyVoucher"
-                    class="focus:outline-gray-400 py-2 px-3 rounded-md border w-full"
-                    :placeholder="
-                      $t(
-                        'v1.view.main.dashboard.org.pay.recharge.voucher.description'
-                      )
+                  :
+                  <span class="font-semibold">
+                    {{ selectedPack }}
+                  </span>
+                </p>
+                <p>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.time') }} :
+                  <span class="font-semibold">
+                    {{ $t('one_month') }}
+                  </span>
+                </p>
+                <p>
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.cost') }} :
+                  <span class="font-semibold">
+                    {{ currency(Number(amount)) }}đ
+                  </span>
+                </p>
+              </div>
+              <div class="py-3 w-1/2 text-sm flex flex-col gap-2.5 items-start">
+                <label class="font-semibold">{{
+                  $t('Thông tin thanh toán')
+                }}</label>
+                <div class="flex gap-5">
+                  <Radio
+                    v-model="is_issue_invoice"
+                    :value="false"
+                    :title="
+                      $t('v1.view.main.dashboard.org.pay.recharge.no_invoice')
                     "
+                    :disabled="pay_step === 'STEP_2'"
                   />
-                  <div
-                    v-else
-                    class="py-2 px-3 rounded-md border w-full"
-                  >
-                    <span v-if="voucher_code">{{ voucher_code }}</span>
-                    <span
+                  <Radio
+                    v-model="is_issue_invoice"
+                    :value="true"
+                    :title="
+                      $t('v1.view.main.dashboard.org.pay.recharge.need_invoice')
+                    "
+                    :disabled="pay_step === 'STEP_2'"
+                  />
+                </div>
+                <p>
+                  {{
+                    $t('v1.view.main.dashboard.org.pay.upgrade.total_amount')
+                  }}
+                  :
+                  <span class="font-semibold">
+                    {{ currency(Number(amount)) }}đ
+                  </span>
+                </p>
+                <div class="w-full flex flex-col gap-2">
+                  <div class="text-start">
+                    {{
+                      $t(
+                        'v1.view.main.dashboard.org.pay.recharge.voucher.title'
+                      )
+                    }}
+                  </div>
+                  <div class="pt-0 flex flex-col gap-2">
+                    <input
+                      v-if="pay_step === 'STEP_1'"
+                      v-model="voucher_code"
+                      @keyup="debounceVerifyVoucher"
+                      class="focus:outline-gray-400 py-2 px-3 rounded-md border w-full"
+                      :placeholder="
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.description'
+                        )
+                      "
+                    />
+                    <div
                       v-else
-                      class="text-slate-500"
+                      class="py-2 px-3 rounded-md border w-full"
+                    >
+                      <span v-if="voucher_code">{{ voucher_code }}</span>
+                      <span
+                        v-else
+                        class="text-slate-500"
+                      >
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.pay.recharge.voucher.empty'
+                          )
+                        }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="verify_voucher?.is_verify === false"
+                      class="text-sm text-red-500"
                     >
                       {{
                         $t(
-                          'v1.view.main.dashboard.org.pay.recharge.voucher.empty'
+                          'v1.view.main.dashboard.org.pay.recharge.voucher.wrong'
                         )
                       }}
-                    </span>
+                    </div>
+                    <div
+                      v-else
+                      class="text-sm text-green-600 text-left"
+                    >
+                      {{
+                        getPriceChangeText(
+                          Number(verify_voucher?.txn_origin_amount),
+                          Number(verify_voucher?.txn_amount)
+                        )
+                      }}
+                    </div>
                   </div>
-                  <div
-                    v-if="verify_voucher?.is_verify === false"
-                    class="text-sm text-red-500"
+                </div>
+                <p>
+                  {{
+                    $t('v1.view.main.dashboard.org.pay.upgrade.payment_amount')
+                  }}
+                  :
+                  <span class="font-semibold text-green-600">
+                    {{
+                      currency(Number(verify_voucher?.txn_amount || amount))
+                    }}đ
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div
+              v-if="pay_step === 'STEP_2'"
+              class="text-left"
+            >
+              <div class="px-4 py-1 font-medium">
+                {{ $t('v1.view.main.dashboard.org.pay.recharge.pay') }}
+              </div>
+              <div class="p-4 pt-0 flex flex-col gap-5">
+                <template v-for="method of LIST_PAYMENT_METHOD">
+                  <Radio
+                    v-if="
+                      pay_step === 'STEP_2' && payment_method === method.value
+                    "
+                    v-model="payment_method"
+                    :value="method.value"
+                    :title="method.title"
+                    :disabled="method.disabled"
+                    :class="{
+                      '!cursor-not-allowed': method.disabled,
+                    }"
+                  />
+                </template>
+                <template v-if="pay_step === 'STEP_2'">
+                  <template v-if="payment_method === 'TRANSFER'">
+                    <TransferInfo
+                      v-model="txn_info"
+                      :amount="calcBankAmount()"
+                      :txn_id="txn_info?.txn_id"
+                      :is_issue_invoice
+                      :is_pay_partner="
+                        verify_voucher?.voucher_is_pay_partner ||
+                        txn_info?.txn_voucher_info?.voucher_is_pay_partner
+                      "
+                      :partner_info="
+                        verify_voucher?.voucher_partner_info ||
+                        txn_info?.txn_voucher_info?.voucher_partner_info
+                      "
+                    />
+                    <!-- <button
+                    v-if="txn_info?.txn_status !== 'SUCCESS'"
+                    @click="checkPayment"
+                    class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
                   >
                     {{
                       $t(
-                        'v1.view.main.dashboard.org.pay.recharge.voucher.wrong'
+                        'v1.view.main.dashboard.org.pay.recharge.transfer_info.check'
                       )
                     }}
-                  </div>
-                  <div
-                    v-else
-                    class="text-sm text-green-600"
-                  >
-                    {{
-                      verify_voucher?.voucher_description ||
-                      txn_info?.txn_voucher_info?.voucher_description
-                    }}
-                  </div>
-                </div>
-              </div>
-              <p>
-                {{
-                  $t('v1.view.main.dashboard.org.pay.upgrade.payment_amount')
-                }}
-                :
-                <span class="font-semibold">
-                  {{ selectedPack }}
-                </span>
-              </p>
-            </div>
-          </div>
-          <div>
-            <div class="p-4 font-medium">
-              {{ $t('v1.view.main.dashboard.org.pay.recharge.pay') }}
-            </div>
-            <div class="p-4 pt-0 flex flex-col gap-5">
-              <template v-for="method of LIST_PAYMENT_METHOD">
-                <Radio
-                  v-if="
-                    pay_step === 'STEP_1' ||
-                    (pay_step === 'STEP_2' && payment_method === method.value)
-                  "
-                  v-model="payment_method"
-                  :value="method.value"
-                  :title="method.title"
-                  :disabled="method.disabled"
-                  :class="{
-                    '!cursor-not-allowed': method.disabled,
-                  }"
-                />
-              </template>
-              <template v-if="pay_step === 'STEP_2'">
-                <template v-if="payment_method === 'TRANSFER'">
-                  <TransferInfo
-                    v-model="txn_info"
-                    :amount="calcBankAmount()"
-                    :txn_id="txn_info?.txn_id"
-                    :is_issue_invoice
-                    :is_pay_partner="
-                      verify_voucher?.voucher_is_pay_partner ||
-                      txn_info?.txn_voucher_info?.voucher_is_pay_partner
-                    "
-                    :partner_info="
-                      verify_voucher?.voucher_partner_info ||
-                      txn_info?.txn_voucher_info?.voucher_partner_info
-                    "
-                  />
-                  <!-- <button
-                  v-if="txn_info?.txn_status !== 'SUCCESS'"
-                  @click="checkPayment"
-                  class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit uppercase"
-                >
-                  {{
-                    $t(
-                      'v1.view.main.dashboard.org.pay.recharge.transfer_info.check'
-                    )
-                  }}
-                </button> -->
+                  </button> -->
+                  </template>
+                  <template v-else> Tính năng đang phát triển! </template>
                 </template>
-                <template v-else> Tính năng đang phát triển! </template>
-              </template>
-              <button
-                v-if="pay_step === 'STEP_1'"
-                @click="createTxn"
-                class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit"
-              >
-                {{ $t('v1.view.main.dashboard.org.pay.recharge.continue') }}
-              </button>
+                <!-- <button
+                  v-if="pay_step === 'STEP_1'"
+                  @click="createTxn"
+                  class="py-2 px-4 rounded-md text-sm font-semibold text-white bg-blue-600 hover:brightness-90 w-fit"
+                >
+                  {{ $t('v1.view.main.dashboard.org.pay.recharge.continue') }}
+                </button> -->
+              </div>
             </div>
           </div>
 
@@ -413,11 +435,24 @@
             >
               {{ $t('v1.view.main.dashboard.org.pay.upgrade.cancel') }}
             </button>
+            <!-- @click="confirmPayment" -->
+            <!-- :disabled="pay_step === 'STEP_2'" -->
             <button
-              @click="confirmPayment"
-              class="py-2 px-4 rounded-md bg-blue-700 text-white hover:brightness-95"
+              @click="pay_step !== 'STEP_2' && createTxn()"
+              :class="[
+                'py-2 px-4 rounded-md ',
+                pay_step === 'STEP_2'
+                  ? 'bg-blue-100 cursor-not-allowed text-blue-700'
+                  : 'bg-blue-700 text-white hover:brightness-95',
+              ]"
             >
-              {{ $t('v1.view.main.dashboard.org.pay.upgrade.confirm') }}
+              {{
+                pay_step === 'STEP_2'
+                  ? $t(
+                      'v1.view.main.dashboard.org.pay.recharge.waiting_payment'
+                    )
+                  : $t('v1.view.main.dashboard.org.pay.upgrade.confirm')
+              }}
             </button>
           </div>
         </div>
@@ -427,10 +462,12 @@
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useCommonStore, useOrgStore } from '@/stores'
 import { openNewTab } from '@/service/function'
 import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
+
+import TransferInfo from '@/views/Dashboard/Org/Pay/PackInfo/TransferInfo.vue'
 // import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
 import { toast, toastError } from '@/service/helper/alert'
 import {
@@ -459,6 +496,24 @@ import type { TransactionInfo } from '@/service/interface/app/billing'
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
+
+/** Hàm tính toán hiển thị text sau khi nhập mã thành công
+ * @param original_price giá gốc
+ * @param new_price giá sau khi add voucher
+ */
+function getPriceChangeText(original_price: number, new_ơrice: number): string {
+  /** Tính toán chenh lệch */
+  const DIFF_AMOUNT = new_ơrice - original_price
+  /** Nếu tí hơn là giảm giá */
+  if (DIFF_AMOUNT < 0) {
+    return `Bạn được giảm giá ${Math.abs(DIFF_AMOUNT).toLocaleString()}đ`
+    /** Nếu nhiều hơn là tăng giá */
+  } else if (DIFF_AMOUNT > 0) {
+    return `Bạn phải trả thêm ${DIFF_AMOUNT.toLocaleString()}đ`
+  } else {
+    return ''
+  }
+}
 
 /**các phương thức thanh toán */
 const LIST_PAYMENT_METHOD: {
@@ -617,8 +672,6 @@ const is_issue_invoice = ref<boolean>(false)
 const is_open = ref(false)
 /**mua gói Pro 1 năm */
 const is_full_year = ref(false)
-/**số tiền nạp */
-const amount = ref<string>('500000')
 /**dữ liệu xác thực mã khuyến mại */
 const verify_voucher = ref<ResponseVerifyVoucher>({})
 
@@ -645,6 +698,8 @@ async function verifyVoucher() {
       Number(amount.value),
       voucher_code.value
     )
+
+    console.log(verify_voucher, 'verify_voucher')
   } catch (e) {
   } finally {
     // tắt trạng thái loading
@@ -659,11 +714,28 @@ const pay_step = ref<'STEP_1' | 'STEP_2'>('STEP_1')
 const voucher_code = ref<string>()
 /** modal xác nhận thanh toán */
 const is_confirm_open = ref(false)
+
+/**số tiền nạp */
+const amount = ref<string>('199000')
+/** Số tiền sau khi giảm giá */
+const amount_after_add_voucher = ref<string>('199000')
+
 /** gói đã chọn */
 const selectedPack = ref<'LITE' | 'PRO' | 'BUSINESS' | null>(null)
 /** mở modal xác nhận thanh toán */
 function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
   selectedPack.value = pack
+
+  if (pack === 'LITE') {
+    amount.value = '199000'
+  }
+  if (pack === 'PRO') {
+    amount.value = '480000'
+  }
+  if (pack === 'BUSINESS') {
+    amount.value = '2600000'
+  }
+
   is_confirm_open.value = true
 }
 /**tạo mới giao dịch */
@@ -683,7 +755,7 @@ async function createTxn() {
     /**số tiền nạp */
     const AMOUNT = Number(amount.value)
 
-    // kiểm tra số tiền nạp có hợp lệ không
+    /** kiểm tra số tiền nạp có hợp lệ không */
     if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
       throw $t('v1.view.main.dashboard.org.pay.recharge.amount_description')
 
@@ -693,11 +765,11 @@ async function createTxn() {
     /**id ví */
     const WALLET_ID = WALLET_INFO?.wallet_id
 
-    // kiểm tra ví có tồn tại không
+    /** kiểm tra ví có tồn tại không */
     if (!WALLET_ID)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
-    // tạo giao dịch
+    /** tạo giao dịch */
     txn_info.value = await create_txn(
       orgStore.selected_org_id,
       WALLET_ID,
@@ -707,14 +779,14 @@ async function createTxn() {
       voucher_code.value
     )
 
-    // chuyển sang bước 2
+    /** chuyển sang bước 2 */
     pay_step.value = 'STEP_2'
   } catch (e) {
     // hiển thị thông báo lỗi
     toastError(e)
   }
 
-  // tắt trạng thái loading
+  /** tắt trạng thái loading */
   orgStore.is_loading = false
 }
 
@@ -722,6 +794,9 @@ async function createTxn() {
 function closeConfirmModal() {
   is_confirm_open.value = false
   selectedPack.value = null
+
+  verify_voucher.value = {}
+  voucher_code.value = ''
 }
 
 /** gọi mua gói sau khi confirm */
@@ -737,25 +812,25 @@ function toggleModal() {
 }
 /**liên hệ với chúng tôi */
 function contactUs() {
-  // nếu đang ở gói doanh nghiệp thì không mở tab
+  /** nếu đang ở gói doanh nghiệp thì không mở tab */
   if (orgStore.isBusinessPack()) return
 
-  // mở tab liên hệ với chúng tôi
+  /** mở tab liên hệ với chúng tôi */
   openNewTab(BBH_PAGE_MESS)
 }
 /**kích hoạt gói dùng thử hoặc gói pro */
 async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
-  // nếu chưa chọn org thì không làm gì
+  /** nếu chưa chọn org thì không làm gì */
   if (!orgStore.selected_org_id || orgStore.is_loading) return
 
-  // nếu đã mua gói lite thì không làm gì
+  /** nếu đã mua gói lite thì không làm gì */
   if (orgStore.isLitePack() && pack === 'LITE') return
-  // nếu đã mua gói thì không làm gì
+  /** nếu đã mua gói thì không làm gì */
   if (orgStore.isProPack() && pack === 'PRO') return
-  // nếu đã mua gói doanh nghiệp thì không làm gì
+  /** nếu đã mua gói doanh nghiệp thì không làm gì */
   if (orgStore.isBusinessPack() && pack === 'BUSINESS') return
 
-  // kích hoạt loading
+  /** kích hoạt loading */
   orgStore.is_loading = true
 
   try {
@@ -769,14 +844,14 @@ async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
 
-    // nếu không có ví thì thông báo lỗi
+    /** nếu không có ví thì thông báo lỗi */
     if (!WALLET?.wallet_id)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
     /**số tháng mua */
     const MONTHS = is_full_year.value ? 12 : 1
 
-    // yêu cầu mua gói
+    /** yêu cầu mua gói */
     await purchase_package(
       orgStore.selected_org_id,
       WALLET?.wallet_id,
@@ -784,22 +859,21 @@ async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
       MONTHS
     )
 
-    // thông báo mua gói thành công
+    /** thông báo mua gói thành công */
     toast('success', $t('v1.view.main.dashboard.org.pay.upgrade.success'))
 
-    // chờ 1s
+    /** chờ 1s */
     await new Promise(cb => setTimeout(cb, 1000))
 
-    // reload lại trang
+    /** reload lại trang */
     window.location.reload()
   } catch (e) {
     if (e === 'WALLET.NOT_ENOUGH_MONEY')
       toastError($t('v1.view.main.dashboard.org.pay.upgrade.not_enough_money'))
-    // nếu có lỗi thì hiện thông báo lỗi
-    else toastError(e)
+    /** nếu có lỗi thì hiện thông báo lỗi */ else toastError(e)
   }
 
-  // tắt loading
+  /** tắt loading */
   orgStore.is_loading = false
 }
 /**hạ xuống gói free */
