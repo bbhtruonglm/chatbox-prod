@@ -15,187 +15,203 @@
       >
         <div
           @click.stop
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white w-max flex flex-col shadow-lg p-3 gap-4 pb-5"
+          class="w-full h-full p-3 flex flex-grow min-h-0 overflow-y-auto justify-center items-center"
         >
-          <div class="px-3 text-lg font-semibold flex-shrink-0 text-center">
-            {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
-          </div>
-          <div class="grid grid-cols-4 gap-3 px-10">
-            <div class="item">
-              <Content :content="CONTENTS.FREE" />
-              <button
-                v-if="orgStore.isFreePack() || orgStore.isTrialPack()"
-                @click="downgradeFreePack"
-                class="btn text-slate-700 bg-slate-200 cursor-not-allowed"
-              >
-                {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
-              </button>
-            </div>
-            <div class="item max-w-80">
-              <Content
-                :content="CONTENTS.LITE"
-                :is_full_year
-              >
-                <template #toggle>
-                  <Toggle
-                    v-model="is_full_year"
-                    class_toggle="peer-checked:bg-black"
-                  >
-                    <span class="text-green-600">
-                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
-                    </span>
-                  </Toggle>
-                </template>
-                <template #chat_feature>
-                  (<a
-                    class="underline text-blue-700"
-                    href="https://retion.ai"
-                    target="_blank"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
-                  >)
-                </template>
-                <template #ai_feature>
-                  (<a
-                    class="underline text-blue-700"
-                    href="https://retion.ai"
-                    target="_blank"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
-                  >)
-                </template>
-                <template #support>
-                  (<a
-                    class="underline text-blue-700"
-                    href="https://bbh.gitbook.io/bot-ban-hang-docs"
-                    target="_blank"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
-                  >)
-                </template>
-              </Content>
-              <!-- @click="activeTrialOrProPack('LITE')" -->
-              <button
-                v-if="!orgStore.isBusinessPack() && !orgStore.isProPack()"
-                @click="openConfirmModal('LITE')"
-                :class="{
-                  'cursor-not-allowed !text-slate-700 bg-slate-200':
-                    orgStore.isLitePack(),
-                }"
-                class="btn text-white bg-green-600"
-              >
-                <template v-if="orgStore.isLitePack()">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
-                </template>
-                <template v-else>
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.lite') }}
-                </template>
-              </button>
-            </div>
-            <div class="item max-w-80">
-              <Content
-                :content="CONTENTS.PRO"
-                :is_full_year
-              >
-                <template #toggle>
-                  <Toggle
-                    v-model="is_full_year"
-                    class_toggle="peer-checked:bg-black"
-                  >
-                    <span class="text-green-600">
-                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
-                    </span>
-                  </Toggle>
-                </template>
-                <template #chat_feature>
-                  (<a
-                    class="underline text-blue-700"
-                    href="https://retion.ai"
-                    target="_blank"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
-                  >)
-                </template>
-                <template #ai_feature>
-                  (<a
-                    class="underline text-blue-700"
-                    href="https://retion.ai"
-                    target="_blank"
-                  >
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.more') }} </a
-                  >)
-                </template>
-              </Content>
-              <!-- @click="activeTrialOrProPack('PRO')" -->
-              <button
-                v-if="!orgStore.isBusinessPack()"
-                @click="openConfirmModal('PRO')"
-                :class="{
-                  'cursor-not-allowed !text-slate-700 bg-slate-200':
-                    orgStore.isProPack(),
-                  'bg-blue-600 text-white': !orgStore.hasTrial(),
-                  'bg-green-600 text-white': orgStore.hasTrial(),
-                }"
-                class="btn"
-              >
-                <template
-                  v-if="
-                    orgStore.isFreePack() &&
-                    !orgStore.selected_org_info?.org_package?.org_has_trial
-                  "
-                >
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.trial_day_7') }}
-                </template>
-                <template v-else-if="orgStore.isProPack()">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
-                </template>
-                <template v-else>
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.pro') }}
-                </template>
-              </button>
-            </div>
-            <div class="item max-w-80">
-              <Content
-                :content="CONTENTS.COMPANY"
-                :is_full_year
-              >
-                <template #toggle>
-                  <Toggle
-                    v-model="is_full_year"
-                    class_toggle="peer-checked:bg-black"
-                  >
-                    <span class="text-green-600">
-                      {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
-                    </span>
-                  </Toggle>
-                </template>
-              </Content>
-              <!-- @click="activeTrialOrProPack('BUSINESS')" -->
-              <button
-                :class="{
-                  'cursor-not-allowed !text-slate-700 bg-slate-200':
-                    orgStore.isBusinessPack(),
-                }"
-                @click="openConfirmModal('BUSINESS')"
-                class="btn text-white bg-green-600"
-              >
-                <template v-if="orgStore.isBusinessPack()">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
-                </template>
-                <template v-else>
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.business') }}
-                </template>
-              </button>
-            </div>
-          </div>
-          <a
-            :href="`https://${commonStore.partner?.domain}/pricing`"
-            target="_blank"
-            class="text-slate-700 flex items-center gap-1 w-fit mx-auto"
+          <div
+            class="p-3 rounded-lg bg-slate-50 w-full flex flex-col shadow-lg gap-10 max-h-screen overflow-y-auto"
           >
-            {{ $t('v1.view.main.dashboard.org.pay.upgrade.detail') }}
-            <NewTabIcon class="w-4 h-4" />
-          </a>
+            <div class="px-3 text-lg font-semibold flex-shrink-0 text-center">
+              {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
+            </div>
+            <div class="grid grid-cols-4 gap-3">
+              <div class="item">
+                <Content :content="CONTENTS.FREE" />
+                <button
+                  v-if="orgStore.isFreePack() || orgStore.isTrialPack()"
+                  @click="downgradeFreePack"
+                  class="btn text-slate-700 bg-slate-200 cursor-not-allowed"
+                >
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                </button>
+              </div>
+              <div class="item max-w-80">
+                <Content
+                  :content="CONTENTS.LITE"
+                  :is_full_year
+                >
+                  <template #toggle>
+                    <Toggle
+                      v-model="is_full_year"
+                      class_toggle="peer-checked:bg-black"
+                    >
+                      <span class="text-green-600">
+                        {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
+                      </span>
+                    </Toggle>
+                  </template>
+                  <template #chat_feature>
+                    (<a
+                      class="underline text-blue-700"
+                      href="https://retion.ai"
+                      target="_blank"
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.more')
+                      }} </a
+                    >)
+                  </template>
+                  <template #ai_feature>
+                    (<a
+                      class="underline text-blue-700"
+                      href="https://retion.ai"
+                      target="_blank"
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.more')
+                      }} </a
+                    >)
+                  </template>
+                  <template #support>
+                    (<a
+                      class="underline text-blue-700"
+                      href="https://bbh.gitbook.io/bot-ban-hang-docs"
+                      target="_blank"
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.more')
+                      }} </a
+                    >)
+                  </template>
+                </Content>
+                <button
+                  v-if="!orgStore.isBusinessPack() && !orgStore.isProPack()"
+                  @click="openConfirmModal('LITE')"
+                  :class="{
+                    'cursor-not-allowed !text-slate-700 bg-slate-200':
+                      orgStore.isLitePack(),
+                  }"
+                  class="btn text-white bg-green-600"
+                >
+                  <template v-if="orgStore.isLitePack()">
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                  </template>
+                  <template v-else>
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.lite') }}
+                  </template>
+                </button>
+              </div>
+              <div class="item max-w-80">
+                <Content
+                  :content="CONTENTS.PRO"
+                  :is_full_year
+                >
+                  <template #toggle>
+                    <Toggle
+                      v-model="is_full_year"
+                      class_toggle="peer-checked:bg-black"
+                    >
+                      <span class="text-green-600">
+                        {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
+                      </span>
+                    </Toggle>
+                  </template>
+                  <template #chat_feature>
+                    (<a
+                      class="underline text-blue-700"
+                      href="https://retion.ai"
+                      target="_blank"
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.more')
+                      }} </a
+                    >)
+                  </template>
+                  <template #ai_feature>
+                    (<a
+                      class="underline text-blue-700"
+                      href="https://retion.ai"
+                      target="_blank"
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade.more')
+                      }} </a
+                    >)
+                  </template>
+                </Content>
+                <!-- @click="activeTrialOrProPack('PRO')" -->
+                <button
+                  v-if="!orgStore.isBusinessPack()"
+                  @click="openConfirmModal('PRO')"
+                  :class="{
+                    'cursor-not-allowed !text-slate-700 bg-slate-200':
+                      orgStore.isProPack(),
+                    'bg-blue-600 text-white': !orgStore.hasTrial(),
+                    'bg-green-600 text-white': orgStore.hasTrial(),
+                  }"
+                  class="btn"
+                >
+                  <template
+                    v-if="
+                      orgStore.isFreePack() &&
+                      !orgStore.selected_org_info?.org_package?.org_has_trial
+                    "
+                  >
+                    {{
+                      $t('v1.view.main.dashboard.org.pay.upgrade.trial_day_7')
+                    }}
+                  </template>
+                  <template v-else-if="orgStore.isProPack()">
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                  </template>
+                  <template v-else>
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.pro') }}
+                  </template>
+                </button>
+              </div>
+              <div class="item max-w-80">
+                <Content
+                  :content="CONTENTS.COMPANY"
+                  :is_full_year
+                >
+                  <template #toggle>
+                    <Toggle
+                      v-model="is_full_year"
+                      class_toggle="peer-checked:bg-black"
+                    >
+                      <span class="text-green-600">
+                        {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
+                      </span>
+                    </Toggle>
+                  </template>
+                </Content>
+                <!-- @click="activeTrialOrProPack('BUSINESS')" -->
+                <button
+                  :class="{
+                    'cursor-not-allowed !text-slate-700 bg-slate-200':
+                      orgStore.isBusinessPack(),
+                  }"
+                  @click="openConfirmModal('BUSINESS')"
+                  class="btn text-white bg-green-600"
+                >
+                  <template v-if="orgStore.isBusinessPack()">
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.current') }}
+                  </template>
+                  <template v-else>
+                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.business') }}
+                  </template>
+                </button>
+              </div>
+            </div>
+
+            <a
+              :href="`https://${commonStore.partner?.domain}/pricing`"
+              target="_blank"
+              class="text-slate-700 flex items-center gap-1 w-fit mx-auto"
+            >
+              {{ $t('v1.view.main.dashboard.org.pay.upgrade.detail') }}
+              <NewTabIcon class="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </Transition>

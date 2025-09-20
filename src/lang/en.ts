@@ -1412,7 +1412,11 @@ const source: Language = {
                   check: 'Check payment',
                 },
               },
-              lite: 'LITE',
+              lite: 'Lite',
+              upgrade_v2: {
+                title: 'Choose the right plan for your team',
+                choose_team_plan: 'Choose your team plan',
+              },
             },
             app: {
               title: 'AI App',
