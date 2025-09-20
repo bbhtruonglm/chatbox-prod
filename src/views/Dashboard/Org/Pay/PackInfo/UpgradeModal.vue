@@ -20,8 +20,34 @@
           <div
             class="p-3 rounded-lg bg-slate-50 w-full flex flex-col shadow-lg gap-10 max-h-screen overflow-y-auto"
           >
-            <div class="px-3 text-lg font-semibold flex-shrink-0 text-center">
-              {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
+            <div>
+              <div class="flex justify-between items-center">
+                <div></div>
+                <div
+                  class="px-3 text-lg font-semibold flex-shrink-0 text-center"
+                >
+                  {{ $t('v1.view.main.dashboard.org.pay.upgrade.title') }}
+                </div>
+
+                <div
+                  @click="toggleModal"
+                  class="cursor-pointer"
+                >
+                  <XMarkIcon class="size-4" />
+                </div>
+              </div>
+              <div
+                class="flex items-center justify-end w-full h-full gap-4 bg-gray-50 rounded-lg text-sm"
+              >
+                <span class="font-medium">Choose month</span>
+
+                <ShadcnSelectPopper
+                  v-model="SELECTED"
+                  :options="MONTHS"
+                  placeholder="Select month"
+                  width="180px"
+                />
+              </div>
             </div>
             <div class="grid grid-cols-4 gap-3">
               <div class="item">
@@ -38,8 +64,9 @@
                 <Content
                   :content="CONTENTS.LITE"
                   :is_full_year
+                  :SELECTED
                 >
-                  <template #toggle>
+                  <!-- <template #toggle>
                     <Toggle
                       v-model="is_full_year"
                       class_toggle="peer-checked:bg-black"
@@ -48,7 +75,7 @@
                         {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                       </span>
                     </Toggle>
-                  </template>
+                  </template> -->
                   <template #chat_feature>
                     (<a
                       class="underline text-blue-700"
@@ -104,8 +131,9 @@
                 <Content
                   :content="CONTENTS.PRO"
                   :is_full_year
+                  :SELECTED
                 >
-                  <template #toggle>
+                  <!-- <template #toggle>
                     <Toggle
                       v-model="is_full_year"
                       class_toggle="peer-checked:bg-black"
@@ -114,7 +142,7 @@
                         {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                       </span>
                     </Toggle>
-                  </template>
+                  </template> -->
                   <template #chat_feature>
                     (<a
                       class="underline text-blue-700"
@@ -135,6 +163,18 @@
                       {{
                         $t('v1.view.main.dashboard.org.pay.upgrade.more')
                       }} </a
+                    >)
+                  </template>
+                  <template #support>
+                    (<span
+                      class="text-blue-700"
+                      v-tooltip="
+                        $t('v1.view.main.dashboard.org.pay.support_group')
+                      "
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade._detail')
+                      }} </span
                     >)
                   </template>
                 </Content>
@@ -172,8 +212,9 @@
                 <Content
                   :content="CONTENTS.COMPANY"
                   :is_full_year
+                  :SELECTED
                 >
-                  <template #toggle>
+                  <!-- <template #toggle>
                     <Toggle
                       v-model="is_full_year"
                       class_toggle="peer-checked:bg-black"
@@ -182,6 +223,18 @@
                         {{ $t('v1.view.main.dashboard.org.pay.upgrade.year') }}
                       </span>
                     </Toggle>
+                  </template> -->
+                  <template #support>
+                    (<span
+                      class="text-blue-700"
+                      v-tooltip="
+                        $t('v1.view.main.dashboard.org.pay.advanced_support')
+                      "
+                    >
+                      {{
+                        $t('v1.view.main.dashboard.org.pay.upgrade._detail')
+                      }} </span
+                    >)
                   </template>
                 </Content>
                 <!-- @click="activeTrialOrProPack('BUSINESS')" -->
@@ -268,7 +321,7 @@
                 <p>
                   {{ $t('v1.view.main.dashboard.org.pay.upgrade.time') }} :
                   <span class="font-semibold">
-                    {{ $t('v1.view.main.dashboard.org.pay.upgrade.one_month') }}
+                    {{ MONTHS.find(item => item.value === SELECTED)?.label }}
                   </span>
                 </p>
                 <p>
@@ -516,6 +569,7 @@
                   <template v-if="payment_method === 'TRANSFER'">
                     <TransferInfo
                       v-model="txn_info"
+                      v-model:check_payment="check_payment"
                       :amount="calcBankAmount()"
                       :txn_id="txn_info?.txn_id"
                       :is_issue_invoice
@@ -584,6 +638,47 @@
       </div>
     </Transition>
   </Teleport>
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition ease-in-out duration-300"
+      leave-active-class="transition ease-in-out duration-300"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="is_success_open"
+        class="fixed top-0 left-0 w-screen h-screen py-10 bg-black/30 z-40 flex items-center justify-center"
+      >
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-center flex flex-col gap-4 animate-in fade-in"
+          @click.stop
+        >
+          <div class="flex flex-col items-center gap-3">
+            <!-- Icon success -->
+            <svg
+              class="w-16 h-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2l4-4m5 2a9 9 0 1 1-18 0a9 9 0 0 1 18 0z"
+              />
+            </svg>
+            <h3 class="text-lg font-semibold text-green-600">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
+            </h3>
+            <p class="text-slate-600 text-sm">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success_desc') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
@@ -602,6 +697,8 @@ import {
   read_wallet,
 } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
+
+import ShadcnSelectPopper from '@/components/Select/ShadcnSelectPopper.vue'
 
 import Toggle from '@/components/Toggle.vue'
 import Content from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal/Content.vue'
@@ -622,13 +719,59 @@ const commonStore = useCommonStore()
 const orgStore = useOrgStore()
 const { t: $t } = useI18n()
 
+/** Các option chọn tháng */
+const MONTHS = [
+  { value: '1', label: $t('v1.view.main.dashboard.org.pay.upgrade._1_month') },
+  { value: '3', label: $t('v1.view.main.dashboard.org.pay.upgrade._3_months') },
+  { value: '6', label: $t('v1.view.main.dashboard.org.pay.upgrade._6_months') },
+  { value: '9', label: $t('v1.view.main.dashboard.org.pay.upgrade._9_months') },
+  {
+    value: '12',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._12_months'),
+  },
+  {
+    value: '15',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._15_months'),
+  },
+  {
+    value: '18',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._18_months'),
+  },
+  {
+    value: '21',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._21_months'),
+  },
+  {
+    value: '24',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._24_months'),
+  },
+  {
+    value: '27',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._27_months'),
+  },
+  {
+    value: '30',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._30_months'),
+  },
+  {
+    value: '33',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._33_months'),
+  },
+  {
+    value: '36',
+    label: $t('v1.view.main.dashboard.org.pay.upgrade._36_months'),
+  },
+]
+/** giá trị mặc định */
+const SELECTED = ref('1')
+
 /** Hàm tính toán hiển thị text sau khi nhập mã thành công
  * @param original_price giá gốc
  * @param new_price giá sau khi add voucher
  */
-function getPriceChangeText(original_price: number, new_ơrice: number): string {
+function getPriceChangeText(original_price: number, new_price: number): string {
   /** Tính toán chenh lệch */
-  const DIFF_AMOUNT = new_ơrice - original_price
+  const DIFF_AMOUNT = new_price - original_price
   /** Nếu tí hơn là giảm giá */
   if (DIFF_AMOUNT < 0) {
     return `Bạn được giảm giá ${Math.abs(DIFF_AMOUNT).toLocaleString()}đ`
@@ -710,8 +853,8 @@ const CONTENTS: Record<string, IContent> = {
     page: '3',
     member: '3',
     ai_text: '1.000.000 ' + $t('v1.view.main.dashboard.org.pay.text'),
-    ai_image: '1.000 ' + $t('v1.view.main.dashboard.org.pay.image'),
-    ai_sound: '1000 ' + $t('v1.view.main.dashboard.org.pay.minute'),
+    ai_image: $t('v1.view.main.dashboard.org.pay.not_support'),
+    ai_sound: $t('v1.view.main.dashboard.org.pay.not_support'),
     fau: '10.000 ' + $t('v1.view.main.dashboard.org.pay.fau'),
     client: $t('v1.view.main.dashboard.org.pay.unlimited'),
     chat_feature: $t('v1.view.main.dashboard.org.pay.all'),
@@ -747,7 +890,7 @@ const CONTENTS: Record<string, IContent> = {
     company_name: $t('v1.view.main.dashboard.org.pay.yes'),
     api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.none'),
-    support: $t('v1.view.main.dashboard.org.pay.support_group'),
+    support: $t('v1.view.main.dashboard.org.pay.prioritize'),
   },
   /**gói doanh nghiệp */
   COMPANY: {
@@ -774,7 +917,7 @@ const CONTENTS: Record<string, IContent> = {
     company_name: $t('v1.view.main.dashboard.org.pay.yes'),
     api_integrate: $t('v1.view.main.dashboard.org.pay.yes'),
     domain_logo: $t('v1.view.main.dashboard.org.pay.yes'),
-    support: $t('v1.view.main.dashboard.org.pay.advanced_support'),
+    support: $t('v1.view.main.dashboard.org.pay.high'),
   },
 }
 /**tính ra số tiền chính xác cần quét qr */
@@ -802,6 +945,27 @@ const verify_voucher = ref<ResponseVerifyVoucher>({})
 
 /**thông tin giao dịch mới tạo */
 const txn_info = ref<TransactionInfo>()
+/** Check trạng thái payment */
+const check_payment = ref(false)
+/** trạng thái payment modal */
+const is_success_open = ref(false)
+/** đóng modal payment success */
+function closeSuccessModal() {
+  is_success_open.value = false
+}
+/** Theo dõi trạng thái payment */
+watch(check_payment, value => {
+  if (value) {
+    /** Bật modal báo success */
+    is_success_open.value = true
+    setTimeout(() => {
+      /** sau 5s thì tắt */
+      is_success_open.value = false
+      is_confirm_open.value = false
+      is_open.value = false
+    }, 5000)
+  }
+})
 
 const debounceVerifyVoucher = debounce(verifyVoucher, 300)
 /**kiểm tra mã giảm giá */
@@ -849,25 +1013,30 @@ const amount_after_add_voucher = ref<string>('199000')
 const selectedPack = ref<'LITE' | 'PRO' | 'BUSINESS' | null>(null)
 /** mở modal xác nhận thanh toán */
 async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
-  /** Trạng thái payment */
+  /** Gọi API hoặc logic thanh toán */
   const ON_PAYMENT = await activeTrialOrProPack(pack)
-  /** Nếu ví không đủ tiền, thì mới tiếp tục, không thì bỏ qua */
+
+  /** Nếu ví đủ tiền thì dừng, không mở modal */
   if (ON_PAYMENT !== 'WALLET.NOT_ENOUGH_MONEY') return
 
+  /** Gán gói đã chọn */
   selectedPack.value = pack
 
-  if (pack === 'LITE') {
-    amount.value = '199000'
-  }
-  if (pack === 'PRO') {
-    amount.value = '480000'
-  }
-  if (pack === 'BUSINESS') {
-    amount.value = '2600000'
+  /** Bảng giá từng gói */
+  const priceMap: Record<'LITE' | 'PRO' | 'BUSINESS', number> = {
+    LITE: 199000,
+    PRO: 480000,
+    BUSINESS: 2600000,
   }
 
+  /** Tính tiền = đơn giá * số lượng */
+  const QUANTITY = Number(SELECTED.value || 1)
+  amount.value = (QUANTITY * priceMap[pack]).toString()
+
+  /** Mở modal xác nhận */
   is_confirm_open.value = true
 }
+
 /**tạo mới giao dịch */
 async function createTxn() {
   // nếu chưa chọn tổ chức nào thì không thực hiện
@@ -883,10 +1052,12 @@ async function createTxn() {
 
   try {
     /**số tiền nạp */
-    const AMOUNT = Number(amount.value)
+    // const AMOUNT = Number(amount.value)
+    const AMOUNT = 4000
 
     /** kiểm tra số tiền nạp có hợp lệ không */
-    if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
+    // if (!AMOUNT || AMOUNT < 50000 || AMOUNT > 250000000)
+    if (!AMOUNT || AMOUNT < 4000 || AMOUNT > 250000000)
       throw $t('v1.view.main.dashboard.org.pay.recharge.amount_description')
 
     /**lấy thông tin ví hiện tại */
@@ -979,7 +1150,7 @@ async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
     /**số tháng mua */
-    const MONTHS = is_full_year.value ? 12 : 1
+    const MONTHS = Number(SELECTED.value)
 
     /** yêu cầu mua gói */
     await purchase_package(

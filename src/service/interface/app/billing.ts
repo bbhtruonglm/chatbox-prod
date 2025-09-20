@@ -1,6 +1,7 @@
-import type { IBankAccount } from '@/utils/api/N4Service/Partner'
-import type { ChatbotUserInfo } from './chatbot_user'
 import type { IPage, PageInfo } from './page'
+
+import type { ChatbotUserInfo } from './chatbot_user'
+import type { IBankAccount } from '@/utils/api/N4Service/Partner'
 
 /**tổ chức */
 export interface OrgInfo {
@@ -244,6 +245,8 @@ export interface TransactionInfo {
   txn_voucher_id?: string
   /**snap lại dữ liệu của mã khuyến mại tại thời điểm tạo */
   txn_voucher_info?: IVoucher
+  /** phiên bản sử dụng */
+  version?: string
 }
 /**dữ liệu đính kèm nếu mã theo phạm vi nhân viên */
 export interface IStaffInfo {
@@ -382,4 +385,8 @@ export interface QrCodeInput {
   amount: number
   /**nội dung chuyển khoản */
   message: string
+  /** phiên bản   */
+  version?: string
+  /** mã giao dịch txn_id */
+  txn_id?: string
 }

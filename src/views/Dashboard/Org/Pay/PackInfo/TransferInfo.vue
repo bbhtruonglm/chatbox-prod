@@ -165,7 +165,7 @@ const $props = withDefaults(
     /**id giao dịch */
     txn_id?: string
     /**dữ liệu giao dịch */
-    // txn_info?: TransactionInfo
+    txn_info?: TransactionInfo
     /**số tiền */
     amount?: string
     /**có xuất hóa đơn không */
@@ -181,6 +181,8 @@ const $props = withDefaults(
 const commonStore = useCommonStore()
 console.log(commonStore, 'common Store')
 const txn_info = defineModel<TransactionInfo>()
+
+const check_payment = defineModel<Boolean>('check_payment')
 
 /**Thông tin chuyển khoản của cty */
 const BBH: IBankAccount = {
@@ -251,14 +253,17 @@ function checkTxnSuccess() {
       /**dữ liệu giao dịch */
       const TXN = await new BillingAppTxn().checkTxn(
         txn_info.value?.txn_id,
-        payment_info.value?.code || ''
+        payment_info.value?.code || '',
+        'v2'
       )
 
+      console.log(TXN, 'txn')
       // nếu không có giao dịch thì check lại sau
       if (!TXN) return
-
       // cập nhật thông tin giao dịch
       txn_info.value = TXN
+      // txn_info.value = true as any
+      check_payment.value = true
     } catch (e) {
       clearInterval(check_txn_timeout_id.value)
     }
