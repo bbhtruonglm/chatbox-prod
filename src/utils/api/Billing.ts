@@ -143,7 +143,7 @@ export class BillingAppTxn extends Billing {
     txn_id: string,
     bank_name: string,
     version?: string
-  ): Promise<TransactionInfo | undefined> {
+  ): Promise<TransactionInfo | boolean | undefined> {
     /** Khai báo body , nếu có version thì truyền vào */
     const BODY = { txn_id, bank_name, ...(version && { version }) }
     /** Gọi method post */

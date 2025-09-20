@@ -10,14 +10,14 @@
       leave-to-class="opacity-0"
     >
       <div
-        @click="toggleModal"
         class="absolute top-0 left-0 w-screen h-screen bg-black/10 z-20 shadow-lg"
       >
         <div
-          @click.stop
+          @click="toggleModal"
           class="w-full h-full p-3 flex flex-grow min-h-0 overflow-y-auto justify-center items-center"
         >
           <div
+            @click.stop
             class="p-3 rounded-lg bg-slate-50 w-full flex flex-col shadow-lg gap-10 max-h-screen overflow-y-auto"
           >
             <div>
@@ -315,7 +315,7 @@
                   }}
                   :
                   <span class="font-semibold">
-                    {{ selectedPack }}
+                    {{ renderPackageName(selectedPack) }}
                   </span>
                 </p>
                 <p>
@@ -359,7 +359,7 @@
                   }}
                   :
                   <span class="font-semibold">
-                    {{ currency(Number(amount)) }}đ
+                    {{ currency(Number(amount) - wallet_balance) }}đ
                   </span>
                 </p>
                 <div class="w-full flex flex-col gap-2">
@@ -428,7 +428,10 @@
                   :
                   <span class="font-semibold text-green-600">
                     {{
-                      currency(Number(verify_voucher?.txn_amount || amount))
+                      currency(
+                        Number(verify_voucher?.txn_amount || amount) -
+                          wallet_balance
+                      )
                     }}đ
                   </span>
                 </p>
@@ -949,6 +952,16 @@ const txn_info = ref<TransactionInfo>()
 const check_payment = ref(false)
 /** trạng thái payment modal */
 const is_success_open = ref(false)
+/** render tên package
+ * @param package_name tên gói
+ */
+const renderPackageName = (package_name?: string) => {
+  if (package_name === 'LITE') return $t('v1.view.main.dashboard.org.pay.lite')
+  if (package_name === 'PRO') return $t('v1.view.main.dashboard.org.pay.pro')
+  if (package_name === 'BUSINESS')
+    return $t('v1.view.main.dashboard.org.pay.business')
+}
+
 /** đóng modal payment success */
 function closeSuccessModal() {
   is_success_open.value = false
@@ -959,11 +972,13 @@ watch(check_payment, value => {
     /** Bật modal báo success */
     is_success_open.value = true
     setTimeout(() => {
-      /** sau 5s thì tắt */
       is_success_open.value = false
-      is_confirm_open.value = false
-      is_open.value = false
-    }, 5000)
+      /** refresh lại trang */
+      window.location.reload()
+      /** sau 5s thì tắt */
+      // is_confirm_open.value = false
+      // is_open.value = false
+    }, 3000)
   }
 })
 
@@ -1007,10 +1022,10 @@ const is_confirm_open = ref(false)
 /**số tiền nạp */
 const amount = ref<string>('199000')
 /** Số tiền sau khi giảm giá */
-const amount_after_add_voucher = ref<string>('199000')
+const wallet_balance = ref<number>(0)
 
 /** gói đã chọn */
-const selectedPack = ref<'LITE' | 'PRO' | 'BUSINESS' | null>(null)
+const selectedPack = ref<'LITE' | 'PRO' | 'BUSINESS' | undefined>(undefined)
 /** mở modal xác nhận thanh toán */
 async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
   /** Gọi API hoặc logic thanh toán */
@@ -1094,7 +1109,7 @@ async function createTxn() {
 /** đóng modal xác nhận thanh toán */
 function closeConfirmModal() {
   is_confirm_open.value = false
-  selectedPack.value = null
+  selectedPack.value = undefined
 
   verify_voucher.value = {}
   voucher_code.value = ''
@@ -1144,6 +1159,8 @@ async function activeTrialOrProPack(pack: 'LITE' | 'PRO' | 'BUSINESS') {
 
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
+    /** Lưu số dư ví */
+    wallet_balance.value = WALLET.wallet_balance || 0
 
     /** nếu không có ví thì thông báo lỗi */
     if (!WALLET?.wallet_id)

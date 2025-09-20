@@ -165,7 +165,7 @@ const $props = withDefaults(
     /**id giao dịch */
     txn_id?: string
     /**dữ liệu giao dịch */
-    txn_info?: TransactionInfo
+    // txn_info?: TransactionInfo
     /**số tiền */
     amount?: string
     /**có xuất hóa đơn không */
@@ -179,7 +179,7 @@ const $props = withDefaults(
 )
 
 const commonStore = useCommonStore()
-console.log(commonStore, 'common Store')
+
 const txn_info = defineModel<TransactionInfo>()
 
 const check_payment = defineModel<Boolean>('check_payment')
@@ -261,7 +261,7 @@ function checkTxnSuccess() {
       // nếu không có giao dịch thì check lại sau
       if (!TXN) return
       // cập nhật thông tin giao dịch
-      txn_info.value = TXN
+      // txn_info.value = TXN
       // txn_info.value = true as any
       check_payment.value = true
     } catch (e) {
