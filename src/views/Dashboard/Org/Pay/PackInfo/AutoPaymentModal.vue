@@ -212,6 +212,14 @@
                   }}
                   :
                   <span class="font-semibold text-green-600">
+                    <!-- {{
+                      payment_type === 'PACKAGE'
+                        ? currency(
+                            Number(verify_voucher?.txn_amount || amount) -
+                              wallet_balance
+                          )
+                        : currency(Number(amount) - wallet_balance)
+                    }}đ -->
                     {{
                       currency(
                         Number(verify_voucher?.txn_amount || amount) -
@@ -369,6 +377,7 @@
                         verify_voucher?.voucher_partner_info ||
                         txn_info?.txn_voucher_info?.voucher_partner_info
                       "
+                      :wallet_balance="wallet_balance.toString()"
                     />
                     <!-- <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
@@ -443,19 +452,7 @@
         >
           <div class="flex flex-col items-center gap-3">
             <!-- Icon success -->
-            <svg
-              class="w-16 h-16 text-green-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2l4-4m5 2a9 9 0 1 1-18 0a9 9 0 0 1 18 0z"
-              />
-            </svg>
+            <CheckCircleIcon class="size-10 text-green-600" />
             <h3 class="text-lg font-semibold text-green-600">
               {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
             </h3>
@@ -470,7 +467,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XMarkIcon } from '@heroicons/vue/24/solid'
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid'
 
 import TransferInfo from '@/views/Dashboard/Org/Pay/PackInfo/TransferInfo.vue'
 
@@ -609,10 +606,14 @@ function getPriceChangeText(original_price: number, new_price: number): string {
   const DIFF_AMOUNT = new_price - original_price
   /** Nếu tí hơn là giảm giá */
   if (DIFF_AMOUNT < 0) {
-    return `Bạn được giảm giá ${Math.abs(DIFF_AMOUNT).toLocaleString()}đ`
+    return `${$t('v1.view.main.dashboard.org.pay.upgrade.pay_less')} ${Math.abs(
+      DIFF_AMOUNT
+    ).toLocaleString()}đ`
     /** Nếu nhiều hơn là tăng giá */
   } else if (DIFF_AMOUNT > 0) {
-    return `Bạn phải trả thêm ${DIFF_AMOUNT.toLocaleString()}đ`
+    return `${$t(
+      'v1.view.main.dashboard.org.pay.upgrade.pay_more'
+    )} ${DIFF_AMOUNT.toLocaleString()}đ`
   } else {
     return ''
   }

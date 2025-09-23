@@ -1172,6 +1172,8 @@ const source: Language = {
                 _36_months: '36 tháng',
                 choose_month: 'Thời gian sử dụng gói',
                 package_duration: 'Chọn thời gian',
+                pay_less: 'Bạn được giảm giá',
+                pay_more: 'Bạn phải trả thêm',
               },
               recharge: {
                 wrong_wallet_id: 'Thông tin tài khoản không chính xác',

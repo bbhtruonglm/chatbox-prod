@@ -86,6 +86,7 @@
         :consumer_id="payment_info?.account"
         :amount
         :message="txn_id"
+        :wallet_balance="wallet_balance"
       />
     </div>
   </div>
@@ -174,6 +175,8 @@ const $props = withDefaults(
     is_pay_partner?: boolean
     /**thông tin của đối tác */
     partner_info?: IBankAccount
+    /** wallet balance */
+    wallet_balance?: string
   }>(),
   {}
 )

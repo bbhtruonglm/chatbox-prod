@@ -39,6 +39,8 @@ const $props = withDefaults(
     amount?: string
     /**nội dung chuyển khoản */
     message?: string
+    /** wallet balance */
+    wallet_balance?: string
   }>(),
   {}
 )
@@ -124,7 +126,9 @@ async function createQrCodeContent() {
       org_id: orgStore.selected_org_id,
       bank_bin: $props.bank_bin,
       consumer_id: $props.consumer_id,
-      amount: Number($props.amount),
+      amount:
+        Number($props.amount) -
+        ($props.wallet_balance ? Number($props.wallet_balance) : 0),
       message: $props.message,
       version: 'v2',
       txn_id: $props.message,

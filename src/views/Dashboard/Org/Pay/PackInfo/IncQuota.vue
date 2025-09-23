@@ -279,6 +279,8 @@ async function incQuota() {
 
     /**dữ liệu của ví */
     const WALLET = await read_wallet(orgStore.selected_org_id)
+    /** Lưu số dư ví */
+    wallet_balance.value = WALLET.wallet_balance || 0
 
     /** nếu không có ví thì thông báo lỗi */
     if (!WALLET?.wallet_id)
