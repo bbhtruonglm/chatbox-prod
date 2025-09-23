@@ -205,41 +205,41 @@ const payment_info = ref<IBankAccount>()
 /**id của time out check giao dịch */
 const check_txn_timeout_id = ref<number>()
 
-// tính toán thông tin chuyển khoản khi khởi tạo
+/**  tính toán thông tin chuyển khoản khi khởi tạo*/
 onMounted(() => {
   payment_info.value = calcPaymentInfo()
 
-  // kiểm tra giao dịch đã thành công chưa
+  /**  kiểm tra giao dịch đã thành công chưa*/
   checkTxnSuccess()
 })
 
-// xoá time out check giao dịch
+/**  xoá time out check giao dịch*/
 onUnmounted(() => clearInterval(check_txn_timeout_id.value))
 
-// tính toán thông tin chuyển khoản khi có thay đổi mã
+/**  tính toán thông tin chuyển khoản khi có thay đổi mã*/
 watch(
   () => $props.txn_id,
   () => {
     payment_info.value = calcPaymentInfo()
 
-    // kiểm tra giao dịch đã thành công chưa
+    /**  kiểm tra giao dịch đã thành công chưa*/
     checkTxnSuccess()
   }
 )
 
 /**kiẻm tra xem giao dich đã thành công chưa */
 function checkTxnSuccess() {
-  // chỉ kiểm tra giao dịch mới tạo
+  /** chỉ kiểm tra giao dịch mới tạo */
   if (txn_info.value?.txn_status !== 'PENDING') return
 
   /**bước nhảy */
   // const TIMER = 1000 * 20 // 20s 1 lần
   const TIMER = 1000 * 5 // 20s 1 lần
 
-  // kiểm tra giao dịch liên tục, sau 20s sẽ chạy lần đầu tiên
+  /** kiểm tra giao dịch liên tục, sau 20s sẽ chạy lần đầu tiên */
   check_txn_timeout_id.value = setInterval(async () => {
     try {
-      // nếu không có id giao dịch thì dừng
+      /** nếu không có id giao dịch thì dừng */
       if (!txn_info.value?.txn_id || !txn_info.value?.txn_amount) throw 'NO_TXN'
 
       /**thời gian tạo giao dịch */
@@ -247,7 +247,7 @@ function checkTxnSuccess() {
       /**thời gian kiểm tra tối đa */
       const MAX_CHECK_TIME = 1000 * 60 * 30 // 30 phút
 
-      // nếu quá thời gian kiểm tra thì dừng
+      /** nếu quá thời gian kiểm tra thì dừng */
       if (Date.now() - CREATED_AT > MAX_CHECK_TIME) throw 'MAX_CHECK_TIME'
 
       /**dữ liệu giao dịch */
@@ -278,16 +278,16 @@ function calcPaymentInfo(): IBankAccount {
   const NON_INVOICE: IBankAccount =
     commonStore.partner?.bank_account?.non_invoice || A_TUNG_TIMO
 
-  // nếu không có mã, hoặc mã không bật chế độ đối tác, thì chuyển về cty
+  /** nếu không có mã, hoặc mã không bật chế độ đối tác, thì chuyển về cty */
   if (!$props?.is_pay_partner) return INVOICE
 
-  // nếu xuất hoá đơn thì vẫn chuyển về cty
+  /** nếu xuất hoá đơn thì vẫn chuyển về cty */
   if ($props?.is_issue_invoice) return INVOICE
 
-  // nếu không có thông tin đối tác thì chuyển về a Tùng
+  /** nếu không có thông tin đối tác thì chuyển về a Tùng */
   if (!size($props?.partner_info)) return NON_INVOICE
 
-  // nếu có thông tin đối tác thì chuyển về đối tác
+  /** nếu có thông tin đối tác thì chuyển về đối tác */
   return $props.partner_info || NON_INVOICE
 }
 </script>

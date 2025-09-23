@@ -1355,7 +1355,7 @@ const source: Language = {
                 confirm_text: 'Are you sure you want to pay for the package',
                 cancel: 'Cancel',
                 confirm: 'Confirm',
-                total_amount: 'Total Amount',
+                total_amount: 'Total Amount:',
                 payment_amount: 'Payment Amount',
                 upgrade_package: 'Upgrade Package',
                 time: 'Duration',

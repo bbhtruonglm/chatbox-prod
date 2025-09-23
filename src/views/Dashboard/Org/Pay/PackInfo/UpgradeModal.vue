@@ -262,11 +262,6 @@
   <AutoPaymentModal
     :is_confirm_open="is_confirm_open"
     :title="$t('v1.view.main.dashboard.org.pay.upgrade.confirm_title')"
-    :closeText="$t('v1.view.main.dashboard.org.pay.upgrade.close')"
-    :confirmText="$t('v1.view.main.dashboard.org.pay.upgrade.confirm')"
-    :processingText="
-      $t('v1.view.main.dashboard.org.pay.recharge.waiting_payment')
-    "
     :selected_pack="selected_pack"
     :amount="amount"
     :wallet_balance="wallet_balance"
@@ -274,49 +269,10 @@
     :SELECTED="SELECTED"
     :closeConfirmModal="closeConfirmModal"
     :MONTHS="MONTHS"
+    v-model:check_payment="check_payment"
+    :is_success_open="is_success_open"
+    :payment_type="'PACKAGE'"
   />
-
-  <Teleport to="body">
-    <Transition
-      enter-active-class="transition ease-in-out duration-300"
-      leave-active-class="transition ease-in-out duration-300"
-      enter-from-class="opacity-0"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="is_success_open"
-        class="fixed top-0 left-0 w-screen h-screen py-10 bg-black/30 z-40 flex items-center justify-center"
-      >
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-center flex flex-col gap-4 animate-in fade-in"
-          @click.stop
-        >
-          <div class="flex flex-col items-center gap-3">
-            <!-- Icon success -->
-            <svg
-              class="w-16 h-16 text-green-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2l4-4m5 2a9 9 0 1 1-18 0a9 9 0 0 1 18 0z"
-              />
-            </svg>
-            <h3 class="text-lg font-semibold text-green-600">
-              {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
-            </h3>
-            <p class="text-slate-600 text-sm">
-              {{ $t('v1.view.main.dashboard.org.pay.recharge.success_desc') }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
@@ -406,8 +362,6 @@ const MONTHS = [
 /** giá trị mặc định */
 const SELECTED = ref('1')
 
-/**phương thức thanh toán đang chọn */
-const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 /**nội dung của các gói */
 const CONTENTS: Record<string, IContent> = {
   /**gói miễn phí */
@@ -512,8 +466,6 @@ const CONTENTS: Record<string, IContent> = {
   },
 }
 
-/**có xuất hoá đơn không */
-const is_issue_invoice = ref<boolean>(false)
 /**ẩn hiện modal */
 const is_open = ref(false)
 /**mua gói Pro 1 năm */
@@ -521,8 +473,6 @@ const is_full_year = ref(false)
 /**dữ liệu xác thực mã khuyến mại */
 const verify_voucher = ref<ResponseVerifyVoucher>({})
 
-/**thông tin giao dịch mới tạo */
-const txn_info = ref<TransactionInfo>()
 /** Check trạng thái payment */
 const check_payment = ref(false)
 /** trạng thái payment modal */

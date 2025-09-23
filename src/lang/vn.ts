@@ -1149,7 +1149,7 @@ const source: Language = {
                 confirm_text: 'Bạn có chắc chắn muốn thanh toán gói',
                 cancel: 'Hủy',
                 confirm: 'Xác nhận',
-                total_amount: 'Tổng tiền',
+                total_amount: 'Tổng tiền: ',
                 payment_amount: 'Số tiền thanh toán',
                 upgrade_package: 'Gói nâng cấp',
                 time: 'Thời gian',

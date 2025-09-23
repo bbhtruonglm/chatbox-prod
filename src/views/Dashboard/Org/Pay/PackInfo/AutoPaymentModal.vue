@@ -16,7 +16,8 @@
         >
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">
-              {{ $t('v1.view.main.dashboard.org.pay.upgrade.confirm_title') }}
+              <!-- {{ $t('v1.view.main.dashboard.org.pay.upgrade.confirm_title') }} -->
+              {{ title }}
             </h3>
             <div
               @click="closeConfirmModal"
@@ -37,7 +38,10 @@
                   : '',
               ]"
             >
-              <div class="py-3 w-1/2 flex flex-col gap-2.5 items-start text-sm">
+              <div
+                v-if="MONTHS && size(MONTHS) > 0"
+                class="py-3 w-1/2 flex flex-col gap-2.5 items-start text-sm"
+              >
                 <label class="font-semibold">{{ $t('Thông tin gói') }}</label>
                 <p>
                   {{
@@ -56,6 +60,57 @@
                 </p>
                 <p>
                   {{ $t('v1.view.main.dashboard.org.pay.upgrade.cost') }} :
+                  <span class="font-semibold">
+                    {{ currency(Number(amount)) }}đ
+                  </span>
+                </p>
+              </div>
+              <div
+                v-else
+                class="py-3 w-1/2 flex flex-col gap-2.5 items-start text-sm"
+              >
+                <label class="font-semibold">{{ $t('Thông tin gói') }}</label>
+                <p>
+                  {{
+                    $t('v1.view.main.dashboard.org.pay.upgrade.upgrade_package')
+                  }}
+                  :
+                  <span class="font-semibold">
+                    {{
+                      $t(
+                        `v1.view.main.dashboard.org.pay.inc_quota.${payment_type.toLowerCase()}`
+                      )
+                    }}
+                  </span>
+                </p>
+                <div>
+                  {{ $t('v1.view.main.dashboard.org.pay.inc_quota.total') }}
+                  <span
+                    v-if="payment_type === 'PAGE'"
+                    class="font-semibold"
+                  >
+                    {{ SELECTED }}
+                    {{ $t('v1.view.main.dashboard.org.pay.inc_quota.a_page') }}
+                    x
+                    {{ orgStore.calcDayRemaining() }}
+                    {{ $t('v1.view.main.dashboard.org.pay.inc_quota.day') }}
+                    x 2.000đ
+                  </span>
+                  <span
+                    v-if="payment_type === 'STAFF'"
+                    class="font-semibold"
+                  >
+                    {{ SELECTED }}
+                    {{ $t('v1.view.main.dashboard.org.pay.inc_quota.a_staff') }}
+                    x
+                    {{ orgStore.calcDayRemaining() }}
+                    {{ $t('v1.view.main.dashboard.org.pay.inc_quota.day') }}
+                    x 1.000đ
+                  </span>
+                </div>
+                <p>
+                  {{ $t('v1.view.main.dashboard.org.pay.inc_quota.need_pay') }}
+                  :
                   <span class="font-semibold">
                     {{ currency(Number(amount)) }}đ
                   </span>
@@ -104,7 +159,7 @@
                     <input
                       v-if="pay_step === 'STEP_1'"
                       v-model="voucher_code"
-                      @keyup="debounceVerifyVoucher"
+                      @keyup="DEBOUNCE_VERIFY_VOUCHER"
                       class="focus:outline-gray-400 py-2 px-3 rounded-md border w-full"
                       :placeholder="
                         $t(
@@ -371,6 +426,47 @@
       </div>
     </Transition>
   </Teleport>
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition ease-in-out duration-300"
+      leave-active-class="transition ease-in-out duration-300"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="is_success_open"
+        class="fixed top-0 left-0 w-screen h-screen py-10 bg-black/30 z-40 flex items-center justify-center"
+      >
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-center flex flex-col gap-4 animate-in fade-in"
+          @click.stop
+        >
+          <div class="flex flex-col items-center gap-3">
+            <!-- Icon success -->
+            <svg
+              class="w-16 h-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2l4-4m5 2a9 9 0 1 1-18 0a9 9 0 0 1 18 0z"
+              />
+            </svg>
+            <h3 class="text-lg font-semibold text-green-600">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
+            </h3>
+            <p class="text-slate-600 text-sm">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success_desc') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -388,32 +484,56 @@ import { create_txn, read_wallet } from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 import { BillingAppVoucher } from '@/utils/api/Billing'
 import { currency } from '@/service/helper/format'
+import type { is } from 'date-fns/locale'
 /** nhận props từ cha */
 const props = defineProps<{
+  /** Đóng mở modal */
   is_confirm_open: boolean
+  /** Tiêu đề modal */
   title: string
-  closeText: string
-  confirmText: string
-  processingText: string
+  /** Gói đã chọn */
   selected_pack: string | undefined
+  /** Số lượng hoặc giá gói */
   amount: string
+  /** Số dư ví */
   wallet_balance: number
-  SELECTED: string
+  /** Số tháng chọn || Số nhân viên || Số trang */
+  SELECTED?: string
+  /** Hàm đóng modal */
   closeConfirmModal: () => void
-  MONTHS: { label: string; value: string }[]
+  /** Số tháng mua gói */
+  MONTHS?: { label: string; value: string }[]
+  /** Trạng thái mở modal thành công */
+  is_success_open: boolean
+  /** Loại thanh toán */
+  payment_type: PAYMENT_TYPE
 }>()
+/** Loại thanh toán
+ * PAGE = Mua thêm trang
+ * STAFF = Mua thêm nhân viên
+ * PACKAGE = Nâng cấp gói
+ * TOKEN = Mua thêm token
+ */
+type PAYMENT_TYPE = 'PAGE' | 'STAFF' | 'PACKAGE' | 'TOKEN'
+/** Common store */
 const commonStore = useCommonStore()
+/** Org store */
 const orgStore = useOrgStore()
+/** Hàm dịch i18n */
 const { t: $t } = useI18n()
 /** call back hàm close và confirm */
 const emit = defineEmits(['close', 'confirm'])
 
-// state nội bộ trong modal
+/** state nội bộ trong modal */
 const voucher_code = ref('')
+/** Trạng thái xuất hóa đơn */
 const is_issue_invoice = ref(false)
+/** Trạng thái kiểm tra thanh toán */
 const verify_voucher = ref<any>({})
+/** Thông tin giao dịch */
 const txn_info = ref<any>({})
-const check_payment = ref(false)
+/** Trạng thái kiểm tra thanh toán lấy từ file cha */
+const check_payment = defineModel<Boolean>('check_payment')
 
 /**phương thức thanh toán đang chọn */
 const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
@@ -454,7 +574,7 @@ const LIST_PAYMENT_METHOD: {
 ]
 
 /** Hàm debounce kiểm tra mã giảm giá */
-const debounceVerifyVoucher = debounce(verifyVoucher, 300)
+const DEBOUNCE_VERIFY_VOUCHER = debounce(verifyVoucher, 300)
 /**kiểm tra mã giảm giá */
 async function verifyVoucher() {
   try {
@@ -462,7 +582,7 @@ async function verifyVoucher() {
     if (!voucher_code.value) {
       /** xoá mã thì đánh dấu là hợp lệ */
       verify_voucher.value = {}
-
+      /** return luôn */
       return
     }
 
@@ -499,7 +619,7 @@ function getPriceChangeText(original_price: number, new_price: number): string {
 }
 /**tính ra số tiền chính xác cần quét qr */
 function calcBankAmount(): string {
-  // nếu không có mã giảm giá thì thôi
+  /** nếu không có mã giảm giá thì thôi */
   if (!size(verify_voucher.value)) return props.amount
 
   /**số tiền mới */
