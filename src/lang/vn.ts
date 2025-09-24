@@ -186,6 +186,48 @@ const source: Language = {
           btn_text: 'Tiếp tục với Facebook',
         },
       },
+      onboarding: {
+        personal_experience: 'Tạo ra trải nghiệm cá nhân hóa của bạn',
+        two_minutes: 'Khoảng 2 phút',
+        step_industry: 'Bạn đang hoạt động trong lĩnh vực nào?',
+        step_industry_description:
+          'Chúng tôi sẽ tùy chỉnh trải nghiệm của bạn dựa trên lựa chọn của bạn.',
+        step_role: 'Bạn đang đảm nhận vai trò nào?',
+        step_role_description:
+          'Điều này sẽ giúp chúng tôi cá nhân hóa trải nghiệm của bạn dựa trên vai trò bạn phụ trách.',
+        company_question: 'Trải nghiệm cá nhân của bạn',
+        company_question_description:
+          'Chúng tôi sẽ sử dụng tên công ty của bạn để trải nghiệm trở nên quen thuộc hơn.',
+        company_preferences: 'Quy mô công ty của bạn là bao nhiêu?',
+        company_preferences_description:
+          'Chúng tôi sẽ sử dụng thông tin này để đề xuất gói giải pháp phù hợp nhất cho doanh nghiệp của bạn.',
+        company_summary: 'Website của công ty bạn là gì?',
+        company_summary_description:
+          'Website, Fanpage Facebook, Instagram Page hoặc TikTok Page sẽ giúp chúng tôi cá nhân hóa trải nghiệm của bạn.',
+        industry_1: 'Marketing và Quảng cáo',
+        industry_2: 'Công nghệ và Dịch vụ',
+        industry_3: 'Phần mềm máy tính',
+        industry_4: 'Bất động sản',
+        industry_5: 'Dịch vụ tài chính',
+        industry_6: 'Sức khỏe, Thể hình và Thể thao',
+        industry_7: 'Giáo dục',
+        industry_8: 'Tư vấn',
+        industry_9: 'Du lịch và Ẩm thực',
+        step_of: 'của',
+        role_1: 'Chủ doanh nghiệp',
+        role_2: 'Nhóm điều hành',
+        role_3: 'Nhân viên',
+        role_4: 'Quản lý',
+        role_5: 'Học sinh',
+        role_6: 'Thực tập sinh',
+        role_7: 'Freelancer',
+        role_8: 'Khác',
+        company_name: 'Tên công ty',
+        enter_company_name: 'Nhập tên công ty',
+        back: 'Quay lại',
+        next: 'Tiếp theo',
+        submit: 'Hoàn tất',
+      },
       main: {
         dashboard: {
           nav: {
