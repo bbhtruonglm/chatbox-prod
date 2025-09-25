@@ -1,21 +1,18 @@
 <template>
   <div class="h-screen bg-gradient-secondary py-10 px-6 font-sans">
     <div
-      v-if="flow_step === 1"
-      class="flex mx-auto overflow-hidden gap-2.5 flex-grow h-full min-h-0"
+      class="flex max-full mx-auto overflow-hidden gap-2.5 flex-grow h-full min-h-0"
     >
       <!-- Left panel -->
       <aside
         class="w-96 p-5 gap-10 bg-white flex flex-col justify-between flex-grow min-h-0 h-full rounded-xl"
       >
         <div class="flex flex-col gap-10">
-          <div class="flex flex-col gap-10">
+          <div class="flex items-start gap-3">
             <div
-              :style="{
-                backgroundImage: `url(${commonStore.partner?.logo?.full})`,
-              }"
-              class="h-7 w-full bg-contain bg-no-repeat bg-left flex-shrink-0"
-            />
+              class="size-8 rounded-full bg-black text-white flex items-center justify-center font-bold"
+            ></div>
+            <div class="text-2xl font-semibold">Retion</div>
           </div>
           <div class="flex flex-col gap-3">
             <h1 class="text-5xl leading-tight font-semibold">
@@ -59,7 +56,7 @@
                   :class="[
                     'border rounded-md py-3 px-5 text-center text-sm font-semibold shadow-sm',
                     SELECTED_INDUSTRY === option
-                      ? 'bg-blue-700 border-blue-700 text-white'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-slate-500 bg-white',
                   ]"
                   @click="SELECTED_INDUSTRY = option"
@@ -78,7 +75,7 @@
                   :class="[
                     'border rounded-md py-3 px-5 text-center text-sm font-semibold shadow-sm',
                     SELECTED_ROLE === option
-                      ? 'border-blue-700 bg-blue-700 text-white'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-slate-500 bg-white',
                   ]"
                   @click="SELECTED_ROLE = option"
@@ -101,7 +98,7 @@
                 v-model="COMPANY_DETAILS.name"
                 type="text"
                 :placeholder="$t('v1.view.onboarding.enter_company_name')"
-                class="w-full border border-gray-300 rounded-md px-3 py-2"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               />
             </div>
 
@@ -112,9 +109,9 @@
                   v-for="option in OPTION_PREFERENCES"
                   :key="option"
                   :class="[
-                    'border rounded-md py-3 px-5 text-center font-semibold text-sm',
+                    'border rounded-md py-3 px-5 text-center font-semibold text-sm shadow-sm',
                     SELECTED_PREFERENCES === option
-                      ? 'border-blue-700 bg-blue-700 text-white'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-slate-500 bg-white',
                   ]"
                   @click="SELECTED_PREFERENCES = option"
@@ -287,23 +284,14 @@
       @submit="submitForm"
     /> -->
     <!-- flow 2: loading tạo tài khoản -->
-    <OnboardingLoading
-      v-else-if="flow_step === 2"
-      @complete="completeLoading"
-    />
 
     <!-- flow 3: verify account -->
-    <OnboardingVerify
+    <!-- <OnboardingVerify
       v-else-if="flow_step === 3"
-      v-model:phone="phone"
-      :current_step="current_step"
-      :total_steps="total_steps"
-      :STEP_TITLE="$t('v1.view.onboarding.verify_account')"
-      :STEP_DESCRIPTIONS="$t('v1.view.onboarding.verify_account_description')"
+      :email="email"
       @resend="resendVerification"
       @back="backToLogin"
-      @verify="verifyPhone"
-    />
+    /> -->
   </div>
 </template>
 
@@ -313,43 +301,25 @@ import { useI18n } from 'vue-i18n'
 import OnboardingForm from './OnboardingFormLegacy.vue'
 import OnboardingLoading from './OnboardingLoading.vue'
 import OnboardingVerify from './OnboardingVerify.vue'
-import { useCommonStore } from '@/stores'
 
 const { t: $t } = useI18n()
-/** Common store */
-const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
 const flow_step = ref<1 | 2 | 3>(1)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')
-/** Số điện thoại */
-const phone = ref('')
-/** Hàm verify phone */
-const verifyPhone = () => console.log('Xác minh số điện thoại:', phone.value)
-
 /** verify actions */
 const resendVerification = () => {
   console.log('Gửi lại email verify')
 }
-/** Hàm trợ lại trang login */
 const backToLogin = () => {
   console.log('Quay lại trang login')
 }
-/** Hàm hoàn thành loading */
-const completeLoading = () => {
-  /** Chuyển sang màn verify */
-  flow_step.value = 3
-}
+
 /**Bước hiện tại */
 const current_step = ref(0)
 /** Tổng số bước */
 const total_steps = 5
-
-const current_step_verify = ref(0)
-
-/** Tổng số bước  */
-const total_steps_verify = 3
 
 /** Step 1 */
 const OPTION_INDUSTRY = [
@@ -458,22 +428,19 @@ const prevStep = () => {
 
 /** Submit */
 const submitForm = () => {
-  /** Nếu chưa nhập đủ thông tin thì return */
   if (!IS_STEP_VALID.value) return
   console.log('Industry:', SELECTED_INDUSTRY.value)
   console.log('Role:', SELECTED_ROLE.value)
   console.log('Company name step 3:', company_name.value)
   console.log('Preferences:', SELECTED_PREFERENCES.value)
   console.log('Company details step 5:', COMPANY_DETAILS.value)
-  /** Chuyển sang step 2 */
-  flow_step.value = 2
+  alert('Form đã submit!')
 }
 </script>
 
 <style scoped>
 html,
 body,
-/** Các khai báo css chung */
 #app {
   height: 100%;
 }
