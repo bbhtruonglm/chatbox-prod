@@ -308,18 +308,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { useCommonStore } from '@/stores'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import OnboardingForm from './OnboardingFormLegacy.vue'
 import OnboardingLoading from './OnboardingLoading.vue'
 import OnboardingVerify from './OnboardingVerify.vue'
-import { useCommonStore } from '@/stores'
 
 const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3>(1)
+const flow_step = ref<1 | 2 | 3>(3)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')

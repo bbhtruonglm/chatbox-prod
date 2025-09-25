@@ -1,9 +1,9 @@
 <template>
   <div class="flex mx-auto overflow-hidden gap-2.5 flex-grow h-full min-h-0">
     <div
-      class="flex w-full flex-grow min-h-0 h-full gap-5 px-3 py-5 rounded-xl bg-white flex-col justify-between"
+      class="flex w-full flex-grow min-h-0 h-full rounded-xl bg-white flex-col justify-between"
     >
-      <div>
+      <div class="p-5 flex flex-col gap-5">
         <div class="flex flex-col gap-10">
           <div
             :style="{

@@ -251,7 +251,7 @@ const source: Language = {
         step_5_description:
           'Your data will be hosted in the Singapore. By creating an account you are agreeing to the ',
         step_5_description_2: 'Retion Customer Terms of Service',
-        verify_account: 'Xác thực tài khoản',
+        verify_account: 'Bảo mật tài khoản',
         verify_account_description:
           'Chúng tôi cần xác thực tài khoản để hỗ trợ, bảo hành và bảo mật tài khoản của bạn.',
         verify_your_account: 'Bảo mật tài khoản',
@@ -264,6 +264,9 @@ const source: Language = {
         verify_via_zalo: 'Xác thực qua Zalo',
         verify_via_whatsapp: 'Xác thực qua WhatsApp',
         verify_via_sms: 'Xác thực qua SMS',
+        change_phone: 'Đổi số điện thoại',
+        pin_code: 'Mã PIN xác thực đã được gửi đến số điện thoại của bạn',
+        get_pin_code: 'Bạn chưa nhận được mã?',
       },
       main: {
         dashboard: {

@@ -33,58 +33,157 @@
         <!-- Step header -->
         <div class="flex flex-col justify-between gap-3">
           <div>
-            <h2 class="text-4xl font-bold">{{ STEP_TITLE }}</h2>
+            <h2 class="text-4xl font-bold flex gap-2.5 items-center">
+              <span>
+                <ShieldCheckIconOutline class="size-8" />
+              </span>
+              {{ STEP_TITLE }}
+            </h2>
             <p class="font-medium">{{ STEP_DESCRIPTIONS }}</p>
           </div>
         </div>
+
         <!-- Verification content -->
-        <div class="flex flex-col gap-5">
-          <div class="flex flex-col gap-1 max-w-lg text-left">
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1 max-w-4xl text-left">
             <label class="block text-gray-700 font-medium text-sm">
               {{ $t('v1.view.onboarding.phone') }}
             </label>
-            <input
-              :value="phone"
-              type="text"
-              :placeholder="$t('v1.view.onboarding.enter_phone')"
-              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              @input="handleInput"
-            />
+            <div class="flex gap-2.5">
+              <input
+                v-model="phone_value"
+                type="text"
+                :placeholder="$t('v1.view.onboarding.enter_phone')"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                :disabled="is_sending_verify_code"
+              />
+              <button
+                v-if="is_sending_verify_code"
+                class="px-5 py-2 w-60 flex justify-center border bg-slate-200 text-slate-700 hover:bg-slate-700 hover:text-white border-slate-700 items-center gap-1 rounded-md font-semibold text-sm"
+                @click="changePhone"
+              >
+                {{ $t('v1.view.onboarding.change_phone') }}
+              </button>
+              <div
+                v-else
+                class="w-60"
+              ></div>
+            </div>
           </div>
-          <div class="flex gap-5">
+
+          <!-- Nút verify -->
+          <div
+            v-if="!is_sending_verify_code"
+            class="flex gap-5"
+          >
             <button
               :class="[
-                'px-10 py-3 rounded-md font-medium focus:outline-none',
-                phone.trim()
-                  ? 'bg-blue-700 text-white'
-                  : 'bg-blue-100 text-blue-700',
+                'px-6 py-3 flex items-center gap-1 border rounded-md font-medium ',
+                phone_value.trim()
+                  ? 'bg-blue-700 text-white border-blue-700'
+                  : 'bg-blue-100 text-blue-700 border-blue-300',
               ]"
-              @click="$emit('verify')"
+              @click="handleVerify"
             >
+              <ZaloIcon class="size-4" />
               {{ $t('v1.view.onboarding.verify_via_zalo') }}
             </button>
             <button
               :class="[
-                'px-10 py-3 rounded-md font-medium focus:outline-none',
-                phone.trim()
-                  ? 'bg-green-700 text-white'
-                  : 'bg-green-100 text-green-700',
+                'px-6 py-3 flex items-center gap-1 border  rounded-md font-medium ',
+                phone_value.trim()
+                  ? 'bg-green-700 text-white border-green-700'
+                  : 'bg-green-100 text-green-700 border-green-300',
               ]"
-              @click="$emit('verify')"
+              @click="handleVerify"
             >
+              <WhatsappIcon />
               {{ $t('v1.view.onboarding.verify_via_whatsapp') }}
             </button>
             <button
               :class="[
-                'px-10 py-3 rounded-md font-medium focus:outline-none',
-                phone.trim()
-                  ? 'bg-slate-700 text-white'
-                  : 'bg-slate-100 text-slate-700',
+                'px-6 py-3 flex items-center gap-1 border rounded-md font-medium ',
+                phone_value.trim()
+                  ? 'bg-slate-700 text-white border-slate-700'
+                  : 'bg-slate-100 text-slate-700 border-slate-300',
               ]"
-              @click="$emit('verify')"
+              @click="handleVerify"
             >
+              <div
+                :class="[
+                  'flex justify-center items-center p-1 rounded-full ',
+                  phone_value.trim()
+                    ? 'bg-white text-slate-700'
+                    : 'bg-slate-700 text-white',
+                ]"
+              >
+                <ChatBubbleLeftEllipsisIcon class="size-3" />
+              </div>
               {{ $t('v1.view.onboarding.verify_via_sms') }}
             </button>
+          </div>
+
+          <!-- OTP -->
+          <div
+            v-else
+            class="flex flex-col gap-3"
+          >
+            <h4 class="text-sm">{{ $t('v1.view.onboarding.pin_code') }}</h4>
+
+            <div class="flex flex-col gap-2">
+              <div class="flex gap-4 items-center">
+                <!-- 3 ô trái -->
+                <div class="flex">
+                  <input
+                    v-for="(__, i) in 3"
+                    :key="'left-' + i"
+                    type="text"
+                    maxlength="1"
+                    v-model="OTP[i]"
+                    @input="onInputOTP(i, $event)"
+                    @keydown="onKeydownOTP(i, $event)"
+                    class="size-9 text-center border"
+                    :ref="el => (inputs[i] = el as HTMLInputElement | null)"
+                    :class="[
+                      i === 0
+                        ? 'rounded-l-md'
+                        : i === 2
+                        ? 'rounded-r-md'
+                        : 'border-x-0',
+                    ]"
+                  />
+                </div>
+
+                <span>-</span>
+
+                <!-- 3 ô phải -->
+                <div class="flex">
+                  <input
+                    v-for="(__, i) in 3"
+                    :key="'right-' + i"
+                    type="text"
+                    maxlength="1"
+                    v-model="OTP[i + 3]"
+                    @input="onInputOTP(i + 3, $event)"
+                    @keydown="onKeydownOTP(i + 3, $event)"
+                    class="size-9 text-center border"
+                    :ref="el => (inputs[i + 3] = el as HTMLInputElement | null)"
+                    :class="[
+                      i === 0
+                        ? 'rounded-l-md'
+                        : i === 2
+                        ? 'rounded-r-md'
+                        : 'border-x-0',
+                    ]"
+                  />
+                </div>
+              </div>
+
+              <h4 class="text-sm text-gray-500">
+                {{ $t('v1.view.onboarding.get_pin_code') }}
+                (<span>{{ time_remaining }}s</span>)
+              </h4>
+            </div>
           </div>
         </div>
       </div>
@@ -96,44 +195,176 @@
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
 import { ShieldCheckIcon } from '@heroicons/vue/24/solid'
+import {
+  ChatBubbleLeftEllipsisIcon,
+  ShieldCheckIcon as ShieldCheckIconOutline,
+} from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n'
+
+import ZaloIcon from '@/components/Icons/Zalo.vue'
+import WhatsappIcon from '@/components/Icons/Whatsapp.vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
+
 /** Hàm dịch */
 const { t: $t } = useI18n()
 /** Khai báo common store */
 const commonStore = useCommonStore()
+
 /** Định nghĩa props */
-defineProps<{
-  /** Số Điện thoại */
+const props = defineProps<{
+  /** Số phone */
   phone: string
   /** Bước hiện tại */
   current_step: number
   /** Tổng số bước */
   total_steps: number
-  /** Title của các bước */
+  /** Tiêu đề step */
   STEP_TITLE: string
-  /** Mô tả của bước này */
+  /** Mô tả của step */
   STEP_DESCRIPTIONS: string
 }>()
-/** Hàm emit các sự kiện */
+
+/** Hàm emit */
 const $emit = defineEmits<{
   (e: 'update:phone', value: string): void
   (e: 'resend'): void
   (e: 'back'): void
   (e: 'verify'): void
 }>()
-/** Hàm cập nhật ôn input phone */
-const handleInput = (event: Event) => {
-  /** Lấy target Input */
-  const TARGET = event.target as HTMLInputElement
-  /** Cập nhật giá trị phone cho hàm cha  */
-  $emit('update:phone', TARGET.value)
+
+/** Trạng thái gửi verify code */
+const is_sending_verify_code = ref(false)
+
+/** countdown */
+const time_remaining = ref(30)
+/** Tạo count down interval */
+let countdown_interval: number | undefined
+
+/** OTP */
+const OTP = ref<string[]>(Array(6).fill(''))
+/** Inputs */
+const inputs = ref<(HTMLInputElement | null)[]>([])
+/** Trạng thái verifying */
+const is_verifying = ref(false)
+
+/** Phone value với v-model */
+const phone_value = ref(props.phone)
+
+/** Đồng bộ phone prop với phone_value */
+watch(phone_value, newValue => {
+  $emit('update:phone', newValue)
+})
+
+/** Đồng bộ props.phone với phone_value khi props thay đổi */
+watch(
+  () => props.phone,
+  newValue => {
+    phone_value.value = newValue
+  }
+)
+/** timeout verify sau 5s */
+let verify_timeout: number | undefined
+/** khi OTP thay đổi */
+watch(
+  OTP,
+  newOTP => {
+    /** Nếu không có verify_timeout thì clear */
+    if (verify_timeout) clearTimeout(verify_timeout)
+    /** Khai báo OTP string */
+    const OTP_STRING = newOTP.join('')
+    /** Check OTP === 6 và k phải string rỗng */
+    if (OTP_STRING.length === 6 && OTP_STRING.trim() !== '') {
+      console.log('OTP valid, starting verification timeout')
+      verify_timeout = window.setTimeout(() => {
+        console.log('Verifying OTP...')
+        verifyOTP()
+      }, 5000)
+    } else {
+      console.log('OTP invalid or incomplete')
+    }
+  },
+  { deep: true }
+) // Thêm deep để đảm bảo theo dõi thay đổi trong mảng
+
+/** Giả lập verify */
+const verifyOTP = () => {
+  console.log('verifyOTP called')
+  /** Bật verify */
+  is_verifying.value = true
+  setTimeout(() => {
+    /** tắt verify */
+    is_verifying.value = false
+    console.log('Emitting verify event')
+    /** Gọi hàm callback verify */
+    $emit('verify')
+  }, 1000)
+}
+
+/** Nhập input OTP
+ * @param index
+ * @param e event
+ */
+const onInputOTP = (index: number, e: Event) => {
+  /** Lấy target */
+  const TARGET = e.target as HTMLInputElement
+  /** Chỉ cho phép số */
+  TARGET.value = TARGET.value.replace(/\D/g, '')
+  console.log(`Input OTP[${index}]:`, TARGET.value) // Debug giá trị input
+  /** nếu đã nhập thì focus ô input kế tiếp */
+  if (TARGET.value && index < inputs.value.length - 1) {
+    inputs.value[index + 1]?.focus()
+  }
+}
+
+/** Phím Backspace lùi
+ * @param index
+ * @param e
+ */
+const onKeydownOTP = (index: number, e: KeyboardEvent) => {
+  /** Nếu ấn backspace thì chuyển focus về ô input trước */
+  if (e.key === 'Backspace' && !OTP.value[index] && index > 0) {
+    inputs.value[index - 1]?.focus()
+  }
+}
+
+/** khi trạng thái thay đổi */
+watch(is_sending_verify_code, new_val => {
+  /** Nếu có new value */
+  if (new_val) {
+    /** tạo interval, giảm từ 30 -> 0 */
+    time_remaining.value = 30
+    countdown_interval = window.setInterval(() => {
+      /** Nếu > 0 thì tiếp tục */
+      if (time_remaining.value > 0) {
+        /** giảm 1 giá trị */
+        time_remaining.value--
+      } else {
+        /** clear interval */
+        clearInterval(countdown_interval)
+      }
+    }, 1000)
+  } else {
+    /** clear interval */
+    clearInterval(countdown_interval)
+  }
+})
+/** clear interval */
+onBeforeUnmount(() => {
+  clearInterval(countdown_interval)
+  if (verify_timeout) clearTimeout(verify_timeout)
+})
+
+/** Hàm gửi verify */
+const handleVerify = () => {
+  console.log('handleVerify called')
+  is_sending_verify_code.value = true
+}
+
+/** đổi số điện thoại */
+const changePhone = () => {
+  console.log('changePhone called')
+  is_sending_verify_code.value = false
 }
 </script>
 
-<style scoped>
-/** Css sự kiện focus */
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-</style>
+<style scoped></style>
