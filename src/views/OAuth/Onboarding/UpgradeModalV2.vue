@@ -1,8 +1,6 @@
 <template>
-  <Teleport
-    to="body"
-    v-if="IS_OPEN"
-  >
+  <Teleport to="body">
+    <!-- v-if="IS_OPEN" -->
     <Transition
       enter-active-class="transition ease-in-out duration-500"
       leave-active-class="transition ease-in-out duration-500"
@@ -53,7 +51,7 @@
                 @change-tab="handleTabChange"
               />
               <div
-                class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5"
+                class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5 pt-12 border-b"
               >
                 <div
                   :class="[
@@ -82,10 +80,39 @@
                 <div class="">
                   <ComparePlans
                     :data="COMPARE_DATA"
-                    :selectedPlanIndex="SELECTED_INDEX"
-                    :selectedRow="SELECTED_ROW"
+                    :selected_plan_index="SELECTED_INDEX"
+                    :selected_row="SELECTED_ROW"
                     @rowSelect="handleRowSelect"
                   />
+                </div>
+                <div>
+                  <FAQ />
+                </div>
+              </div>
+              <div class="flex px-8 py-3 w-full justify-between">
+                <div class="flex items-center justify-center gap-5">
+                  <img
+                    src="@/assets/imgs/visa.png"
+                    alt="Verified by Visa"
+                    class="h-8 object-contain grayscale"
+                  />
+                  <img
+                    src="@/assets/imgs/mastercard.png"
+                    alt="MasterCard SecureCode"
+                    class="h-8 object-contain grayscale"
+                  />
+                  <img
+                    src="@/assets/imgs/secure.png"
+                    alt="Secure SSL Encryption"
+                    class="h-8 object-contain grayscale"
+                  />
+                </div>
+                <div
+                  @click="submitPackage"
+                  class="flex items-center cursor-pointer bg-green-500 text-white gap-3 px-10 py-3 rounded-md"
+                >
+                  {{ $t('v1.view.onboarding.continue') }}
+                  <span><ArrowRightIcon class="size-5" /></span>
                 </div>
               </div>
             </div>
@@ -101,10 +128,17 @@ import { computed, ref } from 'vue'
 import { purchase_package, read_wallet } from '@/service/api/chatbox/billing'
 import { toast, toastError } from '@/service/helper/alert'
 import { useI18n } from 'vue-i18n'
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  ChevronUpIcon,
+  ArrowRightIcon,
+} from '@heroicons/vue/24/solid'
 
 import { XMarkIcon } from '@heroicons/vue/24/solid'
 
 import PricingCard from '@/components/PricingCard/PricingCard.vue'
+import FAQ from './FAQ.vue'
 
 import HeaderCustom from '@/views/Dashboard/Org/Pay/PackInfo/Header/HeaderCustom.vue'
 
@@ -121,6 +155,15 @@ function handleClick(pkg_title: string) {
   // alert(`Bạn chọn gói ${pkg_title}`)
   console.log('title', pkg_title)
 }
+/** Hàm emit */
+const $emit = defineEmits<{
+  (e: 'submit'): void
+}>()
+
+const submitPackage = () => {
+  $emit('submit')
+}
+
 /** tab đang được chọn */
 const SELECTED_INDEX = ref('Free')
 /** Hàm thay đổi index */

@@ -236,7 +236,7 @@ import Toggle from '@/components/Toggle.vue'
 import CardItem from '@/components/Main/Dashboard/CardItem.vue'
 import Item from '@/views/Dashboard/Org/Pay/PackInfo/Item.vue'
 import UpgradeModal from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal.vue'
-import UpgradeModalV2 from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModalV2.vue'
+import UpgradeModalV2 from '@/views/OAuth/Onboarding/UpgradeModalV2.vue'
 import IncQuota from '@/views/Dashboard/Org/Pay/PackInfo/IncQuota.vue'
 
 import QueueIcon from '@/components/Icons/Queue.vue'

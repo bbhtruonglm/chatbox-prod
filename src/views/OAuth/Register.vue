@@ -26,9 +26,9 @@
         class="custom-input"
       />
     </div>
-    <!-- @click="$main.goRegisterDetail" -->
+    <!-- @click="$service_oauth.redirect('/onboarding')" -->
     <button
-      @click="$service_oauth.redirect('/onboarding')"
+      @click="$main.goRegisterDetail"
       class="custom-btn-black"
     >
       {{

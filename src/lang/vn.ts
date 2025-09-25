@@ -267,6 +267,22 @@ const source: Language = {
         change_phone: 'Đổi số điện thoại',
         pin_code: 'Mã PIN xác thực đã được gửi đến số điện thoại của bạn',
         get_pin_code: 'Bạn chưa nhận được mã?',
+
+        select_employee: 'Chọn nhân viên',
+        select_month: 'Chọn tháng',
+        employees: 'Nhân viên',
+        month: 'Tháng',
+        FAQ: 'Frequently Asked Questions',
+        continue: 'Continue',
+        send_code_again: 'Gửi lại mã xác thực',
+        quick_started: 'Quick Started',
+        connect_social: 'Kết nối nền tảng',
+        connect_social_description:
+          'Hãy chia sẻ bộ công cụ hiện tại của bạn để chúng tôi có thể kết nối với hơn 1.500+ tích hợp, giúp doanh nghiệp của bạn tạo thêm khách hàng tiềm năng.',
+        skip_for_now: 'Skip, for now',
+        invite_staff: 'Cuối cùng, bạn muốn mời ai?',
+        invite_staff_desctiption:
+          'Hãy mời đội ngũ của bạn để cùng nhau bắt đầu tạo khách hàng tiềm năng, hoặc bạn có thể thêm họ sau nếu hiện tại chưa thuận tiện.',
       },
       main: {
         dashboard: {

@@ -19,7 +19,7 @@
           :key="plan.key"
           class="p-3 text-center flex justify-center text-2xl rounded-t-xl"
           :class="[
-            plan.name === selectedPlanIndex
+            plan.name === selected_plan_index
               ? 'bg-cyan-50 font-bold '
               : 'font-semibold',
           ]"
@@ -28,23 +28,23 @@
             <div
               class="flex size-6 rounded-full justify-center items-center flex-shrink-0"
               :class="[
-                plan.name === selectedPlanIndex ? 'bg-cyan-600' : 'bg-gray-400',
+                plan.name === selected_plan_index
+                  ? 'bg-cyan-600'
+                  : 'bg-gray-400',
               ]"
             >
               <div
                 class="flex bg-white rounded-full justify-center items-center"
                 :class="[
-                  plan.name !== selectedPlanIndex
-                    ? 'bg-blue-600'
+                  plan.name !== selected_plan_index
+                    ? 'bg-cyan-600'
                     : 'bg-gray-400',
                 ]"
               >
                 <CheckCircleIcon
                   class="size-5 text-cyan-600"
                   :class="[
-                    plan.name === selectedPlanIndex
-                      ? 'text-white'
-                      : 'text-transparent',
+                    plan.name !== selected_plan_index ? 'text-white' : '',
                   ]"
                 />
               </div>
@@ -73,7 +73,7 @@
             v-for="(plan, planIdx) in data.plans"
             :key="plan.key + section.title"
             class="p-3 text-center"
-            :class="plan.name === selectedPlanIndex ? 'bg-cyan-50' : ''"
+            :class="plan.name === selected_plan_index ? 'bg-cyan-50' : ''"
           >
             <!-- để màu nền tương ứng với gói -->
           </div>
@@ -102,7 +102,7 @@
             v-for="(plan, planIdx) in data.plans"
             :key="plan.key + idx"
             class="p-3 flex justify-center items-center w-full text-sm"
-            :class="plan.name === selectedPlanIndex ? 'bg-cyan-50' : ''"
+            :class="plan.name === selected_plan_index ? 'bg-cyan-50' : ''"
           >
             <template v-if="feature.values[plan.key] === true">
               <span class="text-slate-800 text-center">
@@ -158,8 +158,8 @@ type SelectedRow = { sectionIndex: number; rowIndex: number } | null
 /** Định nghĩa props */
 const props = defineProps<{
   data: CompareData
-  selectedPlanIndex?: string // gói được highlight (ở bạn dùng plan.name so sánh)
-  selectedRow?: SelectedRow // giờ là object {sectionIndex, rowIndex}
+  selected_plan_index?: string // gói được highlight (ở bạn dùng plan.name so sánh)
+  selected_row?: SelectedRow // giờ là object {sectionIndex, rowIndex}
 }>()
 
 /** Khai báo hàm emit để component con phát sự kiện 'rowSelect' kèm {sectionIndex,rowIndex} cho cha */
@@ -174,8 +174,8 @@ const gridCols = `416px repeat(${props.data.plans.length}, minmax(120px,1fr))`
 /** helper: kiểm tra row đang được chọn (theo section) */
 function isRowSelected(sectionIdx: number, rowIdx: number) {
   return (
-    props.selectedRow?.sectionIndex === sectionIdx &&
-    props.selectedRow?.rowIndex === rowIdx
+    props.selected_row?.sectionIndex === sectionIdx &&
+    props.selected_row?.rowIndex === rowIdx
   )
 }
 

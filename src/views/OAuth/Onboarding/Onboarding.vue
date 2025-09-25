@@ -304,6 +304,22 @@
       @back="backToLogin"
       @verify="verifyPhone"
     />
+
+    <UpgradeModalV2
+      v-else-if="flow_step === 4"
+      @submit="submitPackage"
+    />
+    <!-- flow 3: verify account -->
+    <OnboardingQuickStarter
+      v-else-if="flow_step === 5"
+      v-model:phone="phone"
+      :current_step="current_step_quick_start"
+      :total_steps="2"
+      @resend="resendVerification"
+      @back="onPrev"
+      @next="onNext"
+      @skip_for_now="skipForNow"
+    />
   </div>
 </template>
 
@@ -314,18 +330,44 @@ import { useI18n } from 'vue-i18n'
 import OnboardingLoading from './OnboardingLoading.vue'
 import OnboardingVerify from './OnboardingVerify.vue'
 
+import UpgradeModalV2 from '@/views/OAuth/Onboarding/UpgradeModalV2.vue'
+import OnboardingQuickStarter from './OnboardingQuickStarter.vue'
+
 const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3>(3)
+const flow_step = ref<1 | 2 | 3 | 4 | 5>(1)
+
+const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModalV2>>()
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')
 /** Số điện thoại */
 const phone = ref('')
 /** Hàm verify phone */
-const verifyPhone = () => console.log('Xác minh số điện thoại:', phone.value)
+const verifyPhone = () => {
+  console.log('verify phone')
+  flow_step.value = 4
+}
+/** Hàm verify phone */
+const onNext = () => {
+  if (current_step_quick_start.value < 1) current_step_quick_start.value++
+}
+/** Hàm verify phone */
+const onPrev = () => {
+  if (current_step_quick_start.value > 0) current_step_quick_start.value--
+}
+/** Hàm verify phone */
+const skipForNow = () => {
+  console.log('skip for now')
+}
+
+/** Hàm verify phone */
+const submitPackage = () => {
+  console.log('submitPackage')
+  flow_step.value = 5
+}
 
 /** verify actions */
 const resendVerification = () => {
@@ -346,6 +388,8 @@ const current_step = ref(0)
 const total_steps = 5
 
 const current_step_verify = ref(0)
+
+const current_step_quick_start = ref(0)
 
 /** Tổng số bước  */
 const total_steps_verify = 3

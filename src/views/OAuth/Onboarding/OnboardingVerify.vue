@@ -131,7 +131,7 @@
             <h4 class="text-sm">{{ $t('v1.view.onboarding.pin_code') }}</h4>
 
             <div class="flex flex-col gap-2">
-              <div class="flex gap-4 items-center">
+              <div class="flex gap-2 items-center">
                 <!-- 3 ô trái -->
                 <div class="flex">
                   <input
@@ -178,11 +178,20 @@
                   />
                 </div>
               </div>
-
-              <h4 class="text-sm text-gray-500">
+              <h4
+                v-if="time_remaining"
+                class="text-sm text-gray-500"
+              >
                 {{ $t('v1.view.onboarding.get_pin_code') }}
                 (<span>{{ time_remaining }}s</span>)
               </h4>
+              <a
+                v-else
+                target="_blank"
+                class="underline text-sm"
+              >
+                {{ $t('v1.view.onboarding.send_code_again') }}
+              </a>
             </div>
           </div>
         </div>
