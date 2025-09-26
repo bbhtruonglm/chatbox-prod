@@ -2,12 +2,19 @@
   <div class="flex flex-col gap-5">
     <h2
       class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
+      @click="toggleAll"
     >
       {{ data.title }}
-      <ChevronUpIcon class="size-7" />
+      <ChevronDownIcon
+        class="size-7 transition-transform duration-200"
+        :class="openAll ? 'rotate-180' : ''"
+      />
     </h2>
 
-    <div class="overflow-x-auto bg-white rounded-xl">
+    <div
+      v-show="openAll"
+      class="overflow-x-auto bg-white rounded-xl"
+    >
       <!-- Header -->
       <div
         class="grid font-semibold"
@@ -126,9 +133,10 @@
 import {
   CheckCircleIcon,
   CheckIcon,
-  ChevronUpIcon,
+  ChevronDownIcon,
 } from '@heroicons/vue/24/solid'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { ref } from 'vue'
 
 /** Kiểu dữ liệu plans */
 interface Plan {
@@ -152,6 +160,10 @@ interface CompareData {
   sections: Section[]
 }
 
+const openAll = ref(true) // mặc định hiện
+const toggleAll = () => {
+  openAll.value = !openAll.value
+}
 /** Selected row kiểu object để phân biệt theo section */
 type SelectedRow = { sectionIndex: number; rowIndex: number } | null
 

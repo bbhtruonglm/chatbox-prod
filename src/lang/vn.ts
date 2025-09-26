@@ -285,6 +285,10 @@ const source: Language = {
           'Hãy mời đội ngũ của bạn để cùng nhau bắt đầu tạo khách hàng tiềm năng, hoặc bạn có thể thêm họ sau nếu hiện tại chưa thuận tiện.',
         connected: 'Đã kết nối',
         connect: 'Kết nối',
+        validate_website:
+          'Website không hợp lệ. Ví dụ: example.com hoặc https://example.com',
+        select_country: 'Chọn quốc gia',
+        popular: 'Gói phổ biến',
       },
       main: {
         dashboard: {

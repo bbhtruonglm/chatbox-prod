@@ -50,6 +50,7 @@
           <Transition
             name="fade-slide"
             mode="out-in"
+            @after-enter="focusCompanyInput"
           >
             <div
               :key="current_step"
@@ -103,6 +104,7 @@
                   }}<span class="text-red-500">*</span>
                 </label>
                 <input
+                  ref="company_name_input_ref"
                   v-model="COMPANY_DETAILS.name"
                   type="text"
                   :placeholder="$t('v1.view.onboarding.enter_company_name')"
@@ -132,7 +134,7 @@
               <!-- Step 5: Company details -->
               <div
                 v-if="current_step === 4"
-                class="flex flex-col max-w-lg gap-8"
+                class="flex flex-col max-w-lg gap-4"
               >
                 <div class="flex flex-col gap-1">
                   <label class="block text-gray-700 font-semibold text-sm">{{
@@ -143,12 +145,25 @@
                   >
                     <div class="pl-3 pr-1 py-2.5 bg-slate-100">www.</div>
                     <input
+                      ref="company_website_input_ref"
                       v-model="COMPANY_DETAILS.website"
                       type="text"
                       :placeholder="$t('v1.view.onboarding.enter_website')"
                       class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                      :class="
+                        !IS_WEBSITE_VALID && COMPANY_DETAILS.website
+                          ? 'border-red-500'
+                          : ''
+                      "
                     />
+                    <!-- hiển thị lỗi -->
                   </div>
+                  <p
+                    v-if="COMPANY_DETAILS.website && !IS_WEBSITE_VALID"
+                    class="text-red-500 text-xs"
+                  >
+                    {{ $t('v1.view.onboarding.validate_website') }}
+                  </p>
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="block text-gray-700 font-semibold text-sm">{{
@@ -333,43 +348,52 @@
       @next="onNextQuickStart"
       @skip_for_now="skipForNow"
     />
+    <OnboardingCreatingAccount
+      v-else-if="flow_step === 6"
+      @complete="completeCreatingAccount"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import OnboardingLoading from './OnboardingLoading.vue'
 import OnboardingVerify from './OnboardingVerify.vue'
 
 import UpgradeModalV2 from '@/views/OAuth/Onboarding/UpgradeModalV2.vue'
 import OnboardingQuickStarter from './OnboardingQuickStarter.vue'
+import OnboardingCreatingAccount from './OnboardingCreatingAccount.vue'
 
 const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3 | 4 | 5>(1)
+const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(1)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')
 /** Số điện thoại */
 const phone = ref('')
+
 /** Hàm verify phone */
 const verifyPhone = () => {
   console.log('verify phone')
   flow_step.value = 4
 }
-/** Hàm verify phone */
+/** Hàm next trong quick start */
 const onNextQuickStart = () => {
   if (current_step_quick_start.value < 1) current_step_quick_start.value++
+  if (current_step_quick_start.value === 1) {
+    flow_step.value = 6
+  }
 }
-/** Hàm verify phone */
+/** Hàm back trong quick start */
 const onPrevQuickStart = () => {
   if (current_step_quick_start.value > 0) current_step_quick_start.value--
 }
-/** Hàm verify phone */
+/** Hàm skip bước quick start*/
 const skipForNow = () => {
   console.log('skip for now')
 }
@@ -393,6 +417,10 @@ const completeLoading = () => {
   /** Chuyển sang màn verify */
   flow_step.value = 3
 }
+/** Hàm hoàn thành loading */
+const completeCreatingAccount = () => {
+  /** Chuyển sang màn đăng nhập */
+}
 /**Bước hiện tại */
 const current_step = ref(0)
 /** Tổng số bước */
@@ -401,6 +429,44 @@ const total_steps = 5
 const current_step_verify = ref(0)
 
 const current_step_quick_start = ref(0)
+
+/** ref tới input */
+const company_name_input_ref = ref<HTMLInputElement | null>(null)
+
+/** company website ref */
+const company_website_input_ref = ref<HTMLInputElement | null>(null)
+
+/** callback khi transition hoàn tất */
+const focusCompanyInput = () => {
+  /** Nếu có giá trị ref */
+  if (company_name_input_ref.value) {
+    /** Mới focus */
+    company_name_input_ref.value.focus()
+    console.log('Focused input', company_name_input_ref.value)
+  }
+  /** Nếu có giá trị ref chọn website công ty */
+  if (company_website_input_ref.value) {
+    company_website_input_ref.value.focus()
+  }
+}
+
+/** regex cơ bản validate domain hoặc url */
+const WEBSITE_REGEX = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/
+
+/** computed check hợp lệ */
+// const IS_WEBSITE_VALID = computed(() => {
+//   /** rỗng thì false */
+//   if (!COMPANY_DETAILS.value.website) return false
+//   return WEBSITE_REGEX.test(COMPANY_DETAILS.value.website)
+// })
+
+// Computed kiểm tra website hợp lệ
+const IS_WEBSITE_VALID = computed(() => {
+  const WEBSITE = COMPANY_DETAILS.value.website.trim()
+  /** không nhập thì coi như valid */
+  if (!WEBSITE) return true
+  return WEBSITE_REGEX.test(WEBSITE)
+})
 
 /** Tổng số bước  */
 const total_steps_verify = 3
@@ -419,11 +485,29 @@ const HAS_INPUT_STEP = computed(() => {
 
 /** validation step hiện tại */
 const IS_STEP_VALID = computed(() => {
-  /** Ở màn 3, check giá trị tên công ty */
-  if (current_step.value === 2) return COMPANY_DETAILS.value.name.trim() !== ''
-  /** Ở màn cuối, ít nhất có website của công ty */
-  if (current_step.value === 4)
-    return COMPANY_DETAILS.value.website.trim().length > 0
+  /** Step 3: check tên công ty */
+  if (current_step.value === 2) {
+    return COMPANY_DETAILS.value.name.trim() !== ''
+  }
+
+  /** Step 4: website phải đúng định dạng nếu có */
+  if (current_step.value === 4) {
+    const { website, facebook, instagram, tiktok, zalo } = COMPANY_DETAILS.value
+
+    /** website hợp lệ và có nhập */
+    const WEBSITE_VALID_AND_FILLED =
+      website.trim() !== '' && IS_WEBSITE_VALID.value
+
+    /**  hoặc website trống nhưng có ít nhất 1 field khác*/
+    const OTHER_FILLED =
+      facebook.trim() !== '' ||
+      instagram.trim() !== '' ||
+      tiktok.trim() !== '' ||
+      zalo.trim() !== ''
+
+    return WEBSITE_VALID_AND_FILLED || OTHER_FILLED
+  }
+
   return true
 })
 

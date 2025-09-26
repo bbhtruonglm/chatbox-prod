@@ -45,30 +45,36 @@
 
         <!-- Verification content -->
         <div class="flex flex-col gap-3">
-          <div class="flex flex-col gap-1 max-w-4xl text-left">
+          <div class="flex flex-col gap-1 max-w-2xl text-left">
             <label class="block text-gray-700 font-medium text-sm">
               {{ $t('v1.view.onboarding.phone') }}
             </label>
-            <div class="flex gap-2.5">
+            <div
+              class="flex border rounded-md overflow-hidden items-center border-gray-200"
+            >
+              <ShadcnSelectPopper2
+                v-model="SELECTED_PREFIX"
+                :options="PREFIXES"
+                :placeholder="$t('v1.view.onboarding.select_country')"
+                width="180px"
+                class="rounded-none"
+                :disabled="is_sending_verify_code"
+              />
               <input
+                ref="phone_ref"
                 v-model="phone_value"
                 type="text"
                 :placeholder="$t('v1.view.onboarding.enter_phone')"
-                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                class="w-full rounded-md px-3 py-2 outline-none focus:outline-none"
                 :disabled="is_sending_verify_code"
               />
-              <button
-                v-if="is_sending_verify_code"
-                class="px-5 py-2 w-60 flex justify-center border bg-slate-200 text-slate-700 hover:bg-slate-700 hover:text-white border-slate-700 items-center gap-1 rounded-md font-semibold text-sm"
-                @click="changePhone"
-              >
-                {{ $t('v1.view.onboarding.change_phone') }}
-              </button>
-              <div
-                v-else
-                class="w-60"
-              ></div>
             </div>
+            <p
+              v-if="phone_value && !IS_PHONE_VALID"
+              class="text-red-500 text-sm mt-1"
+            >
+              Số điện thoại không hợp lệ (chỉ nhập số, 8-15 chữ số)
+            </p>
           </div>
 
           <!-- Nút verify -->
@@ -128,6 +134,14 @@
             v-else
             class="flex flex-col gap-3"
           >
+            <button
+              v-if="is_sending_verify_code"
+              class="px-5 py-2 w-60 flex justify-center border bg-slate-200 text-slate-700 hover:bg-slate-700 hover:text-white border-slate-700 items-center gap-1 rounded-md font-semibold text-sm"
+              @click="changePhone"
+            >
+              {{ $t('v1.view.onboarding.change_phone') }}
+            </button>
+
             <h4 class="text-sm">{{ $t('v1.view.onboarding.pin_code') }}</h4>
 
             <div class="flex flex-col gap-2">
@@ -143,7 +157,7 @@
                     @input="onInputOTP(i, $event)"
                     @keydown="onKeydownOTP(i, $event)"
                     class="size-9 text-center border"
-                    :ref="el => (inputs[i] = el as HTMLInputElement | null)"
+                    :ref="(el:HTMLInputElement)  => (inputs[i] = el as HTMLInputElement | null)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -167,7 +181,7 @@
                     @input="onInputOTP(i + 3, $event)"
                     @keydown="onKeydownOTP(i + 3, $event)"
                     class="size-9 text-center border"
-                    :ref="el => (inputs[i + 3] = el as HTMLInputElement | null)"
+                    :ref="(el:HTMLInputElement) => (inputs[i + 3] = el as HTMLInputElement | null)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -212,8 +226,10 @@ import { useI18n } from 'vue-i18n'
 
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WhatsappIcon from '@/components/Icons/Whatsapp.vue'
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+import ShadcnSelectPopper from '@/components/Select/ShadcnSelectPopper.vue'
+import ShadcnSelectPopper2 from '@/components/Select/ShadcnSelectPopper2.vue'
 /** Hàm dịch */
 const { t: $t } = useI18n()
 /** Khai báo common store */
@@ -243,6 +259,21 @@ const $emit = defineEmits<{
 
 /** Trạng thái gửi verify code */
 const is_sending_verify_code = ref(false)
+/** Prefix */
+const PREFIXES = [
+  { label: 'Việt Nam (+84)', value: '+84' },
+  { label: 'US (+1)', value: '+1' },
+  { label: 'UK (+44)', value: '+44' },
+  // thêm nữa...
+]
+
+/** regex */
+const PHONE_REGEX = /^\+?[0-9]{8,15}$/
+/** CHeck valid */
+const IS_PHONE_VALID = computed(() => PHONE_REGEX.test(phone_value.value))
+
+/** mặc định VN */
+const SELECTED_PREFIX = ref('+84')
 
 /** countdown */
 const time_remaining = ref(30)
@@ -258,6 +289,15 @@ const is_verifying = ref(false)
 
 /** Phone value với v-model */
 const phone_value = ref(props.phone)
+
+/** ref tới input */
+const phone_ref = ref<HTMLInputElement | null>(null)
+/** focus phone input */
+onMounted(() => {
+  nextTick(() => {
+    if (phone_ref.value) phone_ref.value.focus()
+  })
+})
 
 /** Đồng bộ phone prop với phone_value */
 watch(phone_value, newValue => {

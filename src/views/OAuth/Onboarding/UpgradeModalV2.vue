@@ -29,12 +29,7 @@
                 <div class="px-3 text-4xl font-bold flex-shrink-0 text-center">
                   {{ $t('v1.view.main.dashboard.org.pay.upgrade_v2.title') }}
                 </div>
-                <div
-                  @click="toggleModal"
-                  class="rounded-lg cursor-pointer hover:bg-slate-200"
-                >
-                  <XMarkIcon class="size-10" />
-                </div>
+                <div class="w-32"></div>
               </div>
               <div class="px-3 font-medium flex-shrink-0 text-center">
                 {{

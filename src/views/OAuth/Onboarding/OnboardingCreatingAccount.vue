@@ -14,7 +14,7 @@
         </div>
         <div class="h-full flex flex-col items-center gap-3 w-full">
           <img
-            src="@/assets/imgs/loading_img.png"
+            src="@/assets/imgs/creating_account.png"
             alt=""
             class="size-64"
           />
@@ -55,7 +55,7 @@ onMounted(() => {
   /** Simulate API call with a 5-second delay */
   setTimeout(() => {
     $emit('complete')
-  }, 1000)
+  }, 5000)
 })
 </script>
 

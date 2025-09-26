@@ -2,13 +2,21 @@
   <section class="max-w-3xl mx-auto">
     <!-- Tiêu đề -->
     <h2
-      class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
+      class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center cursor-pointer"
+      @click="toggleAll"
     >
       {{ $t('v1.view.onboarding.FAQ') }}
-      <ChevronUpIcon class="size-7" />
+      <ChevronDownIcon
+        class="size-7 transition-transform duration-200"
+        :class="openAll ? 'rotate-180' : ''"
+      />
     </h2>
 
-    <div class="divide-y">
+    <div
+      v-show="openAll"
+      class="divide-y"
+    >
+      <!-- ẩn/hiện toàn bộ -->
       <!-- Câu hỏi 1 -->
       <div class="py-4">
         <button
@@ -17,7 +25,7 @@
         >
           <span class="text-lg font-medium">Question 1</span>
           <svg
-            class="w-5 h-5"
+            class="w-5 h-5 transition-transform duration-200"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -46,7 +54,7 @@
         >
           <span class="text-lg font-medium">Question 2</span>
           <svg
-            class="w-5 h-5"
+            class="w-5 h-5 transition-transform duration-200"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -69,26 +77,24 @@
     </div>
   </section>
 </template>
-
 <script setup lang="ts">
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  ChevronUpIcon,
-} from '@heroicons/vue/24/solid'
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import { ref } from 'vue'
 
 const openIndex = ref<number | null>(null)
-const openAll = ref(false)
+const openAll = ref(true) // mặc định hiện
 
 const toggle = (index: number) => {
-  openIndex.value = openIndex.value === index ? null : index
+  // chỉ cho mở từng cái khi openAll true
+  if (openAll.value) {
+    openIndex.value = openIndex.value === index ? null : index
+  }
 }
 
 const toggleAll = () => {
   openAll.value = !openAll.value
-  openIndex.value = openAll.value ? -1 : null // -1 nghĩa là mở tất cả
+  if (!openAll.value) {
+    openIndex.value = null // đóng tất cả
+  }
 }
 </script>
-
-<style scoped></style>

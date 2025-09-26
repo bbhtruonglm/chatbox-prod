@@ -8,12 +8,20 @@
     ]"
     @click="onSelect"
   >
+    <!-- <div
+    v-if="is_popular"
+    class="absolute flex justify-center items-center text-sm font-semibold text-white -top-5 left-0 z-10 h-9 rounded-t-lg bg-cyan-700 w-full"
+  >
+    Most Popular
+  </div> -->
+
     <div class="flex flex-col gap-3 cursor-pointer transition-all duration-200">
       <div
         v-if="is_popular"
-        class="absolute flex justify-center items-center text-sm font-semibold text-white -top-5 left-0 z-10 h-9 rounded-t-lg bg-cyan-700 w-full"
+        class="absolute flex justify-center items-center text-sm font-semibold text-white -top-5 left-0 z-10 h-9 rounded-t-lg bg-cyan-700"
+        style="width: calc(100% + 4px); left: -2px"
       >
-        Most Popular
+        {{ $t('v1.view.onboarding.popular') }}
       </div>
       <div class="pb-10">
         <!-- Title + price -->
