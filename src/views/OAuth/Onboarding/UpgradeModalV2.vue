@@ -150,6 +150,11 @@ const COMMON_STORE = useCommonStore()
 const orgStore = useOrgStore()
 /** Hàm dịch */
 const { t: $t } = useI18n()
+
+const props = defineProps<{
+  selected_preference: string | null
+}>()
+
 /** Hàm click */
 function handleClick(pkg_title: string) {
   // alert(`Bạn chọn gói ${pkg_title}`)

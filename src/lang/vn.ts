@@ -283,6 +283,8 @@ const source: Language = {
         invite_staff: 'Cuối cùng, bạn muốn mời ai?',
         invite_staff_desctiption:
           'Hãy mời đội ngũ của bạn để cùng nhau bắt đầu tạo khách hàng tiềm năng, hoặc bạn có thể thêm họ sau nếu hiện tại chưa thuận tiện.',
+        connected: 'Đã kết nối',
+        connect: 'Kết nối',
       },
       main: {
         dashboard: {

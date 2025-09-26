@@ -24,9 +24,11 @@
           <p class="font-medium">
             {{ $t('v1.view.onboarding.loading_description') }}
           </p>
-          <div
-            class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"
-          ></div>
+          <VueSpinnerIos
+            size="60"
+            color="gray"
+            slot="10"
+          />
         </div>
       </div>
       <div
@@ -40,6 +42,8 @@
 import { useCommonStore } from '@/stores'
 import { onMounted } from 'vue'
 import trialBg from '@/assets/imgs/trial_bg_cover.webp' // import ảnh
+import { VueSpinnerIos } from 'vue3-spinners'
+
 /** Khai báo common store */
 const commonStore = useCommonStore()
 /** Emit sự kiện hoàn thành tạo tài khoản */

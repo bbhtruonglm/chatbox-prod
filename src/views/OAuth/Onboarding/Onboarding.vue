@@ -1,5 +1,6 @@
 <template>
-  <div class="h-screen bg-gradient-secondary py-10 px-6 font-sans">
+  <!-- <div class="h-screen bg-gradient-primary py-10 px-6 font-sans"> -->
+  <div class="h-screen bg-gradient-primary py-10 px-6 font-sans">
     <div
       v-if="flow_step === 1"
       class="flex mx-auto overflow-hidden gap-2.5 flex-grow h-full min-h-0"
@@ -28,7 +29,6 @@
         </div>
       </aside>
 
-      <!-- Right panel -->
       <main
         class="flex w-full flex-grow min-h-0 h-full gap-3 px-3 py-5 rounded-xl bg-white flex-col justify-between"
       >
@@ -42,192 +42,203 @@
               {{ total_steps }}
             </div>
             <div>
-              <!-- Step title -->
               <h2 class="text-4xl font-bold">{{ STEP_TITLE }}</h2>
               <p class="font-medium">{{ STEP_DESCRIPTIONS }}</p>
             </div>
           </div>
-          <div class="flex flex-col gap-5">
-            <!-- Step content -->
 
-            <!-- Step 1: Industry -->
-            <div v-if="current_step === 0">
-              <div class="grid grid-cols-3 gap-5 px-4">
-                <button
-                  v-for="option in OPTION_INDUSTRY"
-                  :key="option"
-                  :class="[
-                    'border rounded-md py-3 px-5 text-center text-sm font-semibold shadow-sm',
-                    SELECTED_INDUSTRY === option
-                      ? 'bg-blue-700 border-blue-700 text-white'
-                      : 'border-slate-500 bg-white',
-                  ]"
-                  @click="SELECTED_INDUSTRY = option"
-                >
-                  {{ option }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 2: Role -->
-            <div v-if="current_step === 1">
-              <div class="grid grid-cols-3 gap-5 px-4">
-                <button
-                  v-for="option in OPTION_ROLE"
-                  :key="option"
-                  :class="[
-                    'border rounded-md py-3 px-5 text-center text-sm font-semibold shadow-sm',
-                    SELECTED_ROLE === option
-                      ? 'border-blue-700 bg-blue-700 text-white'
-                      : 'border-slate-500 bg-white',
-                  ]"
-                  @click="SELECTED_ROLE = option"
-                >
-                  {{ option }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 3: Company name input -->
+          <Transition
+            name="fade-slide"
+            mode="out-in"
+          >
             <div
-              v-if="current_step === 2"
-              class="flex flex-col gap-1 max-w-lg"
+              :key="current_step"
+              class="flex flex-col gap-5 flex-grow min-h-0 overflow-hidden overflow-y-auto py-2"
             >
-              <label class="block text-gray-700 font-medium text-sm">
-                {{ $t('v1.view.onboarding.company_name') }}
-                <span class="text-red-500">*</span></label
+              <!-- Step 1: Industry -->
+              <div v-if="current_step === 0">
+                <div class="grid grid-cols-3 gap-5 px-4">
+                  <button
+                    v-for="option in OPTION_INDUSTRY"
+                    :key="option"
+                    :class="[
+                      'border rounded-md py-3 px-5 text-center text-sm font-semibold transition-all',
+                      SELECTED_INDUSTRY === option
+                        ? 'bg-blue-700 border-blue-700 text-white'
+                        : 'border-slate-500 bg-white hover:bg-blue-100',
+                    ]"
+                    @click="handleIndustry(option)"
+                  >
+                    {{ option }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 2: Role -->
+              <div v-if="current_step === 1">
+                <div class="grid grid-cols-3 gap-5 px-4">
+                  <button
+                    v-for="option in OPTION_ROLE"
+                    :key="option"
+                    :class="[
+                      'border rounded-md py-3 px-5 text-center text-sm font-semibold transition-all',
+                      SELECTED_ROLE === option
+                        ? 'bg-blue-700 border-blue-700 text-white'
+                        : 'border-slate-500 bg-white hover:bg-blue-100',
+                    ]"
+                    @click="handleRole(option)"
+                  >
+                    {{ option }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 3: Company name -->
+              <div
+                v-if="current_step === 2"
+                class="flex flex-col gap-1 max-w-lg"
               >
-              <input
-                v-model="COMPANY_DETAILS.name"
-                type="text"
-                :placeholder="$t('v1.view.onboarding.enter_company_name')"
-                class="w-full border border-gray-300 rounded-md px-3 py-2"
-              />
-            </div>
-
-            <!-- Step 4: Preferences -->
-            <div v-if="current_step === 3">
-              <div class="grid grid-cols-3 gap-5 px-4">
-                <button
-                  v-for="option in OPTION_PREFERENCES"
-                  :key="option"
-                  :class="[
-                    'border rounded-md py-3 px-5 text-center font-semibold text-sm',
-                    SELECTED_PREFERENCES === option
-                      ? 'border-blue-700 bg-blue-700 text-white'
-                      : 'border-slate-500 bg-white',
-                  ]"
-                  @click="SELECTED_PREFERENCES = option"
-                >
-                  {{ option }}
-                </button>
+                <label class="block text-gray-700 font-medium text-sm">
+                  {{ $t('v1.view.onboarding.company_name')
+                  }}<span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model="COMPANY_DETAILS.name"
+                  type="text"
+                  :placeholder="$t('v1.view.onboarding.enter_company_name')"
+                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none"
+                />
               </div>
-            </div>
 
-            <!-- Step 5: Company details -->
-            <div
-              v-if="current_step === 4"
-              class="flex flex-col max-w-lg gap-8"
-            >
-              <div class="flex flex-col gap-1">
-                <label class="block text-gray-700 font-semibold text-sm">{{
-                  $t('v1.view.onboarding.website_company')
-                }}</label>
-                <div
-                  class="flex border rounded-md overflow-hidden items-center border-gray-200"
-                >
-                  <div class="pl-3 pr-1 py-2.5 bg-slate-100">www.</div>
-                  <input
-                    v-model="COMPANY_DETAILS.website"
-                    type="text"
-                    :placeholder="$t('v1.view.onboarding.enter_website')"
-                    class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold"
-                  />
+              <!-- Step 4: Preferences -->
+              <div v-if="current_step === 3">
+                <div class="grid grid-cols-3 gap-5 px-4">
+                  <button
+                    v-for="option in OPTION_PREFERENCES"
+                    :key="option"
+                    :class="[
+                      'border rounded-md py-3 px-5 text-center font-semibold text-sm transition-all',
+                      SELECTED_PREFERENCES === option
+                        ? 'bg-blue-700 border-blue-700 text-white'
+                        : 'border-slate-500 bg-white hover:bg-blue-100',
+                    ]"
+                    @click="handlePreference(option)"
+                  >
+                    {{ option }}
+                  </button>
                 </div>
               </div>
-              <div class="flex flex-col gap-1">
-                <label class="block text-gray-700 font-semibold text-sm">{{
-                  $t('v1.view.onboarding.facebook_page')
-                }}</label>
-                <div
-                  class="flex border rounded-md overflow-hidden items-center border-gray-200"
-                >
-                  <div class="pl-3 pr-1 py-2.5 bg-slate-100">facebook.com/</div>
-                  <input
-                    v-model="COMPANY_DETAILS.facebook"
-                    type="text"
-                    :placeholder="$t('v1.view.onboarding.enter_facebook')"
-                    class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold"
-                  />
-                </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <label class="block text-gray-700 font-semibold text-sm">{{
-                  $t('v1.view.onboarding.instagram_page')
-                }}</label>
-                <div
-                  class="flex border rounded-md overflow-hidden items-center border-gray-200"
-                >
-                  <div class="pl-3 pr-1 py-2.5 bg-slate-100">
-                    instagram.com/
+
+              <!-- Step 5: Company details -->
+              <div
+                v-if="current_step === 4"
+                class="flex flex-col max-w-lg gap-8"
+              >
+                <div class="flex flex-col gap-1">
+                  <label class="block text-gray-700 font-semibold text-sm">{{
+                    $t('v1.view.onboarding.website_company')
+                  }}</label>
+                  <div
+                    class="flex border rounded-md overflow-hidden items-center border-gray-200"
+                  >
+                    <div class="pl-3 pr-1 py-2.5 bg-slate-100">www.</div>
+                    <input
+                      v-model="COMPANY_DETAILS.website"
+                      type="text"
+                      :placeholder="$t('v1.view.onboarding.enter_website')"
+                      class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                    />
                   </div>
-                  <input
-                    v-model="COMPANY_DETAILS.instagram"
-                    type="text"
-                    :placeholder="$t('v1.view.onboarding.enter_instagram')"
-                    class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold"
-                  />
                 </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <label class="block text-gray-700 font-semibold text-sm">{{
-                  $t('v1.view.onboarding.tiktok_page')
-                }}</label>
-                <div
-                  class="flex border rounded-md overflow-hidden items-center border-gray-200"
-                >
-                  <div class="pl-3 pr-1 py-2.5 bg-slate-100">tiktok.com/</div>
-                  <input
-                    v-model="COMPANY_DETAILS.tiktok"
-                    type="text"
-                    :placeholder="$t('v1.view.onboarding.enter_tiktok')"
-                    class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold"
-                  />
+                <div class="flex flex-col gap-1">
+                  <label class="block text-gray-700 font-semibold text-sm">{{
+                    $t('v1.view.onboarding.facebook_page')
+                  }}</label>
+                  <div
+                    class="flex border rounded-md overflow-hidden items-center border-gray-200"
+                  >
+                    <div class="pl-3 pr-1 py-2.5 bg-slate-100">
+                      facebook.com/
+                    </div>
+                    <input
+                      v-model="COMPANY_DETAILS.facebook"
+                      type="text"
+                      :placeholder="$t('v1.view.onboarding.enter_facebook')"
+                      class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <label class="block text-gray-700 font-semibold text-sm">{{
-                  $t('v1.view.onboarding.zalo')
-                }}</label>
-                <div
-                  class="flex border rounded-md overflow-hidden items-center border-gray-200"
-                >
-                  <div class="pl-3 pr-1 py-2.5 bg-slate-100">zalo.me/</div>
-                  <input
-                    v-model="COMPANY_DETAILS.zalo"
-                    type="text"
-                    :placeholder="$t('v1.view.onboarding.enter_zalo')"
-                    class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold"
-                  />
+                <div class="flex flex-col gap-1">
+                  <label class="block text-gray-700 font-semibold text-sm">{{
+                    $t('v1.view.onboarding.instagram_page')
+                  }}</label>
+                  <div
+                    class="flex border rounded-md overflow-hidden items-center border-gray-200"
+                  >
+                    <div class="pl-3 pr-1 py-2.5 bg-slate-100">
+                      instagram.com/
+                    </div>
+                    <input
+                      v-model="COMPANY_DETAILS.instagram"
+                      type="text"
+                      :placeholder="$t('v1.view.onboarding.enter_instagram')"
+                      class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                    />
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="block text-gray-700 font-semibold text-sm">{{
+                    $t('v1.view.onboarding.tiktok_page')
+                  }}</label>
+                  <div
+                    class="flex border rounded-md overflow-hidden items-center border-gray-200"
+                  >
+                    <div class="pl-3 pr-1 py-2.5 bg-slate-100">tiktok.com/</div>
+                    <input
+                      v-model="COMPANY_DETAILS.tiktok"
+                      type="text"
+                      :placeholder="$t('v1.view.onboarding.enter_tiktok')"
+                      class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                    />
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="block text-gray-700 font-semibold text-sm">{{
+                    $t('v1.view.onboarding.zalo')
+                  }}</label>
+                  <div
+                    class="flex border rounded-md overflow-hidden items-center border-gray-200"
+                  >
+                    <div class="pl-3 pr-1 py-2.5 bg-slate-100">zalo.me/</div>
+                    <input
+                      v-model="COMPANY_DETAILS.zalo"
+                      type="text"
+                      :placeholder="$t('v1.view.onboarding.enter_zalo')"
+                      class="w-full rounded-r-md px-4 pl-1 py-2 font-semibold outline-none"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </Transition>
         </div>
 
         <!-- Navigation -->
         <div class="flex justify-between items-center w-full">
           <button
-            class="px-10 py-3 gap-4 rounded-md bg-gray-200 font-medium text-black focus:outline-none disabled:opacity-50"
+            class="px-10 py-3 gap-4 rounded-md font-medium text-black focus:outline-none disabled:opacity-50"
+            :class="[
+              current_step === 0
+                ? 'hover:bg-gray-200 bg-gray-200 cursor-not-allowed'
+                : 'bg-gray-200 ',
+            ]"
             :disabled="current_step === 0"
             @click="prevStep"
           >
             {{ $t('v1.view.onboarding.back') }}
           </button>
 
-          <!-- Khi chưa đến step 5 -->
           <div class="flex items-center w-2/3 justify-end gap-4">
-            <!-- Khi step 5 -->
             <template v-if="current_step === total_steps - 1">
               <p class="text-xs text-left">
                 {{ $t('v1.view.onboarding.step_5_description') }}
@@ -253,9 +264,10 @@
               </button>
             </template>
 
-            <!-- Khi chưa đến step 5 -->
+            <!-- chỉ hiện nút next ở step có input -->
             <template v-else>
               <button
+                v-if="HAS_INPUT_STEP"
                 :disabled="!IS_STEP_VALID"
                 :class="[
                   'px-10 py-3 rounded-md font-medium focus:outline-none',
@@ -278,7 +290,7 @@
       v-model:role="SELECTED_ROLE"
       v-model:companyName="COMPANY_DETAILS.name"
       v-model:preferences="SELECTED_PREFERENCES"
-      v-model:companyDetails="COMPANY_DETAILS"
+      v-model:COMPANY_DETAILS="COMPANY_DETAILS"
       :current-step="current_step"
       :total-steps="total_steps"
       :is-step-valid="IS_STEP_VALID"
@@ -308,6 +320,7 @@
     <UpgradeModalV2
       v-else-if="flow_step === 4"
       @submit="submitPackage"
+      :selected_preference="SELECTED_PREFERENCES"
     />
     <!-- flow 3: verify account -->
     <OnboardingQuickStarter
@@ -316,8 +329,8 @@
       :current_step="current_step_quick_start"
       :total_steps="2"
       @resend="resendVerification"
-      @back="onPrev"
-      @next="onNext"
+      @back="onPrevQuickStart"
+      @next="onNextQuickStart"
       @skip_for_now="skipForNow"
     />
   </div>
@@ -339,8 +352,6 @@ const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
 const flow_step = ref<1 | 2 | 3 | 4 | 5>(1)
 
-const upgrade_modal_ref = ref<InstanceType<typeof UpgradeModalV2>>()
-
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')
 /** Số điện thoại */
@@ -351,11 +362,11 @@ const verifyPhone = () => {
   flow_step.value = 4
 }
 /** Hàm verify phone */
-const onNext = () => {
+const onNextQuickStart = () => {
   if (current_step_quick_start.value < 1) current_step_quick_start.value++
 }
 /** Hàm verify phone */
-const onPrev = () => {
+const onPrevQuickStart = () => {
   if (current_step_quick_start.value > 0) current_step_quick_start.value--
 }
 /** Hàm verify phone */
@@ -394,6 +405,59 @@ const current_step_quick_start = ref(0)
 /** Tổng số bước  */
 const total_steps_verify = 3
 
+/** Lựa chọn ngành nghề */
+const SELECTED_INDUSTRY = ref<string | null>(null)
+
+const SELECTED_ROLE = ref<string | null>(null)
+
+const SELECTED_PREFERENCES = ref<string | null>(null)
+
+/** computed step có input */
+const HAS_INPUT_STEP = computed(() => {
+  return current_step.value === 2 || current_step.value === 4
+})
+
+/** validation step hiện tại */
+const IS_STEP_VALID = computed(() => {
+  /** Ở màn 3, check giá trị tên công ty */
+  if (current_step.value === 2) return COMPANY_DETAILS.value.name.trim() !== ''
+  /** Ở màn cuối, ít nhất có website của công ty */
+  if (current_step.value === 4)
+    return COMPANY_DETAILS.value.website.trim().length > 0
+  return true
+})
+
+/** methods chuyển step Flow1 */
+const nextStep = () => {
+  if (current_step.value < total_steps - 1) current_step.value++
+}
+/** Methods Lùi step Flow1 */
+const prevStep = () => {
+  if (current_step.value > 0) current_step.value--
+}
+
+/** auto next khi click chọn option */
+const handleIndustry = (option: string) => {
+  SELECTED_INDUSTRY.value = option
+  nextStep()
+}
+/** Auto next khi click chọn Role */
+const handleRole = (option: string) => {
+  SELECTED_ROLE.value = option
+  nextStep()
+}
+/** Auto next khi click chọn Quy mô công ty */
+const handlePreference = (option: string) => {
+  SELECTED_PREFERENCES.value = option
+  nextStep()
+}
+/** Hàm submit form tạo tài khoản */
+const submitForm = () => {
+  if (!IS_STEP_VALID) return
+  /** Chuyển sang step 2 */
+  flow_step.value = 2
+}
+
 /** Step 1 */
 const OPTION_INDUSTRY = [
   $t('v1.view.onboarding.industry_1'),
@@ -406,9 +470,6 @@ const OPTION_INDUSTRY = [
   $t('v1.view.onboarding.industry_8'),
   $t('v1.view.onboarding.industry_9'),
 ]
-/** Lựa chọn ngành nghề */
-const SELECTED_INDUSTRY = ref<string | null>(null)
-
 /** Step 2 */
 const OPTION_ROLE = [
   $t('v1.view.onboarding.role_1'),
@@ -420,10 +481,6 @@ const OPTION_ROLE = [
   $t('v1.view.onboarding.role_7'),
   $t('v1.view.onboarding.role_8'),
 ]
-const SELECTED_ROLE = ref<string | null>(null)
-
-/** Step 3 */
-const company_name = ref('')
 
 /** Step 4 */
 const OPTION_PREFERENCES = [
@@ -436,7 +493,6 @@ const OPTION_PREFERENCES = [
   $t('v1.view.onboarding.preference_7'),
   $t('v1.view.onboarding.preference_8'),
 ]
-const SELECTED_PREFERENCES = ref<string | null>(null)
 
 /** Step 5 */
 const COMPANY_DETAILS = ref({
@@ -468,49 +524,6 @@ const STEP_DESCRIPTIONS = computed(() => {
     $t('v1.view.onboarding.company_summary_description'),
   ][current_step.value]
 })
-
-/** Điều kiện hợp lệ mỗi bước */
-const IS_STEP_VALID = computed(() => {
-  switch (current_step.value) {
-    case 0:
-      return !!SELECTED_INDUSTRY.value
-    case 1:
-      return !!SELECTED_ROLE.value
-    case 2:
-      return COMPANY_DETAILS.value.name.trim().length > 0
-    case 3:
-      return !!SELECTED_PREFERENCES.value
-    case 4:
-      /** Step cuối yêu cầu phải nhập website ít nhất */
-      return COMPANY_DETAILS.value.website.trim().length > 0
-    default:
-      return false
-  }
-})
-
-/** Navigation */
-const nextStep = () => {
-  if (IS_STEP_VALID.value && current_step.value < total_steps - 1) {
-    current_step.value++
-  }
-}
-/** Previous step */
-const prevStep = () => {
-  if (current_step.value > 0) current_step.value--
-}
-
-/** Submit */
-const submitForm = () => {
-  /** Nếu chưa nhập đủ thông tin thì return */
-  if (!IS_STEP_VALID.value) return
-  console.log('Industry:', SELECTED_INDUSTRY.value)
-  console.log('Role:', SELECTED_ROLE.value)
-  console.log('Company name step 3:', company_name.value)
-  console.log('Preferences:', SELECTED_PREFERENCES.value)
-  console.log('Company details step 5:', COMPANY_DETAILS.value)
-  /** Chuyển sang step 2 */
-  flow_step.value = 2
-}
 </script>
 
 <style scoped>
@@ -522,6 +535,29 @@ body,
 }
 button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  /* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); */
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s ease; /* tốc độ */
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-slide-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 </style>

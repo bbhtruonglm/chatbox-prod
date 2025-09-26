@@ -155,7 +155,7 @@ const EMPLOYEES = [
   },
   {
     value: 'over1000',
-    label: '1,0001+',
+    label: '1,001+',
   },
 ]
 /** giá trị mặc định */

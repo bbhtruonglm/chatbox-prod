@@ -93,39 +93,14 @@
                     v-if="item.connected"
                     class="text-blue-600 flex items-center gap-1"
                   >
-                    Đã kết nối
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 16h-1v-4h-1m1 4h.01M12 8h.01"
-                      />
-                    </svg>
+                    {{ $t('v1.view.onboarding.connected') }}
                   </button>
                   <button
                     v-else
-                    class="px-4 py-1 bg-gray-100 rounded-md hover:bg-gray-200 flex items-center gap-1"
+                    class="px-4 py-1 bg-slate-200 rounded-md hover:bg-slate-300 flex items-center gap-1"
                   >
-                    Kết nối
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    {{ $t('v1.view.onboarding.connect') }}
+                    <ChevronRightIcon class="size-4" />
                   </button>
                 </div>
               </li>
@@ -244,6 +219,7 @@ import Instagram from '@/components/Icons/Instagram.vue'
 import Whatsapp from '@/components/Icons/Whatsapp.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { PlusCircleIcon } from '@heroicons/vue/24/outline'
+import { ChevronRightIcon } from '@heroicons/vue/16/solid'
 
 /** Hàm dịch */
 const { t: $t } = useI18n()
