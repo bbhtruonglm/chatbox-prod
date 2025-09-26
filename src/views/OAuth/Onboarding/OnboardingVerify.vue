@@ -157,7 +157,7 @@
                     @input="onInputOTP(i, $event)"
                     @keydown="onKeydownOTP(i, $event)"
                     class="size-9 text-center border"
-                    :ref="(el:HTMLInputElement)  => (inputs[i] = el as HTMLInputElement | null)"
+                    :ref="el => setInputRef(el, i)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -167,6 +167,7 @@
                     ]"
                   />
                 </div>
+                <!-- :ref="(el:HTMLInputElement)  => (inputs[i] = el as HTMLInputElement | null)" -->
 
                 <span>-</span>
 
@@ -181,7 +182,7 @@
                     @input="onInputOTP(i + 3, $event)"
                     @keydown="onKeydownOTP(i + 3, $event)"
                     class="size-9 text-center border"
-                    :ref="(el:HTMLInputElement) => (inputs[i + 3] = el as HTMLInputElement | null)"
+                    :ref="el => setInputRef(el, i)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -190,6 +191,7 @@
                         : 'border-x-0',
                     ]"
                   />
+                  <!-- :ref="(el:HTMLInputElement) => (inputs[i + 3] = el as HTMLInputElement | null)" -->
                 </div>
               </div>
               <h4
@@ -226,7 +228,15 @@ import { useI18n } from 'vue-i18n'
 
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import WhatsappIcon from '@/components/Icons/Whatsapp.vue'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  type ComponentPublicInstance,
+} from 'vue'
 
 import ShadcnSelectPopper from '@/components/Select/ShadcnSelectPopper.vue'
 import ShadcnSelectPopper2 from '@/components/Select/ShadcnSelectPopper2.vue'
@@ -257,6 +267,15 @@ const $emit = defineEmits<{
   (e: 'verify'): void
 }>()
 
+const inputs = ref<(HTMLInputElement | null)[]>([])
+
+const setInputRef = (
+  el: Element | ComponentPublicInstance | null,
+  i: number
+) => {
+  inputs.value[i] = el as HTMLInputElement | null
+}
+
 /** Trạng thái gửi verify code */
 const is_sending_verify_code = ref(false)
 /** Prefix */
@@ -283,7 +302,7 @@ let countdown_interval: number | undefined
 /** OTP */
 const OTP = ref<string[]>(Array(6).fill(''))
 /** Inputs */
-const inputs = ref<(HTMLInputElement | null)[]>([])
+
 /** Trạng thái verifying */
 const is_verifying = ref(false)
 
