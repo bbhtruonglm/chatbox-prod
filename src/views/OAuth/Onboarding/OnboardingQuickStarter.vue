@@ -50,13 +50,13 @@
             class="px-28 py-1"
           >
             <h3 class="text-slate-500 font-medium text-xs">
-              Chọn nền tảng cần Kết nối:
+              {{ $t('v1.view.onboarding.select_platform_to_connect') }}
             </h3>
             <ul class="divide-y">
               <li
                 v-for="(item, i) in PLAT_FORMS"
                 :key="i"
-                class="flex items-center justify-between py-3"
+                class="flex items-center justify-between px-2 py-4 gap-3"
               >
                 <!-- Thông tin -->
                 <div class="flex items-center gap-3">
@@ -90,17 +90,29 @@
                 <!-- Nút trạng thái -->
                 <div>
                   <button
-                    v-if="item.connected"
-                    class="text-blue-600 flex items-center gap-1"
+                    v-if="CONNECTED_PLATFORMS.includes(item?.name)"
+                    class="text-blue-600 border py-2 border-transparent flex items-center gap-1 text-sm font-semibold"
                   >
                     {{ $t('v1.view.onboarding.connected') }}
+                    <LinkIcon class="size-4" />
                   </button>
                   <button
                     v-else
-                    class="px-4 py-1 bg-slate-200 rounded-md hover:bg-slate-300 flex items-center gap-1"
+                    @click="handleAddPlatforms(item?.name)"
+                    class="px-6 py-2 bg-slate-200 border border-slate-300 font-semibold rounded-md hover:bg-slate-300 flex items-center gap-1 text-sm"
                   >
-                    {{ $t('v1.view.onboarding.connect') }}
-                    <ChevronRightIcon class="size-4" />
+                    <span
+                      v-if="LOADING_PLATFORM !== item?.name"
+                      class="flex gap-1 items-center"
+                    >
+                      {{ $t('v1.view.onboarding.connect') }}
+                      <ChevronRightIcon class="size-4" />
+                    </span>
+                    <VueSpinnerIos
+                      v-else
+                      size="20"
+                      color="blue"
+                    />
                   </button>
                 </div>
               </li>
@@ -193,12 +205,13 @@
 
           <button
             :class="[
-              'px-10 py-3 rounded-md font-medium border focus:outline-none bg-blue-600 text-white border-blue-600',
-              // IS_STEP_VALID
-              //   ? 'bg-blue-600 text-white border-blue-600'
-              //   : 'bg-blue-100 text-blue-600 border-blue-300',
+              'px-10 py-3 rounded-md font-medium border focus:outline-none',
+              IS_VALID_BTN_NEXT
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-blue-100 text-blue-600 border-blue-300',
             ]"
             @click="nextStep"
+            :disabled="!IS_VALID_BTN_NEXT"
           >
             {{ $t('v1.view.onboarding.next') }}
           </button>
@@ -219,8 +232,8 @@ import Instagram from '@/components/Icons/Instagram.vue'
 import Whatsapp from '@/components/Icons/Whatsapp.vue'
 import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { PlusCircleIcon } from '@heroicons/vue/24/outline'
-import { ChevronRightIcon } from '@heroicons/vue/16/solid'
-
+import { ChevronRightIcon, LinkIcon } from '@heroicons/vue/16/solid'
+import { VueSpinnerIos } from 'vue3-spinners'
 /** Hàm dịch */
 const { t: $t } = useI18n()
 /** Khai báo common store */
@@ -276,6 +289,30 @@ const PLAT_FORMS = [
     connected: false,
   },
 ]
+/** Danh sachs platform đã kết nối */
+const CONNECTED_PLATFORMS = ref<String[]>([])
+/** Trạng thái loading */
+const LOADING_PLATFORM = ref<string | null>(null)
+/** Hàm thêm platform */
+const handleAddPlatforms = (platform: string) => {
+  /** Bật loading */
+  LOADING_PLATFORM.value = platform
+  setTimeout(() => {
+    /** cập nhật danh sách platform đã kết nối */
+    CONNECTED_PLATFORMS.value.push(platform)
+    /** Tắt loading */
+    LOADING_PLATFORM.value = null
+  }, 1000)
+}
+/** Trạng thái  */
+const IS_VALID_BTN_NEXT = computed(() => {
+  /** Đang ở step 1 */
+  if (props.current_step === 0) {
+    return CONNECTED_PLATFORMS.value.length > 0
+  }
+  return false
+})
+
 /** Hàm next sang step */
 const nextStep = () => {
   $emit('next')
@@ -315,27 +352,6 @@ watch(
 /** timeout verify sau 5s */
 let verify_timeout: number | undefined
 
-/** khi trạng thái thay đổi */
-watch(is_sending_verify_code, new_val => {
-  /** Nếu có new value */
-  if (new_val) {
-    /** tạo interval, giảm từ 30 -> 0 */
-    time_remaining.value = 30
-    countdown_interval = window.setInterval(() => {
-      /** Nếu > 0 thì tiếp tục */
-      if (time_remaining.value > 0) {
-        /** giảm 1 giá trị */
-        time_remaining.value--
-      } else {
-        /** clear interval */
-        clearInterval(countdown_interval)
-      }
-    }, 1000)
-  } else {
-    /** clear interval */
-    clearInterval(countdown_interval)
-  }
-})
 /** clear interval */
 onBeforeUnmount(() => {
   clearInterval(countdown_interval)
@@ -354,14 +370,13 @@ const copyLink = () => {
 /** Gửi lời mới */
 const sendInvite = (email: string) => {
   if (!email) {
-    alert('Please enter email')
     return
   }
   // Logic gửi invite ở đây
-  alert(`Invite sent to ${email}`)
 }
 /** THêm email */
 const addEmailField = () => {
+  /** add field trống vào email */
   emails.value.push('')
 }
 /** Title + description theo step */

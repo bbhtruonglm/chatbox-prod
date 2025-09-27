@@ -7,27 +7,28 @@
       {{ data.title }}
       <ChevronDownIcon
         class="size-7 transition-transform duration-200"
-        :class="openAll ? 'rotate-180' : ''"
+        :class="open_all ? 'rotate-180' : ''"
       />
     </h2>
 
     <div
-      v-show="openAll"
+      v-show="open_all"
       class="overflow-x-auto bg-white rounded-xl"
     >
       <!-- Header -->
       <div
-        class="grid font-semibold"
-        :style="{ gridTemplateColumns: gridCols }"
+        class="grid font-semibold top-10 z-50 sticky"
+        :style="{ gridTemplateColumns: GRID_COLS }"
       >
         <div class="p-3 text-left"></div>
         <div
           v-for="(plan, planIdx) in data.plans"
           :key="plan.key"
-          class="p-3 text-center flex justify-center text-2xl rounded-t-xl"
+          @click="onPlanClick(plan.name)"
+          class="p-3 text-center cursor-pointer flex justify-center text-2xl rounded-t-xl"
           :class="[
             plan.name === selected_plan_index
-              ? 'bg-cyan-50 font-bold '
+              ? 'bg-gray-50 font-bold '
               : 'font-semibold',
           ]"
         >
@@ -69,7 +70,7 @@
         <!-- Section row (grid) -->
         <div
           class="grid font-semibold text-2xl text-gray-800"
-          :style="{ gridTemplateColumns: gridCols }"
+          :style="{ gridTemplateColumns: GRID_COLS }"
         >
           <!-- Cột feature name -->
           <div class="pt-5">
@@ -80,7 +81,7 @@
             v-for="(plan, planIdx) in data.plans"
             :key="plan.key + section.title"
             class="p-3 text-center"
-            :class="plan.name === selected_plan_index ? 'bg-cyan-50' : ''"
+            :class="plan.name === selected_plan_index ? 'bg-gray-50' : ''"
           >
             <!-- để màu nền tương ứng với gói -->
           </div>
@@ -91,9 +92,9 @@
           :key="section.title + idx"
           class="grid items-center border-b border-slate-200 cursor-pointer"
           :class="
-            isRowSelected(sectionIdx, idx) ? 'bg-cyan-50' : 'hover:bg-gray-50'
+            isRowSelected(sectionIdx, idx) ? 'bg-gray-50' : 'hover:bg-gray-50'
           "
-          :style="{ gridTemplateColumns: gridCols }"
+          :style="{ gridTemplateColumns: GRID_COLS }"
           @click="onRowClick(sectionIdx, idx)"
         >
           <!-- Feature name cell -->
@@ -109,7 +110,7 @@
             v-for="(plan, planIdx) in data.plans"
             :key="plan.key + idx"
             class="p-3 flex justify-center items-center w-full text-sm"
-            :class="plan.name === selected_plan_index ? 'bg-cyan-50' : ''"
+            :class="plan.name === selected_plan_index ? 'bg-gray-50' : ''"
           >
             <template v-if="feature.values[plan.key] === true">
               <span class="text-slate-800 text-center">
@@ -140,59 +141,86 @@ import { ref } from 'vue'
 
 /** Kiểu dữ liệu plans */
 interface Plan {
+  /** key của plans */
   key: string
+  /** Tên của plans */
   name: string
 }
 /** Kiểu dữ liệu chức năng */
 interface Feature {
+  /** Tên của tính năng */
   name: string
+  /** Giá trị features */
   values: Record<string, string | number | boolean | null | undefined>
 }
 /** Kiểu dữ liệu section */
 interface Section {
+  /** Title section */
   title: string
+  /** chức năng */
   features: Feature[]
 }
 /** Kiểu dữ liệu Data phần compare plans & feature */
 interface CompareData {
+  /** Title của plan */
   title: string
+  /** Data plan */
   plans: Plan[]
+  /** data section */
   sections: Section[]
 }
 
-const openAll = ref(true) // mặc định hiện
+/** mặc định hiện */
+const open_all = ref(true)
+/** Hàm bật tắt content */
 const toggleAll = () => {
-  openAll.value = !openAll.value
+  open_all.value = !open_all.value
 }
 /** Selected row kiểu object để phân biệt theo section */
 type SelectedRow = { sectionIndex: number; rowIndex: number } | null
 
 /** Định nghĩa props */
 const props = defineProps<{
+  /** Dữ liệu */
   data: CompareData
-  selected_plan_index?: string // gói được highlight (ở bạn dùng plan.name so sánh)
-  selected_row?: SelectedRow // giờ là object {sectionIndex, rowIndex}
+  /** gói được highlight (ở bạn dùng plan.name so sánh) */
+  selected_plan_index?: string
+  /** giờ là object {sectionIndex, rowIndex} */
+  selected_row?: SelectedRow
 }>()
 
 /** Khai báo hàm emit để component con phát sự kiện 'rowSelect' kèm {sectionIndex,rowIndex} cho cha */
 // Phát sự kiện: emit('rowSelect', { sectionIndex: number, rowIndex: number })
 const emit = defineEmits<{
   (e: 'rowSelect', payload: { sectionIndex: number; rowIndex: number }): void
+  (e: 'planSelect', payload: string): void // emit khi chọn plan
 }>()
 
 /** tạo call  */
-const gridCols = `416px repeat(${props.data.plans.length}, minmax(120px,1fr))`
+const GRID_COLS = `416px repeat(${props.data.plans.length}, minmax(120px,1fr))`
 
 /** helper: kiểm tra row đang được chọn (theo section) */
 function isRowSelected(sectionIdx: number, rowIdx: number) {
+  /** Trả về trạng thái row select*/
   return (
     props.selected_row?.sectionIndex === sectionIdx &&
     props.selected_row?.rowIndex === rowIdx
   )
 }
 
-/** on click row -> emit payload có sectionIndex & rowIndex */
+/** on click row -> emit payload có sectionIndex & rowIndex
+ * @param sectionIndex
+ * @param rowIdx
+ */
 function onRowClick(sectionIdx: number, rowIdx: number) {
+  /** Hàm emit select row */
   emit('rowSelect', { sectionIndex: sectionIdx, rowIndex: rowIdx })
+}
+/** click plan header
+ * @param planKey
+ */
+function onPlanClick(planKey: string) {
+  /** hàm emit plan select */
+  emit('planSelect', planKey)
 }
 </script>

@@ -130,6 +130,7 @@
           </div>
 
           <!-- OTP -->
+
           <div
             v-else
             class="flex flex-col gap-3"
@@ -167,10 +168,7 @@
                     ]"
                   />
                 </div>
-                <!-- :ref="(el:HTMLInputElement)  => (inputs[i] = el as HTMLInputElement | null)" -->
-
                 <span>-</span>
-
                 <!-- 3 ô phải -->
                 <div class="flex">
                   <input
@@ -182,7 +180,7 @@
                     @input="onInputOTP(i + 3, $event)"
                     @keydown="onKeydownOTP(i + 3, $event)"
                     class="size-9 text-center border"
-                    :ref="el => setInputRef(el, i)"
+                    :ref="el => setInputRef(el, i + 3)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -191,7 +189,6 @@
                         : 'border-x-0',
                     ]"
                   />
-                  <!-- :ref="(el:HTMLInputElement) => (inputs[i + 3] = el as HTMLInputElement | null)" -->
                 </div>
               </div>
               <h4
@@ -267,17 +264,59 @@ const $emit = defineEmits<{
   (e: 'verify'): void
 }>()
 
+// const inputs = ref<(HTMLInputElement | null)[]>([])
+
+// Khai báo mảng refs để lưu trữ các input elements
 const inputs = ref<(HTMLInputElement | null)[]>([])
 
-const setInputRef = (
-  el: Element | ComponentPublicInstance | null,
-  i: number
-) => {
-  inputs.value[i] = el as HTMLInputElement | null
-}
+// Khai báo OTP
+const OTP = ref<string[]>(Array(6).fill(''))
 
 /** Trạng thái gửi verify code */
 const is_sending_verify_code = ref(false)
+
+// Hàm để gán ref và focus vào ô đầu tiên nếu cần
+const setInputRef = (el: HTMLInputElement | null, index: number) => {
+  inputs.value[index] = el
+}
+
+// Hàm xử lý khi click nút "changePhone" để focus vào ô input đầu tiên
+const changePhone = () => {
+  if (inputs.value[0]) {
+    inputs.value[0].focus()
+  }
+}
+
+// Focus vào ô input đầu tiên khi component được mounted
+// onMounted(() => {
+//   console.log('first')
+//   if (inputs.value[0]) {
+//     inputs.value[0].focus()
+//   }
+// })
+
+// Hàm xử lý input OTP
+const onInputOTP = (index: number, event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (input.value && index < 5) {
+    inputs.value[index + 1]?.focus()
+  }
+}
+
+// Hàm xử lý keydown OTP
+const onKeydownOTP = (index: number, event: KeyboardEvent) => {
+  if (event.key === 'Backspace' && !OTP.value[index] && index > 0) {
+    inputs.value[index - 1]?.focus()
+  }
+}
+
+// const setInputRef = (
+//   el: Element | ComponentPublicInstance | null,
+//   i: number
+// ) => {
+//   inputs.value[i] = el as HTMLInputElement | null
+// }
+
 /** Prefix */
 const PREFIXES = [
   { label: 'Việt Nam (+84)', value: '+84' },
@@ -300,7 +339,7 @@ const time_remaining = ref(30)
 let countdown_interval: number | undefined
 
 /** OTP */
-const OTP = ref<string[]>(Array(6).fill(''))
+// const OTP = ref<string[]>(Array(6).fill(''))
 /** Inputs */
 
 /** Trạng thái verifying */
@@ -372,33 +411,38 @@ const verifyOTP = () => {
  * @param index
  * @param e event
  */
-const onInputOTP = (index: number, e: Event) => {
-  /** Lấy target */
-  const TARGET = e.target as HTMLInputElement
-  /** Chỉ cho phép số */
-  TARGET.value = TARGET.value.replace(/\D/g, '')
-  console.log(`Input OTP[${index}]:`, TARGET.value) // Debug giá trị input
-  /** nếu đã nhập thì focus ô input kế tiếp */
-  if (TARGET.value && index < inputs.value.length - 1) {
-    inputs.value[index + 1]?.focus()
-  }
-}
+// const onInputOTP = (index: number, e: Event) => {
+//   /** Lấy target */
+//   const TARGET = e.target as HTMLInputElement
+//   /** Chỉ cho phép số */
+//   TARGET.value = TARGET.value.replace(/\D/g, '')
+//   console.log(`Input OTP[${index}]:`, TARGET.value) // Debug giá trị input
+//   /** nếu đã nhập thì focus ô input kế tiếp */
+//   if (TARGET.value && index < inputs.value.length - 1) {
+//     inputs.value[index + 1]?.focus()
+//   }
+// }
 
 /** Phím Backspace lùi
  * @param index
  * @param e
  */
-const onKeydownOTP = (index: number, e: KeyboardEvent) => {
-  /** Nếu ấn backspace thì chuyển focus về ô input trước */
-  if (e.key === 'Backspace' && !OTP.value[index] && index > 0) {
-    inputs.value[index - 1]?.focus()
-  }
-}
+// const onKeydownOTP = (index: number, e: KeyboardEvent) => {
+//   /** Nếu ấn backspace thì chuyển focus về ô input trước */
+//   if (e.key === 'Backspace' && !OTP.value[index] && index > 0) {
+//     inputs.value[index - 1]?.focus()
+//   }
+// }
 
 /** khi trạng thái thay đổi */
 watch(is_sending_verify_code, new_val => {
   /** Nếu có new value */
   if (new_val) {
+    nextTick(() => {
+      if (inputs.value[0]) {
+        inputs.value[0].focus()
+      }
+    })
     /** tạo interval, giảm từ 30 -> 0 */
     time_remaining.value = 30
     countdown_interval = window.setInterval(() => {
@@ -416,6 +460,7 @@ watch(is_sending_verify_code, new_val => {
     clearInterval(countdown_interval)
   }
 })
+
 /** clear interval */
 onBeforeUnmount(() => {
   clearInterval(countdown_interval)
@@ -424,15 +469,15 @@ onBeforeUnmount(() => {
 
 /** Hàm gửi verify */
 const handleVerify = () => {
-  console.log('handleVerify called')
+  /** bật Check verify */
   is_sending_verify_code.value = true
 }
 
 /** đổi số điện thoại */
-const changePhone = () => {
-  console.log('changePhone called')
-  is_sending_verify_code.value = false
-}
+// const changePhone = () => {
+//   console.log('changePhone called')
+//   is_sending_verify_code.value = false
+// }
 </script>
 
 <style scoped></style>

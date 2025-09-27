@@ -357,20 +357,20 @@
 
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import OnboardingLoading from './OnboardingLoading.vue'
 import OnboardingVerify from './OnboardingVerify.vue'
 
 import UpgradeModalV2 from '@/views/OAuth/Onboarding/UpgradeModalV2.vue'
-import OnboardingQuickStarter from './OnboardingQuickStarter.vue'
 import OnboardingCreatingAccount from './OnboardingCreatingAccount.vue'
+import OnboardingQuickStarter from './OnboardingQuickStarter.vue'
 
 const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(1)
+const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(3)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')
@@ -384,8 +384,14 @@ const verifyPhone = () => {
 }
 /** Hàm next trong quick start */
 const onNextQuickStart = () => {
-  if (current_step_quick_start.value < 1) current_step_quick_start.value++
+  /** NẾu đang ở step 1, thì chuyền step */
+  if (current_step_quick_start.value < 1) {
+    current_step_quick_start.value++
+    return
+  }
+  /** Nếu step 2 -> chuyển sang màn onboarding */
   if (current_step_quick_start.value === 1) {
+    /** Chuyển sang step cuối */
     flow_step.value = 6
   }
 }
@@ -395,12 +401,14 @@ const onPrevQuickStart = () => {
 }
 /** Hàm skip bước quick start*/
 const skipForNow = () => {
-  console.log('skip for now')
+  /** Chuyển sang step cuối */
+  flow_step.value = 6
 }
 
 /** Hàm verify phone */
 const submitPackage = () => {
   console.log('submitPackage')
+  /** Chuyển sang step 5 quick step */
   flow_step.value = 5
 }
 
@@ -426,8 +434,7 @@ const current_step = ref(0)
 /** Tổng số bước */
 const total_steps = 5
 
-const current_step_verify = ref(0)
-
+/** step hiện tại mà bắt đầu nhanh */
 const current_step_quick_start = ref(0)
 
 /** ref tới input */
@@ -446,6 +453,7 @@ const focusCompanyInput = () => {
   }
   /** Nếu có giá trị ref chọn website công ty */
   if (company_website_input_ref.value) {
+    /** tự độgn focus */
     company_website_input_ref.value.focus()
   }
 }
@@ -462,9 +470,11 @@ const WEBSITE_REGEX = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/
 
 // Computed kiểm tra website hợp lệ
 const IS_WEBSITE_VALID = computed(() => {
+  /** Kiểm tra giá trị website */
   const WEBSITE = COMPANY_DETAILS.value.website.trim()
   /** không nhập thì coi như valid */
   if (!WEBSITE) return true
+  /** Trả về website đã check regex */
   return WEBSITE_REGEX.test(WEBSITE)
 })
 
@@ -473,9 +483,9 @@ const total_steps_verify = 3
 
 /** Lựa chọn ngành nghề */
 const SELECTED_INDUSTRY = ref<string | null>(null)
-
+/** Role đang được chọn */
 const SELECTED_ROLE = ref<string | null>(null)
-
+/** Hàm quy mô đang được chọn */
 const SELECTED_PREFERENCES = ref<string | null>(null)
 
 /** computed step có input */
@@ -487,13 +497,15 @@ const HAS_INPUT_STEP = computed(() => {
 const IS_STEP_VALID = computed(() => {
   /** Step 3: check tên công ty */
   if (current_step.value === 2) {
+    /** Trả về tên đã trim */
     return COMPANY_DETAILS.value.name.trim() !== ''
   }
 
   /** Step 4: website phải đúng định dạng nếu có */
   if (current_step.value === 4) {
+    /** lấy các giá trị từ platform */
     const { website, facebook, instagram, tiktok, zalo } = COMPANY_DETAILS.value
-
+    /** Cần ghép đủ thông tin bảo gom domain của từng nền tảng */
     /** website hợp lệ và có nhập */
     const WEBSITE_VALID_AND_FILLED =
       website.trim() !== '' && IS_WEBSITE_VALID.value
@@ -504,7 +516,7 @@ const IS_STEP_VALID = computed(() => {
       instagram.trim() !== '' ||
       tiktok.trim() !== '' ||
       zalo.trim() !== ''
-
+    /** Trả về các điều kiện check valid */
     return WEBSITE_VALID_AND_FILLED || OTHER_FILLED
   }
 
@@ -513,30 +525,36 @@ const IS_STEP_VALID = computed(() => {
 
 /** methods chuyển step Flow1 */
 const nextStep = () => {
+  /** Tăng giá trị step */
   if (current_step.value < total_steps - 1) current_step.value++
 }
 /** Methods Lùi step Flow1 */
 const prevStep = () => {
+  /** Giảm giá trị step */
   if (current_step.value > 0) current_step.value--
 }
 
 /** auto next khi click chọn option */
 const handleIndustry = (option: string) => {
+  /** Lưu giá trị ngành */
   SELECTED_INDUSTRY.value = option
   nextStep()
 }
 /** Auto next khi click chọn Role */
 const handleRole = (option: string) => {
+  /** Chọn role của admin */
   SELECTED_ROLE.value = option
   nextStep()
 }
 /** Auto next khi click chọn Quy mô công ty */
 const handlePreference = (option: string) => {
+  /** Chọn quy mô công ty */
   SELECTED_PREFERENCES.value = option
   nextStep()
 }
 /** Hàm submit form tạo tài khoản */
 const submitForm = () => {
+  /** Nếu k valid thì return luôn */
   if (!IS_STEP_VALID) return
   /** Chuyển sang step 2 */
   flow_step.value = 2

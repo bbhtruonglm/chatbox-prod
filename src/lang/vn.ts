@@ -272,10 +272,10 @@ const source: Language = {
         select_month: 'Chọn tháng',
         employees: 'Nhân viên',
         month: 'Tháng',
-        FAQ: 'Frequently Asked Questions',
-        continue: 'Continue',
+        FAQ: 'Câu hỏi thường gặp',
+        continue: 'Tiếp tục',
         send_code_again: 'Gửi lại mã xác thực',
-        quick_started: 'Quick Started',
+        quick_started: 'Bắt đầu nhanh',
         connect_social: 'Kết nối nền tảng',
         connect_social_description:
           'Hãy chia sẻ bộ công cụ hiện tại của bạn để chúng tôi có thể kết nối với hơn 1.500+ tích hợp, giúp doanh nghiệp của bạn tạo thêm khách hàng tiềm năng.',
@@ -289,6 +289,30 @@ const source: Language = {
           'Website không hợp lệ. Ví dụ: example.com hoặc https://example.com',
         select_country: 'Chọn quốc gia',
         popular: 'Gói phổ biến',
+        code: 'Mã',
+        package_title: 'Chọn gói phù hợp cho nhóm của bạn',
+        select_your_package: 'Chọn gói cho nhóm của bạn',
+        lite_subtitle:
+          'Phù hợp với cá nhân, cửa hàng, hộ kinh doanh mới bắt đầu',
+        pro_subtitle:
+          'Phù hợp với doanh nghiệp vừa và nhỏ đang sẵn sàng mở rộng và tăng trưởng',
+        business_subtitle: 'Phù hợp với Doanh nghiệp có lượng lớn khách hàng',
+        enterprise_subtitle:
+          'Phù hợp với Doanh nghiệp lớn, Tập đoàn cần bảo mật dữ liệu. Đáp ứng các yêu cầu đặc biệt.',
+        lite_description:
+          'Phù hợp với cá nhân, cửa hàng, hộ kinh doanh mới bắt đầu',
+        pro_description:
+          'Phù hợp với doanh nghiệp vừa và nhỏ đang sẵn sàng mở rộng và tăng trưởng',
+        business_description:
+          'Phù hợp với các đội ngũ kinh doanh đang phát triển và cần bộ công cụ thiết yếu.',
+        enterprise_description:
+          'Gói dành cho các Tổ chức, Doanh nghiệp lớn và Tập đoàn.',
+        is_sale_off: 'Tặng 2 tháng',
+        use_trial_7_day: 'Dùng thử miễn phí 7 ngày',
+        free_consultation: 'Tư vấn miễn phí',
+        discount: 'giảm giá',
+        plans_and_feature: 'So sánh các gói dịch vụ và tính năng',
+        select_platform_to_connect: 'Chọn nền tảng cần Kết nối:',
       },
       main: {
         dashboard: {

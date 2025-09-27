@@ -27,16 +27,12 @@
                   class="h-8"
                 />
                 <div class="px-3 text-4xl font-bold flex-shrink-0 text-center">
-                  {{ $t('v1.view.main.dashboard.org.pay.upgrade_v2.title') }}
+                  {{ $t('v1.view.onboarding.package_title') }}
                 </div>
                 <div class="w-32"></div>
               </div>
               <div class="px-3 font-medium flex-shrink-0 text-center">
-                {{
-                  $t(
-                    'v1.view.main.dashboard.org.pay.upgrade_v2.choose_team_plan'
-                  )
-                }}
+                {{ $t('v1.view.onboarding.select_your_package') }}
               </div>
             </div>
             <div class="flex flex-col bg-white rounded-b-lg overflow-hidden">
@@ -76,6 +72,7 @@
                   <ComparePlans
                     :data="COMPARE_DATA"
                     :selected_plan_index="SELECTED_INDEX"
+                    @planSelect="handleSelect"
                     :selected_row="SELECTED_ROW"
                     @rowSelect="handleRowSelect"
                   />
@@ -118,19 +115,12 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { useCommonStore, useOrgStore } from '@/stores'
-import { computed, ref } from 'vue'
 import { purchase_package, read_wallet } from '@/service/api/chatbox/billing'
 import { toast, toastError } from '@/service/helper/alert'
+import { useCommonStore, useOrgStore } from '@/stores'
+import { ArrowRightIcon } from '@heroicons/vue/24/solid'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  ChevronUpIcon,
-  ArrowRightIcon,
-} from '@heroicons/vue/24/solid'
-
-import { XMarkIcon } from '@heroicons/vue/24/solid'
 
 import PricingCard from '@/components/PricingCard/PricingCard.vue'
 import FAQ from './FAQ.vue'
@@ -138,6 +128,8 @@ import FAQ from './FAQ.vue'
 import HeaderCustom from '@/views/Dashboard/Org/Pay/PackInfo/Header/HeaderCustom.vue'
 
 import ComparePlans from '@/views/Dashboard/Org/Pay/PackInfo/Header/ComparePlans.vue'
+import Cookies from 'js-cookie'
+import { currency } from '@/service/helper/format'
 
 /** Lấy giá trị trong store */
 const COMMON_STORE = useCommonStore()
@@ -159,31 +151,43 @@ function handleClick(pkg_title: string) {
 const $emit = defineEmits<{
   (e: 'submit'): void
 }>()
-
+/** Hàm submit */
 const submitPackage = () => {
   $emit('submit')
 }
 
 /** tab đang được chọn */
-const SELECTED_INDEX = ref('Free')
+const SELECTED_INDEX = ref('Lite')
 /** Hàm thay đổi index */
 function handleSelect(index: string) {
+  /** Nếu enterpise thì chuyển sang tab 1 */
+  if (index === 'Enterprise') {
+    ACTIVE_INDEX.value = 1
+  }
+  /**Chọn gói */
   SELECTED_INDEX.value = index
 }
 /** Khai báo các tab đăng ký */
 const TABS = ref(['All plans', 'Business & Enterprise'])
 /** Tab active hiện tại */
 const ACTIVE_INDEX = ref(0)
+/** Lấy locale từ cookies */
+const LOCALE = Cookies.get('locale') || 'en'
+
 /** Mock các gói */
 const PACKAGES = [
   {
-    title: 'Free',
-    price: '$0',
-    subtitle:
-      'Miễn phí vĩnh viễn, cho đến khi bạn thấy hiệu quả mới cần nâng cấp',
-    ctaText: 'Bắt đầu miễn phí',
+    title: 'Lite',
+    price: LOCALE === 'en' ? '$8' : currency(199000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$10' : currency(270000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.lite_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Free'),
-    description: 'For individuals and small teams getting started with CRM.',
+    description: $t('v1.view.onboarding.lite_description'),
     sections: [
       {
         heading: 'LIMITS',
@@ -213,13 +217,17 @@ const PACKAGES = [
     ],
   },
   {
-    title: 'Lite',
-    price: '$0',
-    subtitle:
-      'Miễn phí vĩnh viễn, cho đến khi bạn thấy hiệu quả mới cần nâng cấp',
-    ctaText: 'Dùng thử 7 ngày miễn phí',
-    ctaOnClick: () => handleClick('Free'),
-    description: 'For growing business teams that need the essential toolkit.',
+    title: 'Pro',
+    price: LOCALE === 'en' ? '$18' : currency(480000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$20' : currency(540000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.pro_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
+    ctaOnClick: () => handleClick('Lite'),
+    description: $t('v1.view.onboarding.pro_description'),
     sections: [
       {
         heading: 'LIMITS',
@@ -249,14 +257,18 @@ const PACKAGES = [
     ],
   },
   {
-    title: 'Pro',
-    price: '$20',
-    subtitle:
-      'Miễn phí vĩnh viễn, cho đến khi bạn thấy hiệu quả mới cần nâng cấp',
-    ctaText: 'Dùng thử miễn phí 7 ngày',
-    ctaOnClick: () => handleClick('Free'),
+    title: 'Business',
+    price: LOCALE === 'en' ? '$90' : currency(2200000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$99' : currency(2600000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.business_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
+    ctaOnClick: () => handleClick('Pro'),
     is_popular: true,
-    description: 'For growing teams ready to scale with advanced tools.',
+    description: $t('v1.view.onboarding.business_description'),
     sections: [
       {
         heading: 'LIMITS',
@@ -288,12 +300,12 @@ const PACKAGES = [
   {
     title: 'Enterprise',
     price: '$0',
-    subtitle:
-      'Miễn phí vĩnh viễn, cho đến khi bạn thấy hiệu quả mới cần nâng cấp',
-    ctaText: 'Tư vấn miễn phí',
-    ctaOnClick: () => handleClick('Free'),
 
-    description: 'Gói dành cho các Tổ chức, Doanh nghiệp lớn và Tập đoàn.',
+    subtitle: $t('v1.view.onboarding.enterprise_subtitle'),
+    ctaText: $t('v1.view.onboarding.free_consultation'),
+    ctaOnClick: () => handleClick('Enterprise'),
+
+    description: $t('v1.view.onboarding.enterprise_description'),
     sections: [
       {
         heading: 'LIMITS',
@@ -333,12 +345,23 @@ const FILTERED_PACKAGES = computed(() => {
     return PACKAGES
   } else {
     /** Tab 1 = Business & Enterprise */
-    return PACKAGES.filter(pkg => ['Pro', 'Enterprise'].includes(pkg.title))
+    return PACKAGES.filter(pkg =>
+      ['Business', 'Enterprise'].includes(pkg.title)
+    )
   }
 })
 /** Hàm chuyển đổi tab */
 function handleTabChange(index: number) {
+  /**Gán tab đã chọn */
   ACTIVE_INDEX.value = index
+
+  /** Mở tab business thì tự độgn chọn gói Enterprise */
+  if (index === 1) {
+    SELECTED_INDEX.value = 'Enterprise'
+    /** Nếu chuyển lại all plans thì auto chọn gói Lite */
+  } else {
+    SELECTED_INDEX.value = 'Lite'
+  }
 }
 /** selected rơ */
 const SELECTED_ROW = ref<{ sectionIndex: number; rowIndex: number } | null>(
@@ -351,11 +374,11 @@ function handleRowSelect(payload: { sectionIndex: number; rowIndex: number }) {
 
 /** Dữ liệu mock data compare plans và features */
 const COMPARE_DATA = {
-  title: 'Compare plans and features',
+  title: $t('v1.view.onboarding.plans_and_feature'),
   plans: [
-    { key: 'free', name: 'Free' },
     { key: 'lite', name: 'Lite' },
     { key: 'pro', name: 'Pro' },
+    { key: 'business', name: 'Business' },
     { key: 'enterprise', name: 'Enterprise' },
   ],
   sections: [

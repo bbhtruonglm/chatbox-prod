@@ -1,24 +1,25 @@
 <template>
   <div
-    class="relative flex flex-row rounded-2xl p-5 gap-2.5 cursor-pointer transition-all duration-200"
+    class="relative flex flex-row p-5 gap-2.5 cursor-pointer transition-all duration-200"
     :class="[
       selected
         ? 'bg-cyan-50 border-cyan-700 border-2 shadow-md'
         : 'bg-white border-gray-300 border-2',
+      is_popular ? 'rounded-b-2xl' : 'rounded-2xl',
     ]"
     @click="onSelect"
   >
-    <!-- <div
-    v-if="is_popular"
-    class="absolute flex justify-center items-center text-sm font-semibold text-white -top-5 left-0 z-10 h-9 rounded-t-lg bg-cyan-700 w-full"
-  >
-    Most Popular
-  </div> -->
-
+    <div
+      v-if="is_sale_off"
+      class="absolute flex justify-center items-center top-1 text-sm font-medium right-1 z-10 gap-1 py-0.5 px-2 rounded-md bg-blue-50 text-blue-600"
+    >
+      <GiftIcon class="size-4" />
+      <h4>{{ is_sale_off }}</h4>
+    </div>
     <div class="flex flex-col gap-3 cursor-pointer transition-all duration-200">
       <div
         v-if="is_popular"
-        class="absolute flex justify-center items-center text-sm font-semibold text-white -top-5 left-0 z-10 h-9 rounded-t-lg bg-cyan-700"
+        class="absolute flex justify-center items-center text-sm font-semibold text-white -top-8 left-0 z-10 h-9 rounded-t-lg bg-cyan-700"
         style="width: calc(100% + 4px); left: -2px"
       >
         {{ $t('v1.view.onboarding.popular') }}
@@ -45,9 +46,30 @@
 
         <div
           v-if="title !== 'Enterprise'"
-          class="text-6xl font-bold py-3"
+          class="py-3 flex gap-3"
+          :class="locale === 'vn' ? 'flex-col' : 'flex-row'"
         >
-          {{ price }}
+          <span
+            class="font-bold"
+            :class="[locale === 'vn' ? 'text-4xl' : 'text-6xl']"
+          >
+            {{ price }}
+          </span>
+          <div>
+            <span class="text-2xl font-semibold line-through text-slate-500">
+              {{ original_price }}
+            </span>
+            <div
+              v-if="code"
+              class="p-1 py-0.5 bg-green-100 rounded-md text-xs text-green-700 w-fit"
+            >
+              {{ $t('v1.view.onboarding.code') }}
+              <span class="font-semibold">
+                {{ code }}
+              </span>
+              {{ discount }} {{ discount_percent }}
+            </div>
+          </div>
         </div>
         <div
           v-else
@@ -71,7 +93,7 @@
           class="px-4 py-2 text-sm uppercase font-semibold rounded-md border flex items-center justify-center gap-2 w-fit"
           :class="[
             selected
-              ? 'bg-green-600 hover:bg-green-500 text-white'
+              ? 'bg-green-600 border-green-600 hover:bg-green-500 text-white'
               : 'bg-slate-100 hover:bg-slate-200 text-black',
           ]"
         >
@@ -326,32 +348,56 @@ import {
   UserCircleIcon,
   CurrencyDollarIcon,
   LockClosedIcon,
+  GifIcon,
+  GiftIcon,
 } from '@heroicons/vue/24/outline'
 import { CheckCircleIcon } from '@heroicons/vue/24/solid'
+import Cookies from 'js-cookie'
 import { withDefaults } from 'vue'
 
 // --- Types ---
 type SectionItem = { text: string; enabled: boolean }
 type Section = { heading: string; items: SectionItem[] }
 type AIFeature = { text: string; enabled: boolean }
-
-// --- Props with types + defaults ---
-// withDefaults(defineProps<...>(), { ...defaults })
+/** Khai báo props */
 const props = withDefaults(
   defineProps<{
+    /** Tên gói */
     title?: string
+    /** Giá gói */
     price?: string
+    /** Tiêu đề phụ gói */
     subtitle?: string
+    /** Mô tả gói */
     description?: string
+    /** Title nút bấm */
     ctaText?: string
+    /** Hàm CTA click */
     ctaOnClick?: (() => void) | undefined
+    /** Trạng thái thẻ sale off */
+    is_sale_off?: string
+    /** Thẻ gói phổ biến */
     is_popular?: boolean
+    /** Trạng thái highlight */
     highlight?: boolean
+    /** Khai báo section */
     sections?: Section[]
+    /** AI feature */
     aiFeatures?: AIFeature[]
+    /** thao tác chọn gói */
     selected?: boolean
+    /** Hàm xử lý chọn gói */
     onSelect?: (() => void) | undefined
+    /** Active tab gói */
     active_tab?: number
+    /** Giá gốc */
+    original_price?: string
+    /** Mã giảm giá */
+    code?: string
+    /** Tỉ lệ giảm giá */
+    discount_percent?: string
+    /** Mô tả giảm giá */
+    discount?: string
   }>(),
   {
     title: '',
@@ -367,6 +413,12 @@ const props = withDefaults(
     selected: false,
     onSelect: undefined,
     active_tab: undefined,
+    original_price: '',
+    code: '',
+    discount_percent: '',
+    discount: '',
   }
 )
+/** Lấy locale từ cookies */
+const locale = Cookies.get('locale') || 'en'
 </script>
