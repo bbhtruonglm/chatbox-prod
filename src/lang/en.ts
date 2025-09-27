@@ -493,12 +493,41 @@ const source: Language = {
         package_title: 'Choose the right plan for your team',
         select_your_package: 'Choose your team plan',
 
-        lite_desc: 'Suitable for individuals, shops, and new small businesses',
-        pro_desc:
-          'Suitable for small and medium-sized enterprises ready to expand and grow',
-        business_desc: 'Suitable for businesses with a large customer base',
-        enterprise_desc:
-          'A plan designed for large organizations, enterprises, and corporations',
+        lite_subtitle:
+          'Suitable for individuals, shops, and small businesses just starting out',
+        pro_subtitle:
+          'Suitable for small and medium businesses ready to expand and grow',
+        business_subtitle: 'Suitable for businesses with a large customer base',
+        enterprise_subtitle:
+          'Suitable for large enterprises and corporations requiring data security and special requirements',
+
+        lite_description:
+          'Suitable for individuals, shops, and small businesses just starting out',
+        pro_description:
+          'Suitable for small and medium businesses ready to expand and grow',
+        business_description:
+          'Suitable for growing business teams that need the essential toolkit',
+        enterprise_description:
+          'Plan for organizations, large enterprises, and corporations',
+
+        is_sale_off: 'Get 2 months free',
+        use_trial_7_day: 'Free 7-day trial',
+        free_consultation: 'Free consultation',
+        discount: 'discount',
+        plans_and_feature: 'Compare plans and features',
+        select_platform_to_connect: 'Select platform to connect:',
+        copy_clipboard: 'Copy link',
+        copied: 'Copied',
+        link_invite: 'Invite link',
+        email_address: 'Email address',
+        send_invite: 'Send invite',
+        enter_email: 'Enter email address',
+        invite_email: 'Add email',
+
+        completing_quick_setup: 'Completing Quick Setup',
+        applying_preference: 'Applying your preferences',
+        config_ai: 'Config your AI',
+        finalizing_Retion: 'Finalizing Retion',
       },
       main: {
         dashboard: {

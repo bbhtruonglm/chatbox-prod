@@ -273,6 +273,35 @@
     :is_success_open="is_success_open"
     :payment_type="'PACKAGE'"
   />
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition ease-in-out duration-300"
+      leave-active-class="transition ease-in-out duration-300"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="is_upgrade_success"
+        class="fixed top-0 left-0 w-screen h-screen py-10 bg-black/30 z-40 flex items-center justify-center"
+      >
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-center flex flex-col gap-4 animate-in fade-in"
+          @click.stop
+        >
+          <div class="flex flex-col items-center gap-3">
+            <!-- Icon success -->
+            <CheckCircleIcon class="size-10 text-green-600" />
+            <h3 class="text-lg font-semibold text-green-600">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success') }}
+            </h3>
+            <p class="text-slate-600 text-sm">
+              {{ $t('v1.view.main.dashboard.org.pay.recharge.success_desc') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 <script setup lang="ts">
 import { currency } from '@/service/helper/format'
@@ -477,6 +506,8 @@ const verify_voucher = ref<ResponseVerifyVoucher>({})
 const check_payment = ref(false)
 /** trạng thái payment modal */
 const is_success_open = ref(false)
+/** Trang thái gia hạn gói thành công */
+const is_upgrade_success = ref(false)
 
 /** Theo dõi trạng thái payment */
 watch(check_payment, value => {
@@ -539,31 +570,43 @@ async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
 /** mở modal xác nhận thanh toán */
 async function autoPayment(pack: 'LITE' | 'PRO' | 'BUSINESS') {
   /** Gọi API hoặc logic thanh toán */
-  const ON_PAYMENT = await activeTrialOrProPack(pack)
+  // const ON_PAYMENT = await activeTrialOrProPack(pack)
 
-  /** Nếu ví đủ tiền thì dừng, không mở modal */
-  if (ON_PAYMENT !== 'WALLET.NOT_ENOUGH_MONEY') {
-    setTimeout(() => {
-      /** reset màn hình */
-      window.location.reload()
-      /** sau 5s thì tắt */
-      // is_confirm_open.value = false
-      // is_open.value = false
-    }, 3000)
+  // /** Nếu ví đủ tiền thì dừng, không mở modal */
+  // if (ON_PAYMENT !== 'WALLET.NOT_ENOUGH_MONEY') {
+  //   setTimeout(() => {
+  //     /** reset màn hình */
+  //     window.location.reload()
+  //     /** sau 5s thì tắt */
+  //     // is_confirm_open.value = false
+  //     // is_open.value = false
+  //   }, 3000)
 
-    return
-  }
+  //   return
+  // }
   /** Bật modal báo success */
   auto_payment_success.value = true
+  setTimeout(() => {
+    /** Tắt modal báo success */
+    auto_payment_success.value = false
+  }, 3000)
+  /** sau 1s hiện toast */
+  setTimeout(() => {
+    /** thông báo mua gói thành công */
+    toast('success', $t('v1.view.main.dashboard.org.pay.upgrade.success'))
+
+    /** Tắt giao diện thanh toán */
+    is_success_open.value = false
+    /** Tắt modal tự động thanh toán */
+    is_confirm_open.value = false
+  }, 1000)
+  /** sau 2s thì f5  */
   setTimeout(() => {
     /** sau 5s thì tắt  f5 màn*/
     window.location.reload()
 
-    auto_payment_success.value = false
-    /** Tắt giao diện thanh toán */
-    is_success_open.value = false
     /** refresh lại trang */
-  }, 3000)
+  }, 2000)
 
   // /** Gán gói đã chọn */
   // selected_pack.value = pack

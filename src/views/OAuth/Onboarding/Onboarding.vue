@@ -365,12 +365,12 @@ import OnboardingVerify from './OnboardingVerify.vue'
 import UpgradeModalV2 from '@/views/OAuth/Onboarding/UpgradeModalV2.vue'
 import OnboardingCreatingAccount from './OnboardingCreatingAccount.vue'
 import OnboardingQuickStarter from './OnboardingQuickStarter.vue'
-
+/** Hàm dịch ngôn ngữ */
 const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(3)
+const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(1)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')

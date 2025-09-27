@@ -12,25 +12,49 @@
             class="h-7 w-full bg-contain bg-no-repeat bg-left flex-shrink-0"
           />
         </div>
-        <div class="h-full flex flex-col items-center gap-3 w-full">
+
+        <div class="h-full flex flex-col items-center gap-5 w-full">
           <img
             src="@/assets/imgs/creating_account.png"
             alt=""
             class="size-64"
           />
-          <label class="text-xl font-semibold">{{
-            $t('v1.view.onboarding.you_are_doing_great')
-          }}</label>
-          <p class="font-medium">
-            {{ $t('v1.view.onboarding.loading_description') }}
-          </p>
-          <VueSpinnerIos
-            size="60"
-            color="gray"
-            slot="10"
-          />
+          <label class="text-xl font-semibold">
+            {{ $t('v1.view.onboarding.completing_quick_setup') }}
+          </label>
+
+          <!-- 3 bước theo cột -->
+          <div
+            class="h-full flex flex-col items-center justify-center gap-2 mx-auto"
+          >
+            <div
+              v-for="(step, index) in STEPS"
+              :key="index"
+              class="flex items-center gap-3 w-full"
+            >
+              <!-- Icon -->
+              <div class="flex items-center justify-center size-6">
+                <VueSpinnerIos
+                  v-if="index === current_step && !step.done"
+                  size="20"
+                  color="gray"
+                />
+                <CheckCircleIcon
+                  v-else-if="step.done"
+                  class="size-6 text-slate-700"
+                />
+                <ClockIcon
+                  v-else
+                  class="size-6 text-slate-400"
+                />
+              </div>
+              <!-- Title -->
+              <span class="text-sm font-medium">{{ step.text }}</span>
+            </div>
+          </div>
         </div>
       </div>
+
       <div
         :style="{ backgroundImage: `url(${trialBg})` }"
         class="relative h-40 md:h-96 w-full -top-40 bg-cover bg-center bg-no-repeat flex-shrink-0"
@@ -38,35 +62,49 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { useCommonStore } from '@/stores'
-import { onMounted } from 'vue'
-import trialBg from '@/assets/imgs/trial_bg_cover.webp' // import ảnh
+import { onMounted, ref } from 'vue'
+import trialBg from '@/assets/imgs/trial_bg_cover.webp'
 import { VueSpinnerIos } from 'vue3-spinners'
+import { CheckCircleIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { useI18n } from 'vue-i18n'
 
-/** Khai báo common store */
+/** Hàm dịch ngôn ngữ */
+const { t: $t } = useI18n()
+/** Common store */
 const commonStore = useCommonStore()
-/** Emit sự kiện hoàn thành tạo tài khoản */
+/** Hàm emit complete */
 const $emit = defineEmits<{
   (e: 'complete'): void
 }>()
-/** Giả lập sau 5s sẽ tạo tk thành công và chuyển qua màn xác thức */
+
+/** Danh sách bước */
+const STEPS = ref([
+  { text: $t('v1.view.onboarding.applying_preference'), done: false },
+  { text: $t('v1.view.onboarding.config_ai'), done: false },
+  { text: $t('v1.view.onboarding.finalizing_Retion'), done: false },
+])
+
+/** Bước hiện tại */
+const current_step = ref(0)
+
 onMounted(() => {
-  /** Simulate API call with a 5-second delay */
-  setTimeout(() => {
-    $emit('complete')
-  }, 5000)
+  /** Khai báo index step */
+  let step_index = 0
+  /** Tạo 1 interval */
+  const INTERVAL = setInterval(() => {
+    /** đánh dấu xong step hiện tại */
+    STEPS.value[step_index].done = true
+    /** chuyển sang step tiếp theo */
+    step_index++
+    current_step.value = step_index
+    /** Nếu hoàn thành thì chuyển đến bước tiếp theo */
+    if (step_index >= STEPS.value.length) {
+      clearInterval(INTERVAL)
+      setTimeout(() => $emit('complete'), 500)
+    }
+  }, 1000)
 })
 </script>
-
-<style scoped>
-/** Css phần spin */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-</style>

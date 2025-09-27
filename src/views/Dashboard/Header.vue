@@ -34,23 +34,22 @@
       position="BOTTOM"
       class_content="flex flex-col gap-1 max-h-[calc(100vh-100px)]"
     >
-      <OrgSetting @close="attach_ref?.toggleDropdown"/>
+      <OrgSetting @close="attach_ref?.toggleDropdown" />
     </Dropdown>
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { useCommonStore } from '@/stores'
 
 import User from '@/components/User.vue'
 
-import { Squares2X2Icon } from '@heroicons/vue/24/solid';
-import Dropdown from '@/components/Dropdown.vue';
-import OrgSetting from '@/components/Main/OrgSetting.vue';
+import { Squares2X2Icon } from '@heroicons/vue/24/solid'
+import Dropdown from '@/components/Dropdown.vue'
+import OrgSetting from '@/components/Main/OrgSetting.vue'
 
 const commonStore = useCommonStore()
 
 /**ref của menu đính kèm */
 const attach_ref = ref<InstanceType<typeof Dropdown>>()
-
 </script>

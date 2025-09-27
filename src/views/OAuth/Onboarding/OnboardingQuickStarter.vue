@@ -94,7 +94,7 @@
                     class="text-blue-600 border py-2 border-transparent flex items-center gap-1 text-sm font-semibold"
                   >
                     {{ $t('v1.view.onboarding.connected') }}
-                    <LinkIcon class="size-4" />
+                    <Link2Icon class="size-4" />
                   </button>
                   <button
                     v-else
@@ -121,11 +121,11 @@
           <div v-else-if="current_step === 1">
             <div class="flex flex-col gap-5 max-w-xl">
               <!-- Link invite -->
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-5">
                 <div class="flex-1">
-                  <label class="block text-sm font-medium mb-1"
-                    >Link invite</label
-                  >
+                  <label class="block text-sm font-medium mb-1">{{
+                    $t('v1.view.onboarding.link_invite')
+                  }}</label>
                   <input
                     type="text"
                     readonly
@@ -134,10 +134,18 @@
                   />
                 </div>
                 <button
-                  @click="copyLink"
-                  class="mt-6 px-4 py-2 w-28 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  v-if="!IS_COPIED"
+                  @click="copyLink(INVITE_LINKS)"
+                  class="mt-6 px-4 py-2 w-28 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md"
                 >
-                  Copy link
+                  {{ $t('v1.view.onboarding.copy_clipboard') }}
+                </button>
+                <button
+                  v-else
+                  class="mt-6 px-4 py-2 w-28 flex font-medium items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
+                >
+                  {{ $t('v1.view.onboarding.copied') }}
+                  <CheckIcon class="size-5" />
                 </button>
               </div>
 
@@ -145,24 +153,37 @@
               <div
                 v-for="(email, index) in emails"
                 :key="index"
-                class="flex items-center gap-3"
+                class="flex items-center gap-5"
               >
                 <div class="flex-1">
-                  <label class="block text-sm font-medium mb-1"
-                    >Email address</label
-                  >
+                  <label class="block text-sm font-medium mb-1">{{
+                    $t('v1.view.onboarding.email_address')
+                  }}</label>
                   <input
                     type="email"
                     v-model="emails[index]"
-                    placeholder="Enter email"
-                    class="w-full border rounded-md px-3 py-2"
+                    :placeholder="$t('v1.view.onboarding.enter_email')"
+                    class="w-full border rounded-md px-3 py-2 relative"
+                    :ref="el => { if (index === 0) FIRST_EMAIL_INPUT = el as HTMLInputElement }"
                   />
+                  <p
+                    v-if="emailErrors[index]"
+                    class="text-red-500 text-xs absolute"
+                  >
+                    {{ emailErrors[index] }}
+                  </p>
                 </div>
                 <button
-                  @click="sendInvite(email)"
-                  class="mt-6 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  @click="sendInvite(email, index)"
+                  class="mt-6 px-4 py-2 w-28 rounded-md text-sm font-medium"
+                  :class="[
+                    /** Check có email và không sai regex */
+                    email[index] && !emailErrors[index]
+                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200',
+                  ]"
                 >
-                  Send Invite
+                  {{ $t('v1.view.onboarding.send_invite') }}
                 </button>
               </div>
 
@@ -172,7 +193,7 @@
                 class="flex items-center gap-2 text-sm text-gray-700 hover:text-black"
               >
                 <PlusCircleIcon class="size-5" />
-                Invite Email
+                {{ $t('v1.view.onboarding.invite_email') }}
               </button>
             </div>
           </div>
@@ -225,7 +246,17 @@
 import { useCommonStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  toRefs,
+  watch,
+} from 'vue'
+
+import { copyToClipboard } from '@/service/helper/copyWithAlert'
 
 import Facebook from '@/components/Icons/Facebook.vue'
 import Instagram from '@/components/Icons/Instagram.vue'
@@ -234,6 +265,8 @@ import ZaloIcon from '@/components/Icons/Zalo.vue'
 import { PlusCircleIcon } from '@heroicons/vue/24/outline'
 import { ChevronRightIcon, LinkIcon } from '@heroicons/vue/16/solid'
 import { VueSpinnerIos } from 'vue3-spinners'
+import { CheckIcon } from '@heroicons/vue/24/solid'
+import { Link2Icon } from 'lucide-vue-next'
 /** Hàm dịch */
 const { t: $t } = useI18n()
 /** Khai báo common store */
@@ -291,6 +324,10 @@ const PLAT_FORMS = [
 ]
 /** Danh sachs platform đã kết nối */
 const CONNECTED_PLATFORMS = ref<String[]>([])
+
+/** ref cho input đầu tiên */
+const FIRST_EMAIL_INPUT = ref<HTMLInputElement | null>(null)
+
 /** Trạng thái loading */
 const LOADING_PLATFORM = ref<string | null>(null)
 /** Hàm thêm platform */
@@ -310,7 +347,36 @@ const IS_VALID_BTN_NEXT = computed(() => {
   if (props.current_step === 0) {
     return CONNECTED_PLATFORMS.value.length > 0
   }
+  /** Đang ở step 2 */
+  if (props.current_step === 1) {
+    /** Nếu trạng thái copy thì active btn */
+    if (IS_COPIED.value) {
+      return true
+    }
+    /** Check có email valid */
+    const HAS_VALID_EMAIL = emails.value.some(email => {
+      /** dùng regex validate email */
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    })
+    /** Nếu có ít nhất 1 email đúng thì return true */
+    if (HAS_VALID_EMAIL) {
+      return true
+    }
+  }
+
   return false
+})
+/** giúp current_step reactive */
+const { current_step } = toRefs(props)
+/** Theo dõi thay đổi current step */
+watch(current_step, async new_val => {
+  /** Nếu step --= 1 */
+  if (new_val === 1) {
+    /** Chờ nextTick */
+    await nextTick()
+    /**focus vào ô input đầu tiên */
+    FIRST_EMAIL_INPUT.value?.focus()
+  }
 })
 
 /** Hàm next sang step */
@@ -360,25 +426,65 @@ onBeforeUnmount(() => {
 
 /** INVITE LINK */
 const INVITE_LINKS = 'https://retion.ai/invite?code=123123'
+
+const IS_COPIED = ref<Boolean>(false)
 /** Email */
 const emails = ref(['', '']) // mặc định 2 ô như ảnh
+/** mảng lỗi cho từng email */
+const emailErrors = ref<string[]>(['', ''])
+
 /** Hàm copy link */
-const copyLink = () => {
-  navigator.clipboard.writeText(INVITE_LINKS)
-  alert('Link copied!')
+const copyLink = (value: string) => {
+  /** Lưu giá trị clip board */
+  copyToClipboard(value)
+  /** Bật trạng thái copied */
+  IS_COPIED.value = true
 }
 /** Gửi lời mới */
-const sendInvite = (email: string) => {
-  if (!email) {
+const sendInvite = (email: string, index: number) => {
+  /** Check validate email */
+  if (!isValidEmail(email)) {
+    emailErrors.value[index] = 'Email không hợp lệ'
     return
   }
-  // Logic gửi invite ở đây
+  /** Xóa error */
+  emailErrors.value[index] = ''
+  console.log('Send invite to', email)
 }
+
+/**  validate email*/
+const isValidEmail = (email: string) => {
+  /** Regex email. */
+  const REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  /** Trả về trạng thái regex */
+  return REGEX.test(email)
+}
+
 /** THêm email */
 const addEmailField = () => {
   /** add field trống vào email */
   emails.value.push('')
+  /** Errors field */
+  emailErrors.value.push('')
 }
+
+/** ✅ realtime validate: watch mảng emails */
+watch(
+  emails,
+  newVal => {
+    newVal.forEach((email, idx) => {
+      if (email === '') {
+        emailErrors.value[idx] = ''
+      } else if (!isValidEmail(email)) {
+        emailErrors.value[idx] = 'Email không hợp lệ'
+      } else {
+        emailErrors.value[idx] = ''
+      }
+    })
+  },
+  { deep: true }
+)
+
 /** Title + description theo step */
 const STEP_TITLE = computed(() => {
   return [

@@ -248,16 +248,21 @@ watch(check_payment, value => {
   if (value) {
     /** Bật modal báo success */
     is_success_open.value = true
-
+    /** sau khi thanh toán thành công */
     setTimeout(() => {
+      /** Tắt modal báo nạp tiền thành công */
       is_success_open.value = false
-      /** sau 5s thì tắt */
+      /** sau 1s thì tắt */
       auto_payment.value = false
       /** Tăt modal */
       toggleModal()
+      /** thông báo mua gói thành công */
+      toast('success', $t(`v1.view.main.dashboard.org.pay.inc_quota.success`))
+    }, 1000)
+    setTimeout(() => {
       /** refresh lại trang */
-      window.location.reload()
-    }, 3000)
+      // window.location.reload()
+    }, 2000)
   }
 })
 /**mua thêm quota */

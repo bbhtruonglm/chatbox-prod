@@ -313,6 +313,18 @@ const source: Language = {
         discount: 'giảm giá',
         plans_and_feature: 'So sánh các gói dịch vụ và tính năng',
         select_platform_to_connect: 'Chọn nền tảng cần Kết nối:',
+        copy_clipboard: 'Copy link',
+        copied: 'Copied',
+        link_invite: 'Link invite',
+        email_address: 'Địa chỉ email',
+        send_invite: 'Gửi lời mới',
+        enter_email: 'Nhập địa chỉ email',
+        invite_email: 'Thêm email',
+
+        completing_quick_setup: 'Hoàn tất thiết lập nhanh',
+        applying_preference: 'Áp dụng tùy chỉnh của bạn',
+        config_ai: 'Cấu hình AI của bạn',
+        finalizing_Retion: 'Hoàn tất Retion',
       },
       main: {
         dashboard: {

@@ -180,11 +180,11 @@ const $props = withDefaults(
   }>(),
   {}
 )
-
+/** Khai báo common store */
 const commonStore = useCommonStore()
-
+/** Khai báo transaction */
 const txn_info = defineModel<TransactionInfo>()
-
+/** Trạng thái check payment */
 const check_payment = defineModel<Boolean>('check_payment')
 
 /**Thông tin chuyển khoản của cty */

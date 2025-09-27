@@ -158,7 +158,7 @@
                     @input="onInputOTP(i, $event)"
                     @keydown="onKeydownOTP(i, $event)"
                     class="size-9 text-center border"
-                    :ref="el => setInputRef(el, i)"
+                    :ref="el => setInputRef(el as HTMLInputElement | null, i)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -180,7 +180,7 @@
                     @input="onInputOTP(i + 3, $event)"
                     @keydown="onKeydownOTP(i + 3, $event)"
                     class="size-9 text-center border"
-                    :ref="el => setInputRef(el, i + 3)"
+                    :ref="el => setInputRef(el as HTMLInputElement | null, i + 3)"
                     :class="[
                       i === 0
                         ? 'rounded-l-md'
@@ -264,24 +264,23 @@ const $emit = defineEmits<{
   (e: 'verify'): void
 }>()
 
-// const inputs = ref<(HTMLInputElement | null)[]>([])
-
-// Khai báo mảng refs để lưu trữ các input elements
+/** Khai báo mảng refs để lưu trữ các input elements */
 const inputs = ref<(HTMLInputElement | null)[]>([])
 
-// Khai báo OTP
+/** Khai báo OTP */
 const OTP = ref<string[]>(Array(6).fill(''))
 
 /** Trạng thái gửi verify code */
 const is_sending_verify_code = ref(false)
 
-// Hàm để gán ref và focus vào ô đầu tiên nếu cần
+/** Hàm để gán ref và focus vào ô đầu tiên nếu cần */
 const setInputRef = (el: HTMLInputElement | null, index: number) => {
   inputs.value[index] = el
 }
 
-// Hàm xử lý khi click nút "changePhone" để focus vào ô input đầu tiên
+/** Hàm xử lý khi click nút "changePhone" để focus vào ô input đầu tiên */
 const changePhone = () => {
+  /** Forcus vào ô đầu tiên */
   if (inputs.value[0]) {
     inputs.value[0].focus()
   }
@@ -297,8 +296,10 @@ const changePhone = () => {
 
 // Hàm xử lý input OTP
 const onInputOTP = (index: number, event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (input.value && index < 5) {
+  /** lấy value input  */
+  const INPUT = event.target as HTMLInputElement
+  /** Tăng giá trị index của ô input */
+  if (INPUT.value && index < 5) {
     inputs.value[index + 1]?.focus()
   }
 }
@@ -385,7 +386,7 @@ watch(
       verify_timeout = window.setTimeout(() => {
         console.log('Verifying OTP...')
         verifyOTP()
-      }, 5000)
+      }, 1000)
     } else {
       console.log('OTP invalid or incomplete')
     }
@@ -395,7 +396,6 @@ watch(
 
 /** Giả lập verify */
 const verifyOTP = () => {
-  console.log('verifyOTP called')
   /** Bật verify */
   is_verifying.value = true
   setTimeout(() => {
