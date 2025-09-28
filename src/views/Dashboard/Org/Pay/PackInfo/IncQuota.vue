@@ -158,6 +158,7 @@
     :is_success_open="is_success_open"
     :MONTHS="[]"
     :payment_type="inc_quota_type?.toUpperCase() as PAYMENT_TYPE || 'PAGE'"
+    :meta="meta"
   />
 </template>
 <script setup lang="ts">
@@ -231,6 +232,15 @@ function toggleModal() {
   inc_quota_ref.value?.toggleModal()
 }
 
+/** Khai báo meta cho việc tự động mua gói */
+const meta = ref<{
+  type: 'PURCHASE' | 'INCREASE' | 'TOP_UP_WALLET'
+  product: QuotaType
+}>({
+  type: 'INCREASE', // giá trị mặc định
+  product: ($props.inc_quota_type?.toUpperCase() as QuotaType) || 'PAGE',
+})
+
 /** đóng modal xác nhận thanh toán */
 function closeConfirmModal() {
   /** Đóng modal xác nhận */
@@ -261,7 +271,7 @@ watch(check_payment, value => {
     }, 1000)
     setTimeout(() => {
       /** refresh lại trang */
-      // window.location.reload()
+      window.location.reload()
     }, 2000)
   }
 })
@@ -291,6 +301,7 @@ async function incQuota() {
     if (!WALLET?.wallet_id)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
 
+    meta.value.product = $props.inc_quota_type
     /** thêm quota */
     await inc_quota(
       orgStore.selected_org_id,

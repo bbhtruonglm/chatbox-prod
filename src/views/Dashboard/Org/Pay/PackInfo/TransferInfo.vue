@@ -1,6 +1,7 @@
 <template>
   <div
-    class="rounded-lg min-w-[674px] p-3 w-full bg-slate-100 border border-slate-300 grid grid-cols-2 overflow-hidden text-sm gap-2.5"
+    class="rounded-lg p-3 bg-slate-100 border border-slate-300 grid grid-cols-2 overflow-hidden text-sm gap-2.5"
+    :class="[is_modal ? 'min-w-[674px] w-full' : 'w-[720px]']"
   >
     <div class="bg-slate-100 flex flex-col gap-2.5">
       <div>
@@ -177,6 +178,8 @@ const $props = withDefaults(
     partner_info?: IBankAccount
     /** wallet balance */
     wallet_balance?: string
+    /** is modal */
+    is_modal?: boolean
   }>(),
   {}
 )

@@ -272,6 +272,7 @@
     v-model:check_payment="check_payment"
     :is_success_open="is_success_open"
     :payment_type="'PACKAGE'"
+    :meta="meta"
   />
   <Teleport to="body">
     <Transition
@@ -304,42 +305,26 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { currency } from '@/service/helper/format'
-import { ref, watch } from 'vue'
-import { useCommonStore, useOrgStore } from '@/stores'
-import { openNewTab } from '@/service/function'
 import { BBH_PAGE_MESS } from '@/configs/constants/botbanhang'
+import { openNewTab } from '@/service/function'
+import { useCommonStore, useOrgStore } from '@/stores'
+import { ref, watch } from 'vue'
 
-import TransferInfo from '@/views/Dashboard/Org/Pay/PackInfo/TransferInfo.vue'
 // import { BBH_PAGE_MESS } from '@/service/constant/botbanhang'
 import { toast, toastError } from '@/service/helper/alert'
 import AutoPaymentModal from '@/views/Dashboard/Org/Pay/PackInfo/AutoPaymentModal.vue'
 
-import {
-  active_discount,
-  create_txn,
-  purchase_package,
-  read_wallet,
-} from '@/service/api/chatbox/billing'
+import { purchase_package, read_wallet } from '@/service/api/chatbox/billing'
 import { useI18n } from 'vue-i18n'
 
 import ShadcnSelectPopper from '@/components/Select/ShadcnSelectPopper.vue'
 
-import Toggle from '@/components/Toggle.vue'
 import Content from '@/views/Dashboard/Org/Pay/PackInfo/UpgradeModal/Content.vue'
 
-import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
 import NewTabIcon from '@/components/Icons/NewTab.vue'
 
+import { type ResponseVerifyVoucher } from '@/utils/api/Billing'
 import type { IContent } from './UpgradeModal/type'
-import { XMarkIcon } from '@heroicons/vue/24/solid'
-import {
-  BillingAppVoucher,
-  type ResponseVerifyVoucher,
-} from '@/utils/api/Billing'
-import { debounce, set, size } from 'lodash'
-import type { TransactionInfo } from '@/service/interface/app/billing'
-import { is } from 'date-fns/locale'
 
 const commonStore = useCommonStore()
 const orgStore = useOrgStore()
@@ -502,12 +487,22 @@ const is_full_year = ref(false)
 /**dữ liệu xác thực mã khuyến mại */
 const verify_voucher = ref<ResponseVerifyVoucher>({})
 
+/** gói đã chọn */
+const selected_pack = ref<'LITE' | 'PRO' | 'BUSINESS' | undefined>(undefined)
 /** Check trạng thái payment */
 const check_payment = ref(false)
 /** trạng thái payment modal */
 const is_success_open = ref(false)
 /** Trang thái gia hạn gói thành công */
 const is_upgrade_success = ref(false)
+/** Khai báo meta cho việc tự động mua gói */
+const meta = ref<{
+  type: 'PURCHASE' | 'INCREASE' | 'TOP_UP_WALLET'
+  product: typeof selected_pack.value
+}>({
+  type: 'PURCHASE', // giá trị mặc định
+  product: selected_pack.value,
+})
 
 /** Theo dõi trạng thái payment */
 watch(check_payment, value => {
@@ -539,8 +534,6 @@ const wallet_balance = ref<number>(0)
 /** Trạng thái tự động thanh toán */
 const auto_payment_success = ref(false)
 
-/** gói đã chọn */
-const selected_pack = ref<'LITE' | 'PRO' | 'BUSINESS' | undefined>(undefined)
 /** mở modal xác nhận thanh toán */
 async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
   /** Gọi API hoặc logic thanh toán */
@@ -551,6 +544,8 @@ async function openConfirmModal(pack: 'LITE' | 'PRO' | 'BUSINESS') {
 
   /** Gán gói đã chọn */
   selected_pack.value = pack
+
+  meta.value.product = pack
 
   /** Bảng giá từng gói */
   const PRICE_MAP: Record<'LITE' | 'PRO' | 'BUSINESS', number> = {

@@ -370,7 +370,7 @@ const { t: $t } = useI18n()
 /** Common store */
 const commonStore = useCommonStore()
 /** 1: 5 bước cơ bản, 2: loading, 3: verify */
-const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(1)
+const flow_step = ref<1 | 2 | 3 | 4 | 5 | 6>(4)
 
 /** email để verify ở flow 3 */
 const email = ref('user@example.com')

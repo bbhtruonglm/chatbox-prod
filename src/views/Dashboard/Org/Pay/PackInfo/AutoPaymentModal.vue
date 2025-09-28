@@ -20,7 +20,7 @@
               {{ title }}
             </h3>
             <div
-              @click="closeConfirmModal"
+              @click="handleClose"
               class="cursor-pointer"
             >
               <XMarkIcon class="size-4" />
@@ -239,81 +239,186 @@
                   v-if="is_issue_invoice"
                   class="flex flex-col gap-1 text-sm"
                 >
-                  <div class="font-semibold">
-                    {{
-                      $t(
-                        'v1.view.main.dashboard.org.pay.recharge.invoice_info.title'
-                      )
-                    }}
-                  </div>
-                  <div class="font-semibold">
-                    {{
-                      orgStore.selected_org_info?.org_info?.org_company_name ||
-                      orgStore.selected_org_info?.org_info?.org_name
-                    }}
-                    <template
-                      v-if="orgStore.selected_org_info?.org_info?.org_tax_code"
+                  <!-- Header + nút -->
+                  <div class="flex justify-between items-center">
+                    <div class="font-semibold">
+                      {{
+                        $t(
+                          'v1.view.main.dashboard.org.pay.recharge.invoice_info.title'
+                        )
+                      }}
+                    </div>
+                    <button
+                      v-if="!is_edit"
+                      @click="$main.activeEdit"
+                      class="bg-blue-600 text-white py-1 px-4 rounded-md text-sm font-medium"
                     >
-                      -
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
-                        )
-                      }}
-                      :
-                      {{ orgStore.selected_org_info?.org_info?.org_tax_code }}
-                    </template>
-                  </div>
-                  <div class="flex">
-                    <div class="w-32">
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.setting.customer_info.address'
-                        )
-                      }}:
-                    </div>
-                    <div>
-                      {{ orgStore.selected_org_info?.org_info?.org_address }}
-                    </div>
-                  </div>
-                  <div class="flex">
-                    <div class="w-32">
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.setting.customer_info.representative'
-                        )
-                      }}:
-                    </div>
-                    <div>
-                      {{
-                        orgStore.selected_org_info?.org_info?.org_representative
-                      }}
+                      {{ $t('v1.common.change') }}
+                    </button>
+                    <div
+                      v-else
+                      class="flex gap-2"
+                    >
+                      <button
+                        v-if="!orgStore.is_loading"
+                        @click="$main.save"
+                        class="bg-green-600 text-white py-1 px-4 rounded-md text-sm font-medium"
+                      >
+                        <span class="hidden md:block">{{
+                          $t('v1.common.ok')
+                        }}</span>
+                        <span class="block md:hidden">✔︎</span>
+                      </button>
+                      <button
+                        @click="$main.cancelEdit"
+                        class="bg-gray-600 text-white py-1 px-4 rounded-md text-sm font-medium"
+                      >
+                        <span class="hidden md:block">{{
+                          $t('v1.common.cancel')
+                        }}</span>
+                        <span class="block md:hidden">✕</span>
+                      </button>
                     </div>
                   </div>
-                  <div class="flex">
-                    <div class="w-32">
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.setting.customer_info.phone'
-                        )
-                      }}:
+
+                  <!-- VIEW MODE -->
+                  <template v-if="!is_edit">
+                    <div class="font-semibold">
+                      {{ org_info.org_company_name || org_info.org_name }}
+                      <template v-if="org_info.org_tax_code">
+                        -
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.pay.recharge.invoice_info.tax_code'
+                          )
+                        }}:
+                        {{ org_info.org_tax_code }}
+                      </template>
                     </div>
-                    <div>
-                      {{ orgStore.selected_org_info?.org_info?.org_phone }}
+                    <div class="flex">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.address'
+                          )
+                        }}:
+                      </div>
+                      <div>{{ org_info.org_address }}</div>
                     </div>
-                  </div>
-                  <div class="flex">
-                    <div class="w-32">
-                      {{
-                        $t(
-                          'v1.view.main.dashboard.org.setting.customer_info.email'
-                        )
-                      }}:
+                    <div class="flex">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.representative'
+                          )
+                        }}:
+                      </div>
+                      <div>{{ org_info.org_representative }}</div>
                     </div>
-                    <div>
-                      {{ orgStore.selected_org_info?.org_info?.org_email }}
+                    <div class="flex">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.phone'
+                          )
+                        }}:
+                      </div>
+                      <div>{{ org_info.org_phone }}</div>
                     </div>
-                  </div>
+                    <div class="flex">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.email'
+                          )
+                        }}:
+                      </div>
+                      <div>{{ org_info.org_email }}</div>
+                    </div>
+                  </template>
+
+                  <!-- EDIT MODE -->
+                  <template v-else>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.company_name'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        disabled
+                        v-model="org_info.org_company_name"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.tax_code'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        v-model="org_info.org_tax_code"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.address'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        v-model="org_info.org_address"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.representative'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        v-model="org_info.org_representative"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.phone'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        v-model="org_info.org_phone"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-32">
+                        {{
+                          $t(
+                            'v1.view.main.dashboard.org.setting.customer_info.email'
+                          )
+                        }}:
+                      </div>
+                      <input
+                        v-model="org_info.org_email"
+                        class="border p-1 rounded w-full"
+                      />
+                    </div>
+                  </template>
                 </div>
                 <ul
                   v-if="is_issue_invoice"
@@ -378,6 +483,7 @@
                         txn_info?.txn_voucher_info?.voucher_partner_info
                       "
                       :wallet_balance="wallet_balance.toString()"
+                      :is_modal="true"
                     />
                     <!-- <button
                     v-if="txn_info?.txn_status !== 'SUCCESS'"
@@ -406,7 +512,7 @@
 
           <div class="flex justify-between gap-4 w-full text-sm">
             <button
-              @click="closeConfirmModal"
+              @click="handleClose"
               class="py-2 px-4 rounded-md bg-slate-200 hover:brightness-95"
             >
               {{ $t('v1.view.main.dashboard.org.pay.upgrade.close') }}
@@ -466,7 +572,7 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid'
 
 import TransferInfo from '@/views/Dashboard/Org/Pay/PackInfo/TransferInfo.vue'
@@ -475,13 +581,25 @@ import Radio from '@/views/Dashboard/Org/Pay/ReCharge/Radio.vue'
 import { useCommonStore, useOrgStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 
-import type { TransactionInfo } from '@/service/interface/app/billing'
-import { debounce, size } from 'lodash'
-import { create_txn, read_wallet } from '@/service/api/chatbox/billing'
+import type {
+  ITxnMeta,
+  OrgInfo,
+  TransactionInfo,
+} from '@/service/interface/app/billing'
+import { debounce, set, size } from 'lodash'
+import {
+  create_txn,
+  read_wallet,
+  update_org,
+} from '@/service/api/chatbox/billing'
 import { toastError } from '@/service/helper/alert'
 import { BillingAppVoucher } from '@/utils/api/Billing'
-import { currency } from '@/service/helper/format'
+import { copy, currency } from '@/service/helper/format'
 import type { is } from 'date-fns/locale'
+import { loading } from '@/utils/decorator/Loading'
+import { error } from '@/utils/decorator/Error'
+import { container } from 'tsyringe'
+import { Toast } from '@/utils/helper/Alert/Toast'
 /** nhận props từ cha */
 const props = defineProps<{
   /** Đóng mở modal */
@@ -504,6 +622,8 @@ const props = defineProps<{
   is_success_open: boolean
   /** Loại thanh toán */
   payment_type: PAYMENT_TYPE
+  /** txn meta */
+  meta: ITxnMeta
 }>()
 /** Loại thanh toán
  * PAGE = Mua thêm trang
@@ -537,6 +657,13 @@ const payment_method = ref<TransactionInfo['txn_payment_method']>('TRANSFER')
 
 /**bước thanh toán */
 const pay_step = ref<'STEP_1' | 'STEP_2'>('STEP_1')
+
+function handleClose() {
+  /** gọi hàm cha */
+  props.closeConfirmModal()
+  /** set step = 1 */
+  pay_step.value = 'STEP_1'
+}
 
 /**các phương thức thanh toán */
 const LIST_PAYMENT_METHOD: {
@@ -663,6 +790,12 @@ async function createTxn() {
     /** kiểm tra ví có tồn tại không */
     if (!WALLET_ID)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
+    /** Check type, nếu mua gói thì hiện tiền, ngược lại là số mua thêm */
+    if (props.meta?.type === 'PURCHASE') {
+      props.meta.quantity = AMOUNT
+    } else {
+      props.meta.quantity = Number(props.SELECTED) || 1
+    }
 
     /** tạo giao dịch */
     txn_info.value = await create_txn(
@@ -671,7 +804,8 @@ async function createTxn() {
       AMOUNT,
       payment_method.value,
       is_issue_invoice.value,
-      voucher_code.value
+      voucher_code.value,
+      props.meta
     )
 
     /** chuyển sang bước 2 */
@@ -695,4 +829,42 @@ const renderPackageName = (package_name?: string) => {
   if (package_name === 'BUSINESS')
     return $t('v1.view.main.dashboard.org.pay.business')
 }
+/** KHai báo toast */
+const $toast = container.resolve(Toast)
+
+/**có kích hoat chế độ sửa không */
+const is_edit = ref(false)
+/**dữ liệu trước khi sửa */
+const old_info = ref<OrgInfo['org_info']>({})
+console.log(orgStore, 'org_store')
+/** Hàm theo dõi thông tin org */
+const org_info = computed({
+  get() {
+    return orgStore.selected_org_info?.org_info || {}
+  },
+  set(val) {
+    set(orgStore, 'selected_org_info.org_info', val)
+  },
+})
+
+class Main {
+  activeEdit() {
+    old_info.value = copy(org_info.value)
+    is_edit.value = true
+  }
+  cancelEdit() {
+    if (orgStore.is_loading) return
+    org_info.value = copy(old_info.value || {})
+    is_edit.value = false
+  }
+  @loading(toRef(orgStore, 'is_loading'))
+  @error($toast)
+  async save() {
+    if (!orgStore.selected_org_id) return
+    await update_org(orgStore.selected_org_id, { org_info: org_info.value })
+    is_edit.value = false
+    $toast.success($t('v1.common.update_success'))
+  }
+}
+const $main = new Main()
 </script>

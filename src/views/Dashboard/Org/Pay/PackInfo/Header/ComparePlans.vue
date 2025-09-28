@@ -13,11 +13,12 @@
 
     <div
       v-show="open_all"
-      class="overflow-x-auto bg-white rounded-xl"
+      class="overflow-y-auto bg-white rounded-xl"
     >
       <!-- Header -->
+      <!-- class="grid font-semibold top-10 z-50 sticky" -->
       <div
-        class="grid font-semibold top-10 z-50 sticky"
+        class="grid font-semibold sticky top-0 bg-white z-20 shadow-sm"
         :style="{ gridTemplateColumns: GRID_COLS }"
       >
         <div class="p-3 text-left"></div>
