@@ -41,42 +41,73 @@
                 :active_index="ACTIVE_INDEX"
                 @change-tab="handleTabChange"
               />
+
+              <!-- <AnimatedTabs /> -->
+
               <div
                 class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5 pt-12 border-b"
               >
-                <div
+               <!-- <TransitionGroup
+                name="expand"
+                tag="div"
+                :class="[
+                  'gap-6',
+                  ACTIVE_INDEX === 0
+                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                    : 'grid grid-cols-4'
+                ]"
+              >
+                <PricingCard
+                  v-for="(pkg, index) in FILTERED_PACKAGES"
+                  :key="pkg.title"
+                  v-bind="pkg"
+                  :selected="SELECTED_INDEX === pkg.title"
+                  :onSelect="() => handleSelect(pkg.title)"
+                  :active_tab="ACTIVE_INDEX"
                   :class="[
-                    'gap-6',
+                    'transition-all duration-500 ease-in-out',
                     ACTIVE_INDEX === 0
-                      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                      : 'grid grid-cols-4', // grid 4 cột nhưng ta sẽ chỉnh col-span từng item
+                      ? '' // All plans
+                      : index === 0
+                      ? 'col-span-1'
+                      : pkg.title === 'Enterprise'
+                      ? 'col-span-3'
+                      : ''
                   ]"
-                >
-                  <PricingCard
-                    v-for="(pkg, index) in FILTERED_PACKAGES"
-                    :key="pkg.title"
-                    v-bind="pkg"
-                    :selected="SELECTED_INDEX === pkg.title"
-                    :onSelect="() => handleSelect(pkg.title)"
-                    :active_tab="ACTIVE_INDEX"
-                    :class="[
-                      ACTIVE_INDEX === 0
-                        ? '' // tab All plans: theo grid mặc định
-                        : index === 0
-                        ? 'col-span-1' // gói đầu chiếm 1 cột
-                        : 'col-span-3', // gói thứ 2 chiếm 3 cột
-                    ]"
-                  />
-                </div>
+              />
+              </TransitionGroup> -->
 
-                <!-- <ComparePlans
-                  :data="COMPARE_DATA"
-                  :selected_plan_index="SELECTED_INDEX"
-                  @planSelect="handleSelect"
-                  :selected_row="SELECTED_ROW"
-                  @rowSelect="handleRowSelect"
-                /> -->
-
+              <TransitionGroup
+  name="expand"
+  tag="div"
+  :class="[
+    'gap-6',
+    ACTIVE_INDEX === 0
+      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+      : 'grid grid-cols-4'
+  ]"
+>
+  <PricingCard
+    v-for="(pkg, index) in PACKAGES" 
+    :key="pkg.title"
+    v-bind="pkg"
+    :selected="SELECTED_INDEX === pkg.title"
+    :onSelect="() => handleSelect(pkg.title)"
+    :active_tab="ACTIVE_INDEX"
+    v-show="ACTIVE_INDEX === 0 || ['Business','Enterprise'].includes(pkg.title)" 
+    :class="[
+      'transition-all duration-500 ease-in-out',
+      // layout
+      ACTIVE_INDEX === 0
+        ? '' 
+        : pkg.title === 'Business'
+        ? 'col-span-1'
+        : pkg.title === 'Enterprise'
+        ? 'col-span-3'
+        : ''
+    ]"
+/>
+</TransitionGroup>
                 <div class="flex flex-col gap-5">
                   <h2
                     class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
@@ -279,6 +310,7 @@ import {
   CheckIcon,
   ChevronDownIcon,
 } from '@heroicons/vue/24/solid'
+import AnimatedTabs from './AnimatedTabs.vue'
 
 /** Kiểu dữ liệu plans */
 interface Plan {
@@ -568,19 +600,19 @@ const COMPARE_DATA = {
         {
           name: 'Active contacts & deals (limit)',
           values: {
-            free: '1,000',
-            lite: '10,000',
-            pro: 'Unlimited',
-            enterprise: '1,000',
+            lite: '1,000',
+            pro: '10,000',
+            business: '10,000',
+            enterprise: 'Unlimited',
           },
         },
         {
           name: 'Feature A',
-          values: { free: true, lite: true, pro: true, enterprise: true },
+          values: { lite: true, pro: true, business: true, enterprise: true },
         },
         {
           name: 'Feature B',
-          values: { free: false, lite: false, pro: true, enterprise: true },
+          values: { lite: false, pro: false, business: true, enterprise: true },
         },
       ],
     },
@@ -590,19 +622,19 @@ const COMPARE_DATA = {
         {
           name: 'Active contacts & deals (limit)',
           values: {
-            free: '1,000',
-            lite: '10,000',
-            pro: 'Unlimited',
-            enterprise: '1,000',
+            lite: '1,000',
+            pro: '10,000',
+            business: '10,000',
+            enterprise: 'Unlimited',
           },
         },
         {
           name: 'Feature A',
-          values: { free: true, lite: true, pro: true, enterprise: true },
+          values: { lite: true, pro: true, business: true, enterprise: true },
         },
         {
           name: 'Feature B',
-          values: { free: false, lite: false, pro: true, enterprise: true },
+          values: { lite: false, pro: false, business: true, enterprise: true },
         },
       ],
     },
@@ -612,19 +644,19 @@ const COMPARE_DATA = {
         {
           name: 'Active contacts & deals (limit)',
           values: {
-            free: '1,000',
-            lite: '10,000',
-            pro: 'Unlimited',
-            enterprise: '1,000',
+            lite: '1,000',
+            pro: '10,000',
+            business: '10,000',
+            enterprise: 'Unlimited',
           },
         },
         {
           name: 'Feature A',
-          values: { free: true, lite: true, pro: true, enterprise: true },
+          values: { lite: true, pro: true, business: true, enterprise: true },
         },
         {
           name: 'Feature B',
-          values: { free: false, lite: false, pro: true, enterprise: true },
+          values: { lite: false, pro: false, business: true, enterprise: true },
         },
       ],
     },
@@ -634,15 +666,15 @@ const COMPARE_DATA = {
         {
           name: 'AI credits (monthly)',
           values: {
-            free: '1,000',
-            lite: '10,000',
-            pro: 'Unlimited',
-            enterprise: '1,000',
+            lite: '1,000',
+            pro: '10,000',
+            business: '10,000',
+            enterprise: 'Unlimited',
           },
         },
         {
           name: 'AI assistant',
-          values: { free: true, lite: true, pro: true, enterprise: true },
+          values: { lite: true, pro: true, business: true, enterprise: true },
         },
       ],
     },
@@ -651,7 +683,7 @@ const COMPARE_DATA = {
       features: [
         {
           name: 'Workflow automations',
-          values: { free: false, lite: true, pro: true, enterprise: true },
+          values: { lite: false, pro: true, business: true, enterprise: true },
         },
       ],
     },
@@ -772,4 +804,9 @@ defineExpose({ toggleModal })
 .btn {
   @apply py-2 px-4 rounded-md hover:brightness-90 text-sm font-semibold;
 }
+.expand-move {
+  transition: all 0.5s ease-in-out;
+}
+
+
 </style>
