@@ -42,7 +42,7 @@
                 @change-tab="handleTabChange"
               />
 
-              <AnimatedTabs />
+              <!-- <AnimatedTabs /> -->
 
               <div
                 class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5 pt-12 border-b"
