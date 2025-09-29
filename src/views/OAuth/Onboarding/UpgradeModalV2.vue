@@ -42,7 +42,7 @@
                 @change-tab="handleTabChange"
               />
 
-              <!-- <AnimatedTabs /> -->
+              <AnimatedTabs />
 
               <div
                 class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5 pt-12 border-b"
@@ -77,37 +77,37 @@
               />
               </TransitionGroup> -->
 
+              <!-- name="expand" -->
               <TransitionGroup
-  name="expand"
-  tag="div"
-  :class="[
-    'gap-6',
-    ACTIVE_INDEX === 0
-      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-      : 'grid grid-cols-4'
-  ]"
->
-  <PricingCard
-    v-for="(pkg, index) in PACKAGES" 
-    :key="pkg.title"
-    v-bind="pkg"
-    :selected="SELECTED_INDEX === pkg.title"
-    :onSelect="() => handleSelect(pkg.title)"
-    :active_tab="ACTIVE_INDEX"
-    v-show="ACTIVE_INDEX === 0 || ['Business','Enterprise'].includes(pkg.title)" 
-    :class="[
-      'transition-all duration-500 ease-in-out',
-      // layout
-      ACTIVE_INDEX === 0
-        ? '' 
-        : pkg.title === 'Business'
-        ? 'col-span-1'
-        : pkg.title === 'Enterprise'
-        ? 'col-span-3'
-        : ''
-    ]"
-/>
-</TransitionGroup>
+                tag="div"
+                :class="[
+                  'gap-6',
+                  ACTIVE_INDEX === 0
+                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                    : 'grid grid-cols-4'
+                ]"
+              >
+                <PricingCard
+                  v-for="(pkg, index) in PACKAGES" 
+                  :key="pkg.title"
+                  v-bind="pkg"
+                  :selected="SELECTED_INDEX === pkg.title"
+                  :onSelect="() => handleSelect(pkg.title)"
+                  :active_tab="ACTIVE_INDEX"
+                  v-show="ACTIVE_INDEX === 0 || ['Business','Enterprise'].includes(pkg.title)" 
+                  :class="[
+                    'transition-all duration-500 ease-in-out',
+                    // layout
+                    ACTIVE_INDEX === 0
+                      ? '' 
+                      : pkg.title === 'Business'
+                      ? 'col-span-1'
+                      : pkg.title === 'Enterprise'
+                      ? 'col-span-3'
+                      : ''
+                  ]"
+              />
+              </TransitionGroup>
                 <div class="flex flex-col gap-5">
                   <h2
                     class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
