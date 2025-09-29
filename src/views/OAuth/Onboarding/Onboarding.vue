@@ -401,8 +401,16 @@ const onPrevQuickStart = () => {
 }
 /** Hàm skip bước quick start*/
 const skipForNow = () => {
-  /** Chuyển sang step cuối */
-  flow_step.value = 6
+  /** NẾu đang ở step 1, thì chuyền step */
+  if (current_step_quick_start.value < 1) {
+    current_step_quick_start.value++
+    return
+  }
+  /** Nếu step 2 -> chuyển sang màn onboarding */
+  if (current_step_quick_start.value === 1) {
+    /** Chuyển sang step cuối */
+    flow_step.value = 6
+  }
 }
 
 /** Hàm verify phone */
