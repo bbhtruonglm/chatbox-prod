@@ -791,11 +791,8 @@ async function createTxn() {
     if (!WALLET_ID)
       throw $t('v1.view.main.dashboard.org.pay.recharge.wrong_wallet_id')
     /** Check type, nếu mua gói thì hiện tiền, ngược lại là số mua thêm */
-    if (props.meta?.type === 'PURCHASE') {
-      props.meta.quantity = AMOUNT
-    } else {
-      props.meta.quantity = Number(props.SELECTED) || 1
-    }
+
+    props.meta.quantity = Number(props.SELECTED) || 1
 
     /** tạo giao dịch */
     txn_info.value = await create_txn(

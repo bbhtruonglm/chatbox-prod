@@ -47,7 +47,21 @@
               <div
                 class="overflow-hidden flex flex-col flex-grow min-h-0 h-full overflow-y-auto gap-5 p-5 pt-12 border-b"
               >
-               <!-- <TransitionGroup
+                <!-- <div class="bg-red-500 w-full">
+                  <div class="w-full relative h-full py-10">
+                    <PricingCard
+                      v-for="(pkg, index) in PACKAGES"
+                      :key="pkg.title"
+                      v-bind="pkg"
+                      :selected="SELECTED_INDEX === pkg.title"
+                      :onSelect="() => handleSelect(pkg.title)"
+                      :active_tab="ACTIVE_INDEX"
+                      class="absolute py-10"
+                      ref="el => boxRefs[index] = el"
+                    />
+                  </div>
+                </div> -->
+                <TransitionGroup
                 name="expand"
                 tag="div"
                 :class="[
@@ -65,7 +79,8 @@
                   :onSelect="() => handleSelect(pkg.title)"
                   :active_tab="ACTIVE_INDEX"
                   :class="[
-                    'transition-all duration-500 ease-in-out',
+                    // 'transition-all duration-500 ease-in-out',
+                    '',
                     ACTIVE_INDEX === 0
                       ? '' // All plans
                       : index === 0
@@ -75,40 +90,8 @@
                       : ''
                   ]"
               />
-              </TransitionGroup> -->
-
-              <!-- name="expand" -->
-              <TransitionGroup
-                tag="div"
-                :class="[
-                  'gap-6',
-                  ACTIVE_INDEX === 0
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                    : 'grid grid-cols-4'
-                ]"
-              >
-                <PricingCard
-                  v-for="(pkg, index) in PACKAGES" 
-                  :key="pkg.title"
-                  v-bind="pkg"
-                  :selected="SELECTED_INDEX === pkg.title"
-                  :onSelect="() => handleSelect(pkg.title)"
-                  :active_tab="ACTIVE_INDEX"
-                  v-show="ACTIVE_INDEX === 0 || ['Business','Enterprise'].includes(pkg.title)" 
-                  :class="[
-                    'transition-all duration-500 ease-in-out',
-                    // layout
-                    ACTIVE_INDEX === 0
-                      ? '' 
-                      : pkg.title === 'Business'
-                      ? 'col-span-1'
-                      : pkg.title === 'Enterprise'
-                      ? 'col-span-3'
-                      : ''
-                  ]"
-              />
               </TransitionGroup>
-                <div class="flex flex-col gap-5">
+                  <div class="flex flex-col gap-5">
                   <h2
                     class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
                     @click="toggleAll"
@@ -250,7 +233,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <FAQ />
                 </div>
@@ -367,19 +349,36 @@ const $emit = defineEmits<{
 const submitPackage = () => {
   $emit('submit')
 }
-
+/** Filter list package
+ * All plans hiện all
+ * Business chỉ hiện pro và business
+ */
+const FILTERED_PACKAGES = computed(() => {
+  if (ACTIVE_INDEX.value === 0) {
+    /** Tab 0 = All plans */
+    return PACKAGES
+  } else {
+    /** Tab 1 = Business & Enterprise */
+    return PACKAGES.filter(pkg =>
+      ['Business', 'Enterprise'].includes(pkg.title)
+    )
+  }
+})
 /** tab đang được chọn */
 const SELECTED_INDEX = ref('Lite')
 /** Hàm thay đổi index */
 function handleSelect(index: string) {
   /** Nếu enterpise thì chuyển sang tab 1 */
   if (index === 'Enterprise') {
+    // ACTIVE_INDEX.value = 1
+    setTab2()
     ACTIVE_INDEX.value = 1
   }
   /**Chọn gói */
   SELECTED_INDEX.value = index
 }
 /** Khai báo các tab đăng ký */
+// const TABS = ref(['All plans', 'Business & Enterprise'])
 const TABS = ref(['All plans', 'Business & Enterprise'])
 /** Tab active hiện tại */
 const ACTIVE_INDEX = ref(0)
@@ -400,6 +399,7 @@ const PACKAGES = [
     ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Free'),
     description: $t('v1.view.onboarding.lite_description'),
+    style: {},
     sections: [
       {
         heading: 'LIMITS',
@@ -439,6 +439,7 @@ const PACKAGES = [
     subtitle: $t('v1.view.onboarding.pro_subtitle'),
     ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Lite'),
+    style: {},
     description: $t('v1.view.onboarding.pro_description'),
     sections: [
       {
@@ -480,6 +481,7 @@ const PACKAGES = [
     ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Pro'),
     is_popular: true,
+    style: {},
     description: $t('v1.view.onboarding.business_description'),
     sections: [
       {
@@ -516,7 +518,7 @@ const PACKAGES = [
     subtitle: $t('v1.view.onboarding.enterprise_subtitle'),
     ctaText: $t('v1.view.onboarding.free_consultation'),
     ctaOnClick: () => handleClick('Enterprise'),
-
+    style: {},
     description: $t('v1.view.onboarding.enterprise_description'),
     sections: [
       {
@@ -547,33 +549,101 @@ const PACKAGES = [
     ],
   },
 ]
-/** Filter list package
- * All plans hiện all
- * Business chỉ hiện pro và business
- */
-const FILTERED_PACKAGES = computed(() => {
-  if (ACTIVE_INDEX.value === 0) {
-    /** Tab 0 = All plans */
-    return PACKAGES
-  } else {
-    /** Tab 1 = Business & Enterprise */
-    return PACKAGES.filter(pkg =>
-      ['Business', 'Enterprise'].includes(pkg.title)
-    )
-  }
-})
+
 /** Hàm chuyển đổi tab */
 function handleTabChange(index: number) {
   /**Gán tab đã chọn */
-  ACTIVE_INDEX.value = index
+
+  ACTIVE_INDEX.value = ACTIVE_INDEX.value === 0 ? 1 : 0
 
   /** Mở tab business thì tự độgn chọn gói Enterprise */
   if (index === 1) {
+    // setTab2()
     SELECTED_INDEX.value = 'Enterprise'
     /** Nếu chuyển lại all plans thì auto chọn gói Lite */
   } else {
+    // setTab1()
     SELECTED_INDEX.value = 'Lite'
   }
+}
+// Gap = 1.5rem = 24px
+const GAP = 24
+const boxRefs = ref<Array<HTMLElement | null>>([])
+
+const containerWidth = 100 // tính % cho responsive
+
+function setTab1() {
+  // const width = (containerWidth - 3 * (GAP / 16)) / 4 // 4 phần tử, GAP tính rem → % approx
+  // PACKAGES[0].style = {
+  //   top: '0%',
+  //   left: '0%',
+  //   width: `${width}%`,
+  //   height: '100%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
+  // PACKAGES[1].style = {
+  //   top: '0%',
+  //   left: `${width + GAP / 16}%`,
+  //   width: `${width}%`,
+  //   height: '100%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
+  // PACKAGES[2].style = {
+  //   top: '0%',
+  //   left: `${2 * (width + GAP / 16)}%`,
+  //   width: `${width}%`,
+  //   height: '100%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
+  // PACKAGES[3].style = {
+  //   top: '0%',
+  //   left: `${3 * (width + GAP / 16)}%`,
+  //   width: `${width}%`,
+  //   height: '100%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
+}
+
+function setTab2() {
+  // C = 1/4, D = 3/4, gap giữa C-D = GAP
+  // const widthC = (containerWidth - GAP / 16) * 0.25
+  // const widthD = (containerWidth - GAP / 16) * 0.75
+  // PACKAGES[0].style = {
+  //   top: '0%',
+  //   left: `-${widthC}%`,
+  //   width: `${widthC}%`,
+  //   height: '50%',
+  //   opacity: 0,
+  //   transform: 'translateX(-100%)',
+  // }
+  // PACKAGES[1].style = {
+  //   top: '0%',
+  //   left: `-${widthC}%`,
+  //   width: `${widthC}%`,
+  //   height: '50%',
+  //   opacity: 0,
+  //   transform: 'translateX(-100%)',
+  // }
+  // PACKAGES[2].style = {
+  //   top: '0%',
+  //   left: '0%',
+  //   width: `${widthC}%`,
+  //   height: '50%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
+  // PACKAGES[3].style = {
+  //   top: '0%',
+  //   left: `${widthC + GAP / 16}%`,
+  //   width: `${widthD}%`,
+  //   height: '50%',
+  //   opacity: 1,
+  //   transform: 'translateX(0)',
+  // }
 }
 /** selected rơ */
 const SELECTED_ROW = ref<{ sectionIndex: number; rowIndex: number } | null>(
@@ -794,6 +864,8 @@ function onRowClick(sectionIdx: number, rowIdx: number) {
 function onPlanClick(planKey: string) {
   /** hàm emit plan select */
 }
+// Initialize Tab1
+setTab1()
 
 defineExpose({ toggleModal })
 </script>
@@ -805,8 +877,6 @@ defineExpose({ toggleModal })
   @apply py-2 px-4 rounded-md hover:brightness-90 text-sm font-semibold;
 }
 .expand-move {
-  transition: all 0.5s ease-in-out;
+  // transition: all 0.5s ease-in-out;
 }
-
-
 </style>

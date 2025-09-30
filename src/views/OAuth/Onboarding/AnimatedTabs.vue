@@ -1,260 +1,354 @@
 <template>
-  <div class="p-6">
-    <div class="flex gap-4 mb-4">
+  <div class="w-full h-screen relative overflow-hidden p-10">
+    <div class="w-full h-full relative py-10">
+      <!-- Boxes -->
+      <!-- <div
+        v-for="(item, index) in items"
+        :key="item.id"
+        ref="el => boxRefs[index] = el"
+        class="absolute flex h-full items-center justify-center text-2xl border bg-gray-200 transition-all duration-500"
+        :style="item.style"
+        ></div> -->
+      <!-- v-show="
+          ACTIVE_INDEX === 0 || ['Business', 'Enterprise'].includes(pkg.title)
+        " -->
+      <PricingCard
+        v-for="(pkg, index) in PACKAGES"
+        :key="pkg.title"
+        v-bind="pkg"
+        :selected="SELECTED_INDEX === pkg.title"
+        :onSelect="() => handleSelect(pkg.title)"
+        :active_tab="ACTIVE_INDEX"
+        class="absolute h-full py-10"
+        ref="el => boxRefs[index] = el"
+      />
+      <!-- :class="[
+          'absolute',
+          // layout
+          ACTIVE_INDEX === 0
+            ? ''
+            : pkg.title === 'Business'
+            ? 'col-span-1'
+            : pkg.title === 'Enterprise'
+            ? 'col-span-3'
+            : '',
+        ]" -->
       <button
-        @click="switchTab(0)"
-        :class="[
-          'px-4 py-2 rounded',
-          ACTIVE_INDEX === 0 ? 'bg-blue-600 text-white' : 'bg-gray-200',
-        ]"
+        @click="toggleTab"
+        class="absolute bottom-5 right-40 px-4 py-2 rounded text-white bg-blue-500"
       >
-        Tab 1
+        {{ 'Tab1' }}
       </button>
       <button
-        @click="switchTab(1)"
-        :class="[
-          'px-4 py-2 rounded',
-          ACTIVE_INDEX === 1 ? 'bg-blue-600 text-white' : 'bg-gray-200',
-        ]"
+        @click="toggleTab"
+        class="absolute bottom-5 right-5 px-4 py-2 rounded text-white bg-blue-500"
       >
-        Tab 2
+        {{ 'Tab2' }}
       </button>
-    </div>
-
-    <div
-      ref="containerRef"
-      class="flex-container"
-      :class="{ tab2: ACTIVE_INDEX === 1 }"
-    >
-      <!-- A -->
-      <div
-        v-show="ACTIVE_INDEX === 0 || isAnimating"
-        ref="cardA"
-        key="a"
-        class="card"
-      >
-        A1231231231231231
-      </div>
-      <!-- B -->
-      <div
-        v-show="ACTIVE_INDEX === 0 || isAnimating"
-        ref="cardB"
-        key="b"
-        class="card"
-      >
-        B123123123123123123
-      </div>
-      <!-- C -->
-      <div
-        ref="cardC"
-        key="c"
-        class="card c-card"
-      >
-        C123123123123123123123
-      </div>
-      <!-- D -->
-      <div
-        ref="cardD"
-        key="d"
-        class="card d-card"
-      >
-        D12312312312312331212312
-      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, nextTick } from 'vue'
+<script lang="ts" setup>
+import PricingCard from '@/components/PricingCard/PricingCard.vue'
+import { currency } from '@/service/helper/format'
+import Cookies from 'js-cookie'
+import { reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const ACTIVE_INDEX = ref(0)
-const isAnimating = ref(false)
-const containerRef = ref(null)
-const cardA = ref(null)
-const cardB = ref(null)
-const cardC = ref(null)
-const cardD = ref(null)
+const ACTIVE_INDEX = ref(1)
 
-const gap = 16 // Gap from CSS
+/** Hàm dịch */
+const { t: $t } = useI18n()
 
-const switchTab = async tab => {
-  if (ACTIVE_INDEX.value === tab) return
-  isAnimating.value = true
+/** Lấy locale từ cookies */
+const LOCALE = Cookies.get('locale') || 'en'
 
-  const containerRect = containerRef.value.getBoundingClientRect()
-  const containerWidth = containerRect.width
-  const containerLeft = containerRect.left
+// Gap = 1.5rem = 24px
+const GAP = 24
 
-  // Record initial positions
-  const firstA = cardA.value ? cardA.value.getBoundingClientRect() : null
-  const firstB = cardB.value ? cardB.value.getBoundingClientRect() : null
-  const firstC = cardC.value.getBoundingClientRect()
-  const firstD = cardD.value.getBoundingClientRect()
-
-  const firstLeftA = firstA ? firstA.left - containerLeft : 0
-  const firstLeftB = firstB ? firstB.left - containerLeft : 0
-  const firstLeftC = firstC.left - containerLeft
-  const firstLeftD = firstD.left - containerLeft
-
-  // Calculate fixed width for cards in Tab 1 (1/4 container width)
-  const targetWidth = (containerWidth - 3 * gap) / 4
-
-  // Update tab
-  ACTIVE_INDEX.value = tab
-  await nextTick()
-
-  // Set absolute positioning to invert to initial state
-  const cards = {
-    A: cardA.value,
-    B: cardB.value,
-    C: cardC.value,
-    D: cardD.value,
+/** tab đang được chọn */
+const SELECTED_INDEX = ref('Lite')
+/** Hàm thay đổi index */
+function handleSelect(index: string) {
+  /** Nếu enterpise thì chuyển sang tab 1 */
+  if (index === 'Enterprise') {
+    // ACTIVE_INDEX.value = 2
+    setTab2()
+    ACTIVE_INDEX.value = 2
   }
-
-  Object.values(cards).forEach(el => {
-    if (el) {
-      el.style.transition = 'none'
-      el.style.position = 'absolute'
-    }
-  })
-
-  // Set initial positions and widths
-  if (cards.A) {
-    cards.A.style.left = firstLeftA + 'px'
-    cards.A.style.width = targetWidth + 'px'
-    cards.A.style.opacity = firstA ? '1' : '0'
-  }
-  if (cards.B) {
-    cards.B.style.left = firstLeftB + 'px'
-    cards.B.style.width = targetWidth + 'px'
-    cards.B.style.opacity = firstB ? '1' : '0'
-  }
-  cards.C.style.left = firstLeftC + 'px'
-  cards.C.style.width = firstC.width + 'px'
-  cards.D.style.left = firstLeftD + 'px'
-  cards.D.style.width = firstD.width + 'px'
-
-  // Prevent layout collapse
-  containerRef.value.style.height = containerRect.height + 'px'
-
-  // Play animation
-  requestAnimationFrame(() => {
-    if (tab === 1) {
-      // To Tab 2: A, B slide out, C takes 1/4, D takes 3/4
-      const targetWidthC = (containerWidth - gap) / 4
-      const targetWidthD = (3 * (containerWidth - gap)) / 4
-      const shiftAmount = -(targetWidth + gap) // Slide A, B out to the left
-      const targetLeftA = firstLeftA + shiftAmount
-      const targetLeftB = firstLeftB + shiftAmount
-      const targetLeftC = 0
-      const targetLeftD = targetWidthC + gap
-
-      Object.values(cards).forEach(el => {
-        if (el) el.style.transition = 'all 0.6s ease-in-out'
-      })
-
-      if (cards.A) {
-        cards.A.style.left = targetLeftA + 'px'
-        cards.A.style.opacity = '0'
-      }
-      if (cards.B) {
-        cards.B.style.left = targetLeftB + 'px'
-        cards.B.style.opacity = '0'
-      }
-      cards.C.style.left = targetLeftC + 'px'
-      cards.C.style.width = targetWidthC + 'px'
-      cards.D.style.left = targetLeftD + 'px'
-      cards.D.style.width = targetWidthD + 'px'
-    } else {
-      // To Tab 1: A, B slide in from outside, all cards 1/4 width
-      const targetLeftA = 0
-      const targetLeftB = targetWidth + gap
-      const targetLeftC = 2 * (targetWidth + gap)
-      const targetLeftD = 3 * (targetWidth + gap)
-      const shiftAmount = -(2 * (targetWidth + gap)) // Start A, B outside left
-
-      Object.values(cards).forEach(el => {
-        if (el) el.style.transition = 'all 0.6s ease-in-out'
-      })
-
-      // Initialize A, B outside left
-      if (cards.A) {
-        cards.A.style.left = shiftAmount + 'px'
-        cards.A.style.width = targetWidth + 'px'
-        cards.A.style.opacity = '0'
-      }
-      if (cards.B) {
-        cards.B.style.left = shiftAmount + targetWidth + gap + 'px'
-        cards.B.style.width = targetWidth + 'px'
-        cards.B.style.opacity = '0'
-      }
-      cards.C.style.left = firstLeftC + 'px'
-      cards.C.style.width = firstC.width + 'px'
-      cards.D.style.left = firstLeftD + 'px'
-      cards.D.style.width = firstD.width + 'px'
-
-      // Animate to target positions
-      requestAnimationFrame(() => {
-        if (cards.A) {
-          cards.A.style.left = targetLeftA + 'px'
-          cards.A.style.opacity = '1'
-        }
-        if (cards.B) {
-          cards.B.style.left = targetLeftB + 'px'
-          cards.B.style.opacity = '1'
-        }
-        cards.C.style.left = targetLeftC + 'px'
-        cards.C.style.width = targetWidth + 'px'
-        cards.D.style.left = targetLeftD + 'px'
-        cards.D.style.width = targetWidth + 'px'
-      })
-    }
-  })
-
-  // Cleanup after animation
-  const onTransitionEnd = () => {
-    Object.values(cards).forEach(el => {
-      if (el) el.style = ''
-    })
-    containerRef.value.style.height = ''
-    isAnimating.value = false
-  }
-  cardD.value.addEventListener('transitionend', onTransitionEnd, { once: true })
+  /**Chọn gói */
+  SELECTED_INDEX.value = index
 }
+/** Hàm click */
+function handleClick(pkg_title: string) {
+  // alert(`Bạn chọn gói ${pkg_title}`)
+  console.log('title', pkg_title)
+}
+// Container width 100% → dùng % để tính cho responsive
+/** Mock các gói */
+const PACKAGES = [
+  {
+    title: 'Lite',
+    price: LOCALE === 'en' ? '$8' : currency(199000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$10' : currency(270000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.lite_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
+    ctaOnClick: () => handleClick('Free'),
+    description: $t('v1.view.onboarding.lite_description'),
+    style: {},
+    sections: [
+      {
+        heading: 'LIMITS',
+        items: [
+          { text: '1,000 Active contacts & deals', enabled: true },
+          { text: '1 Custom dashboard', enabled: true },
+          { text: '5 Columns per board max', enabled: true },
+          { text: 'Custom automation', enabled: false },
+          { text: 'Guest', enabled: false },
+        ],
+      },
+      {
+        heading: 'ADVANCES',
+        items: [
+          { text: 'Centralized comms hub', enabled: true },
+          { text: 'iOS & Android apps', enabled: true },
+          { text: 'Send mass emails', enabled: false },
+          { text: 'Email sequences', enabled: false },
+          { text: 'Quotes & invoices', enabled: false },
+        ],
+      },
+    ],
+    aiFeatures: [
+      { text: 'AI Automation', enabled: false },
+      { text: 'AI Writing', enabled: false },
+      { text: 'AI Research', enabled: false },
+    ],
+  },
+  {
+    title: 'Pro',
+    price: LOCALE === 'en' ? '$18' : currency(480000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$20' : currency(540000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.pro_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
+    ctaOnClick: () => handleClick('Lite'),
+    style: {},
+    description: $t('v1.view.onboarding.pro_description'),
+    sections: [
+      {
+        heading: 'LIMITS',
+        items: [
+          { text: '1,000 Active contacts & deals', enabled: true },
+          { text: '1 Custom dashboard', enabled: true },
+          { text: '5 Columns per board max', enabled: true },
+          { text: 'Custom automation', enabled: false },
+          { text: 'Guest', enabled: false },
+        ],
+      },
+      {
+        heading: 'ADVANCES',
+        items: [
+          { text: 'Centralized comms hub', enabled: true },
+          { text: 'iOS & Android apps', enabled: true },
+          { text: 'Send mass emails', enabled: false },
+          { text: 'Email sequences', enabled: false },
+          { text: 'Quotes & invoices', enabled: false },
+        ],
+      },
+    ],
+    aiFeatures: [
+      { text: 'AI Automation', enabled: true },
+      { text: 'AI Writing', enabled: true },
+      { text: 'AI Research', enabled: false },
+    ],
+  },
+  {
+    title: 'Business',
+    price: LOCALE === 'en' ? '$90' : currency(2200000) + 'đ',
+    is_sale_off: $t('v1.view.onboarding.is_sale_off'),
+    original_price: LOCALE === 'en' ? '$99' : currency(2600000) + 'đ',
+    code: 'BBH',
+    discount_percent: '40%',
+    discount: $t('v1.view.onboarding.discount'),
+    subtitle: $t('v1.view.onboarding.business_subtitle'),
+    ctaText: $t('v1.view.onboarding.use_trial_7_day'),
+    ctaOnClick: () => handleClick('Pro'),
+    is_popular: true,
+    style: {},
+    description: $t('v1.view.onboarding.business_description'),
+    sections: [
+      {
+        heading: 'LIMITS',
+        items: [
+          { text: '1,000 Active contacts & deals', enabled: true },
+          { text: '1 Custom dashboard', enabled: true },
+          { text: '5 Columns per board max', enabled: true },
+          { text: 'Custom automation', enabled: false },
+          { text: 'Guest', enabled: false },
+        ],
+      },
+      {
+        heading: 'ADVANCES',
+        items: [
+          { text: 'Centralized comms hub', enabled: true },
+          { text: 'iOS & Android apps', enabled: true },
+          { text: 'Send mass emails', enabled: false },
+          { text: 'Email sequences', enabled: false },
+          { text: 'Quotes & invoices', enabled: false },
+        ],
+      },
+    ],
+    aiFeatures: [
+      { text: 'AI Automation', enabled: true },
+      { text: 'AI Writing', enabled: true },
+      { text: 'AI Research', enabled: true },
+    ],
+  },
+  {
+    title: 'Enterprise',
+    price: '$0',
+
+    subtitle: $t('v1.view.onboarding.enterprise_subtitle'),
+    ctaText: $t('v1.view.onboarding.free_consultation'),
+    ctaOnClick: () => handleClick('Enterprise'),
+    style: {},
+    description: $t('v1.view.onboarding.enterprise_description'),
+    sections: [
+      {
+        heading: 'LIMITS',
+        items: [
+          { text: '1,000 Active contacts & deals', enabled: true },
+          { text: '1 Custom dashboard', enabled: true },
+          { text: '5 Columns per board max', enabled: true },
+          { text: 'Custom automation', enabled: false },
+          { text: 'Guest', enabled: false },
+        ],
+      },
+      {
+        heading: 'ADVANCES',
+        items: [
+          { text: 'Centralized comms hub', enabled: true },
+          { text: 'iOS & Android apps', enabled: true },
+          { text: 'Send mass emails', enabled: false },
+          { text: 'Email sequences', enabled: false },
+          { text: 'Quotes & invoices', enabled: false },
+        ],
+      },
+    ],
+    aiFeatures: [
+      { text: 'AI Automation', enabled: true },
+      { text: 'AI Writing', enabled: true },
+      { text: 'AI Research', enabled: true },
+    ],
+  },
+]
+
+const boxRefs = ref<Array<HTMLElement | null>>([])
+
+const containerWidth = 100 // tính % cho responsive
+
+function setTab1() {
+  const width = (containerWidth - 3 * (GAP / 16)) / 4 // 4 phần tử, GAP tính rem → % approx
+  PACKAGES[0].style = {
+    top: '0%',
+    left: '0%',
+    width: `${width}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+  PACKAGES[1].style = {
+    top: '0%',
+    left: `${width + GAP / 16}%`,
+    width: `${width}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+  PACKAGES[2].style = {
+    top: '0%',
+    left: `${2 * (width + GAP / 16)}%`,
+    width: `${width}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+  PACKAGES[3].style = {
+    top: '0%',
+    left: `${3 * (width + GAP / 16)}%`,
+    width: `${width}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+}
+
+function setTab2() {
+  // C = 1/4, D = 3/4, gap giữa C-D = GAP
+  const widthC = (containerWidth - GAP / 16) * 0.25
+  const widthD = (containerWidth - GAP / 16) * 0.75
+  PACKAGES[0].style = {
+    top: '0%',
+    left: `-${widthC}%`,
+    width: `${widthC}%`,
+    height: '50%',
+    opacity: 0,
+    transform: 'translateX(-100%)',
+  }
+  PACKAGES[1].style = {
+    top: '0%',
+    left: `-${widthC}%`,
+    width: `${widthC}%`,
+    height: '50%',
+    opacity: 0,
+    transform: 'translateX(-100%)',
+  }
+  PACKAGES[2].style = {
+    top: '0%',
+    left: '0%',
+    width: `${widthC}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+  PACKAGES[3].style = {
+    top: '0%',
+    left: `${widthC + GAP / 16}%`,
+    width: `${widthD}%`,
+    height: '50%',
+    opacity: 1,
+    transform: 'translateX(0)',
+  }
+}
+
+function toggleTab() {
+  if (ACTIVE_INDEX.value === 1) {
+    setTab2()
+    SELECTED_INDEX.value = 'Enterprise'
+  } else {
+    setTab1()
+    SELECTED_INDEX.value = 'Lite'
+  }
+  ACTIVE_INDEX.value = ACTIVE_INDEX.value === 1 ? 2 : 1
+}
+
+/** Lấy locale từ cookies */
+const locale = Cookies.get('locale') || 'en'
+
+// Initialize Tab1
+setTab1()
 </script>
 
 <style scoped>
-.flex-container {
-  display: flex;
-  gap: 16px;
-  align-items: stretch;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Card chung */
-.card {
-  flex: 1;
-  background: #e5e7eb;
-  padding: 1.25rem;
-  border-radius: 0.75rem;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.125rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  box-sizing: border-box;
-  transition: all 0.6s ease-in-out;
-}
-
-/* Khi Tab2: D mở rộng width */
-.flex-container.tab2 .d-card {
-  flex: 3;
-}
-.flex-container.tab2 .c-card {
-  flex: 1;
+.absolute {
+  transition: all 0.5s ease;
 }
 </style>

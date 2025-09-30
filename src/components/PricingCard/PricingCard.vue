@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex flex-row p-5 gap-2.5 cursor-pointer transition-all duration-200"
+    class="flex flex-row p-5 gap-2.5 cursor-pointer relative"
     :class="[
       selected
         ? 'bg-cyan-50 border-cyan-700 border-2 shadow-md'
@@ -24,9 +24,9 @@
       >
         {{ $t('v1.view.onboarding.popular') }}
       </div>
-      <div class="pb-10">
+      <div class="pb-10 h-full">
         <!-- Title + price -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 h-172">
           <div
             class="flex size-6 rounded-full justify-center items-center flex-shrink-0"
             :class="[selected ? 'bg-green-600' : 'bg-gray-400']"
@@ -199,7 +199,7 @@
     </div>
 
     <div
-      v-if="active_tab == 1 && title === 'Enterprise'"
+      v-show="active_tab == 1 && title === 'Enterprise'"
       class="h-full w-full bg-white/60 rounded-xl p-5 space-y-6 border"
     >
       <!-- Title -->
@@ -422,3 +422,9 @@ const props = withDefaults(
 /** Lấy locale từ cookies */
 const locale = Cookies.get('locale') || 'en'
 </script>
+
+<style scoped>
+.absolute {
+  transition: all 0.5s ease;
+}
+</style>

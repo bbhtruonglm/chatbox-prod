@@ -617,7 +617,11 @@ import TransferInfo from '@/views/Dashboard/Org/Pay/PackInfo/TransferInfo.vue'
 import BackIcon from '@/components/Icons/Back.vue'
 import WalletIcon from '@/components/Icons/Wallet.vue'
 
-import type { OrgInfo, TransactionInfo } from '@/service/interface/app/billing'
+import type {
+  ITxnMeta,
+  OrgInfo,
+  TransactionInfo,
+} from '@/service/interface/app/billing'
 import {
   BillingAppVoucher,
   type ResponseVerifyVoucher,
@@ -627,6 +631,7 @@ import { loading } from '@/utils/decorator/Loading'
 import { error } from '@/utils/decorator/Error'
 import { container } from 'tsyringe'
 import { Toast } from '@/utils/helper/Alert/Toast'
+import type { QuotaType } from '@/service/interface/app/ai'
 
 const { t: $t } = useI18n()
 const orgStore = useOrgStore()
@@ -762,9 +767,14 @@ async function initSelectedTxn() {
   // kích hoạt trạng thái loading
   orgStore.is_loading = false
 }
+
+/** Khai báo meta cho việc tự động mua gói */
+const meta = ref<ITxnMeta>({
+  type: 'TOP_UP_WALLET', // giá trị mặc định
+})
 /**tạo mới giao dịch */
 async function createTxn() {
-  // nếu chưa chọn tổ chức nào thì không thực hiện
+  /** nếu chưa chọn tổ chức nào thì không thực hiện */
   if (
     !orgStore.selected_org_id ||
     orgStore.is_loading ||
@@ -772,7 +782,7 @@ async function createTxn() {
   )
     return
 
-  // kích hoạt trạng thái loading
+  /** kích hoạt trạng thái loading */
   orgStore.is_loading = true
 
   try {
@@ -804,7 +814,8 @@ async function createTxn() {
       AMOUNT,
       payment_method.value,
       is_issue_invoice.value,
-      voucher_code.value
+      voucher_code.value,
+      meta.value
     )
 
     // chuyển sang bước 2

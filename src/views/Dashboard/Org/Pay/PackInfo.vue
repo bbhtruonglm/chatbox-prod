@@ -14,7 +14,7 @@
         >
           {{ $t('v1.view.main.dashboard.org.pay.guild_1') }}
         </div>
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           <Item :title="$t('v1.view.main.dashboard.org.pay.pack_use')">
             {{
               $t(
@@ -191,7 +191,7 @@
             {{ $t('v1.view.main.dashboard.org.pay.guild_2') }}
           </div>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-col md:flex-row">
           <template v-if="!orgStore.isFreePack()">
             <button
               @click="incQuota('PAGE')"
