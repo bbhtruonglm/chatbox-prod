@@ -61,36 +61,129 @@
                     />
                   </div>
                 </div> -->
-                <TransitionGroup
-                name="expand"
-                tag="div"
-                :class="[
-                  'gap-6',
-                  ACTIVE_INDEX === 0
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                    : 'grid grid-cols-4'
-                ]"
-              >
-                <PricingCard
-                  v-for="(pkg, index) in FILTERED_PACKAGES"
-                  :key="pkg.title"
-                  v-bind="pkg"
-                  :selected="SELECTED_INDEX === pkg.title"
-                  :onSelect="() => handleSelect(pkg.title)"
-                  :active_tab="ACTIVE_INDEX"
+                <!-- <TransitionGroup
+                  name="expand"
+                  tag="div"
                   :class="[
-                    // 'transition-all duration-500 ease-in-out',
-                    '',
+                    'gap-6',
                     ACTIVE_INDEX === 0
-                      ? '' // All plans
-                      : index === 0
-                      ? 'col-span-1'
-                      : pkg.title === 'Enterprise'
-                      ? 'col-span-3'
-                      : ''
+                      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                      : 'grid grid-cols-4'
                   ]"
-              />
-              </TransitionGroup>
+                  >
+                  <PricingCard
+                    v-for="(pkg, index) in FILTERED_PACKAGES"
+                    :key="pkg.title"
+                    v-bind="pkg"
+                    :selected="SELECTED_INDEX === pkg.title"
+                    :onSelect="() => handleSelect(pkg.title)"
+                    :active_tab="ACTIVE_INDEX"
+                    :class="[
+                      // 'transition-all duration-500 ease-in-out',
+                      '',
+                      ACTIVE_INDEX === 0
+                        ? '' // All plans
+                        : index === 0
+                        ? 'col-span-1'
+                        : pkg.title === 'Enterprise'
+                        ? 'col-span-3'
+                        : ''
+                    ]"
+                  />
+              </TransitionGroup> -->
+             <!-- <TransitionGroup
+  name="expand"
+  tag="div"
+  class="flex gap-6 transition-all duration-500"
+>
+  <PricingCard
+    v-for="(pkg, index) in FILTERED_PACKAGES"
+    :key="pkg.title"
+    v-bind="pkg"
+    :selected="SELECTED_INDEX === pkg.title"
+    :onSelect="() => handleSelect(pkg.title)"
+    :active_tab="ACTIVE_INDEX"
+    :class="[
+      'transition-all duration-500',
+      ACTIVE_INDEX === 0
+        ? 'flex-1 basis-1/4' // 4 đều nhau
+        : pkg.title === 'Enterprise'
+        ? 'flex-[3] basis-3/4' // D mở rộng
+        : 'flex-1 basis-1/4'
+    ]"
+  />
+</TransitionGroup> -->
+
+<!-- <TransitionGroup
+  name="expand"
+  tag="div"
+  class="flex gap-6 relative"
+>
+  <PricingCard
+    v-for="(pkg, index) in FILTERED_PACKAGES"
+    :key="pkg.title"
+    v-bind="pkg"
+    :selected="SELECTED_INDEX === pkg.title"
+    :onSelect="() => handleSelect(pkg.title)"
+    :active_tab="ACTIVE_INDEX"
+    :class="[
+      'transition-all duration-500',
+      ACTIVE_INDEX === 0
+        ? 'flex-1 basis-1/4'
+        : pkg.title === 'Enterprise'
+        ? 'flex-[3] basis-3/4'
+        : 'flex-1 basis-1/4'
+    ]"
+  />
+</TransitionGroup> -->
+<!-- <TransitionGroup
+  name="expand"
+  tag="div"
+  class="flex gap-6 relative"
+>
+  <PricingCard
+    v-for="(pkg, index) in FILTERED_PACKAGES"
+    :key="pkg.title"
+    v-bind="pkg"
+    :selected="SELECTED_INDEX === pkg.title"
+    :onSelect="() => handleSelect(pkg.title)"
+    :active_tab="ACTIVE_INDEX"
+    :class="[
+      'transition-all duration-500',
+      pkg.title === 'Enterprise'
+        ? ACTIVE_INDEX === 0
+          ? 'flex-1 basis-1/4 order-4'              // Tab1: width nhỏ, luôn đứng cuối
+          : 'flex-[3] basis-3/4 order-4 ml-auto'    // Tab2: width lớn, vẫn cuối, giữ mép phải
+        : 'flex-1 basis-1/4'
+    ]"
+  />
+</TransitionGroup> -->
+
+<TransitionGroup
+  name="expand"
+  tag="div"
+  class="flex gap-6 relative w-full"
+>
+  <PricingCard
+    v-for="(pkg, index) in FILTERED_PACKAGES"
+    :key="pkg.title"
+    v-bind="pkg"
+    :selected="SELECTED_INDEX === pkg.title"
+    :onSelect="() => handleSelect(pkg.title)"
+    :active_tab="ACTIVE_INDEX"
+    :class="[
+      'transition-all duration-500',
+      pkg.title === 'Enterprise'
+        ? (ACTIVE_INDEX === 0
+            ? 'order-last ml-auto flex-none w-1/4'
+            : 'order-last ml-auto flex-none w-3/4')
+        : 'flex-1 min-w-0'
+    ]"
+  />
+</TransitionGroup>
+
+
+
                   <div class="flex flex-col gap-5">
                   <h2
                     class="text-3xl font-medium text-center pt-5 flex justify-center gap-2.5 items-center"
@@ -439,6 +532,7 @@ const PACKAGES = [
     subtitle: $t('v1.view.onboarding.pro_subtitle'),
     ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Lite'),
+    is_popular: true,
     style: {},
     description: $t('v1.view.onboarding.pro_description'),
     sections: [
@@ -480,7 +574,6 @@ const PACKAGES = [
     subtitle: $t('v1.view.onboarding.business_subtitle'),
     ctaText: $t('v1.view.onboarding.use_trial_7_day'),
     ctaOnClick: () => handleClick('Pro'),
-    is_popular: true,
     style: {},
     description: $t('v1.view.onboarding.business_description'),
     sections: [
@@ -518,6 +611,7 @@ const PACKAGES = [
     subtitle: $t('v1.view.onboarding.enterprise_subtitle'),
     ctaText: $t('v1.view.onboarding.free_consultation'),
     ctaOnClick: () => handleClick('Enterprise'),
+    is_popular: true,
     style: {},
     description: $t('v1.view.onboarding.enterprise_description'),
     sections: [
@@ -563,7 +657,7 @@ function handleTabChange(index: number) {
     /** Nếu chuyển lại all plans thì auto chọn gói Lite */
   } else {
     // setTab1()
-    SELECTED_INDEX.value = 'Lite'
+    SELECTED_INDEX.value = 'Pro'
   }
 }
 // Gap = 1.5rem = 24px
@@ -876,7 +970,39 @@ defineExpose({ toggleModal })
 .btn {
   @apply py-2 px-4 rounded-md hover:brightness-90 text-sm font-semibold;
 }
-.expand-move {
-  // transition: all 0.5s ease-in-out;
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.45s cubic-bezier(.2,.9,.3,1);
 }
+
+/* enter: từ ngoài trái */
+.expand-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.expand-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* leave: tách khỏi flow */
+.expand-leave-active {
+  position: absolute;
+  z-index: 40;
+}
+.expand-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+.expand-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+/* reorder mượt */
+.expand-move {
+  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
+}
+
+
 </style>

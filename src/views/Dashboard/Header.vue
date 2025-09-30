@@ -1,6 +1,6 @@
 <template>
   <div
-    class="dashboard-header bg-white rounded-lg py-3 px-6 flex justify-between"
+    class="dashboard-header bg-white rounded-lg py-3 px-3 md:px-6 flex justify-between"
   >
     <button
       @click="$router.push('/dashboard/select-page')"
@@ -11,7 +11,7 @@
         class="h-8"
       />
     </button>
-    <div class="flex gap-7 items-center">
+    <div class="flex gap-3 md:gap-7 items-center">
       <slot name="right" />
       <User
         position="BOTTOM"

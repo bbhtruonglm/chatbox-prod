@@ -5,7 +5,10 @@
       selected
         ? 'bg-cyan-50 border-cyan-700 border-2 shadow-md'
         : 'bg-white border-gray-300 border-2',
-      is_popular ? 'rounded-b-2xl' : 'rounded-2xl',
+      (is_popular && active_tab === 0 && title === 'Pro') ||
+      (is_popular && active_tab === 1 && title === 'Enterprise')
+        ? 'rounded-b-2xl'
+        : 'rounded-2xl',
     ]"
     @click="onSelect"
   >
@@ -18,7 +21,10 @@
     </div>
     <div class="flex flex-col gap-3 cursor-pointer transition-all duration-200">
       <div
-        v-if="is_popular"
+        v-if="
+          (is_popular && active_tab === 0 && title === 'Pro') ||
+          (is_popular && active_tab === 1 && title === 'Enterprise')
+        "
         class="absolute flex justify-center items-center text-sm font-semibold text-white -top-8 left-0 z-10 h-9 rounded-t-lg bg-cyan-700"
         style="width: calc(100% + 4px); left: -2px"
       >

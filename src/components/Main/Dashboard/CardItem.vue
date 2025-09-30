@@ -12,7 +12,7 @@
     >
       <div
         :class="class_header_content"
-        class="flex justify-between gap-2"
+        class="flex flex-col md:flex-row justify-between gap-2"
       >
         <div
           :class="class_title"
