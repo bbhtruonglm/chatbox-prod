@@ -48,7 +48,6 @@ class Main {
   ) {}
 
   /**lưu lại ref được truyền ở param */
-
   saveRef() {
     /**mã ref */
     const REF =
