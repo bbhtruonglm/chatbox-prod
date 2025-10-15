@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4 min-h-0 flex-grow overflow-hidden">
-    <div class="flex-shrink-0 flex items-center gap-3">
+    <div class="flex-shrink-0 flex flex-col md:flex-row md:items-center gap-3">
       <SelectOrg class="rounded-lg" />
       <SelectPageOrg class="rounded-lg" />
     </div>
