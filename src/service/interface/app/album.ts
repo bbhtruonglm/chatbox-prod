@@ -74,7 +74,7 @@ export interface FolderInfo {
 /**cập nhật dữ liệu thư mục */
 export interface UpdateFolderInput {
   /**id trang */
-  page_id: string
+  page_id: string | string[]
   /**lấy từ thư mục */
   folder_id?: string
   /**tên mới */
