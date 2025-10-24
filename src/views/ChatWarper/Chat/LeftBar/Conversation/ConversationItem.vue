@@ -142,8 +142,10 @@ class Main {
     /**cấu hình trang đặc biệt */
     const SPECIAL_PAGE_CONFIG = this.SERVICE_CALC_SPECIAL_PAGE_CONFIGS.exec()
 
-    /**xóa các conversation có client_id trùng với client_id vừa phản hồi nếu có */
+    /**xóa các conversation có client_id trùng với client_id vừa phản hồi nếu có phải là case chưa phản hồi */
+
     if (
+      conversationStore.option_filter_page_data.not_response_client &&
       conversationStore.selected_client_id &&
       conversationStore.selected_client_id !== CONVERSATION.fb_client_id
     ) {

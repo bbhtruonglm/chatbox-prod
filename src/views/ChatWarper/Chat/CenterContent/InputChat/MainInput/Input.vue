@@ -844,6 +844,11 @@ class Main {
                   file.is_loading = false
                   file.is_done = true
                 })
+                /** Nếu có lỗi thì xử lý thông báo lỗi */
+                if (e) {
+                  /** xử lý thông báo lỗi */
+                  this.handleSendMessageError(e)
+                }
                 cb()
               }
             )
@@ -889,6 +894,11 @@ class Main {
                         /** is_group: conversationStore.select_conversation?.is_group, */
                       },
                       (e, r) => {
+                        /** Kiểm tra lỗi  */
+                        if (e) {
+                          /** xử lý thông báo lỗi */
+                          this.handleSendMessageError(e)
+                        }
                         if (e) return _cb('DONE')
                         _cb()
                       }
