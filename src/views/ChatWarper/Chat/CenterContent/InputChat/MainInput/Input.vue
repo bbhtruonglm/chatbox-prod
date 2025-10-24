@@ -246,6 +246,9 @@ class Main {
     /**nội dung tin nhắn */
     const TEXT = INPUT.innerText.trim()
 
+    /** Lưu selected client id */
+    conversationStore.selected_client_id = CLIENT_ID
+
     /** nếu có nội dung tin nhắn */
     if (TEXT) {
       /** xử lý luồng bình luận riêng nếu có, và dừng tiến trình luôn */
