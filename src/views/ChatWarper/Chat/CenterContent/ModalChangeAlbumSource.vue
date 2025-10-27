@@ -37,6 +37,15 @@
           {{ $t('Chọn tất cả các trang') }}
         </button>
 
+        <!-- 🔹 Nút bỏ chọn tất cả -->
+        <!-- <button
+          class="flex-1 py-2 px-3 rounded-md bg-red-50 text-red-700 font-medium w-full border border-red-700"
+          @click="clearAllPages"
+        >
+          {{ $t('Bỏ chọn tất cả') }}
+        </button> -->
+        <!-- Nút khôi phục trang mặc định -->
+        <!-- v-if="!is_default_selection" -->
         <button
           class="flex-1 py-2 px-3 rounded-md bg-blue-100 text-blue-700 font-medium w-full border border-blue-700"
           @click="selectDefaultPage"
@@ -99,7 +108,7 @@
   </Modal>
 </template>
 
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import { nonAccentVn } from '@/service/helper/format'
 import { useConversationStore, useOrgStore } from '@/stores'
 import { isEmpty } from 'lodash'
@@ -128,8 +137,6 @@ const page_ids = defineModel('page_ids', {
 /** LOCAL copy của page_ids để thao tác trong modal (chỉ commit khi confirm) */
 const local_page_ids = ref<string[]>([...(page_ids.value || [])])
 
-console.log(local_page_ids, 'kkkkasdkjfasjdfakjlsdfkjadfkjlakldjsfklja')
-
 /** modal ref */
 const modal_change_quick_answer_ref = ref<InstanceType<typeof Modal> | null>(
   null
@@ -138,27 +145,15 @@ const modal_change_quick_answer_ref = ref<InstanceType<typeof Modal> | null>(
 /** từ khóa tìm kiếm */
 const search = ref('')
 
-/**
- * 🧩 Watch prop `page_ids` từ component cha
- * Mục tiêu:
- * - Khi prop `page_ids` bên ngoài thay đổi, ta sẽ đồng bộ lại `local_page_ids` trong modal.
- * - Không cần kiểm tra modal đang mở hay đóng, vì logic copy dữ liệu khi mở modal đã đảm bảo user không bị ghi đè.
- */
+/** Khi prop page_ids thay đổi từ cha (ngoài modal), cập nhật local nếu modal đang đóng.
+    Để đơn giản, ta luôn cập nhật local nếu parent thay đổi (không ghi đè khi user đang edit vì modal copy khi mở). */
 watch(
-  /** 👀 Theo dõi giá trị của prop `page_ids` */
   () => page_ids.value,
-
-  /** 🔄 Khi `page_ids` thay đổi, đồng bộ về `local_page_ids` */
   v => {
-    /**
-     * 🧠 Trường hợp thực tế:
-     * - Nếu cha truyền xuống `null`, `undefined` hoặc 1 chuỗi (do lỗi API hoặc gán sai kiểu),
-     *   ta vẫn normalize về dạng `string[]` để tránh lỗi spread hoặc hiển thị sai.
-     */
-    const normalized = Array.isArray(v) ? v : typeof v === 'string' ? [v] : []
-
-    /** ✅ Cập nhật local với bản sao của mảng để tránh mutation reference */
-    local_page_ids.value = [...normalized]
+    console.log(v, 'vvvvv')
+    // If parent changes externally and modal not open (or any time), sync local
+    // We intentionally do not watch modal open state here to keep logic simple.
+    local_page_ids.value = [...(v || [])]
   }
 )
 
@@ -227,35 +222,17 @@ function cancelSelection() {
   modal_change_quick_answer_ref.value?.toggleModal()
 }
 
-/**
- * ✅ Xác nhận lựa chọn — emit ra ngoài và đóng modal
- * (Fix lỗi tách ký tự từ string)
- */
+/** ✅ Xác nhận lựa chọn — emit ra ngoài và đóng modal */
 function confirmSelection() {
   const DEFAULT_ID = conversationStore.select_conversation?.fb_page_id || ''
-  console.log(DEFAULT_ID, 'default id')
 
-  console.log(local_page_ids.value, 'dataaaaa')
-
-  /** 🧠 Nếu local_page_ids là chuỗi, chuẩn hóa thành mảng chứa 1 phần tử */
-  if (typeof local_page_ids.value === 'string') {
-    console.log('kkkkkkkkasdfajsdfajlkds')
-    local_page_ids.value = local_page_ids.value ? [local_page_ids.value] : []
-  } else if (!Array.isArray(local_page_ids.value)) {
-    console.log('kádlfajdkfakjlsdjaklfd')
-    local_page_ids.value = []
-  }
-  console.log('zzzzzzzz', local_page_ids.value)
-  /** 🟦 Nếu chưa chọn trang nào → gán trang mặc định */
+  // 🟦 Nếu chưa chọn trang nào → auto chọn trang mặc định
   if (!local_page_ids.value.length && DEFAULT_ID) {
     local_page_ids.value = [DEFAULT_ID]
   }
 
-  /** 🧾 Kiểm tra dữ liệu sau normalize */
-  console.log(local_page_ids.value, '✅ local_page_ids normalized')
-
-  // emit('update:page_ids', [...local_page_ids.value])
-  // modal_change_quick_answer_ref.value?.toggleModal()
+  emit('update:page_ids', [...local_page_ids.value])
+  modal_change_quick_answer_ref.value?.toggleModal()
 }
 
 /** Expose toggle modal — mỗi lần mở modal ta sync local từ prop */
@@ -263,155 +240,6 @@ defineExpose({
   toggleModal() {
     // sync local from parent prop when opening the modal (so user edits start from current value)
     local_page_ids.value = [...(page_ids.value || [])]
-    modal_change_quick_answer_ref.value?.toggleModal()
-  },
-})
-</script> -->
-
-<script setup lang="ts">
-import { nonAccentVn } from '@/service/helper/format'
-import { useConversationStore, useOrgStore } from '@/stores'
-import { isEmpty } from 'lodash'
-import { computed, ref, watch, type PropType } from 'vue'
-
-import PageAvatar from '@/components/Avatar/PageAvatar.vue'
-import Modal from '@/components/Modal.vue'
-import { CheckCircleIcon } from '@heroicons/vue/24/solid'
-import type { IPage } from '@/service/interface/app/page'
-
-/** store */
-const orgStore = useOrgStore()
-const conversationStore = useConversationStore()
-
-/** emits */
-const emit = defineEmits<{
-  (e: 'update:page_ids', value: string[]): void
-}>()
-
-/** Mảng id các trang (v-model prop) */
-const page_ids = defineModel('page_ids', {
-  type: Array as PropType<string[]>,
-  default: () => [],
-})
-
-/** LOCAL copy của page_ids để thao tác trong modal */
-const local_page_ids = ref<string[]>([])
-
-/** ✅ Normalize hàm tiện ích */
-function normalizeToArray(value: unknown): string[] {
-  if (Array.isArray(value)) return value
-  if (typeof value === 'string' && value.trim() !== '') return [value]
-  return []
-}
-
-/** Khi component mount → đồng bộ ban đầu */
-local_page_ids.value = normalizeToArray(page_ids.value)
-
-/** modal ref */
-const modal_change_quick_answer_ref = ref<InstanceType<typeof Modal> | null>(
-  null
-)
-
-/** từ khóa tìm kiếm */
-const search = ref('')
-
-/**
- * 🧩 Watch prop `page_ids` từ cha → luôn đồng bộ đúng kiểu
- */
-watch(
-  () => page_ids.value,
-  v => {
-    local_page_ids.value = normalizeToArray(v)
-  }
-)
-
-/** kiểm tra khôi phục mặc định */
-const is_default_selection = computed(() => {
-  const DEFAULT_ID = conversationStore.select_conversation?.fb_page_id || ''
-  return (
-    local_page_ids.value.length === 1 &&
-    local_page_ids.value.includes(DEFAULT_ID)
-  )
-})
-
-/** 🟦 Danh sách page đã chọn */
-const selectedPages = computed<IPage[]>(() => {
-  return (
-    orgStore.list_os
-      ?.filter(
-        item => item?.page_id && local_page_ids.value.includes(item.page_id)
-      )
-      .map(item => item.page_info)
-      .filter((page): page is IPage => !!page) || []
-  )
-})
-
-/** hiển thị page nếu khớp từ khóa */
-function showPage(page_info: IPage = {}) {
-  if (isEmpty(page_info)) return false
-  const PAGE_NAME = nonAccentVn(page_info?.name || '').replace(/ /g, '')
-  const KEY_WORD = nonAccentVn(search.value).replace(/ /g, '')
-  const PAGE_ID = nonAccentVn(page_info?.fb_page_id || '').replace(/ /g, '')
-  return PAGE_NAME.includes(KEY_WORD) || PAGE_ID.includes(KEY_WORD)
-}
-
-/** Toggle chọn 1 page */
-function togglePage(id: string) {
-  if (!id) return
-  const idx = local_page_ids.value.indexOf(id)
-  if (idx !== -1) local_page_ids.value.splice(idx, 1)
-  else local_page_ids.value.push(id)
-}
-
-/** Chọn tất cả */
-function selectAllPages() {
-  if (orgStore.list_os) {
-    local_page_ids.value = orgStore.list_os
-      .map(item => item.page_id)
-      .filter((id): id is string => typeof id === 'string')
-  }
-}
-
-/** Bỏ chọn tất cả */
-function clearAllPages() {
-  local_page_ids.value = []
-}
-
-/** Khôi phục trang mặc định */
-function selectDefaultPage() {
-  const DEFAULT_ID = conversationStore.select_conversation?.fb_page_id || ''
-  local_page_ids.value = DEFAULT_ID ? [DEFAULT_ID] : []
-}
-
-/** Hủy (không emit) */
-function cancelSelection() {
-  local_page_ids.value = normalizeToArray(page_ids.value)
-  modal_change_quick_answer_ref.value?.toggleModal()
-}
-
-/** ✅ Xác nhận lựa chọn — emit ra ngoài */
-function confirmSelection() {
-  const DEFAULT_ID = conversationStore.select_conversation?.fb_page_id || ''
-
-  // 🔧 Đảm bảo kiểu dữ liệu đúng
-  local_page_ids.value = normalizeToArray(local_page_ids.value)
-
-  // 🟦 Nếu chưa chọn gì thì fallback default
-  if (!local_page_ids.value.length && DEFAULT_ID) {
-    local_page_ids.value = [DEFAULT_ID]
-  }
-
-  console.log(local_page_ids.value, '✅ local_page_ids normalized')
-
-  // ✅ Emit ra ngoài và đóng modal
-  emit('update:page_ids', [...local_page_ids.value])
-  modal_change_quick_answer_ref.value?.toggleModal()
-}
-
-/** expose toggleModal */
-defineExpose({
-  toggleModal() {
-    local_page_ids.value = normalizeToArray(page_ids.value)
     modal_change_quick_answer_ref.value?.toggleModal()
   },
 })
