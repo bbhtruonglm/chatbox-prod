@@ -21,7 +21,9 @@ export class Socket {
    * @param SERVICE_LOCAL_STORAGE service quản lý local storage
    */
   constructor(
-    private SERVICE_LOCAL_STORAGE: ILocalStorage = container.resolve(LocalStorage)
+    private SERVICE_LOCAL_STORAGE: ILocalStorage = container.resolve(
+      LocalStorage
+    )
   ) {}
 
   /** Kết nối socket */
@@ -38,7 +40,9 @@ export class Socket {
     if (!TOKEN) return
 
     // khởi tạo kết nối socket
-    this.socket = new WebSocket(`${url}?access_token=${encodeURIComponent(TOKEN)}`)
+    this.socket = new WebSocket(
+      `${url}?access_token=${encodeURIComponent(TOKEN)}`
+    )
 
     // khi kết nối thành công
     this.socket.onopen = () => {
@@ -50,7 +54,6 @@ export class Socket {
         })
       )
 
-      // tự động ping socket liên tục - 30s
       this.ping_interval_id = setInterval(
         () => this.socket?.send('ping'),
         1000 * 30
