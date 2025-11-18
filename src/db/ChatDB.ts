@@ -1,4 +1,4 @@
-import { map, orderBy } from 'lodash'
+import { map, max, orderBy, size, values } from 'lodash'
 
 import type { ConversationInfo } from '@/service/interface/app/conversation'
 import Dexie from 'dexie'
@@ -44,30 +44,90 @@ class ChatDB extends Dexie {
 
   /**
    * 💾 Lưu nhiều conversation vào DB bằng bulkPut
-   * - mapConvs: object { id: ConversationInfo }
+   * - map_convs: object { id: ConversationInfo }
    * - Tự tạo last_update & đảm bảo id hợp lệ
    */
-  async saveMany(mapConvs: Record<string, ConversationInfo>) {
-    /** Chuyển map → array + chuẩn hoá lại id + thêm last_update */
-    const LIST = map(mapConvs, c => {
-      const ID = `${c.fb_page_id}_${c.fb_client_id}`
-      return { ...c, id: ID, last_update: Date.now() }
-    })
-    if (!LIST.length) return
 
-    /** Bulk put để giảm số lượng transaction */
-    await this.conversations.bulkPut(LIST)
+  async saveMany(map_convs: Record<string, ConversationInfo>) {
+    if (!size(map_convs)) return
 
-    /** Cập nhật meta.last_update */
-    const MAX_UPDATE = Math.max(...LIST.map(c => c.last_update || 0))
-    await this.meta.put({ key: 'last_update', value: MAX_UPDATE })
+    /** --- Nhóm theo pageId --- */
+    const PAGE_GROUP: Record<string, ConversationInfo[]> = {}
+    for (const c of values(map_convs)) {
+      if (!c.fb_page_id || !c.fb_client_id) continue
+      if (!PAGE_GROUP[c.fb_page_id]) PAGE_GROUP[c.fb_page_id] = []
+      PAGE_GROUP[c.fb_page_id].push(c)
+    }
+
+    /** --- Duyệt từng page --- */
+    for (const pageId in PAGE_GROUP) {
+      /** Lấy Conversation theo page ID */
+      const CONVS = PAGE_GROUP[pageId]
+      /** Lọc lấy page id, cập nhật last update */
+      const LIST = CONVS.map(c => {
+        /** Lấy ID */
+        const ID = `${c.fb_page_id}_${c.fb_client_id}`
+        /** Lấy last_update từ last_message_time > create_at > Date.now() */
+        const LAST_UPDATE = c.last_message_time
+        return { ...c, id: ID, last_update: LAST_UPDATE }
+      })
+      /** Nếu không có hội thoại nào thì bỏ qua */
+      if (!LIST.length) continue
+      /** Xử lý vào list */
+      await this.conversations.bulkPut(LIST)
+
+      /** Cập nhật meta.last_update riêng cho page */
+      const MAX_UPDATE = max(LIST.map(c => c.last_update || 0)) || Date.now()
+
+      /** Cập nhật last update theo max update  */
+      await this.meta.put({ key: `last_update_${pageId}`, value: MAX_UPDATE })
+    }
+  }
+
+  /** Tạm thời clone function trên, để xử lý riêng case vào trang fetch mới
+   * Không trùng với các logic khác, tránh ảnh hưởng
+   */
+  async saveManyFetch(map_convs: Record<string, ConversationInfo>) {
+    if (!size(map_convs)) return
+
+    /** --- Nhóm theo pageId --- */
+    const pageGroups: Record<string, ConversationInfo[]> = {}
+    for (const c of values(map_convs)) {
+      if (!c.fb_page_id || !c.fb_client_id) continue
+      if (!pageGroups[c.fb_page_id]) pageGroups[c.fb_page_id] = []
+      pageGroups[c.fb_page_id].push(c)
+    }
+
+    /** --- Duyệt từng page --- */
+    for (const pageId in pageGroups) {
+      const convs = pageGroups[pageId]
+
+      const LIST = convs.map(c => {
+        const id = `${c.fb_page_id}_${c.fb_client_id}`
+        // Lấy last_update từ last_message_time > create_at > Date.now()
+        const last_update = c.last_message_time
+        return { ...c, id, last_update }
+      })
+
+      if (!LIST.length) continue
+
+      await this.conversations.bulkPut(LIST)
+
+      // Cập nhật meta.last_update riêng cho page
+      // const MAX_UPDATE = max(LIST.map(c => c.last_update || 0)) || Date.now()
+      const MAX_UPDATE = Date.now()
+
+      console.log(MAX_UPDATE, 'max update')
+      await this.meta.put({ key: `last_update_${pageId}`, value: MAX_UPDATE })
+    }
   }
 
   /**
-   * 📌 Lấy thời điểm cập nhật cuối cùng của DB
+   * 📌 Lấy thời điểm cập nhật cuối cùng của DB cho từng page
    */
-  async getLastUpdate(): Promise<number> {
-    const META = await this.meta.get('last_update')
+  async getLastUpdate(pageId?: string): Promise<number> {
+    const key = pageId ? `last_update_${pageId}` : 'last_update'
+    const META = await this.meta.get(key)
     return META?.value || 0
   }
 
