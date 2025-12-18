@@ -17,13 +17,7 @@
             "
           >
             <img
-              :src="
-                $cdn.fbMessageMedia(
-                  $props.message?.fb_page_id,
-                  message?.message_mid,
-                  index
-                )
-              "
+              :src="getCdnUrl(index)"
               class="object-contain w-full h-full alo"
             />
           </div>
@@ -40,7 +34,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import MediaDetail from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem/MediaDetail.vue'
 
@@ -52,6 +46,7 @@ import { FitSize } from '@/utils/helper/Attachment'
 import { SingletonCdn } from '@/utils/helper/Cdn'
 import { CreateDataSource, type ICreateDataSource } from './CreateDataSource'
 import { container } from 'tsyringe'
+import { useConversationStore } from '@/stores'
 
 const $props = withDefaults(
   defineProps<{
@@ -65,6 +60,9 @@ const $props = withDefaults(
   {}
 )
 
+/** store quản lý hội thoại */
+const conversationStore = useConversationStore()
+
 const $cdn = SingletonCdn.getInst()
 
 /**ref của component MediaDetail */
@@ -73,6 +71,39 @@ const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
 const data_source = ref<MessageTemplateInput>({})
 /**index của phần tử được chọn */
 const selected_item_index = ref<number>()
+
+/**
+ * loại nền tảng
+ * ưu tiên platform_type của tin nhắn, nếu không có thì fallback platform_type của hội thoại
+ */
+const platform_type = computed(
+  () =>
+    $props.message?.platform_type ||
+    conversationStore.select_conversation?.platform_type
+)
+
+/**
+ * Lấy CDN URL dựa trên platform_type
+ * @param {number} index - index của file đính kèm
+ * @returns {string | undefined} - URL của file đính kèm
+ */
+function getCdnUrl(index: number): string | undefined {
+  /** lấy id của tin nhắn */
+  const TARGET_ID = $props.message?.message_mid
+  /** nếu không có id thì không cần xử lý */
+  if (!TARGET_ID) return
+
+  /** nếu là WEBSITE thì dùng webMessageMedia */
+  if (platform_type.value === 'WEBSITE')
+    return $cdn.webMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
+
+  /** nếu là FB_INSTAGRAM thì dùng igMessageMedia */
+  if (platform_type.value === 'FB_INSTAGRAM')
+    return $cdn.igMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
+
+  /** còn lại dùng fbMessageMedia */
+  return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
+}
 
 class Main {
   /**

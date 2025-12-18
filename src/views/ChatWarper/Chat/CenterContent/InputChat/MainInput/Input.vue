@@ -129,7 +129,24 @@ const page_name = computed(() => {
   return ALIAS && ALIAS.trim() !== '' ? ALIAS : NAME || ''
 })
 
-/**decorator xử lý khi phát sinh lỗi trả lời bình luận */
+/**
+ * Lấy kích thước thực tế của ảnh từ URL
+ * @param url - Đường dẫn ảnh
+ * @returns Promise với width và height
+ */
+function GetImageSize(url: string): Promise<{ width: number; height: number }> {
+  return new Promise(resolve => {
+    /** Tạo element img để load ảnh */
+    const IMG = new Image()
+    /** Khi load xong, lấy kích thước */
+    IMG.onload = () => resolve({ width: IMG.width, height: IMG.height })
+    /** Nếu lỗi, trả về kích thước mặc định */
+    IMG.onerror = () => resolve({ width: 200, height: 200 })
+    /** Gán src để bắt đầu load */
+    IMG.src = url
+  })
+}
+
 const handleErrorReplyComment = error(
   container.resolve(ToastReplyComment),
   messageStore.clearReplyComment
@@ -797,13 +814,17 @@ class Main {
             IMAGE_LIST,
             20,
             (file: UploadFile, i, next) => {
-              file.is_loading = true
-
-              /** Nếu file bị xoá hoặc đã có url sẵn */
+              /** Nếu file bị xoá hoặc đã có url sẵn (từ album) → không cần upload */
               if (!file || file.url) return next()
+
+              /** Chỉ bật loading cho ảnh cần upload */
+              file.is_loading = true
 
               /** Upload file để lấy url */
               this.getFileUrl(file?.source as File, (e, r) => {
+                /** Tắt loading sau khi upload xong */
+                file.is_loading = false
+                /** Gán URL nếu thành công */
                 if (r) file.url = r
                 next()
               })
@@ -837,6 +858,9 @@ class Main {
               }))
             )
 
+            /** Clear preview ngay sau khi gửi qua extension */
+            messageStore.upload_file_list = []
+
             cb()
           } else {
             /** === GỬI CHÍNH THỐNG === */
@@ -850,28 +874,97 @@ class Main {
             /** Nếu không có ảnh nào hợp lệ => bỏ qua */
             if (!ATTACHMENTS.length) return cb()
 
-            /** Gửi 1 lần duy nhất */
-            send_message(
-              {
-                page_id,
-                client_id,
-                attachments: ATTACHMENTS /** ✅ gửi 1 array ảnh */,
-                /** is_group: conversationStore.select_conversation?.is_group, */
-              },
-              (e, r) => {
-                /** cập nhật lại list ảnh  */
-                IMAGE_LIST.forEach(file => {
-                  file.is_loading = false
-                  file.is_done = true
-                })
-                /** Nếu có lỗi thì xử lý thông báo lỗi */
-                if (e) {
-                  /** xử lý thông báo lỗi */
-                  this.handleSendMessageError(e)
-                }
-                cb()
-              }
+            /** Kiểm tra có phải FB_MESS hoặc FB_INSTAGRAM không */
+            const IS_FB_OR_IG = ['FB_MESS', 'FB_INSTAGRAM'].includes(
+              platform_type.value || ''
             )
+
+            /** Tính kích thước thực tế từng ảnh TRƯỚC khi push temp message */
+            Promise.all(
+              ATTACHMENTS.map(f => {
+                /** Nếu không phải ảnh thì trả về null */
+                if (f.type !== 'image') return Promise.resolve(null)
+                /** Lấy kích thước thực tế từ URL */
+                return GetImageSize(f.url)
+              })
+            ).then(ATTACHMENT_SIZES => {
+              /**
+               * FB_MESS/FB_INSTAGRAM: push 1 temp message chứa nhiều ảnh (vì FB/IG giữ nguyên 1 message)
+               * Các platform khác: push nhiều temp message riêng (vì socket sẽ tách thành nhiều tin)
+               */
+              if (IS_FB_OR_IG) {
+                /** Tạo temp_id cho tin nhắn tạm */
+                const TEMP_ID = uniqueId(Date.now().toString())
+                /** Push 1 temp message chứa tất cả ảnh */
+                messageStore.send_message_list.push({
+                  text: '',
+                  time: new Date().toISOString(),
+                  temp_id: TEMP_ID,
+                  message_attachments: ATTACHMENTS,
+                  attachment_size: ATTACHMENT_SIZES,
+                })
+              } else {
+                /** Push nhiều temp message riêng, mỗi message 1 ảnh */
+                ATTACHMENTS.forEach((attachment, index) => {
+                  /** Tạo temp_id riêng cho từng message */
+                  const TEMP_ID = uniqueId(`${Date.now()}_${index}`)
+                  /** Push temp message với 1 ảnh */
+                  messageStore.send_message_list.push({
+                    text: '',
+                    time: new Date().toISOString(),
+                    temp_id: TEMP_ID,
+                    message_attachments: [attachment],
+                    attachment_size: [ATTACHMENT_SIZES[index]],
+                  })
+                })
+              }
+
+              /** Clear preview ngay sau khi push temp message */
+              messageStore.upload_file_list = []
+
+              /** Scroll xuống bottom để thấy temp message */
+              scrollToBottomMessage(messageStore.list_message_id)
+
+              /** Gửi API */
+              send_message(
+                {
+                  page_id,
+                  client_id,
+                  attachments: ATTACHMENTS /** ✅ gửi 1 array ảnh */,
+                  /** is_group: conversationStore.select_conversation?.is_group, */
+                },
+                (e, r) => {
+                  /** cập nhật lại list ảnh  */
+                  IMAGE_LIST.forEach(file => {
+                    file.is_loading = false
+                    file.is_done = true
+                  })
+
+                  /** Nếu có lỗi thì xử lý thông báo lỗi */
+                  if (e) {
+                    /**
+                     * Đánh dấu tất cả temp message liên quan bị lỗi
+                     * FB_MESS: chỉ có 1 temp message
+                     * Các platform khác: có nhiều temp message
+                     */
+                    messageStore.send_message_list.forEach(msg => {
+                      /** Kiểm tra temp message thuộc batch này (có chứa attachment url) */
+                      const HAS_ATTACHMENT = msg.message_attachments?.some(
+                        att => ATTACHMENTS.some(a => a.url === att.url)
+                      )
+                      /** Nếu có thì đánh dấu lỗi */
+                      if (HAS_ATTACHMENT) {
+                        msg.error = true
+                      }
+                    })
+                    /** xử lý thông báo lỗi */
+                    this.handleSendMessageError(e)
+                  }
+                  /** Không cần update message_id vì socket sẽ replace temp message */
+                  cb()
+                }
+              )
+            })
           }
         },
 
@@ -946,7 +1039,6 @@ class Main {
 
   /**xử lý báo lỗi khi gửi tin nhắn thất bại */
   handleSendMessageError(error: any) {
-    console.log('ak:::', error)
     if (error?.error === -224)
       return toastError(
         $t(

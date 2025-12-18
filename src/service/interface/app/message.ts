@@ -396,6 +396,15 @@ export interface TempSendMessage {
   error?: boolean
   /**id tạm dưới client */
   temp_id: string
+  /**danh sách file đính kèm (cho tin nhắn ảnh) */
+  message_attachments?: {
+    /**đường dẫn file */
+    url: string
+    /**loại file */
+    type: FileTypeInfo
+  }[]
+  /**kích thước các file đính kèm */
+  attachment_size?: (AttachmentSize | null)[]
 }
 
 /**dữ liệu 1 file */
