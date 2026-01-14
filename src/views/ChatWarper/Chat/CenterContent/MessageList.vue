@@ -13,6 +13,10 @@
     id="chat__message-list"
     class="h-full overflow-hidden rounded-b-xl relative"
   >
+    <!-- <SkeletonMessage
+      v-if="is_loading && !messageStore.list_message?.length"
+      class="absolute inset-0 z-20 bg-[#f4f5fa]"
+    /> -->
     <div
       v-if="isLockPage()"
       class="text-sm text-red-600 text-center"
@@ -27,11 +31,25 @@
       class="pt-14 pb-5 pl-2 pr-5 gap-1 flex flex-col h-full overflow-hidden overflow-y-auto bg-[#0015810f] rounded-b-xl"
     >
       <div
-        v-if="is_loading"
-        class="relative z-10"
+        v-if="is_loading && messageStore.list_message?.length"
+        class="flex flex-col gap-4 pt-4 pb-2 pl-2 pr-5 transition-all"
       >
-        <div class="fixed left-1/2 -translate-x-1/2">
-          <Loading class="mx-auto" />
+        <div class="flex gap-2.5">
+          <div
+            class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0 animate-pulse"
+          ></div>
+          <div class="flex flex-col gap-1">
+            <div
+              class="w-[200px] h-10 bg-slate-100 rounded-lg animate-pulse"
+            ></div>
+          </div>
+        </div>
+        <div class="flex gap-2.5 flex-row-reverse">
+          <div class="flex flex-col gap-1 items-end">
+            <div
+              class="w-[240px] h-14 bg-blue-50 rounded-lg animate-pulse"
+            ></div>
+          </div>
         </div>
       </div>
       <!-- <HeaderChat /> -->
@@ -94,7 +112,7 @@
                 v-if="message.message_text"
                 :text="message.message_text"
               />
-              <UnsupportMessage v-else />
+              <!-- <UnsupportMessage v-else /> -->
             </div>
             <template
               v-else-if="message.message_type === 'client' && message.ad_id"
@@ -112,11 +130,11 @@
               :message
               :message_index="index"
             />
-            <UnsupportMessage
+            <!-- <UnsupportMessage
               v-else-if="
                 message.message_mid && message.message_mid !== 'undefined'
               "
-            />
+            /> -->
             <DoubleCheckIcon
               v-if="isLastPageMessage(message, index)"
               class="w-3 h-3 text-green-500 absolute -bottom-1.5 -right-11"
@@ -140,17 +158,21 @@
       </div>
       <div
         v-for="message of messageStore.send_message_list"
+        :key="message.temp_id"
         class="relative group flex flex-col gap-1 items-end py-2"
       >
-        <div class="message-size group relative flex gap-1 items-end">
+        <div class="w-fit group relative flex gap-1 items-end">
           <!-- Hiển thị text message nếu có text -->
           <PageTempTextMessage
             v-if="message.text"
             :text="message.text"
-            :class="{
-              'border border-red-500': message.error,
-            }"
+            :mentions="message.mentions"
+            :snap_replay_message="message.snap_replay_message"
+            :is_error="message.error"
           />
+          <!-- :class="{
+            'border border-red-500 rounded-lg': message.error,
+          }" -->
           <!-- Hiển thị attachment message nếu có attachments -->
           <PageTempAttachmentMessage
             v-else-if="message.message_attachments?.length"
@@ -206,6 +228,7 @@ import StaffAvatar from '@/components/Avatar/StaffAvatar.vue'
 import MessageItem from '@/views/ChatWarper/Chat/CenterContent/MessageList/MessageItem.vue'
 import UnReadAlert from '@/views/ChatWarper/Chat/CenterContent/MessageList/UnReadAlert.vue'
 
+import SkeletonMessage from '@/views/ChatWarper/Chat/CenterContent/MessageList/SkeletonMessage.vue'
 import DoubleCheckIcon from '@/components/Icons/DoubleCheck.vue'
 import ChatIcon from '@/components/Icons/Chat.vue'
 
@@ -253,7 +276,33 @@ const select_conversation = computed(() => {
 })
 
 /** danh sách tin nhắn */
-const show_list_message = computed(() => messageStore.list_message)
+const show_list_message = computed(() =>
+  // xử lý logic hiển thị tin nhắn
+  messageStore.list_message.filter(message => {
+    // 1. Quan trọng: Nếu là tin nhắn quảng cáo (có ad_id) -> luôn hiển thị
+    if (message.ad_id) return true
+    // 2. Nếu là tin nhắn post (có fb_post_id) -> luôn hiển thị
+    if (message.fb_post_id) return true
+
+    // 2. Nếu có nội dung text hoặc postback -> hiển thị
+    if (message.message_text || message.postback_title) return true
+    /**  Khai báo attachments */
+    const ATTACHMENTS = message.message_attachments
+    // 2. Nếu không có attachments (và không có text) -> ẩn
+    if (!ATTACHMENTS?.length) return false
+
+    // 3. Kiểm tra xem có attachment nào hợp lệ để hiển thị không
+    const HAS_VALID_ATTACHMENT = ATTACHMENTS.some(att => {
+      // Nếu không phải template (ảnh, video...) -> hiển thị
+      // Hoặc nếu là template thì phải có payload -> hiển thị
+      if (att.type !== 'template' || att.payload) return true
+      // Nếu là template thì phải có payload -> hiển thị
+      return false
+    })
+    // Trả về true nếu có attachment hợp lệ
+    return HAS_VALID_ATTACHMENT
+  })
+)
 
 /**vị trí của tin nhắn cuối cùng nhân viên gửi */
 const last_client_message_index = computed(() =>
@@ -394,7 +443,9 @@ function socketNewMessage({ detail }: CustomEvent) {
   if (detail?.message_mid)
     remove(
       messageStore.send_message_list,
-      message => message.message_id === detail?.message_mid
+      message =>
+        message.message_id === detail?.message_mid ||
+        (message.replay_mid && message.replay_mid === detail?.replay_mid)
     )
 
   /**
@@ -576,24 +627,29 @@ function getListMessage(is_scroll?: boolean) {
       },
     ],
     e => {
-      // tắt loading
-      is_loading.value = false
-
-      // load lần đầu thì tự động cuộn xuống
-      if (is_scroll) {
-        scrollToBottomMessage(messageStore.list_message_id)
-
-        setTimeout(
-          () => scrollToBottomMessage(messageStore.list_message_id),
-          500
-        )
-      }
-
       if (e) {
         // gắn cờ đã load hết dữ liệu
         is_done.value = true
 
+        // tắt loading nếu lỗi
+        is_loading.value = false
+
         return toastError(e)
+      }
+
+      // tắt loading
+      if (!is_scroll) is_loading.value = false
+
+      // load lần đầu thì tự động cuộn xuống
+      if (is_scroll) {
+        // tự động cuộn xuống
+        scrollToBottomMessage(messageStore.list_message_id)
+        // tắt loading sau khi scroll sau 0.3s
+        setTimeout(() => {
+          scrollToBottomMessage(messageStore.list_message_id)
+          // tắt loading sau khi scroll
+          is_loading.value = false
+        }, 300)
       }
     }
   )
@@ -709,11 +765,4 @@ const tryLoadUntilScrollable = (cb: CbError) => {
   )
 }
 </script>
-<style scoped lang="scss">
-.message-size {
-  /** Chiều rộng tự động theo nội dung */
-  width: fit-content;
-  /** Giới hạn chiều rộng tối đa */
-  @apply max-w-96;
-}
-</style>
+<style scoped lang="scss"></style>

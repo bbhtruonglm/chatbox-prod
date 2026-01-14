@@ -1,8 +1,17 @@
 <template>
-  <div class="p-2 bg-[#FFF8E1] rounded-lg flex flex-col gap-2">
+  <div
+    :class="[
+      (attachments?.length || 0) > 1 ? 'bg-white' : 'bg-yellow-50',
+      'w-fit max-w-96',
+    ]"
+    class="p-2 rounded-lg flex flex-col gap-2"
+  >
     <div class="flex gap-2 justify-between">
-      <div class="flex flex-wrap relative z-1 gap-2">
-        <template v-for="(attachment, index) of attachments">
+      <div class="flex flex-wrap relative z-10 gap-2">
+        <template
+          v-for="(attachment, index) of attachments"
+          :key="index"
+        >
           <div
             :class="$main.containerClass()"
             :style="

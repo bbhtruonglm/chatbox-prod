@@ -17,8 +17,14 @@
             "
           >
             <img
-              :src="getCdnUrl(index)"
-              class="object-contain w-full h-full alo"
+              :src="
+                isUseNewCdn()
+                  ? getCdnUrl(index) ||
+                    message?.message_attachments?.[index]?.payload?.url
+                  : message?.message_attachments?.[index]?.payload?.url
+              "
+              :class="is_reply ? 'object-cover' : 'object-contain'"
+              class="w-full h-full alo"
             />
           </div>
         </template>
@@ -60,10 +66,9 @@ const $props = withDefaults(
   {}
 )
 
+const $cdn = SingletonCdn.getInst()
 /** store quản lý hội thoại */
 const conversationStore = useConversationStore()
-
-const $cdn = SingletonCdn.getInst()
 
 /**ref của component MediaDetail */
 const media_detail_ref = ref<InstanceType<typeof MediaDetail>>()
@@ -81,6 +86,19 @@ const platform_type = computed(
     $props.message?.platform_type ||
     conversationStore.select_conversation?.platform_type
 )
+
+/**có sử dụng cnd mới không */
+function isUseNewCdn() {
+  // các nền tảng sử dụng cdn mới
+  return [
+    'FB_MESS',
+    'WEBSITE',
+    'FB_INSTAGRAM',
+    'TIKTOK',
+    'ZALO_OA',
+    'ZALO_PERSONAL',
+  ].includes(platform_type.value || '')
+}
 
 /**
  * Lấy CDN URL dựa trên platform_type
@@ -101,6 +119,16 @@ function getCdnUrl(index: number): string | undefined {
   if (platform_type.value === 'FB_INSTAGRAM')
     return $cdn.igMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
 
+  /** nếu là TIKTOK thì dùng tiktokMessageMedia */
+  if (platform_type.value === 'TIKTOK')
+    return $cdn.tiktokMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
+
+  /** nếu là ZALO_OA hoặc ZALO_PERSONAL thì dùng zaloMessageMedia */
+  if (
+    platform_type.value === 'ZALO_OA' ||
+    platform_type.value === 'ZALO_PERSONAL'
+  )
+    return $cdn.zaloMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
   /** còn lại dùng fbMessageMedia */
   return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, index)
 }
@@ -123,7 +151,8 @@ class Main {
     // tạm thời xử lý data để hiện CTA
     data_source.value = this.SERVICE_CREATE_DATA_SOURCE.exec(
       $props.message,
-      index
+      index,
+      platform_type.value
     )
 
     // mở modal
@@ -132,6 +161,9 @@ class Main {
   /**tạo ra kích thước cho phần từ trước khi hình ảnh, video được load */
   initSize(width?: number, height?: number) {
     // tính toán
+    if ($props.is_reply) {
+      return new FitSize(50, 50, width, height).toCss()
+    }
     return new FitSize(368, 80, width, height).toCss()
   }
 }

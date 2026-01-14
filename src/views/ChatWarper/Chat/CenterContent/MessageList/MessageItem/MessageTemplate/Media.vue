@@ -28,11 +28,7 @@
         preload="metadata"
       >
         <source
-          :src="
-            isUseNewCdn()
-              ? getCdnUrl() || data_source?.video?.url
-              : data_source?.video?.url
-          "
+          :src="getVideoUrl()"
           type="video/mp4"
         />
       </video>
@@ -61,14 +57,7 @@
   <MediaDetail
     ref="media_detail_ref"
     :data_source
-    :url="
-      isUseNewCdn()
-        ? getCdnUrl()
-        : data_source?.image?.url ||
-          data_source?.video?.url ||
-          data_source?.audio?.url ||
-          data_source?.file?.url
-    "
+    :url="getDetailUrl()"
     :message_id="message?._id"
     :message
   />
@@ -90,6 +79,7 @@ import type {
 } from '@/service/interface/app/message'
 import { SingletonCdn } from '@/utils/helper/Cdn'
 import { useConversationStore } from '@/stores'
+import ENV from '@/configs/envs'
 
 const $props = withDefaults(
   defineProps<{
@@ -120,7 +110,7 @@ const platform_type = computed(
 /**có sử dụng cnd mới không */
 function isUseNewCdn() {
   // các nền tảng sử dụng cdn mới
-  return ['FB_MESS', 'WEBSITE', 'FB_INSTAGRAM'].includes(
+  return ['FB_MESS', 'WEBSITE', 'FB_INSTAGRAM', 'TIKTOK'].includes(
     platform_type.value || ''
   )
 }
@@ -173,6 +163,42 @@ function getCdnUrl(): string | undefined {
   if (platform_type.value === 'FB_INSTAGRAM')
     return $cdn.igMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
 
+  if (platform_type.value === 'TIKTOK')
+    return $cdn.tiktokMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
+
   return $cdn.fbMessageMedia($props.message?.fb_page_id, TARGET_ID, 0)
+}
+
+/**
+ * Lấy đường dẫn video, xử lý proxy cho ZALO_PERSONAL
+ */
+function getVideoUrl() {
+  let url = isUseNewCdn()
+    ? getCdnUrl() || $props.data_source?.video?.url
+    : $props.data_source?.video?.url
+
+  if (platform_type.value === 'ZALO_PERSONAL' && url) {
+    return `${ENV.host.proxy_video}?url=${url}`
+  }
+  return url
+}
+
+/**
+ * Lấy đường dẫn chi tiết cho MediaDetail
+ */
+function getDetailUrl() {
+  if (isUseNewCdn()) {
+    return getCdnUrl()
+  }
+
+  if ($props.data_source?.video?.url) {
+    return getVideoUrl()
+  }
+
+  return (
+    $props.data_source?.image?.url ||
+    $props.data_source?.audio?.url ||
+    $props.data_source?.file?.url
+  )
 }
 </script>
